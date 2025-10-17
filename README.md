@@ -1,2 +1,2 @@
-Need XAMMP to run /n
-how to install https://www.apachefriends.org/ /n
+Need XAMMP to run  <br>
+how to install https://www.apachefriends.org/  <br>
