@@ -1,2 +1,2 @@
-Semi working
-requires XAMPP to work
+Need XAMMP to run /n
+how to install https://www.apachefriends.org/ /n
