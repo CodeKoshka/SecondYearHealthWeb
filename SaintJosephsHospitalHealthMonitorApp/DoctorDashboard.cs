@@ -241,7 +241,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnLogout_Click(object sender, EventArgs e)
         {
-            this.Close();
+            this.Hide();
+            LoginForm loginForm = new LoginForm();
+            loginForm.FormClosed += (s, args) => this.Close();
+            loginForm.Show();
         }
 
         private void BtnRefresh_Click(object sender, EventArgs e)

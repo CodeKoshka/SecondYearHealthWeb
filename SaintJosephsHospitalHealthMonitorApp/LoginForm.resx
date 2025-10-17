@@ -117,4 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="lblHint.Text" xml:space="preserve">
+    <value>Default Stuff
+Headadmin
+email: Headadmin@hospital.com / password: admin123
+Receptionist
+email: receptionist@hospital.com / password: receptionist123
+Pharmacist
+email: pharmacist@hospital.com / password: pharmacist123
+Doctor / Patient Kayo Bahala Gumawa</value>
+  </data>
 </root>

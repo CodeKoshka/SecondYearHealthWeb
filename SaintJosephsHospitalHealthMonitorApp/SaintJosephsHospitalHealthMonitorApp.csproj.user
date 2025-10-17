@@ -13,10 +13,37 @@
     <Compile Update="AssignDoctorForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="ReceptionistDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="RegisterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ViewOrderDetailsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyReportsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ManagePricingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="StockAdjustmentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="DispenseMedicineForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MedicationReturnForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ManageInventoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="PatientDetailsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="SecretaryDashboard.cs">
+    <Compile Update="PharmacyStaffDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="MedicalRecordForm.cs">
@@ -28,16 +55,7 @@
     <Compile Update="BillingForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="EditUserForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Update="LoginForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="PatientDashboard.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="RegisterForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="AdminDashboard.cs">

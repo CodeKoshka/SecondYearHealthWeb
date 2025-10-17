@@ -1,12 +1,7 @@
 ﻿using MySqlConnector;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SaintJosephsHospitalHealthMonitorApp
@@ -21,16 +16,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
             InitializeComponent();
             LoadPatients();
         }
-
-        // this is to Load all active patients from the database into the combobox
-        // it also joins the Patients table with the Users table to get patient name and age
+        
+        //this is to Load all active patients from the database into the combobox
+        //it also joins the Patients table with the Users table to get patient name and age
         private void LoadPatients()
         {
-            string query = @"SELECT p.patient_id, u.name + ' (Age: ' + CAST(u.age AS NVARCHAR) + ')' AS patient_info
-                           FROM Patients p
-                           INNER JOIN Users u ON p.user_id = u.user_id
-                           WHERE u.is_active = 1
-                           ORDER BY u.name";
+            string query = @"SELECT p.patient_id, 
+            CONCAT(u.name, ' (Age: ', u.age, ')') AS patient_info
+            FROM Patients p
+            INNER JOIN Users u ON p.user_id = u.user_id
+            WHERE u.is_active = 1
+            ORDER BY u.name";
 
             //this executse the query and store results in a DataTable
             DataTable dt = DatabaseHelper.ExecuteQuery(query);
@@ -54,13 +50,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 //this is to check if patient is already in queue today
                 string checkQuery = @"SELECT COUNT(*) FROM PatientQueue 
-                                    WHERE patient_id = @patientId 
-                                    AND queue_date = CAST(GETDATE() AS DATE) 
-                                    AND status IN ('Waiting', 'Called')";
+                      WHERE patient_id = @patientId 
+                      AND queue_date = CURDATE()
+                      AND status IN ('Waiting', 'Called')";
 
-                //this is the executeScalar returns one value (located yung method sa database helper)
-                int inQueue = (int)DatabaseHelper.ExecuteScalar(checkQuery,
-                    new MySqlParameter("@patientId", patientId));
+                int inQueue = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkQuery,
+                    new MySqlParameter("@patientId", patientId)));
 
                 if (inQueue > 0)
                 {
@@ -69,18 +64,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     return;
                 }
 
-                //this get next queue number
-                string queueNumQuery = @"SELECT ISNULL(MAX(queue_number), 0) + 1 
-                                       FROM PatientQueue 
-                                       WHERE queue_date = CAST(GETDATE() AS DATE)";
-                int queueNumber = (int)DatabaseHelper.ExecuteScalar(queueNumQuery);
+                
+                string queueNumQuery = @"SELECT IFNULL(MAX(queue_number), 0) + 1 
+                         FROM PatientQueue 
+                         WHERE queue_date = CURDATE()";
 
-                //this inserts the new queue entry into the database
+                int queueNumber = Convert.ToInt32(DatabaseHelper.ExecuteScalar(queueNumQuery)); 
+
+                
                 string insertQuery = @"INSERT INTO PatientQueue 
-                                     (patient_id, queue_number, priority, reason_for_visit, registered_by)
-                                     VALUES (@patientId, @queueNum, @priority, @reason, @registeredBy)";
+                       (patient_id, queue_number, priority, reason_for_visit, registered_by, queue_date)
+                       VALUES (@patientId, @queueNum, @priority, @reason, @registeredBy, CURDATE())";
 
-                //executeNonQuery is used for INSERT, UPDATE, DELETE
                 DatabaseHelper.ExecuteNonQuery(insertQuery,
                     new MySqlParameter("@patientId", patientId),
                     new MySqlParameter("@queueNum", queueNumber),

@@ -1,12 +1,7 @@
 ﻿using MySqlConnector;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SaintJosephsHospitalHealthMonitorApp
@@ -36,9 +31,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
         //this gets the doctors with specialization appended to their name
         private void LoadDoctors()
         {
-            string query = @"SELECT d.doctor_id, u.name + ' (' + d.specialization + ')' AS doctor_info
-                           FROM Doctors d
-                           INNER JOIN Users u ON d.user_id = u.user_id";
+            string query = @"SELECT d.doctor_id, CONCAT(u.name, ' (', d.specialization, ')') AS doctor_info
+                   FROM Doctors d
+                   INNER JOIN Users u ON d.user_id = u.user_id";
             DataTable dt = DatabaseHelper.ExecuteQuery(query);
             cmbDoctor.DisplayMember = "doctor_info";
             cmbDoctor.ValueMember = "doctor_id";

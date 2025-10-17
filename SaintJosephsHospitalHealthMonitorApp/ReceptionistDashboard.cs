@@ -11,15 +11,15 @@ using System.Windows.Forms;
 
 namespace SaintJosephsHospitalHealthMonitorApp
 {
-    public partial class SecretaryDashboard : Form
+    public partial class ReceptionistDashboard : Form
     {
         private User currentUser;
 
-        public SecretaryDashboard(User user)
+        public ReceptionistDashboard(User user)
         {
             currentUser = user;
             InitializeComponent();
-            lblWelcome.Text = $"Welcome, {currentUser.Name} (Secretary)";
+            lblWelcome.Text = $"Welcome, {currentUser.Name} (receptionist)";
             LoadData();
         }
 
@@ -27,37 +27,34 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             try
             {
-                //this loads todays queue
                 string queryQueue = @"
-                    SELECT q.queue_id, q.queue_number, u.name AS Patient, 
-                           ISNULL(d.name, 'Not Assigned') AS Doctor, q.priority, 
-                           q.status, q.reason_for_visit, q.registered_time
-                    FROM PatientQueue q
-                    INNER JOIN Patients p ON q.patient_id = p.patient_id
-                    INNER JOIN Users u ON p.user_id = u.user_id
-                    LEFT JOIN Doctors doc ON q.doctor_id = doc.doctor_id
-                    LEFT JOIN Users d ON doc.user_id = d.user_id
-                    WHERE q.queue_date = CAST(GETDATE() AS DATE)
-                    ORDER BY 
-                        CASE q.priority 
-                            WHEN 'Emergency' THEN 1 
-                            WHEN 'Urgent' THEN 2 
-                            ELSE 3 
-                        END, 
-                        q.queue_number";
+                SELECT q.queue_id, q.queue_number, u.name AS Patient, 
+                IFNULL(d.name, 'Not Assigned') AS Doctor, q.priority, 
+                q.status, q.reason_for_visit, q.registered_time
+                FROM PatientQueue q
+                INNER JOIN Patients p ON q.patient_id = p.patient_id
+                INNER JOIN Users u ON p.user_id = u.user_id
+                LEFT JOIN Doctors doc ON q.doctor_id = doc.doctor_id
+                LEFT JOIN Users d ON doc.user_id = d.user_id
+                WHERE q.queue_date = CURDATE()
+                ORDER BY 
+                CASE q.priority 
+                WHEN 'Emergency' THEN 1 
+                WHEN 'Urgent' THEN 2 
+                ELSE 3 
+                END, 
+                q.queue_number";
                 dgvQueue.DataSource = DatabaseHelper.ExecuteQuery(queryQueue);
 
-                //this loads all patients
                 string queryPatients = @"
-                    SELECT p.patient_id, u.name, u.age, u.gender, 
-                           p.blood_type, p.phone_number, u.email
-                    FROM Patients p
-                    INNER JOIN Users u ON p.user_id = u.user_id
-                    WHERE u.is_active = 1
-                    ORDER BY u.name";
+                SELECT p.patient_id, u.name, u.age, u.gender, 
+                p.blood_type, p.phone_number, u.email
+                FROM Patients p
+                INNER JOIN Users u ON p.user_id = u.user_id
+                WHERE u.is_active = 1
+                ORDER BY u.name";
                 dgvPatients.DataSource = DatabaseHelper.ExecuteQuery(queryPatients);
 
-                //this to update the queue count label
                 int queueCount = dgvQueue.Rows.Count;
                 lblQueueCount.Text = $"Total in Queue Today: {queueCount}";
             }
@@ -67,7 +64,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         //this is to add a patient to the queue
         private void BtnAddToQueue_Click(object sender, EventArgs e)
         {
@@ -120,7 +116,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 //this is to update queue status to Called with current time
                 string query = @"UPDATE PatientQueue 
-                               SET status = 'Called', called_time = GETDATE() 
+                               SET status = 'Called', called_time = NOW()
                                WHERE queue_id = @queueId";
                 DatabaseHelper.ExecuteNonQuery(query, new MySqlParameter("@queueId", queueId));
 
@@ -187,7 +183,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnLogout_Click(object sender, EventArgs e)
         {
-            this.Close();
+            this.Hide();
+            LoginForm loginForm = new LoginForm();
+            loginForm.FormClosed += (s, args) => this.Close();
+            loginForm.Show();
+        }
+
+        private void BtnAddPatient_Click(object sender, EventArgs e)
+        {
+            RegisterForm createPatientForm = new RegisterForm(currentUser.UserId, currentUser.Role);
+            createPatientForm.FormClosed += (s, args) => LoadData();
+            createPatientForm.ShowDialog();
         }
     }
 }

@@ -5,13 +5,12 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SaintJosephsHospitalHealthMonitorApp
 {
     public class User
     {
-
-        //this are the properties to store user information
         public int UserId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
@@ -19,7 +18,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
         public int Age { get; set; }
         public string Gender { get; set; } = string.Empty;
 
-        //this is to authenticate the user mostly just validation inside
         public static User? Authenticate(string email, string password)
         {
             try

@@ -1,6 +1,7 @@
 ﻿using MySqlConnector;
 using System;
 using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace SaintJosephsHospitalHealthMonitorApp
@@ -23,7 +24,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             //thallas idea and code to use try and catch to make sure the program doesnt crash when it catches a error
             try
             {
-                // Step 1: Connect to MySQL server and create database
+                
                 conn = new MySqlConnection(serverConnectionString);
                 conn.Open();
 
@@ -33,25 +34,26 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 conn.Close();
                 conn.Dispose();
 
-                // Step 2: Connect to the database and create tables
+                
                 conn = new MySqlConnection(databaseConnectionString);
                 conn.Open();
 
                 //some of this tables are broken so far future fixes when i get a chance
                 //this creates the Users table
                 string createUsersTable = @"
-                    CREATE TABLE IF NOT EXISTS Users (
-                        user_id INT PRIMARY KEY AUTO_INCREMENT,
-                        name VARCHAR(100) NOT NULL,
-                        role VARCHAR(20) NOT NULL,
-                        email VARCHAR(100) UNIQUE NOT NULL,
-                        password VARCHAR(255) NOT NULL,
-                        age INT,
-                        gender VARCHAR(10),
-                        created_by INT NULL,
-                        created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        is_active TINYINT(1) DEFAULT 1
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                CREATE TABLE IF NOT EXISTS Users (
+                    user_id INT PRIMARY KEY AUTO_INCREMENT,
+                    name VARCHAR(100) NOT NULL,
+                    role VARCHAR(20) NOT NULL,
+                    email VARCHAR(100) UNIQUE NOT NULL,
+                    password VARCHAR(255) NOT NULL,
+                    age INT,
+                    gender VARCHAR(10),
+                    created_by INT NULL,
+                    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    is_active TINYINT(1) DEFAULT 1,
+                    FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
                 //this creates the patients table
                 string createPatientsTable = @"
@@ -151,6 +153,151 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
+                
+                string createMedicineInventoryTable = @"
+                CREATE TABLE IF NOT EXISTS MedicineInventory (
+                    medicine_id INT PRIMARY KEY AUTO_INCREMENT,
+                    medicine_name VARCHAR(200) NOT NULL,
+                    generic_name VARCHAR(200),
+                    brand_name VARCHAR(200),
+                    category VARCHAR(100),
+                    dosage_form VARCHAR(50),
+                    strength VARCHAR(50),
+                    quantity INT NOT NULL DEFAULT 0,
+                    unit VARCHAR(20) NOT NULL,
+                    reorder_level INT NOT NULL DEFAULT 10,
+                    cost_price DECIMAL(10,2),
+                    selling_price DECIMAL(10,2) NOT NULL,
+                    supplier VARCHAR(200),
+                    batch_number VARCHAR(100),
+                    expiry_date DATE,
+                    is_controlled TINYINT(1) DEFAULT 0,
+                    requires_approval TINYINT(1) DEFAULT 0,
+                    storage_location VARCHAR(100),
+                    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    created_by INT,
+                    FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+                
+                string createMedicationOrdersTable = @"
+                CREATE TABLE IF NOT EXISTS MedicationOrders (
+                    order_id INT PRIMARY KEY AUTO_INCREMENT,
+                    patient_id INT NOT NULL,
+                    doctor_id INT NOT NULL,
+                    medicine_name VARCHAR(200) NOT NULL,
+                    dosage VARCHAR(100) NOT NULL,
+                    frequency VARCHAR(100) NOT NULL,
+                    duration VARCHAR(100),
+                    quantity INT NOT NULL,
+                    priority VARCHAR(20) DEFAULT 'Normal',
+                    status VARCHAR(20) DEFAULT 'Pending',
+                    special_instructions TEXT,
+                    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    validated_by INT NULL,
+                    validated_date DATETIME NULL,
+                    dispensed_by INT NULL,
+                    dispensed_date DATETIME NULL,
+                    completed_date DATETIME NULL,
+                    notes TEXT,
+                    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
+                    FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id) ON DELETE CASCADE,
+                    FOREIGN KEY (validated_by) REFERENCES Users(user_id) ON DELETE SET NULL,
+                    FOREIGN KEY (dispensed_by) REFERENCES Users(user_id) ON DELETE SET NULL
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+                
+                string createDispensingRecordsTable = @"
+                CREATE TABLE IF NOT EXISTS DispensingRecords (
+                    dispense_id INT PRIMARY KEY AUTO_INCREMENT,
+                    order_id INT,
+                    medicine_id INT NOT NULL,
+                    patient_id INT NOT NULL,
+                    quantity_dispensed INT NOT NULL,
+                    unit_price DECIMAL(10,2) NOT NULL,
+                    total_amount DECIMAL(10,2) NOT NULL,
+                    batch_number VARCHAR(100),
+                    dispensed_by INT NOT NULL,
+                    dispensed_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    inventory_deducted TINYINT(1) DEFAULT 1,
+                    billing_added TINYINT(1) DEFAULT 1,
+                    patient_type VARCHAR(20) DEFAULT 'Outpatient',
+                    notes TEXT,
+                    FOREIGN KEY (order_id) REFERENCES MedicationOrders(order_id) ON DELETE SET NULL,
+                    FOREIGN KEY (medicine_id) REFERENCES MedicineInventory(medicine_id) ON DELETE RESTRICT,
+                    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
+                    FOREIGN KEY (dispensed_by) REFERENCES Users(user_id) ON DELETE RESTRICT
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+                
+                string createMedicationReturnsTable = @"
+                CREATE TABLE IF NOT EXISTS MedicationReturns (
+                    return_id INT PRIMARY KEY AUTO_INCREMENT,
+                    dispense_id INT,
+                    order_id INT,
+                    medicine_id INT NOT NULL,
+                    patient_id INT NOT NULL,
+                    quantity_returned INT NOT NULL,
+                    return_reason VARCHAR(500) NOT NULL,
+                    return_type VARCHAR(50) DEFAULT 'Full',
+                    refund_amount DECIMAL(10,2),
+                    returned_to_stock TINYINT(1) DEFAULT 0,
+                    processed_by INT NOT NULL,
+                    return_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    approved_by INT NULL,
+                    approval_date DATETIME NULL,
+                    status VARCHAR(20) DEFAULT 'Pending',
+                    notes TEXT,
+                    FOREIGN KEY (dispense_id) REFERENCES DispensingRecords(dispense_id) ON DELETE SET NULL,
+                    FOREIGN KEY (order_id) REFERENCES MedicationOrders(order_id) ON DELETE SET NULL,
+                    FOREIGN KEY (medicine_id) REFERENCES MedicineInventory(medicine_id) ON DELETE RESTRICT,
+                    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
+                    FOREIGN KEY (processed_by) REFERENCES Users(user_id) ON DELETE RESTRICT,
+                    FOREIGN KEY (approved_by) REFERENCES Users(user_id) ON DELETE SET NULL
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+
+                string createControlledSubstanceLogTable = @"
+                CREATE TABLE IF NOT EXISTS ControlledSubstanceLog (
+                    log_id INT PRIMARY KEY AUTO_INCREMENT,
+                    medicine_id INT NOT NULL,
+                    dispense_id INT,
+                    patient_id INT NOT NULL,
+                    quantity INT NOT NULL,
+                    action_type VARCHAR(50) NOT NULL,
+                    dispensed_by INT NOT NULL,
+                    approved_by INT,
+                    witness_by INT,
+                    log_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    reason TEXT,
+                    notes TEXT,
+                    FOREIGN KEY (medicine_id) REFERENCES MedicineInventory(medicine_id) ON DELETE RESTRICT,
+                    FOREIGN KEY (dispense_id) REFERENCES DispensingRecords(dispense_id) ON DELETE SET NULL,
+                    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
+                    FOREIGN KEY (dispensed_by) REFERENCES Users(user_id) ON DELETE RESTRICT,
+                    FOREIGN KEY (approved_by) REFERENCES Users(user_id) ON DELETE SET NULL,
+                    FOREIGN KEY (witness_by) REFERENCES Users(user_id) ON DELETE SET NULL
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+
+                string createStockAdjustmentTable = @"
+                CREATE TABLE IF NOT EXISTS StockAdjustment (
+                    adjustment_id INT PRIMARY KEY AUTO_INCREMENT,
+                    medicine_id INT NOT NULL,
+                    adjustment_type VARCHAR(50) NOT NULL,
+                    quantity_change INT NOT NULL,
+                    previous_quantity INT NOT NULL,
+                    new_quantity INT NOT NULL,
+                    reason VARCHAR(500) NOT NULL,
+                    batch_number VARCHAR(100),
+                    adjusted_by INT NOT NULL,
+                    adjustment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    notes TEXT,
+                    FOREIGN KEY (medicine_id) REFERENCES MedicineInventory(medicine_id) ON DELETE RESTRICT,
+                    FOREIGN KEY (adjusted_by) REFERENCES Users(user_id) ON DELETE RESTRICT
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
                 //this is execute table creation
                 ExecuteNonQueryInternal(conn, createUsersTable);
                 ExecuteNonQueryInternal(conn, createPatientsTable);
@@ -160,44 +307,75 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 ExecuteNonQueryInternal(conn, createAppointmentsTable);
                 ExecuteNonQueryInternal(conn, createMedicalRecordsTable);
                 ExecuteNonQueryInternal(conn, createBillingTable);
+                ExecuteNonQueryInternal(conn, createMedicineInventoryTable);
+                ExecuteNonQueryInternal(conn, createMedicationOrdersTable);
+                ExecuteNonQueryInternal(conn, createDispensingRecordsTable);
+                ExecuteNonQueryInternal(conn, createMedicationReturnsTable);
+                ExecuteNonQueryInternal(conn, createControlledSubstanceLogTable);
+                ExecuteNonQueryInternal(conn, createStockAdjustmentTable);
 
                 //this is to insert default admin user
-                string checkAdmin = "SELECT COUNT(*) FROM Users WHERE email = 'admin@hospital.com'";
-                object adminResult = ExecuteScalarInternal(conn, checkAdmin);
-                long adminExists = Convert.ToInt64(adminResult);
+                string checkHeadadmin = "SELECT COUNT(*) FROM Users WHERE email = 'Headadmin@hospital.com'";
+                object adminResult = ExecuteScalarInternal(conn, checkHeadadmin);
+                long HeadadminExists = Convert.ToInt64(adminResult);
 
-                if (adminExists == 0)
+                if (HeadadminExists == 0)
                 {
-                    string insertAdmin = @"
-                        INSERT INTO Users (name, role, email, password, age, gender)
-                        VALUES ('Admin User', 'Admin', 'admin@hospital.com', 'admin123', 30, 'Other')";
-                    ExecuteNonQueryInternal(conn, insertAdmin);
+                    string insertHeadadmin = @"
+        INSERT INTO Users (name, role, email, password, age, gender, created_by)
+        VALUES ('Hospital Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', 30, 'Other', NULL)";
+                    ExecuteNonQueryInternal(conn, insertHeadadmin);
                 }
 
-                //this is to insert default secretary user
-                string checkSecretary = "SELECT COUNT(*) FROM Users WHERE email = 'secretary@hospital.com'";
-                object secretaryResult = ExecuteScalarInternal(conn, checkSecretary);
-                long secretaryExists = Convert.ToInt64(secretaryResult);
 
-                if (secretaryExists == 0)
+                string checkReceptionist = "SELECT COUNT(*) FROM Users WHERE email = 'receptionist@hospital.com'";
+                object receptionistResult = ExecuteScalarInternal(conn, checkReceptionist);
+                long receptionistExists = Convert.ToInt64(receptionistResult);
+
+                if (receptionistExists == 0)
                 {
-                    string insertSecretary = @"
-                        INSERT INTO Users (name, role, email, password, age, gender)
-                        VALUES ('Secretary User', 'Secretary', 'secretary@hospital.com', 'secretary123', 28, 'Female')";
-                    ExecuteNonQueryInternal(conn, insertSecretary);
+                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com'";
+                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
+                    long adminId = Convert.ToInt64(adminIdResult);
 
-                    string getLastId = "SELECT LAST_INSERT_ID()";
-                    object userIdResult = ExecuteScalarInternal(conn, getLastId);
-                    long userId = Convert.ToInt64(userIdResult);
-
-                    string insertStaff = @"
-                        INSERT INTO Staff (user_id, position, department)
-                        VALUES (@userId, 'Receptionist', 'Front Desk')";
-                    MySqlCommand cmdStaff = new MySqlCommand(insertStaff, conn);
-                    cmdStaff.Parameters.AddWithValue("@userId", userId);
-                    cmdStaff.ExecuteNonQuery();
+                    string insertreceptionist = @"
+        INSERT INTO Users (name, role, email, password, age, gender, created_by)
+        VALUES ('receptionist User', 'receptionist', 'receptionist@hospital.com', 'receptionist123', 28, 'Female', @createdBy)";
+                    MySqlCommand cmdReceptionist = new MySqlCommand(insertreceptionist, conn);
+                    cmdReceptionist.Parameters.AddWithValue("@createdBy", adminId);
+                    cmdReceptionist.ExecuteNonQuery();
                 }
-                //will add dafault doctor user havent gotten to do it yet forgot
+
+                string checkPharmacist = "SELECT COUNT(*) FROM Users WHERE email = 'pharmacist@hospital.com'";
+                object pharmacistResult = ExecuteScalarInternal(conn, checkPharmacist);
+                long pharmacistExists = Convert.ToInt64(pharmacistResult);
+
+                if (pharmacistExists == 0)
+                {
+                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com'";
+                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
+                    long adminId = Convert.ToInt64(adminIdResult);
+
+                    string insertPharmacist = @"
+        INSERT INTO Users (name, role, email, password, age, gender, created_by)
+        VALUES ('Pharmacy Staff', 'Pharmacist', 'pharmacist@hospital.com', 'pharmacist123', 30, 'Other', @createdBy)";
+                    MySqlCommand cmdPharmacist = new MySqlCommand(insertPharmacist, conn);
+                    cmdPharmacist.Parameters.AddWithValue("@createdBy", adminId);
+                    cmdPharmacist.ExecuteNonQuery();
+
+                    
+                    string getPharmacistId = "SELECT user_id FROM Users WHERE email = 'pharmacist@hospital.com'";
+                    object pharmacistIdResult = ExecuteScalarInternal(conn, getPharmacistId);
+                    long pharmacistId = Convert.ToInt64(pharmacistIdResult);
+
+                    
+                    string insertPharmacistStaff = @"
+        INSERT INTO Staff (user_id, position, department)
+        VALUES (@userId, 'Pharmacist', 'Pharmacy')";
+                    MySqlCommand cmdPharmacistStaff = new MySqlCommand(insertPharmacistStaff, conn);
+                    cmdPharmacistStaff.Parameters.AddWithValue("@userId", pharmacistId);
+                    cmdPharmacistStaff.ExecuteNonQuery();
+                }
 
                 MessageBox.Show("Database initialized successfully!", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -342,11 +520,14 @@ provided the ideas for the program also helped and contributed to the code aswel
 known issues / (tinatamad pang ayusin) by lead programmer ramilo
 
 1.if the admin user table gets deleted it crashes the xampp and had to reinstall the whole xampp
-2.alot of the programs dont work right / missing not been fix yet (sobrang raming di gumagana sakit sa ulo) 
 
-(titatamad pakong i dibug one by one total november 10 panaman plano kong matapos to)
 
-future plans / missing stuff
+missing stuff / unfinished (top priority) pag di natapos magigisa tayo
+
+1. billing unfinished lot to add than i thought
+2. security dipa added
+
+future plans 
 
 0.need to replace the program name the name right now is temporary
 1.the laus easteregg is not been started yet
@@ -359,4 +540,13 @@ future plans / missing stuff
 final notes by lead programmer
 di po pwede gumamit ng sql express naging corrupted download ng sql saka localdb no choice 
 xampp po kaylangan naming gamitin instead saka mas madaling install
-*/
+
+
+Update
+1.halos fix na lahat need nalang padebug patulong nalang
+2.pag ok na lahat billing nalang need ko i update
+3.pag fix na yung billing design na
+4.pag tapos na doon ko lalagyan lahat ng comments mashadong tamad para maglagay
+
+sa mga designers gamitin ninyo yung mga ui ko as reference papagandahin ninyo lang
+yung probided na sa designer.cs paramakita yung design shift + f7 pag yung code f7 lang*/

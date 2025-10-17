@@ -1,8 +1,8 @@
-﻿using System;
+﻿using MySqlConnector;
+using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using MySqlConnector;
 
 namespace SaintJosephsHospitalHealthMonitorApp
 {
@@ -22,31 +22,35 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             try
             {
-                //this loads users table
-                string queryUsers = @"SELECT user_id, name, role, email, age, gender, created_date 
-                                     FROM Users ORDER BY created_date DESC";
+
+                string queryUsers = @"
+        SELECT u.user_id, u.name, u.role, u.email, u.created_date, 
+               IFNULL(uc.name, 'System') AS created_by
+        FROM Users u
+        LEFT JOIN Users uc ON u.created_by = uc.user_id
+        ORDER BY u.created_date DESC";
                 dgvUsers.DataSource = DatabaseHelper.ExecuteQuery(queryUsers);
 
-                //this Loads appointments table
+
                 string queryAppointments = @"
-                    SELECT a.appointment_id, u1.name AS Patient, u2.name AS Doctor, 
-                           a.appointment_date, a.status, a.notes
-                    FROM Appointments a
-                    INNER JOIN Patients p ON a.patient_id = p.patient_id
-                    INNER JOIN Users u1 ON p.user_id = u1.user_id
-                    INNER JOIN Doctors d ON a.doctor_id = d.doctor_id
-                    INNER JOIN Users u2 ON d.user_id = u2.user_id
-                    ORDER BY a.appointment_date DESC";
+            SELECT a.appointment_id, u1.name AS Patient, u2.name AS Doctor, 
+                   a.appointment_date, a.status, a.notes
+            FROM Appointments a
+            INNER JOIN Patients p ON a.patient_id = p.patient_id
+            INNER JOIN Users u1 ON p.user_id = u1.user_id
+            INNER JOIN Doctors d ON a.doctor_id = d.doctor_id
+            INNER JOIN Users u2 ON d.user_id = u2.user_id
+            ORDER BY a.appointment_date DESC";
                 dgvAppointments.DataSource = DatabaseHelper.ExecuteQuery(queryAppointments);
 
-                //this loads Billing table
+
                 string queryBilling = @"
-                    SELECT b.bill_id, u.name AS Patient, b.amount, b.status, 
-                           b.description, b.bill_date
-                    FROM Billing b
-                    INNER JOIN Patients p ON b.patient_id = p.patient_id
-                    INNER JOIN Users u ON p.user_id = u.user_id
-                    ORDER BY b.bill_date DESC";
+            SELECT b.bill_id, u.name AS Patient, b.amount, b.status, 
+                   b.description, b.bill_date
+            FROM Billing b
+            INNER JOIN Patients p ON b.patient_id = p.patient_id
+            INNER JOIN Users u ON p.user_id = u.user_id
+            ORDER BY b.bill_date DESC";
                 dgvBilling.DataSource = DatabaseHelper.ExecuteQuery(queryBilling);
             }
             catch (Exception ex)
@@ -58,9 +62,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnAddUser_Click(object sender, EventArgs e)
         {
-            RegisterForm regForm = new RegisterForm();
-            regForm.FormClosed += (s, args) => LoadData();
-            regForm.ShowDialog();
+            RegisterForm userForm = new RegisterForm(currentUser.UserId, currentUser.Role);
+            userForm.FormClosed += (s, args) => LoadData();
+            userForm.ShowDialog();
         }
 
         private void BtnEditUser_Click(object sender, EventArgs e)
@@ -72,8 +76,40 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            //this is to safely get the user_id
             var userIdCell = dgvUsers.SelectedRows[0].Cells["user_id"];
+            var roleCell = dgvUsers.SelectedRows[0].Cells["role"];
+
+            if (userIdCell?.Value == null || userIdCell.Value == DBNull.Value)
+            {
+                MessageBox.Show("Invalid user data selected.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string userRole = roleCell?.Value?.ToString() ?? "";
+
+            int userId = Convert.ToInt32(userIdCell.Value);
+
+            RegisterForm editForm = new RegisterForm(userId);
+            editForm.FormClosed += (s, args) => LoadData();
+            editForm.ShowDialog();
+        }
+
+        private void BtnDeleteUser_Click(object sender, EventArgs e)
+        {
+
+            if (dgvUsers.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a user to delete.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var userIdCell = dgvUsers.SelectedRows[0].Cells["user_id"];
+            var roleCell = dgvUsers.SelectedRows[0].Cells["role"];
+            var nameCell = dgvUsers.SelectedRows[0].Cells["name"];
+            var emailCell = dgvUsers.SelectedRows[0].Cells["email"];
+
             if (userIdCell?.Value == null || userIdCell.Value == DBNull.Value)
             {
                 MessageBox.Show("Invalid user data selected.", "Error",
@@ -82,49 +118,73 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             int userId = Convert.ToInt32(userIdCell.Value);
-            EditUserForm editForm = new EditUserForm(userId);
-            editForm.FormClosed += (s, args) => LoadData();
-            editForm.ShowDialog();
-        }
+            string userRole = roleCell?.Value?.ToString() ?? "";
+            string userName = nameCell?.Value?.ToString() ?? "Unknown";
+            string userEmail = emailCell?.Value?.ToString() ?? "";
 
-        private void BtnDeleteUser_Click(object sender, EventArgs e)
-        {
-            //this ensures a row is selected
-            if (dgvUsers.SelectedRows.Count == 0)
+
+            if (userRole == "Headadmin")
             {
-                MessageBox.Show("Please select a user to delete.", "Selection Required",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Cannot delete Headadmin users.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            DialogResult result = MessageBox.Show("Are you sure you want to delete this user?",
-                "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
-            if (result == DialogResult.Yes)
+            if (userEmail == "Headadmin@hospital.com" ||
+                userEmail == "receptionist@hospital.com" ||
+                userEmail == "pharmacist@hospital.com")
             {
-                try
+                MessageBox.Show("Cannot delete default system accounts.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+
+            if (userId == currentUser.UserId)
+            {
+                MessageBox.Show("You cannot delete your own account.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+
+            DialogResult deleteChoice = MessageBox.Show(
+                $"How do you want to remove {userName}?\n\n" +
+                "YES = Permanently Delete (cannot be undone)\n" +
+                "NO = Deactivate (can be reactivated later)\n" +
+                "CANCEL = Cancel operation",
+                "Delete or Deactivate?",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Question);
+
+            if (deleteChoice == DialogResult.Cancel)
+                return;
+
+            try
+            {
+                if (deleteChoice == DialogResult.Yes)
                 {
-                    //this is to safely get the user_id
-                    var userIdCell = dgvUsers.SelectedRows[0].Cells["user_id"];
-                    if (userIdCell?.Value == null || userIdCell.Value == DBNull.Value)
-                    {
-                        MessageBox.Show("Invalid user data selected.", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    //this converts the user_id and run delete query
-                    int userId = Convert.ToInt32(userIdCell.Value);
+
                     string query = "DELETE FROM Users WHERE user_id = @userId";
                     DatabaseHelper.ExecuteNonQuery(query, new MySqlParameter("@userId", userId));
-                    MessageBox.Show("User deleted successfully.", "Success",
+                    MessageBox.Show("User permanently deleted.", "Success",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadData();
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("Error deleting user: " + ex.Message, "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    string query = "UPDATE Users SET is_active = 0 WHERE user_id = @userId";
+                    DatabaseHelper.ExecuteNonQuery(query, new MySqlParameter("@userId", userId));
+                    MessageBox.Show("User deactivated successfully.", "Success",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+                LoadData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -164,8 +224,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             int apptId = Convert.ToInt32(apptIdCell.Value);
 
             //made a small popup form for editing the status
-            //(di ko sure kung gagana ito since gusto ko lang i try and copy yung mga code sa designer.cs)
-            //might transfer to another designer instead of having it here
             Form statusForm = new Form();
             statusForm.Text = "Update Appointment Status";
             statusForm.Size = new Size(350, 200);
@@ -306,7 +364,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnLogout_Click(object sender, EventArgs e)
         {
-            this.Close();
+            this.Hide();
+            LoginForm loginForm = new LoginForm();
+            loginForm.FormClosed += (s, args) => this.Close();
+            loginForm.Show();
         }
     }
 }
