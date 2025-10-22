@@ -15,14 +15,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 {
     public partial class RegisterForm : Form
     {
-        private int? userId; // null = new user, value = edit mode
+        private int? userId;
         private int? createdByUserId;
         private string creatorRole;
         private bool isEditMode;
         private string originalEmail;
         private string originalRole;
 
-        // Constructor for editing existing user
         public RegisterForm(int userIdToEdit)
         {
             userId = userIdToEdit;
@@ -33,7 +32,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             LoadExistingUserData();
         }
 
-        // Constructor for creating new user (admin/receptionist mode)
         public RegisterForm(int creatorId, string role)
         {
             userId = null;
@@ -45,7 +43,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             ConfigureForCreateMode();
         }
 
-        // Constructor for registration mode (no creator)
         public RegisterForm()
         {
             userId = null;
@@ -63,9 +60,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (isEditMode)
             {
-                // Edit mode: Show all 5 roles
                 cmbRole.Items.AddRange(new string[] {
                     "Headadmin",
+                    "Admin",
                     "Receptionist",
                     "Doctor",
                     "Pharmacist",
@@ -74,17 +71,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
             else if (creatorRole == "Registration")
             {
-                // Registration: Admin, Receptionist, Doctor only
-                cmbRole.Items.AddRange(new string[] { "Headadmin", "Receptionist", "Doctor" });
+                cmbRole.Items.AddRange(new string[] { "Admin", "Receptionist", "Doctor" });
             }
             else if (creatorRole == "Headadmin")
             {
-                // Headadmin can create all roles except Headadmin
-                cmbRole.Items.AddRange(new string[] { "Receptionist", "Doctor", "Pharmacist", "Patient" });
+                cmbRole.Items.AddRange(new string[] { "Admin", "Receptionist", "Doctor", "Pharmacist", "Patient" });
             }
             else if (creatorRole == "Receptionist")
             {
-                // Receptionist can only create Patients
                 cmbRole.Items.AddRange(new string[] { "Patient" });
             }
 
@@ -98,14 +92,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             this.Text = "Edit User - St. Joseph's Hospital";
             btnSubmit.Text = "Save Changes";
 
-            // Hide password fields initially - will show change password button
             lblPassword.Visible = false;
             txtPassword.Visible = false;
             lblConfirmPassword.Visible = false;
             txtConfirmPassword.Visible = false;
             chkShowPassword.Visible = false;
 
-            // Add Change Password button
             Button btnChangePassword = new Button();
             btnChangePassword.Name = "btnChangePassword";
             btnChangePassword.Text = "Change Password";
@@ -126,10 +118,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             this.Text = "Create User - St. Joseph's Hospital";
             btnSubmit.Text = "Create User";
 
-            // Password visibility will be controlled by role selection
             if (creatorRole == "Receptionist")
             {
-                // Hide password fields initially since they can only create Patients
                 lblPassword.Visible = false;
                 txtPassword.Visible = false;
                 lblConfirmPassword.Visible = false;
@@ -339,7 +329,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     panelPatientInfo.Visible = true;
 
-                    // Hide password fields for Patient creation (not in edit mode)
                     if (!isEditMode)
                     {
                         lblPassword.Visible = false;
@@ -353,7 +342,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     panelDoctorInfo.Visible = true;
 
-                    // Show password fields for Doctor creation
                     if (!isEditMode)
                     {
                         lblPassword.Visible = true;
@@ -365,8 +353,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
                 else
                 {
-                    // Headadmin, Receptionist, Pharmacist
-                    // Show password fields for creation
                     if (!isEditMode)
                     {
                         lblPassword.Visible = true;
@@ -407,7 +393,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void UpdateUser()
         {
-            // Validate required fields
             if (string.IsNullOrWhiteSpace(txtName.Text) ||
                 string.IsNullOrWhiteSpace(txtEmail.Text) ||
                 string.IsNullOrWhiteSpace(txtAge.Text) ||
@@ -419,7 +404,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            // Validate email format
             if (!IsValidEmail(txtEmail.Text.Trim()))
             {
                 MessageBox.Show("Please enter a valid email address.", "Validation Error",
@@ -427,7 +411,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            // Check if email is already used by another user
             if (txtEmail.Text.Trim() != originalEmail)
             {
                 string checkEmail = "SELECT COUNT(*) FROM Users WHERE email = @email AND user_id != @userId";
@@ -443,7 +426,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            // Validate age
             if (!int.TryParse(txtAge.Text, out int age) || age < 18 || age > 100)
             {
                 MessageBox.Show("Please enter a valid age between 18 and 100.",
@@ -453,7 +435,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             string currentRole = cmbRole.SelectedItem.ToString();
 
-            // Validate role-specific fields
             if (currentRole == "Doctor" && string.IsNullOrWhiteSpace(txtSpecialization.Text))
             {
                 MessageBox.Show("Please enter doctor's specialization.", "Validation Error",
@@ -468,7 +449,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     try
                     {
-                        // Warn about role change
                         if (currentRole != originalRole)
                         {
                             DialogResult result = MessageBox.Show(
@@ -482,7 +462,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             }
                         }
 
-                        // Update Users table
                         string query = @"UPDATE Users 
                                        SET name = @name, email = @email, age = @age, 
                                            gender = @gender, role = @role
@@ -499,7 +478,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             cmd.ExecuteNonQuery();
                         }
 
-                        // Update role-specific tables
                         UpdateRoleSpecificTable(conn, transaction, currentRole);
 
                         transaction.Commit();
@@ -596,7 +574,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void CreateUser()
         {
-
             if (string.IsNullOrWhiteSpace(txtName.Text) ||
                 string.IsNullOrWhiteSpace(txtEmail.Text) ||
                 string.IsNullOrWhiteSpace(txtAge.Text) ||
@@ -610,7 +587,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             string role = cmbRole.SelectedItem.ToString();
 
-            // Validate password based on role
+            if (creatorRole == "Receptionist" && role != "Patient")
+            {
+                MessageBox.Show("Receptionists can only create Patient records.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             bool requirePassword = role != "Patient";
 
             if (requirePassword)
@@ -672,7 +655,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     try
                     {
-
                         string checkEmail = "SELECT COUNT(*) FROM Users WHERE email = @email";
                         using (MySqlCommand cmdCheckEmail = new MySqlCommand(checkEmail, conn, transaction))
                         {
@@ -753,7 +735,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 cmdInsertDoctor.ExecuteNonQuery();
                             }
                         }
-                        else if (role == "Headadmin" || role == "Receptionist" || role == "Pharmacist")
+                        else if (role == "Headadmin" || role == "Admin" || role == "Receptionist" || role == "Pharmacist")
                         {
                             string insertStaff = @"INSERT INTO Staff (user_id, position, department) 
                                                    VALUES (@userId, @position, @department)";
@@ -763,6 +745,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                                 string position = role;
                                 string department = role == "Headadmin" ? "Administration" :
+                                                   role == "Admin" ? "Administration" :
                                                    role == "Receptionist" ? "Reception" :
                                                    "Pharmacy";
 

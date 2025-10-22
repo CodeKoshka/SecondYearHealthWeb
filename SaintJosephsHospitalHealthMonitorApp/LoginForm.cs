@@ -32,8 +32,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (user != null)
             {
-                
                 if (user.Role != "Headadmin" &&
+                    user.Role != "Admin" &&
                     user.Role != "Receptionist" &&
                     user.Role != "Doctor" &&
                     user.Role != "Pharmacist")
@@ -49,7 +49,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 Form dashboard = null;
                 switch (user.Role)
                 {
-                    case "HospitalAdmin":
+                    case "Headadmin":
+                        dashboard = new AdminDashboard(user);
+                        break;
+                    case "Admin":
                         dashboard = new AdminDashboard(user);
                         break;
                     case "Receptionist":

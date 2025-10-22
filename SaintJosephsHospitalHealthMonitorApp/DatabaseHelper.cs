@@ -24,7 +24,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             //thallas idea and code to use try and catch to make sure the program doesnt crash when it catches a error
             try
             {
-                
+
                 conn = new MySqlConnection(serverConnectionString);
                 conn.Open();
 
@@ -34,7 +34,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 conn.Close();
                 conn.Dispose();
 
-                
+
                 conn = new MySqlConnection(databaseConnectionString);
                 conn.Open();
 
@@ -129,14 +129,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id) ON DELETE CASCADE
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                //this creates the billing table
+                //this creates the ENHANCED billing table with all new features
                 string createBillingTable = @"
                     CREATE TABLE IF NOT EXISTS Billing (
                         bill_id INT PRIMARY KEY AUTO_INCREMENT,
                         patient_id INT,
                         amount DECIMAL(10,2) NOT NULL,
+                        subtotal DECIMAL(10,2) DEFAULT 0.00,
+                        discount_percent DECIMAL(5,2) DEFAULT 0.00,
+                        discount_amount DECIMAL(10,2) DEFAULT 0.00,
+                        tax_percent DECIMAL(5,2) DEFAULT 0.00,
+                        tax_amount DECIMAL(10,2) DEFAULT 0.00,
                         status VARCHAR(20) DEFAULT 'Pending',
-                        description VARCHAR(500),
+                        description TEXT,
+                        payment_method VARCHAR(50) DEFAULT 'Cash',
+                        notes TEXT,
                         bill_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         created_by INT,
                         FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
@@ -153,7 +160,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                
+
                 string createMedicineInventoryTable = @"
                 CREATE TABLE IF NOT EXISTS MedicineInventory (
                     medicine_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -180,7 +187,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                
+
                 string createMedicationOrdersTable = @"
                 CREATE TABLE IF NOT EXISTS MedicationOrders (
                     order_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -207,7 +214,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (dispensed_by) REFERENCES Users(user_id) ON DELETE SET NULL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                
+
                 string createDispensingRecordsTable = @"
                 CREATE TABLE IF NOT EXISTS DispensingRecords (
                     dispense_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -230,7 +237,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (dispensed_by) REFERENCES Users(user_id) ON DELETE RESTRICT
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                
+
                 string createMedicationReturnsTable = @"
                 CREATE TABLE IF NOT EXISTS MedicationReturns (
                     return_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -298,6 +305,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (adjusted_by) REFERENCES Users(user_id) ON DELETE RESTRICT
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
+                string updateBillingTable = @"
+                        ALTER TABLE Billing 
+                        ADD COLUMN IF NOT EXISTS subtotal DECIMAL(10,2) DEFAULT 0.00 AFTER amount,
+                        ADD COLUMN IF NOT EXISTS discount_percent DECIMAL(5,2) DEFAULT 0.00 AFTER subtotal,
+                        ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(10,2) DEFAULT 0.00 AFTER discount_percent,
+                        ADD COLUMN IF NOT EXISTS tax_percent DECIMAL(5,2) DEFAULT 0.00 AFTER discount_amount,
+                        ADD COLUMN IF NOT EXISTS tax_amount DECIMAL(10,2) DEFAULT 0.00 AFTER tax_percent,
+                        MODIFY COLUMN description TEXT,
+                        ADD COLUMN IF NOT EXISTS payment_method VARCHAR(50) DEFAULT 'Cash' AFTER description,
+                        ADD COLUMN IF NOT EXISTS notes TEXT AFTER payment_method";
+
                 //this is execute table creation
                 ExecuteNonQueryInternal(conn, createUsersTable);
                 ExecuteNonQueryInternal(conn, createPatientsTable);
@@ -313,6 +331,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 ExecuteNonQueryInternal(conn, createMedicationReturnsTable);
                 ExecuteNonQueryInternal(conn, createControlledSubstanceLogTable);
                 ExecuteNonQueryInternal(conn, createStockAdjustmentTable);
+                ExecuteNonQueryInternal(conn, updateBillingTable);
 
                 //this is to insert default admin user
                 string checkHeadadmin = "SELECT COUNT(*) FROM Users WHERE email = 'Headadmin@hospital.com'";
@@ -340,7 +359,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                     string insertreceptionist = @"
         INSERT INTO Users (name, role, email, password, age, gender, created_by)
-        VALUES ('receptionist User', 'receptionist', 'receptionist@hospital.com', 'receptionist123', 28, 'Female', @createdBy)";
+        VALUES ('receptionist User', 'Receptionist', 'receptionist@hospital.com', 'receptionist123', 28, 'Female', @createdBy)";
                     MySqlCommand cmdReceptionist = new MySqlCommand(insertreceptionist, conn);
                     cmdReceptionist.Parameters.AddWithValue("@createdBy", adminId);
                     cmdReceptionist.ExecuteNonQuery();
@@ -363,12 +382,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     cmdPharmacist.Parameters.AddWithValue("@createdBy", adminId);
                     cmdPharmacist.ExecuteNonQuery();
 
-                    
+
                     string getPharmacistId = "SELECT user_id FROM Users WHERE email = 'pharmacist@hospital.com'";
                     object pharmacistIdResult = ExecuteScalarInternal(conn, getPharmacistId);
                     long pharmacistId = Convert.ToInt64(pharmacistIdResult);
 
-                    
+
                     string insertPharmacistStaff = @"
         INSERT INTO Staff (user_id, position, department)
         VALUES (@userId, 'Pharmacist', 'Pharmacy')";
@@ -524,7 +543,7 @@ known issues / (tinatamad pang ayusin) by lead programmer ramilo
 
 missing stuff / unfinished (top priority) pag di natapos magigisa tayo
 
-1. billing unfinished lot to add than i thought
+1. billing FIXED - enhanced with realistic features
 2. security dipa added
 
 future plans 
@@ -544,7 +563,7 @@ xampp po kaylangan naming gamitin instead saka mas madaling install
 
 Update
 1.halos fix na lahat need nalang padebug patulong nalang
-2.pag ok na lahat billing nalang need ko i update
+2.pag ok na lahat billing nalang need ko i update - BILLING DONE!
 3.pag fix na yung billing design na
 4.pag tapos na doon ko lalagyan lahat ng comments mashadong tamad para maglagay
 
