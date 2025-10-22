@@ -23,6 +23,7 @@ Once XAMPP is running:
 
 ## 💡 Notes
 - The project automatically creates the database and tables when first run.  
+- Designers are outdated.
 - Default accounts:  
   - **Headadmin:** `Headadmin@hospital.com` / `admin123`  
   - **Receptionist:** `receptionist@hospital.com` / `receptionist123`  
