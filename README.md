@@ -1,4 +1,4 @@
-# Saint Joseph’s Hospital Health Monitor App
+# Health App For Second Year Defence Baby
 
 **Status:** Semi-working  
 **Note:** Requires **XAMPP** to run.
@@ -24,6 +24,7 @@ Once XAMPP is running:
 ## 💡 Notes
 - The project automatically creates the database and tables when first run.  
 - Designers are outdated.
+- The name itself is temporary.
 - Default accounts:  
   - **Headadmin:** `Headadmin@hospital.com` / `admin123`  
   - **Receptionist:** `receptionist@hospital.com` / `receptionist123`  
