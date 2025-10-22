@@ -30,14 +30,10 @@ If you want to **wipe or reset** the hospital database completely *(also require
 2. Type the following command:
    ```bash
    mysql -u root -p
+   DROP DATABASE IF EXISTS `hospital_db`;
 When prompted for a password, just press Enter (there isn’t one by default).
 
-Then execute:
-
-sql
-Copy code
-DROP DATABASE IF EXISTS `hospital_db`;
-Restart your app — it will recreate the database automatically if supported.
+3. Restart your app it will recreate the database automatically if supported.
 
 💡 Notes
 The project automatically creates the database and tables when first run.
