@@ -21,6 +21,27 @@ Once XAMPP is running:
 
 ---
 
+
+## 🧹 Resetting the Database
+
+If you want to **wipe or reset** the hospital database completely(also required if i made a update):
+
+1. Open **XAMPP Shell** (click the *Shell* button in the XAMPP Control Panel).  
+2. Type the following command:
+   ```bash
+   
+   mysql -u root -p
+   
+When prompted for a password, just press Enter (their isnt one it just does that).
+
+Then execute:
+
+DROP DATABASE IF EXISTS `hospital_db`;
+
+Restart your app — it will recreate the database automatically if supported.
+
+---
+
 ## 💡 Notes
 - The project automatically creates the database and tables when first run.  
 - Designers are outdated.
