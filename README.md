@@ -1,6 +1,6 @@
 # 🏥 Health App For Second Year Defence Baby!!!
 
-**Status:** 🟡 Semi-working  
+**Status:** 🟡 Almost Working  
 **Note:** Requires **XAMPP** to run.
 
 ---
