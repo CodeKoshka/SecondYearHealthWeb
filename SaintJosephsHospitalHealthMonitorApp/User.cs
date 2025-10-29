@@ -26,27 +26,30 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     return null;
                 }
-
-                string query = @"SELECT user_id, name, role, email, age, gender 
+                string query = @"SELECT user_id, name, role, email, password, age, gender 
                                FROM Users 
-                               WHERE email = @email AND password = @password AND is_active = 1";
+                               WHERE email = @email AND is_active = 1";
 
                 DataTable dt = DatabaseHelper.ExecuteQuery(query,
-                    new MySqlParameter("@email", email.Trim()),
-                    new MySqlParameter("@password", password));
+                    new MySqlParameter("@email", email.Trim()));
 
                 if (dt.Rows.Count > 0)
                 {
                     DataRow row = dt.Rows[0];
-                    return new User
+                    string storedPassword = row["password"]?.ToString() ?? "";
+
+                    if (storedPassword == password)
                     {
-                        UserId = Convert.ToInt32(row["user_id"]),
-                        Name = row["name"]?.ToString() ?? "Unknown",
-                        Role = row["role"]?.ToString() ?? "Unknown",
-                        Email = row["email"]?.ToString() ?? "",
-                        Age = row["age"] != DBNull.Value ? Convert.ToInt32(row["age"]) : 0,
-                        Gender = row["gender"]?.ToString() ?? "Other"
-                    };
+                        return new User
+                        {
+                            UserId = Convert.ToInt32(row["user_id"]),
+                            Name = row["name"]?.ToString() ?? "Unknown",
+                            Role = row["role"]?.ToString() ?? "Unknown",
+                            Email = row["email"]?.ToString() ?? "",
+                            Age = row["age"] != DBNull.Value ? Convert.ToInt32(row["age"]) : 0,
+                            Gender = row["gender"]?.ToString() ?? "Other"
+                        };
+                    }
                 }
                 return null;
             }

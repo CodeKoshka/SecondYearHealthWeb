@@ -8,7 +8,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 {
     public class DatabaseHelper
     {
-        //this the heart of the program itself its the program that handles the database itself
+        //this the heart of the program itself its the program that creates and handles the database itself
         //this is XAMPP MySQL connections (raming issue dito peste)
         private static string serverConnectionString = "Server=localhost;Port=3306;User=root;Password=;";
         private static string databaseConnectionString = "Server=localhost;Port=3306;Database=hospital_db;User=root;Password=;";
@@ -49,6 +49,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     password VARCHAR(255) NOT NULL,
                     age INT,
                     gender VARCHAR(10),
+                    profile_image LONGBLOB NULL,
                     created_by INT NULL,
                     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     is_active TINYINT(1) DEFAULT 1,
@@ -306,15 +307,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
                 string updateBillingTable = @"
-                        ALTER TABLE Billing 
-                        ADD COLUMN IF NOT EXISTS subtotal DECIMAL(10,2) DEFAULT 0.00 AFTER amount,
-                        ADD COLUMN IF NOT EXISTS discount_percent DECIMAL(5,2) DEFAULT 0.00 AFTER subtotal,
-                        ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(10,2) DEFAULT 0.00 AFTER discount_percent,
-                        ADD COLUMN IF NOT EXISTS tax_percent DECIMAL(5,2) DEFAULT 0.00 AFTER discount_amount,
-                        ADD COLUMN IF NOT EXISTS tax_amount DECIMAL(10,2) DEFAULT 0.00 AFTER tax_percent,
-                        MODIFY COLUMN description TEXT,
-                        ADD COLUMN IF NOT EXISTS payment_method VARCHAR(50) DEFAULT 'Cash' AFTER description,
-                        ADD COLUMN IF NOT EXISTS notes TEXT AFTER payment_method";
+                    ALTER TABLE Billing 
+                    ADD COLUMN IF NOT EXISTS subtotal DECIMAL(10,2) DEFAULT 0.00 AFTER amount,
+                    ADD COLUMN IF NOT EXISTS discount_percent DECIMAL(5,2) DEFAULT 0.00 AFTER subtotal,
+                    ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(10,2) DEFAULT 0.00 AFTER discount_percent,
+                    ADD COLUMN IF NOT EXISTS tax_percent DECIMAL(5,2) DEFAULT 0.00 AFTER discount_amount,
+                    ADD COLUMN IF NOT EXISTS tax_amount DECIMAL(10,2) DEFAULT 0.00 AFTER tax_percent,
+                    MODIFY COLUMN description TEXT,
+                    ADD COLUMN IF NOT EXISTS payment_method VARCHAR(50) DEFAULT 'Cash' AFTER description,
+                    ADD COLUMN IF NOT EXISTS notes TEXT AFTER payment_method";
+
+                string addProfileImageColumn = @"
+                ALTER TABLE Users 
+                ADD COLUMN IF NOT EXISTS profile_image LONGBLOB NULL AFTER gender";
+
 
                 //this is execute table creation
                 ExecuteNonQueryInternal(conn, createUsersTable);
@@ -332,6 +338,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 ExecuteNonQueryInternal(conn, createControlledSubstanceLogTable);
                 ExecuteNonQueryInternal(conn, createStockAdjustmentTable);
                 ExecuteNonQueryInternal(conn, updateBillingTable);
+                ExecuteNonQueryInternal(conn, addProfileImageColumn);
 
                 //this is to insert default admin user
                 string checkHeadadmin = "SELECT COUNT(*) FROM Users WHERE email = 'Headadmin@hospital.com'";
@@ -342,12 +349,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     string insertHeadadmin = @"
         INSERT INTO Users (name, role, email, password, age, gender, created_by)
-        VALUES ('Hospital Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', 30, 'Other', NULL)";
+        VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', 30, 'Other', NULL)";
                     ExecuteNonQueryInternal(conn, insertHeadadmin);
                 }
 
 
-                string checkReceptionist = "SELECT COUNT(*) FROM Users WHERE email = 'receptionist@hospital.com'";
+                string checkReceptionist = "SELECT COUNT(*) FROM Users WHERE email = 'Receptionist@hospital.com'";
                 object receptionistResult = ExecuteScalarInternal(conn, checkReceptionist);
                 long receptionistExists = Convert.ToInt64(receptionistResult);
 
@@ -359,13 +366,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                     string insertreceptionist = @"
         INSERT INTO Users (name, role, email, password, age, gender, created_by)
-        VALUES ('receptionist User', 'Receptionist', 'receptionist@hospital.com', 'receptionist123', 28, 'Female', @createdBy)";
+        VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', 28, 'Female', @createdBy)";
                     MySqlCommand cmdReceptionist = new MySqlCommand(insertreceptionist, conn);
                     cmdReceptionist.Parameters.AddWithValue("@createdBy", adminId);
                     cmdReceptionist.ExecuteNonQuery();
                 }
 
-                string checkPharmacist = "SELECT COUNT(*) FROM Users WHERE email = 'pharmacist@hospital.com'";
+                string checkPharmacist = "SELECT COUNT(*) FROM Users WHERE email = 'Pharmacist@hospital.com'";
                 object pharmacistResult = ExecuteScalarInternal(conn, checkPharmacist);
                 long pharmacistExists = Convert.ToInt64(pharmacistResult);
 
@@ -377,13 +384,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                     string insertPharmacist = @"
         INSERT INTO Users (name, role, email, password, age, gender, created_by)
-        VALUES ('Pharmacy Staff', 'Pharmacist', 'pharmacist@hospital.com', 'pharmacist123', 30, 'Other', @createdBy)";
+        VALUES ('Pharmacist', 'Pharmacist', 'Pharmacist@hospital.com', 'pharmacist123', 30, 'Other', @createdBy)";
                     MySqlCommand cmdPharmacist = new MySqlCommand(insertPharmacist, conn);
                     cmdPharmacist.Parameters.AddWithValue("@createdBy", adminId);
                     cmdPharmacist.ExecuteNonQuery();
 
 
-                    string getPharmacistId = "SELECT user_id FROM Users WHERE email = 'pharmacist@hospital.com'";
+                    string getPharmacistId = "SELECT user_id FROM Users WHERE email = 'Pharmacist@hospital.com'";
                     object pharmacistIdResult = ExecuteScalarInternal(conn, getPharmacistId);
                     long pharmacistId = Convert.ToInt64(pharmacistIdResult);
 
@@ -395,9 +402,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     cmdPharmacistStaff.Parameters.AddWithValue("@userId", pharmacistId);
                     cmdPharmacistStaff.ExecuteNonQuery();
                 }
-
-                MessageBox.Show("Database initialized successfully!", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (MySqlException ex)
             {
@@ -416,12 +420,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     errorMsg += "4. Try again";
                 }
 
-                MessageBox.Show(errorMsg, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new Exception(errorMsg);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error:\n{ex.GetType().Name}\n\n{ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new Exception($"Error:\n{ex.GetType().Name}\n\n{ex.Message}");
             }
             finally
             {

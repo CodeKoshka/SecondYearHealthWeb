@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -21,12 +23,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private bool isEditMode;
         private string originalEmail;
         private string originalRole;
+        private byte[] profileImageData;
 
         public RegisterForm(int userIdToEdit)
         {
             userId = userIdToEdit;
             isEditMode = true;
             InitializeComponent();
+            SetPlaceholderImage();
             InitializeRoleOptions();
             ConfigureForEditMode();
             LoadExistingUserData();
@@ -39,6 +43,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             createdByUserId = creatorId;
             creatorRole = role;
             InitializeComponent();
+            SetPlaceholderImage();
             InitializeRoleOptions();
             ConfigureForCreateMode();
         }
@@ -50,8 +55,78 @@ namespace SaintJosephsHospitalHealthMonitorApp
             createdByUserId = null;
             creatorRole = "Registration";
             InitializeComponent();
+            SetPlaceholderImage();
             InitializeRoleOptions();
             ConfigureForRegistrationMode();
+        }
+
+        private void SetPlaceholderImage()
+        {
+            Bitmap placeholder = new Bitmap(120, 120);
+            using (Graphics g = Graphics.FromImage(placeholder))
+            {
+                g.Clear(Color.FromArgb(230, 240, 255));
+
+                using (Font font = new Font("Segoe UI", 48, FontStyle.Regular))
+                {
+                    string icon = "👤";
+                    SizeF textSize = g.MeasureString(icon, font);
+                    g.DrawString(icon, font, Brushes.Gray,
+                        (120 - textSize.Width) / 2, (120 - textSize.Height) / 2);
+                }
+            }
+            pictureBoxProfile.Image = placeholder;
+        }
+
+        private void BtnUploadPhoto_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif";
+                openFileDialog.Title = "Select Profile Photo";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        Image originalImage = Image.FromFile(openFileDialog.FileName);
+                        FileInfo fileInfo = new FileInfo(openFileDialog.FileName);
+                        if (fileInfo.Length > 2 * 1024 * 1024)
+                        {
+                            MessageBox.Show("Image file size should not exceed 2MB.", "File Too Large",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        pictureBoxProfile.Image = originalImage;
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            originalImage.Save(ms, originalImage.RawFormat);
+                            profileImageData = ms.ToArray();
+                        }
+
+                        btnRemovePhoto.Visible = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error loading image: " + ex.Message, "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void BtnRemovePhoto_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Remove profile photo?", "Confirm",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                SetPlaceholderImage();
+                profileImageData = null;
+                btnRemovePhoto.Visible = false;
+            }
         }
 
         private void InitializeRoleOptions()
@@ -61,7 +136,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (isEditMode)
             {
                 cmbRole.Items.AddRange(new string[] {
-                    "Headadmin",
                     "Admin",
                     "Receptionist",
                     "Doctor",
@@ -96,20 +170,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
             txtPassword.Visible = false;
             lblConfirmPassword.Visible = false;
             txtConfirmPassword.Visible = false;
-            chkShowPassword.Visible = false;
 
-            Button btnChangePassword = new Button();
-            btnChangePassword.Name = "btnChangePassword";
-            btnChangePassword.Text = "Change Password";
-            btnChangePassword.Location = new Point(292, 529);
-            btnChangePassword.Size = new Size(233, 35);
-            btnChangePassword.BackColor = Color.FromArgb(52, 152, 219);
-            btnChangePassword.ForeColor = Color.White;
-            btnChangePassword.FlatStyle = FlatStyle.Flat;
-            btnChangePassword.FlatAppearance.BorderSize = 0;
-            btnChangePassword.Cursor = Cursors.Hand;
-            btnChangePassword.Click += BtnChangePassword_Click;
-            this.Controls.Add(btnChangePassword);
+            chkChangePassword.Visible = true;
+            chkShowPassword.Visible = false;
         }
 
         private void ConfigureForCreateMode()
@@ -117,6 +180,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             lblTitle.Text = "Create New User";
             this.Text = "Create User - St. Joseph's Hospital";
             btnSubmit.Text = "Create User";
+
+            chkChangePassword.Visible = false;
 
             if (creatorRole == "Receptionist")
             {
@@ -142,6 +207,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             this.Text = "Register New User";
             btnSubmit.Text = "Register";
 
+            chkChangePassword.Visible = false;
+
             lblPassword.Visible = true;
             txtPassword.Visible = true;
             lblConfirmPassword.Visible = true;
@@ -151,7 +218,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void LoadExistingUserData()
         {
-            string query = @"SELECT name, email, age, gender, role FROM Users WHERE user_id = @userId";
+            string query = @"SELECT name, email, age, gender, role, profile_image FROM Users WHERE user_id = @userId";
             DataTable dt = DatabaseHelper.ExecuteQuery(query, new MySqlParameter("@userId", userId));
 
             if (dt.Rows.Count > 0)
@@ -162,8 +229,31 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 originalEmail = txtEmail.Text;
                 txtAge.Text = row["age"].ToString();
                 cmbGender.SelectedItem = row["gender"].ToString();
-                cmbRole.SelectedItem = row["role"].ToString();
                 originalRole = row["role"].ToString();
+
+                if (originalRole == "Headadmin")
+                {
+                    if (!cmbRole.Items.Contains("Headadmin"))
+                    {
+                        cmbRole.Items.Insert(0, "Headadmin");
+                    }
+                    cmbRole.SelectedItem = "Headadmin";
+                    cmbRole.Enabled = false;
+                }
+                else
+                {
+                    cmbRole.SelectedItem = originalRole;
+                }
+
+                if (row["profile_image"] != DBNull.Value)
+                {
+                    profileImageData = (byte[])row["profile_image"];
+                    using (MemoryStream ms = new MemoryStream(profileImageData))
+                    {
+                        pictureBoxProfile.Image = Image.FromStream(ms);
+                    }
+                    btnRemovePhoto.Visible = true;
+                }
 
                 LoadRoleSpecificData(originalRole);
             }
@@ -204,116 +294,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private void BtnChangePassword_Click(object sender, EventArgs e)
+        private void ChkChangePassword_CheckedChanged(object sender, EventArgs e)
         {
-            Form passwordForm = new Form();
-            passwordForm.Text = "Change Password";
-            passwordForm.Size = new Size(400, 280);
-            passwordForm.StartPosition = FormStartPosition.CenterParent;
-            passwordForm.FormBorderStyle = FormBorderStyle.FixedDialog;
-            passwordForm.MaximizeBox = false;
-            passwordForm.BackColor = Color.FromArgb(240, 244, 248);
+            bool showPasswordFields = chkChangePassword.Checked;
 
-            Label lblNewPassword = new Label();
-            lblNewPassword.Text = "New Password:";
-            lblNewPassword.Location = new Point(20, 20);
-            lblNewPassword.AutoSize = true;
+            lblPassword.Visible = showPasswordFields;
+            txtPassword.Visible = showPasswordFields;
+            lblConfirmPassword.Visible = showPasswordFields;
+            txtConfirmPassword.Visible = showPasswordFields;
+            chkShowPassword.Visible = showPasswordFields;
 
-            TextBox txtNewPassword = new TextBox();
-            txtNewPassword.Location = new Point(20, 45);
-            txtNewPassword.Size = new Size(340, 25);
-            txtNewPassword.PasswordChar = '•';
-
-            Label lblConfirmPassword = new Label();
-            lblConfirmPassword.Text = "Confirm Password:";
-            lblConfirmPassword.Location = new Point(20, 80);
-            lblConfirmPassword.AutoSize = true;
-
-            TextBox txtConfirmPassword = new TextBox();
-            txtConfirmPassword.Location = new Point(20, 105);
-            txtConfirmPassword.Size = new Size(340, 25);
-            txtConfirmPassword.PasswordChar = '•';
-
-            CheckBox chkShowPassword = new CheckBox();
-            chkShowPassword.Text = "Show Password";
-            chkShowPassword.Location = new Point(20, 140);
-            chkShowPassword.AutoSize = true;
-            chkShowPassword.CheckedChanged += (s, ev) =>
+            if (!showPasswordFields)
             {
-                char passChar = chkShowPassword.Checked ? '\0' : '•';
-                txtNewPassword.PasswordChar = passChar;
-                txtConfirmPassword.PasswordChar = passChar;
-            };
-
-            Button btnSavePassword = new Button();
-            btnSavePassword.Text = "Change Password";
-            btnSavePassword.Location = new Point(20, 180);
-            btnSavePassword.Size = new Size(160, 40);
-            btnSavePassword.BackColor = Color.FromArgb(46, 204, 113);
-            btnSavePassword.ForeColor = Color.White;
-            btnSavePassword.FlatStyle = FlatStyle.Flat;
-            btnSavePassword.FlatAppearance.BorderSize = 0;
-            btnSavePassword.Cursor = Cursors.Hand;
-            btnSavePassword.Click += (s, ev) =>
-            {
-                if (string.IsNullOrWhiteSpace(txtNewPassword.Text))
-                {
-                    MessageBox.Show("Please enter a new password.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (txtNewPassword.Text.Length < 6)
-                {
-                    MessageBox.Show("Password must be at least 6 characters long.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (txtNewPassword.Text != txtConfirmPassword.Text)
-                {
-                    MessageBox.Show("Passwords do not match.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtConfirmPassword.Clear();
-                    txtConfirmPassword.Focus();
-                    return;
-                }
-
-                try
-                {
-                    string query = "UPDATE Users SET password = @password WHERE user_id = @userId";
-                    DatabaseHelper.ExecuteNonQuery(query,
-                        new MySqlParameter("@password", txtNewPassword.Text),
-                        new MySqlParameter("@userId", userId));
-
-                    MessageBox.Show("Password changed successfully!", "Success",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    passwordForm.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error changing password: " + ex.Message, "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            };
-
-            Button btnCancelPassword = new Button();
-            btnCancelPassword.Text = "Cancel";
-            btnCancelPassword.Location = new Point(200, 180);
-            btnCancelPassword.Size = new Size(160, 40);
-            btnCancelPassword.BackColor = Color.FromArgb(149, 165, 166);
-            btnCancelPassword.ForeColor = Color.White;
-            btnCancelPassword.FlatStyle = FlatStyle.Flat;
-            btnCancelPassword.FlatAppearance.BorderSize = 0;
-            btnCancelPassword.Cursor = Cursors.Hand;
-            btnCancelPassword.Click += (s, ev) => passwordForm.Close();
-
-            passwordForm.Controls.AddRange(new Control[] {
-                lblNewPassword, txtNewPassword, lblConfirmPassword, txtConfirmPassword,
-                chkShowPassword, btnSavePassword, btnCancelPassword
-            });
-
-            passwordForm.ShowDialog();
+                txtPassword.Clear();
+                txtConfirmPassword.Clear();
+            }
         }
 
         private void CmbRole_SelectedIndexChanged(object sender, EventArgs e)
@@ -329,7 +324,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     panelPatientInfo.Visible = true;
 
-                    if (!isEditMode)
+                    if (isEditMode)
+                    {
+                        if (chkChangePassword.Checked)
+                        {
+                            chkChangePassword.Checked = false;
+                        }
+                        chkChangePassword.Visible = false;
+                        lblPassword.Visible = false;
+                        txtPassword.Visible = false;
+                        lblConfirmPassword.Visible = false;
+                        txtConfirmPassword.Visible = false;
+                        chkShowPassword.Visible = false;
+                    }
+                    else
                     {
                         lblPassword.Visible = false;
                         txtPassword.Visible = false;
@@ -342,7 +350,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     panelDoctorInfo.Visible = true;
 
-                    if (!isEditMode)
+                    if (isEditMode)
+                    {
+                        chkChangePassword.Visible = true;
+                    }
+                    else
                     {
                         lblPassword.Visible = true;
                         txtPassword.Visible = true;
@@ -353,7 +365,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
                 else
                 {
-                    if (!isEditMode)
+                    if (isEditMode)
+                    {
+                        chkChangePassword.Visible = true;
+                    }
+                    else
                     {
                         lblPassword.Visible = true;
                         txtPassword.Visible = true;
@@ -391,6 +407,47 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
+        private bool ValidatePassword(string password)
+        {
+            if (password.Length < 8)
+            {
+                MessageBox.Show("Password must be at least 8 characters long.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (!password.Any(char.IsUpper))
+            {
+                MessageBox.Show("Password must contain at least one uppercase letter.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (!password.Any(char.IsLower))
+            {
+                MessageBox.Show("Password must contain at least one lowercase letter.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (!password.Any(char.IsDigit))
+            {
+                MessageBox.Show("Password must contain at least one number.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            /* thinking if i should add this or not
+            if (!Regex.IsMatch(password, @"[!@#$%^&*(),.?""':{}|<>]"))
+            {
+                MessageBox.Show("Password must contain at least one special character (!@#$%^&*...).", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            } */
+
+            return true;
+        }
+
         private void UpdateUser()
         {
             if (string.IsNullOrWhiteSpace(txtName.Text) ||
@@ -426,9 +483,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (!int.TryParse(txtAge.Text, out int age) || age < 18 || age > 100)
+            if (!int.TryParse(txtAge.Text, out int age) || age < 1 || age > 120)
             {
-                MessageBox.Show("Please enter a valid age between 18 and 100.",
+                MessageBox.Show("Please enter a valid age between 1 and 120.",
                     "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -442,6 +499,30 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
+            if (chkChangePassword.Checked)
+            {
+                if (string.IsNullOrWhiteSpace(txtPassword.Text))
+                {
+                    MessageBox.Show("Please enter a new password.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!ValidatePassword(txtPassword.Text))
+                {
+                    return;
+                }
+
+                if (txtPassword.Text != txtConfirmPassword.Text)
+                {
+                    MessageBox.Show("Passwords do not match.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtConfirmPassword.Clear();
+                    txtConfirmPassword.Focus();
+                    return;
+                }
+            }
+
             using (MySqlConnection conn = DatabaseHelper.GetConnection())
             {
                 conn.Open();
@@ -449,7 +530,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     try
                     {
-                        if (currentRole != originalRole)
+                        if (currentRole != originalRole && originalRole != "Headadmin")
                         {
                             DialogResult result = MessageBox.Show(
                                 "Changing user role will affect their access permissions. Continue?",
@@ -464,7 +545,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                         string query = @"UPDATE Users 
                                        SET name = @name, email = @email, age = @age, 
-                                           gender = @gender, role = @role
+                                           gender = @gender, role = @role, profile_image = @profileImage
                                        WHERE user_id = @userId";
 
                         using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
@@ -474,15 +555,36 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             cmd.Parameters.AddWithValue("@age", age);
                             cmd.Parameters.AddWithValue("@gender", cmbGender.SelectedItem.ToString());
                             cmd.Parameters.AddWithValue("@role", currentRole);
+
+                            if (profileImageData != null)
+                                cmd.Parameters.AddWithValue("@profileImage", profileImageData);
+                            else
+                                cmd.Parameters.AddWithValue("@profileImage", DBNull.Value);
+
                             cmd.Parameters.AddWithValue("@userId", userId);
                             cmd.ExecuteNonQuery();
+                        }
+
+                        if (chkChangePassword.Checked)
+                        {
+                            string passwordQuery = "UPDATE Users SET password = @password WHERE user_id = @userId";
+                            using (MySqlCommand cmdPassword = new MySqlCommand(passwordQuery, conn, transaction))
+                            {
+                                cmdPassword.Parameters.AddWithValue("@password", txtPassword.Text);
+                                cmdPassword.Parameters.AddWithValue("@userId", userId);
+                                cmdPassword.ExecuteNonQuery();
+                            }
                         }
 
                         UpdateRoleSpecificTable(conn, transaction, currentRole);
 
                         transaction.Commit();
 
-                        MessageBox.Show("User information updated successfully!", "Success",
+                        string successMsg = chkChangePassword.Checked
+                            ? "User information and password updated successfully!"
+                            : "User information updated successfully!";
+
+                        MessageBox.Show(successMsg, "Success",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();
                     }
@@ -615,17 +717,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     return;
                 }
 
-                if (txtPassword.Text.Length < 6)
+                if (!ValidatePassword(txtPassword.Text))
                 {
-                    MessageBox.Show("Password must be at least 6 characters long.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
             }
 
-            if (!int.TryParse(txtAge.Text, out int age) || age < 18 || age > 100)
+            if (!int.TryParse(txtAge.Text, out int age) || age < 1 || age > 120)
             {
-                MessageBox.Show("Please enter a valid age between 18 and 100.", "Validation Error",
+                MessageBox.Show("Please enter a valid age between 1 and 120.", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -682,19 +782,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             }
                         }
 
-                        string insertUser = @"INSERT INTO Users (name, role, email, password, age, gender, created_by) 
-                                              VALUES (@name, @role, @email, @password, @age, @gender, @createdBy)";
+                        string insertUser = @"INSERT INTO Users (name, role, email, password, age, gender, created_by, profile_image) 
+                                              VALUES (@name, @role, @email, @password, @age, @gender, @createdBy, @profileImage)";
                         using (MySqlCommand cmdInsertUser = new MySqlCommand(insertUser, conn, transaction))
                         {
                             cmdInsertUser.Parameters.AddWithValue("@name", name);
                             cmdInsertUser.Parameters.AddWithValue("@role", role);
                             cmdInsertUser.Parameters.AddWithValue("@email", email);
-
-                            if (password != null)
-                                cmdInsertUser.Parameters.AddWithValue("@password", password);
-                            else
-                                cmdInsertUser.Parameters.AddWithValue("@password", DBNull.Value);
-
+                            cmdInsertUser.Parameters.AddWithValue("@password", password ?? (object)DBNull.Value);
                             cmdInsertUser.Parameters.AddWithValue("@age", age);
                             cmdInsertUser.Parameters.AddWithValue("@gender", gender);
 
@@ -702,6 +797,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 cmdInsertUser.Parameters.AddWithValue("@createdBy", creatorId.Value);
                             else
                                 cmdInsertUser.Parameters.AddWithValue("@createdBy", DBNull.Value);
+
+                            if (profileImageData != null)
+                                cmdInsertUser.Parameters.AddWithValue("@profileImage", profileImageData);
+                            else
+                                cmdInsertUser.Parameters.AddWithValue("@profileImage", DBNull.Value);
 
                             cmdInsertUser.ExecuteNonQuery();
                         }
@@ -735,6 +835,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 cmdInsertDoctor.ExecuteNonQuery();
                             }
                         }
+
                         else if (role == "Headadmin" || role == "Admin" || role == "Receptionist" || role == "Pharmacist")
                         {
                             string insertStaff = @"INSERT INTO Staff (user_id, position, department) 
@@ -771,6 +872,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                            $"Name: {name}\n" +
                                            $"Email: {email}\n" +
                                            $"Password: {password}\n\n" +
+                                           $"⚠️ IMPORTANT: Please save these credentials securely.\n" +
                                            $"User can now login with these credentials.";
                         }
 
