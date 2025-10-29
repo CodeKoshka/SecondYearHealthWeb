@@ -41,13 +41,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             this.Opacity = 0;
 
-            // Fade in animation
             fadeInTimer = new Timer();
             fadeInTimer.Interval = 20;
             fadeInTimer.Tick += FadeInTimer_Tick;
             fadeInTimer.Start();
 
-            // Progress animation
             progressTimer = new Timer();
             progressTimer.Interval = 50;
             progressTimer.Tick += ProgressTimer_Tick;
@@ -249,4 +247,5 @@ namespace SaintJosephsHospitalHealthMonitorApp
             base.OnFormClosing(e);
         }
     }
+
 }
