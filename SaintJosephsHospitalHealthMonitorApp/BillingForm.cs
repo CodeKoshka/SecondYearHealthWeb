@@ -81,76 +81,76 @@ namespace SaintJosephsHospitalHealthMonitorApp
             switch (category)
             {
                 case "Consultation":
-                    cmbServiceItem.Items.Add("General Consultation - $50");
-                    cmbServiceItem.Items.Add("Specialist Consultation - $100");
-                    cmbServiceItem.Items.Add("Follow-up Consultation - $30");
-                    cmbServiceItem.Items.Add("Emergency Consultation - $150");
+                    cmbServiceItem.Items.Add("General Consultation - ₱2,500");
+                    cmbServiceItem.Items.Add("Specialist Consultation - ₱5,000");
+                    cmbServiceItem.Items.Add("Follow-up Consultation - ₱1,500");
+                    cmbServiceItem.Items.Add("Emergency Consultation - ₱7,500");
                     break;
 
                 case "Laboratory":
-                    cmbServiceItem.Items.Add("Complete Blood Count (CBC) - $25");
-                    cmbServiceItem.Items.Add("Blood Chemistry - $40");
-                    cmbServiceItem.Items.Add("Urinalysis - $15");
-                    cmbServiceItem.Items.Add("Lipid Profile - $35");
-                    cmbServiceItem.Items.Add("Blood Typing - $20");
-                    cmbServiceItem.Items.Add("Liver Function Test - $45");
-                    cmbServiceItem.Items.Add("Kidney Function Test - $45");
+                    cmbServiceItem.Items.Add("Complete Blood Count (CBC) - ₱1,250");
+                    cmbServiceItem.Items.Add("Blood Chemistry - ₱2,000");
+                    cmbServiceItem.Items.Add("Urinalysis - ₱750");
+                    cmbServiceItem.Items.Add("Lipid Profile - ₱1,750");
+                    cmbServiceItem.Items.Add("Blood Typing - ₱1,000");
+                    cmbServiceItem.Items.Add("Liver Function Test - ₱2,250");
+                    cmbServiceItem.Items.Add("Kidney Function Test - ₱2,250");
                     break;
 
                 case "Radiology":
-                    cmbServiceItem.Items.Add("X-Ray (Single View) - $60");
-                    cmbServiceItem.Items.Add("X-Ray (Two Views) - $90");
-                    cmbServiceItem.Items.Add("CT Scan - $300");
-                    cmbServiceItem.Items.Add("MRI - $500");
-                    cmbServiceItem.Items.Add("Ultrasound - $80");
-                    cmbServiceItem.Items.Add("Mammogram - $120");
+                    cmbServiceItem.Items.Add("X-Ray (Single View) - ₱3,000");
+                    cmbServiceItem.Items.Add("X-Ray (Two Views) - ₱4,500");
+                    cmbServiceItem.Items.Add("CT Scan - ₱15,000");
+                    cmbServiceItem.Items.Add("MRI - ₱25,000");
+                    cmbServiceItem.Items.Add("Ultrasound - ₱4,000");
+                    cmbServiceItem.Items.Add("Mammogram - ₱6,000");
                     break;
 
                 case "Procedures":
-                    cmbServiceItem.Items.Add("ECG - $40");
-                    cmbServiceItem.Items.Add("Echocardiogram - $200");
-                    cmbServiceItem.Items.Add("Endoscopy - $400");
-                    cmbServiceItem.Items.Add("Colonoscopy - $450");
-                    cmbServiceItem.Items.Add("Minor Suturing - $75");
-                    cmbServiceItem.Items.Add("Dressing Change - $30");
+                    cmbServiceItem.Items.Add("ECG - ₱2,000");
+                    cmbServiceItem.Items.Add("Echocardiogram - ₱10,000");
+                    cmbServiceItem.Items.Add("Endoscopy - ₱20,000");
+                    cmbServiceItem.Items.Add("Colonoscopy - ₱22,500");
+                    cmbServiceItem.Items.Add("Minor Suturing - ₱3,750");
+                    cmbServiceItem.Items.Add("Dressing Change - ₱1,500");
                     break;
 
                 case "Medications":
-                    cmbServiceItem.Items.Add("Antibiotics (Generic) - $15");
-                    cmbServiceItem.Items.Add("Pain Relief Medication - $10");
-                    cmbServiceItem.Items.Add("IV Fluids - $25");
-                    cmbServiceItem.Items.Add("Vaccine/Immunization - $35");
+                    cmbServiceItem.Items.Add("Antibiotics (Generic) - ₱750");
+                    cmbServiceItem.Items.Add("Pain Relief Medication - ₱500");
+                    cmbServiceItem.Items.Add("IV Fluids - ₱1,250");
+                    cmbServiceItem.Items.Add("Vaccine/Immunization - ₱1,750");
                     cmbServiceItem.Items.Add("Custom Medication (Enter Details)");
                     break;
 
                 case "Room Charges":
-                    cmbServiceItem.Items.Add("Private Room (per day) - $200");
-                    cmbServiceItem.Items.Add("Semi-Private Room (per day) - $120");
-                    cmbServiceItem.Items.Add("Ward Bed (per day) - $80");
-                    cmbServiceItem.Items.Add("ICU (per day) - $500");
-                    cmbServiceItem.Items.Add("Emergency Room - $150");
+                    cmbServiceItem.Items.Add("Private Room (per day) - ₱10,000");
+                    cmbServiceItem.Items.Add("Semi-Private Room (per day) - ₱6,000");
+                    cmbServiceItem.Items.Add("Ward Bed (per day) - ₱4,000");
+                    cmbServiceItem.Items.Add("ICU (per day) - ₱25,000");
+                    cmbServiceItem.Items.Add("Emergency Room - ₱7,500");
                     break;
 
                 case "Emergency Services":
-                    cmbServiceItem.Items.Add("Emergency Room Fee - $150");
-                    cmbServiceItem.Items.Add("Ambulance Service - $200");
-                    cmbServiceItem.Items.Add("Emergency Surgery - $2000");
-                    cmbServiceItem.Items.Add("Trauma Care - $300");
+                    cmbServiceItem.Items.Add("Emergency Room Fee - ₱7,500");
+                    cmbServiceItem.Items.Add("Ambulance Service - ₱10,000");
+                    cmbServiceItem.Items.Add("Emergency Surgery - ₱100,000");
+                    cmbServiceItem.Items.Add("Trauma Care - ₱15,000");
                     break;
 
                 case "Surgery":
-                    cmbServiceItem.Items.Add("Minor Surgery - $1000");
-                    cmbServiceItem.Items.Add("Major Surgery - $3000");
-                    cmbServiceItem.Items.Add("Operating Room Fee - $500");
-                    cmbServiceItem.Items.Add("Anesthesia - $400");
-                    cmbServiceItem.Items.Add("Surgical Supplies - $200");
+                    cmbServiceItem.Items.Add("Minor Surgery - ₱50,000");
+                    cmbServiceItem.Items.Add("Major Surgery - ₱150,000");
+                    cmbServiceItem.Items.Add("Operating Room Fee - ₱25,000");
+                    cmbServiceItem.Items.Add("Anesthesia - ₱20,000");
+                    cmbServiceItem.Items.Add("Surgical Supplies - ₱10,000");
                     break;
 
                 case "Other Services":
-                    cmbServiceItem.Items.Add("Physical Therapy Session - $60");
-                    cmbServiceItem.Items.Add("Dietary Consultation - $40");
-                    cmbServiceItem.Items.Add("Medical Certificate - $20");
-                    cmbServiceItem.Items.Add("Medical Records Copy - $10");
+                    cmbServiceItem.Items.Add("Physical Therapy Session - ₱3,000");
+                    cmbServiceItem.Items.Add("Dietary Consultation - ₱2,000");
+                    cmbServiceItem.Items.Add("Medical Certificate - ₱1,000");
+                    cmbServiceItem.Items.Add("Medical Records Copy - ₱500");
                     cmbServiceItem.Items.Add("Custom Service (Enter Details)");
                     break;
             }
@@ -179,13 +179,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
             decimal unitPrice = 0;
             string serviceName = serviceItem;
 
-            if (serviceItem.Contains(" - $"))
+            if (serviceItem.Contains(" - ₱"))
             {
-                string[] parts = serviceItem.Split(new[] { " - $" }, StringSplitOptions.None);
+                string[] parts = serviceItem.Split(new[] { " - ₱" }, StringSplitOptions.None);
                 serviceName = parts[0];
                 if (parts.Length > 1)
                 {
-                    decimal.TryParse(parts[1], out unitPrice);
+                    string priceStr = parts[1].Replace(",", "");
+                    decimal.TryParse(priceStr, out unitPrice);
                 }
             }
 
@@ -221,8 +222,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             ListViewItem item = new ListViewItem(serviceName);
             item.SubItems.Add(category);
             item.SubItems.Add(quantity.ToString());
-            item.SubItems.Add(unitPrice.ToString("C2"));
-            item.SubItems.Add(amount.ToString("C2"));
+            item.SubItems.Add("₱" + unitPrice.ToString("N2"));
+            item.SubItems.Add("₱" + amount.ToString("N2"));
             lstServices.Items.Add(item);
 
             UpdateTotal();
@@ -252,7 +253,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             currentTotal = 0;
             foreach (ListViewItem item in lstServices.Items)
             {
-                string amountStr = item.SubItems[4].Text.Replace("$", "").Replace(",", "");
+                string amountStr = item.SubItems[4].Text.Replace("₱", "").Replace(",", "");
                 decimal.TryParse(amountStr, out decimal amount);
                 currentTotal += amount;
             }
@@ -265,10 +266,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
             decimal taxAmount = subtotalAfterDiscount * (tax / 100);
             decimal grandTotal = subtotalAfterDiscount + taxAmount;
 
-            lblSubtotal.Text = $"Subtotal: {currentTotal:C2}";
-            lblDiscountAmount.Text = $"Discount ({discount}%): -{discountAmount:C2}";
-            lblTaxAmount.Text = $"Tax ({tax}%): {taxAmount:C2}";
-            lblGrandTotal.Text = $"Grand Total: {grandTotal:C2}";
+            lblSubtotal.Text = $"Subtotal: ₱{currentTotal:N2}";
+            lblDiscountAmount.Text = $"Discount ({discount}%): -₱{discountAmount:N2}";
+            lblTaxAmount.Text = $"Tax ({tax}%): ₱{taxAmount:N2}";
+            lblGrandTotal.Text = $"Grand Total: ₱{grandTotal:N2}";
         }
 
         private void NumDiscount_ValueChanged(object sender, EventArgs e)

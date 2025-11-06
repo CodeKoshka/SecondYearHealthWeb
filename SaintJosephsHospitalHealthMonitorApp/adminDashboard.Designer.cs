@@ -1,397 +1,838 @@
 ﻿namespace SaintJosephsHospitalHealthMonitorApp
 {
-        partial class AdminDashboard
-        {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
+    partial class AdminDashboard
+    {
         private System.ComponentModel.IContainer components = null;
-            private System.Windows.Forms.TabControl tabControl;
-            private System.Windows.Forms.TabPage tabUsers;
-            private System.Windows.Forms.TabPage tabAppointments;
-            private System.Windows.Forms.TabPage tabBilling;
-            private System.Windows.Forms.DataGridView dgvUsers;
-            private System.Windows.Forms.DataGridView dgvAppointments;
-            private System.Windows.Forms.DataGridView dgvBilling;
-            private System.Windows.Forms.Panel panelHeader;
-            private System.Windows.Forms.Label lblWelcome;
-            private System.Windows.Forms.Button btnLogout;
-            private System.Windows.Forms.Button btnAddUser;
-            private System.Windows.Forms.Button btnEditUser;
-            private System.Windows.Forms.Button btnDeleteUser;
-            private System.Windows.Forms.Button btnRefreshUsers;
-            private System.Windows.Forms.Button btnAddAppointment;
-            private System.Windows.Forms.Button btnEditAppointment;
-            private System.Windows.Forms.Button btnDeleteAppointment;
-            private System.Windows.Forms.Button btnRefreshAppointments;
-            private System.Windows.Forms.Button btnAddBill;
-            private System.Windows.Forms.Button btnUpdateBill;
-            private System.Windows.Forms.Button btnRefreshBilling;
+        private System.Windows.Forms.Panel panelSidebar;
+        private System.Windows.Forms.Panel panelMainContent;
+        private System.Windows.Forms.Panel panelHeader;
+        private System.Windows.Forms.PictureBox pictureBoxProfile;
+        private System.Windows.Forms.Label lblRole;
+        private System.Windows.Forms.Label lblHospitalName;
+        private System.Windows.Forms.Label lblWelcome;
+        private System.Windows.Forms.Button btnToggleSidebar;
+        private System.Windows.Forms.Button btnLogout;
+        private System.Windows.Forms.Button btnUsersMenu;
+        private System.Windows.Forms.Button btnAppointmentsMenu;
+        private System.Windows.Forms.Button btnBillingMenu;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage tabUsersMain;
+        private System.Windows.Forms.TabControl tabUsers;
+        private System.Windows.Forms.TabPage tabAllUsers;
+        private System.Windows.Forms.TabPage tabAdmins;
+        private System.Windows.Forms.TabPage tabDoctors;
+        private System.Windows.Forms.TabPage tabPatients;
+        private System.Windows.Forms.TabPage tabStaff;
+        private System.Windows.Forms.DataGridView dgvUsers;
+        private System.Windows.Forms.DataGridView dgvAdmins;
+        private System.Windows.Forms.DataGridView dgvDoctors;
+        private System.Windows.Forms.DataGridView dgvPatients;
+        private System.Windows.Forms.DataGridView dgvStaff;
+        private System.Windows.Forms.Panel panelUserButtons;
+        private System.Windows.Forms.Button btnAddUser;
+        private System.Windows.Forms.Button btnEditUser;
+        private System.Windows.Forms.Button btnDeleteUser;
+        private System.Windows.Forms.Button btnRefreshUsers;
+        private System.Windows.Forms.TabPage tabAppointments;
+        private System.Windows.Forms.DataGridView dgvAppointments;
+        private System.Windows.Forms.Panel panelAppointmentButtons;
+        private System.Windows.Forms.Button btnAddAppointment;
+        private System.Windows.Forms.Button btnEditAppointment;
+        private System.Windows.Forms.Button btnDeleteAppointment;
+        private System.Windows.Forms.Button btnRefreshAppointments;
+        private System.Windows.Forms.TabPage tabBilling;
+        private System.Windows.Forms.DataGridView dgvBilling;
+        private System.Windows.Forms.Panel panelBillingButtons;
+        private System.Windows.Forms.Button btnAddBill;
+        private System.Windows.Forms.Button btnUpdateBill;
+        private System.Windows.Forms.Button btnRefreshBilling;
+        private Panel buttonShadow;
+        private Panel apptBtnShadow;
+        private Panel billBtnShadow;
+        private Panel panelUniversalSearch;
+        private TextBox txtUniversalSearch;
+        private Button btnClearUniversalSearch;
+        private Label lblUniversalSearchIcon;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
-            {
-                if (disposing && (components != null))
-                {
-                    components.Dispose();
-                }
-                base.Dispose(disposing);
-            }
-
-            private void InitializeComponent()
-            {
-                this.panelHeader = new System.Windows.Forms.Panel();
-                this.lblWelcome = new System.Windows.Forms.Label();
-                this.btnLogout = new System.Windows.Forms.Button();
-                this.tabControl = new System.Windows.Forms.TabControl();
-                this.tabUsers = new System.Windows.Forms.TabPage();
-                this.btnAddUser = new System.Windows.Forms.Button();
-                this.btnEditUser = new System.Windows.Forms.Button();
-                this.btnDeleteUser = new System.Windows.Forms.Button();
-                this.btnRefreshUsers = new System.Windows.Forms.Button();
-                this.dgvUsers = new System.Windows.Forms.DataGridView();
-                this.tabAppointments = new System.Windows.Forms.TabPage();
-                this.btnAddAppointment = new System.Windows.Forms.Button();
-                this.btnEditAppointment = new System.Windows.Forms.Button();
-                this.btnDeleteAppointment = new System.Windows.Forms.Button();
-                this.btnRefreshAppointments = new System.Windows.Forms.Button();
-                this.dgvAppointments = new System.Windows.Forms.DataGridView();
-                this.tabBilling = new System.Windows.Forms.TabPage();
-                this.btnAddBill = new System.Windows.Forms.Button();
-                this.btnUpdateBill = new System.Windows.Forms.Button();
-                this.btnRefreshBilling = new System.Windows.Forms.Button();
-                this.dgvBilling = new System.Windows.Forms.DataGridView();
-                this.panelHeader.SuspendLayout();
-                this.tabControl.SuspendLayout();
-                this.tabUsers.SuspendLayout();
-                ((System.ComponentModel.ISupportInitialize)(this.dgvUsers)).BeginInit();
-                this.tabAppointments.SuspendLayout();
-                ((System.ComponentModel.ISupportInitialize)(this.dgvAppointments)).BeginInit();
-                this.tabBilling.SuspendLayout();
-                ((System.ComponentModel.ISupportInitialize)(this.dgvBilling)).BeginInit();
-                this.SuspendLayout();
-                // 
-                // panelHeader
-                // 
-                this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-                this.panelHeader.Controls.Add(this.lblWelcome);
-                this.panelHeader.Controls.Add(this.btnLogout);
-                this.panelHeader.Location = new System.Drawing.Point(0, 0);
-                this.panelHeader.Name = "panelHeader";
-                this.panelHeader.Size = new System.Drawing.Size(1200, 80);
-                this.panelHeader.TabIndex = 0;
-                // 
-                // lblWelcome
-                // 
-                this.lblWelcome.AutoSize = true;
-                this.lblWelcome.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-                this.lblWelcome.ForeColor = System.Drawing.Color.White;
-                this.lblWelcome.Location = new System.Drawing.Point(30, 25);
-                this.lblWelcome.Name = "lblWelcome";
-                this.lblWelcome.Size = new System.Drawing.Size(200, 30);
-                this.lblWelcome.TabIndex = 0;
-                this.lblWelcome.Text = "Welcome, Admin";
-                // 
-                // btnLogout
-                // 
-                this.btnLogout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-                this.btnLogout.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnLogout.FlatAppearance.BorderSize = 0;
-                this.btnLogout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnLogout.Font = new System.Drawing.Font("Segoe UI", 10F);
-                this.btnLogout.ForeColor = System.Drawing.Color.White;
-                this.btnLogout.Location = new System.Drawing.Point(1050, 20);
-                this.btnLogout.Name = "btnLogout";
-                this.btnLogout.Size = new System.Drawing.Size(120, 40);
-                this.btnLogout.TabIndex = 1;
-                this.btnLogout.Text = "Logout";
-                this.btnLogout.UseVisualStyleBackColor = false;
-                this.btnLogout.Click += new System.EventHandler(this.BtnLogout_Click);
-                // 
-                // tabControl
-                // 
-                this.tabControl.Controls.Add(this.tabUsers);
-                this.tabControl.Controls.Add(this.tabAppointments);
-                this.tabControl.Controls.Add(this.tabBilling);
-                this.tabControl.Font = new System.Drawing.Font("Segoe UI", 10F);
-                this.tabControl.Location = new System.Drawing.Point(20, 100);
-                this.tabControl.Name = "tabControl";
-                this.tabControl.SelectedIndex = 0;
-                this.tabControl.Size = new System.Drawing.Size(1140, 540);
-                this.tabControl.TabIndex = 1;
-                // 
-                // tabUsers
-                // 
-                this.tabUsers.Controls.Add(this.btnAddUser);
-                this.tabUsers.Controls.Add(this.btnEditUser);
-                this.tabUsers.Controls.Add(this.btnDeleteUser);
-                this.tabUsers.Controls.Add(this.btnRefreshUsers);
-                this.tabUsers.Controls.Add(this.dgvUsers);
-                this.tabUsers.Location = new System.Drawing.Point(4, 26);
-                this.tabUsers.Name = "tabUsers";
-                this.tabUsers.Padding = new System.Windows.Forms.Padding(3);
-                this.tabUsers.Size = new System.Drawing.Size(1132, 510);
-                this.tabUsers.TabIndex = 0;
-                this.tabUsers.Text = "User Management";
-                this.tabUsers.UseVisualStyleBackColor = true;
-                // 
-                // btnAddUser
-                // 
-                this.btnAddUser.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-                this.btnAddUser.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnAddUser.FlatAppearance.BorderSize = 0;
-                this.btnAddUser.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnAddUser.ForeColor = System.Drawing.Color.White;
-                this.btnAddUser.Location = new System.Drawing.Point(10, 10);
-                this.btnAddUser.Name = "btnAddUser";
-                this.btnAddUser.Size = new System.Drawing.Size(110, 35);
-                this.btnAddUser.TabIndex = 0;
-                this.btnAddUser.Text = "Add User";
-                this.btnAddUser.UseVisualStyleBackColor = false;
-                this.btnAddUser.Click += new System.EventHandler(this.BtnAddUser_Click);
-                // 
-                // btnEditUser
-                // 
-                this.btnEditUser.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-                this.btnEditUser.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnEditUser.FlatAppearance.BorderSize = 0;
-                this.btnEditUser.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnEditUser.ForeColor = System.Drawing.Color.White;
-                this.btnEditUser.Location = new System.Drawing.Point(130, 10);
-                this.btnEditUser.Name = "btnEditUser";
-                this.btnEditUser.Size = new System.Drawing.Size(110, 35);
-                this.btnEditUser.TabIndex = 1;
-                this.btnEditUser.Text = "Edit User";
-                this.btnEditUser.UseVisualStyleBackColor = false;
-                this.btnEditUser.Click += new System.EventHandler(this.BtnEditUser_Click);
-                // 
-                // btnDeleteUser
-                // 
-                this.btnDeleteUser.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-                this.btnDeleteUser.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnDeleteUser.FlatAppearance.BorderSize = 0;
-                this.btnDeleteUser.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnDeleteUser.ForeColor = System.Drawing.Color.White;
-                this.btnDeleteUser.Location = new System.Drawing.Point(250, 10);
-                this.btnDeleteUser.Name = "btnDeleteUser";
-                this.btnDeleteUser.Size = new System.Drawing.Size(110, 35);
-                this.btnDeleteUser.TabIndex = 2;
-                this.btnDeleteUser.Text = "Delete User";
-                this.btnDeleteUser.UseVisualStyleBackColor = false;
-                this.btnDeleteUser.Click += new System.EventHandler(this.BtnDeleteUser_Click);
-                // 
-                // btnRefreshUsers
-                // 
-                this.btnRefreshUsers.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-                this.btnRefreshUsers.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnRefreshUsers.FlatAppearance.BorderSize = 0;
-                this.btnRefreshUsers.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnRefreshUsers.ForeColor = System.Drawing.Color.White;
-                this.btnRefreshUsers.Location = new System.Drawing.Point(370, 10);
-                this.btnRefreshUsers.Name = "btnRefreshUsers";
-                this.btnRefreshUsers.Size = new System.Drawing.Size(110, 35);
-                this.btnRefreshUsers.TabIndex = 3;
-                this.btnRefreshUsers.Text = "Refresh";
-                this.btnRefreshUsers.UseVisualStyleBackColor = false;
-                this.btnRefreshUsers.Click += new System.EventHandler(this.BtnRefresh_Click);
-                // 
-                // dgvUsers
-                // 
-                this.dgvUsers.AllowUserToAddRows = false;
-                this.dgvUsers.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-                this.dgvUsers.BackgroundColor = System.Drawing.Color.White;
-                this.dgvUsers.BorderStyle = System.Windows.Forms.BorderStyle.None;
-                this.dgvUsers.Location = new System.Drawing.Point(10, 60);
-                this.dgvUsers.Name = "dgvUsers";
-                this.dgvUsers.ReadOnly = true;
-                this.dgvUsers.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-                this.dgvUsers.Size = new System.Drawing.Size(1100, 430);
-                this.dgvUsers.TabIndex = 4;
-                // 
-                // tabAppointments
-                // 
-                this.tabAppointments.Controls.Add(this.btnAddAppointment);
-                this.tabAppointments.Controls.Add(this.btnEditAppointment);
-                this.tabAppointments.Controls.Add(this.btnDeleteAppointment);
-                this.tabAppointments.Controls.Add(this.btnRefreshAppointments);
-                this.tabAppointments.Controls.Add(this.dgvAppointments);
-                this.tabAppointments.Location = new System.Drawing.Point(4, 26);
-                this.tabAppointments.Name = "tabAppointments";
-                this.tabAppointments.Padding = new System.Windows.Forms.Padding(3);
-                this.tabAppointments.Size = new System.Drawing.Size(1132, 510);
-                this.tabAppointments.TabIndex = 1;
-                this.tabAppointments.Text = "Appointments";
-                this.tabAppointments.UseVisualStyleBackColor = true;
-                // 
-                // btnAddAppointment
-                // 
-                this.btnAddAppointment.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-                this.btnAddAppointment.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnAddAppointment.FlatAppearance.BorderSize = 0;
-                this.btnAddAppointment.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnAddAppointment.ForeColor = System.Drawing.Color.White;
-                this.btnAddAppointment.Location = new System.Drawing.Point(10, 10);
-                this.btnAddAppointment.Name = "btnAddAppointment";
-                this.btnAddAppointment.Size = new System.Drawing.Size(160, 35);
-                this.btnAddAppointment.TabIndex = 0;
-                this.btnAddAppointment.Text = "Schedule Appointment";
-                this.btnAddAppointment.UseVisualStyleBackColor = false;
-                this.btnAddAppointment.Click += new System.EventHandler(this.BtnAddAppointment_Click);
-                // 
-                // btnEditAppointment
-                // 
-                this.btnEditAppointment.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-                this.btnEditAppointment.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnEditAppointment.FlatAppearance.BorderSize = 0;
-                this.btnEditAppointment.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnEditAppointment.ForeColor = System.Drawing.Color.White;
-                this.btnEditAppointment.Location = new System.Drawing.Point(180, 10);
-                this.btnEditAppointment.Name = "btnEditAppointment";
-                this.btnEditAppointment.Size = new System.Drawing.Size(130, 35);
-                this.btnEditAppointment.TabIndex = 1;
-                this.btnEditAppointment.Text = "Update Status";
-                this.btnEditAppointment.UseVisualStyleBackColor = false;
-                this.btnEditAppointment.Click += new System.EventHandler(this.BtnEditAppointment_Click);
-                // 
-                // btnDeleteAppointment
-                // 
-                this.btnDeleteAppointment.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-                this.btnDeleteAppointment.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnDeleteAppointment.FlatAppearance.BorderSize = 0;
-                this.btnDeleteAppointment.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnDeleteAppointment.ForeColor = System.Drawing.Color.White;
-                this.btnDeleteAppointment.Location = new System.Drawing.Point(320, 10);
-                this.btnDeleteAppointment.Name = "btnDeleteAppointment";
-                this.btnDeleteAppointment.Size = new System.Drawing.Size(160, 35);
-                this.btnDeleteAppointment.TabIndex = 2;
-                this.btnDeleteAppointment.Text = "Cancel Appointment";
-                this.btnDeleteAppointment.UseVisualStyleBackColor = false;
-                this.btnDeleteAppointment.Click += new System.EventHandler(this.BtnDeleteAppointment_Click);
-                // 
-                // btnRefreshAppointments
-                // 
-                this.btnRefreshAppointments.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-                this.btnRefreshAppointments.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnRefreshAppointments.FlatAppearance.BorderSize = 0;
-                this.btnRefreshAppointments.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnRefreshAppointments.ForeColor = System.Drawing.Color.White;
-                this.btnRefreshAppointments.Location = new System.Drawing.Point(490, 10);
-                this.btnRefreshAppointments.Name = "btnRefreshAppointments";
-                this.btnRefreshAppointments.Size = new System.Drawing.Size(110, 35);
-                this.btnRefreshAppointments.TabIndex = 3;
-                this.btnRefreshAppointments.Text = "Refresh";
-                this.btnRefreshAppointments.UseVisualStyleBackColor = false;
-                this.btnRefreshAppointments.Click += new System.EventHandler(this.BtnRefresh_Click);
-                // 
-                // dgvAppointments
-                // 
-                this.dgvAppointments.AllowUserToAddRows = false;
-                this.dgvAppointments.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-                this.dgvAppointments.BackgroundColor = System.Drawing.Color.White;
-                this.dgvAppointments.BorderStyle = System.Windows.Forms.BorderStyle.None;
-                this.dgvAppointments.Location = new System.Drawing.Point(10, 60);
-                this.dgvAppointments.Name = "dgvAppointments";
-                this.dgvAppointments.ReadOnly = true;
-                this.dgvAppointments.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-                this.dgvAppointments.Size = new System.Drawing.Size(1100, 430);
-                this.dgvAppointments.TabIndex = 4;
-                // 
-                // tabBilling
-                // 
-                this.tabBilling.Controls.Add(this.btnAddBill);
-                this.tabBilling.Controls.Add(this.btnUpdateBill);
-                this.tabBilling.Controls.Add(this.btnRefreshBilling);
-                this.tabBilling.Controls.Add(this.dgvBilling);
-                this.tabBilling.Location = new System.Drawing.Point(4, 26);
-                this.tabBilling.Name = "tabBilling";
-                this.tabBilling.Padding = new System.Windows.Forms.Padding(3);
-                this.tabBilling.Size = new System.Drawing.Size(1132, 510);
-                this.tabBilling.TabIndex = 2;
-                this.tabBilling.Text = "Billing & Payments";
-                this.tabBilling.UseVisualStyleBackColor = true;
-                // 
-                // btnAddBill
-                // 
-                this.btnAddBill.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-                this.btnAddBill.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnAddBill.FlatAppearance.BorderSize = 0;
-                this.btnAddBill.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnAddBill.ForeColor = System.Drawing.Color.White;
-                this.btnAddBill.Location = new System.Drawing.Point(10, 10);
-                this.btnAddBill.Name = "btnAddBill";
-                this.btnAddBill.Size = new System.Drawing.Size(130, 35);
-                this.btnAddBill.TabIndex = 0;
-                this.btnAddBill.Text = "Create Invoice";
-                this.btnAddBill.UseVisualStyleBackColor = false;
-                this.btnAddBill.Click += new System.EventHandler(this.BtnAddBill_Click);
-                // 
-                // btnUpdateBill
-                // 
-                this.btnUpdateBill.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-                this.btnUpdateBill.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnUpdateBill.FlatAppearance.BorderSize = 0;
-                this.btnUpdateBill.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnUpdateBill.ForeColor = System.Drawing.Color.White;
-                this.btnUpdateBill.Location = new System.Drawing.Point(150, 10);
-                this.btnUpdateBill.Name = "btnUpdateBill";
-                this.btnUpdateBill.Size = new System.Drawing.Size(150, 35);
-                this.btnUpdateBill.TabIndex = 1;
-                this.btnUpdateBill.Text = "Update Payment";
-                this.btnUpdateBill.UseVisualStyleBackColor = false;
-                this.btnUpdateBill.Click += new System.EventHandler(this.BtnUpdateBill_Click);
-                // 
-                // btnRefreshBilling
-                // 
-                this.btnRefreshBilling.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-                this.btnRefreshBilling.Cursor = System.Windows.Forms.Cursors.Hand;
-                this.btnRefreshBilling.FlatAppearance.BorderSize = 0;
-                this.btnRefreshBilling.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-                this.btnRefreshBilling.ForeColor = System.Drawing.Color.White;
-                this.btnRefreshBilling.Location = new System.Drawing.Point(310, 10);
-                this.btnRefreshBilling.Name = "btnRefreshBilling";
-                this.btnRefreshBilling.Size = new System.Drawing.Size(110, 35);
-                this.btnRefreshBilling.TabIndex = 2;
-                this.btnRefreshBilling.Text = "Refresh";
-                this.btnRefreshBilling.UseVisualStyleBackColor = false;
-                this.btnRefreshBilling.Click += new System.EventHandler(this.BtnRefresh_Click);
-                // 
-                // dgvBilling
-                // 
-                this.dgvBilling.AllowUserToAddRows = false;
-                this.dgvBilling.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-                this.dgvBilling.BackgroundColor = System.Drawing.Color.White;
-                this.dgvBilling.BorderStyle = System.Windows.Forms.BorderStyle.None;
-                this.dgvBilling.Location = new System.Drawing.Point(10, 60);
-                this.dgvBilling.Name = "dgvBilling";
-                this.dgvBilling.ReadOnly = true;
-                this.dgvBilling.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-                this.dgvBilling.Size = new System.Drawing.Size(1100, 430);
-                this.dgvBilling.TabIndex = 3;
-                // 
-                // AdminDashboard
-                // 
-                this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-                this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-                this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
-                this.ClientSize = new System.Drawing.Size(1184, 661);
-                this.Controls.Add(this.tabControl);
-                this.Controls.Add(this.panelHeader);
-                this.Name = "AdminDashboard";
-                this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-                this.Text = "Hospital Management System - Admin Dashboard";
-                this.panelHeader.ResumeLayout(false);
-                this.panelHeader.PerformLayout();
-                this.tabControl.ResumeLayout(false);
-                this.tabUsers.ResumeLayout(false);
-                ((System.ComponentModel.ISupportInitialize)(this.dgvUsers)).EndInit();
-                this.tabAppointments.ResumeLayout(false);
-                ((System.ComponentModel.ISupportInitialize)(this.dgvAppointments)).EndInit();
-                this.tabBilling.ResumeLayout(false);
-                ((System.ComponentModel.ISupportInitialize)(this.dgvBilling)).EndInit();
-                this.ResumeLayout(false);
-            }
+        {
+            if (disposing && (components != null))
+                components.Dispose();
+            base.Dispose(disposing);
         }
+
+        private void InitializeComponent()
+        {
+            panelSidebar = new Panel();
+            btnToggleSidebar = new Button();
+            pictureBoxProfile = new PictureBox();
+            lblWelcome = new Label();
+            lblRole = new Label();
+            btnUsersMenu = new Button();
+            btnAppointmentsMenu = new Button();
+            btnBillingMenu = new Button();
+            btnLogout = new Button();
+            panelMainContent = new Panel();
+            tabControl = new TabControl();
+            tabUsersMain = new TabPage();
+            tabUsers = new TabControl();
+            tabAllUsers = new TabPage();
+            tabAdmins = new TabPage();
+            tabDoctors = new TabPage();
+            tabPatients = new TabPage();
+            tabStaff = new TabPage();
+            panelUserButtons = new Panel();
+            btnRefreshUsers = new Button();
+            btnDeleteUser = new Button();
+            btnEditUser = new Button();
+            btnAddUser = new Button();
+            buttonShadow = new Panel();
+            tabAppointments = new TabPage();
+            panelAppointmentButtons = new Panel();
+            btnRefreshAppointments = new Button();
+            btnDeleteAppointment = new Button();
+            btnEditAppointment = new Button();
+            btnAddAppointment = new Button();
+            apptBtnShadow = new Panel();
+            tabBilling = new TabPage();
+            panelBillingButtons = new Panel();
+            btnRefreshBilling = new Button();
+            btnUpdateBill = new Button();
+            btnAddBill = new Button();
+            billBtnShadow = new Panel();
+            panelHeader = new Panel();
+            panelUniversalSearch = new Panel();
+            lblUniversalSearchIcon = new Label();
+            btnClearUniversalSearch = new Button();
+            txtUniversalSearch = new TextBox();
+            label1 = new Label();
+            lblHospitalName = new Label();
+            panelHeaderRight = new Panel();
+            panelSidebar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).BeginInit();
+            panelMainContent.SuspendLayout();
+            tabControl.SuspendLayout();
+            tabUsersMain.SuspendLayout();
+            tabUsers.SuspendLayout();
+            panelUserButtons.SuspendLayout();
+            tabAppointments.SuspendLayout();
+            panelAppointmentButtons.SuspendLayout();
+            tabBilling.SuspendLayout();
+            panelBillingButtons.SuspendLayout();
+            panelHeader.SuspendLayout();
+            panelUniversalSearch.SuspendLayout();
+            SuspendLayout();
+            // 
+            // panelSidebar
+            // 
+            panelSidebar.BackColor = Color.FromArgb(26, 32, 44);
+            panelSidebar.Controls.Add(btnToggleSidebar);
+            panelSidebar.Controls.Add(pictureBoxProfile);
+            panelSidebar.Controls.Add(lblWelcome);
+            panelSidebar.Controls.Add(lblRole);
+            panelSidebar.Controls.Add(btnUsersMenu);
+            panelSidebar.Controls.Add(btnAppointmentsMenu);
+            panelSidebar.Controls.Add(btnBillingMenu);
+            panelSidebar.Controls.Add(btnLogout);
+            panelSidebar.Dock = DockStyle.Left;
+            panelSidebar.Location = new Point(0, 0);
+            panelSidebar.Name = "panelSidebar";
+            panelSidebar.Size = new Size(280, 854);
+            panelSidebar.TabIndex = 1;
+            // 
+            // btnToggleSidebar
+            // 
+            btnToggleSidebar.BackColor = Color.FromArgb(45, 55, 72);
+            btnToggleSidebar.Cursor = Cursors.Hand;
+            btnToggleSidebar.FlatAppearance.BorderSize = 0;
+            btnToggleSidebar.FlatAppearance.MouseOverBackColor = Color.FromArgb(74, 85, 104);
+            btnToggleSidebar.FlatStyle = FlatStyle.Flat;
+            btnToggleSidebar.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            btnToggleSidebar.ForeColor = Color.White;
+            btnToggleSidebar.Location = new Point(230, 18);
+            btnToggleSidebar.Name = "btnToggleSidebar";
+            btnToggleSidebar.Size = new Size(35, 35);
+            btnToggleSidebar.TabIndex = 0;
+            btnToggleSidebar.Text = "‹";
+            btnToggleSidebar.UseVisualStyleBackColor = false;
+            // 
+            // pictureBoxProfile
+            // 
+            pictureBoxProfile.BackColor = Color.White;
+            pictureBoxProfile.Location = new Point(90, 80);
+            pictureBoxProfile.Name = "pictureBoxProfile";
+            pictureBoxProfile.Size = new Size(100, 100);
+            pictureBoxProfile.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxProfile.TabIndex = 1;
+            pictureBoxProfile.TabStop = false;
+            // 
+            // lblWelcome
+            // 
+            lblWelcome.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblWelcome.ForeColor = Color.White;
+            lblWelcome.Location = new Point(20, 200);
+            lblWelcome.Name = "lblWelcome";
+            lblWelcome.Size = new Size(240, 25);
+            lblWelcome.TabIndex = 2;
+            lblWelcome.Text = "Welcome, Admin";
+            lblWelcome.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // lblRole
+            // 
+            lblRole.Font = new Font("Segoe UI", 9F);
+            lblRole.ForeColor = Color.FromArgb(160, 174, 192);
+            lblRole.Location = new Point(20, 225);
+            lblRole.Name = "lblRole";
+            lblRole.Size = new Size(240, 20);
+            lblRole.TabIndex = 3;
+            lblRole.Text = "Role: Admin";
+            lblRole.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // btnUsersMenu
+            // 
+            btnUsersMenu.BackColor = Color.FromArgb(66, 153, 225);
+            btnUsersMenu.Cursor = Cursors.Hand;
+            btnUsersMenu.FlatAppearance.BorderSize = 0;
+            btnUsersMenu.FlatAppearance.MouseOverBackColor = Color.FromArgb(45, 55, 72);
+            btnUsersMenu.FlatStyle = FlatStyle.Flat;
+            btnUsersMenu.Font = new Font("Segoe UI", 10F);
+            btnUsersMenu.ForeColor = Color.White;
+            btnUsersMenu.Location = new Point(15, 290);
+            btnUsersMenu.Name = "btnUsersMenu";
+            btnUsersMenu.Padding = new Padding(20, 0, 0, 0);
+            btnUsersMenu.Size = new Size(250, 45);
+            btnUsersMenu.TabIndex = 4;
+            btnUsersMenu.Text = "  👥  User Management";
+            btnUsersMenu.TextAlign = ContentAlignment.MiddleLeft;
+            btnUsersMenu.UseVisualStyleBackColor = false;
+            btnUsersMenu.Click += BtnUsersMenu_Click;
+            // 
+            // btnAppointmentsMenu
+            // 
+            btnAppointmentsMenu.BackColor = Color.Transparent;
+            btnAppointmentsMenu.Cursor = Cursors.Hand;
+            btnAppointmentsMenu.FlatAppearance.BorderSize = 0;
+            btnAppointmentsMenu.FlatAppearance.MouseOverBackColor = Color.FromArgb(45, 55, 72);
+            btnAppointmentsMenu.FlatStyle = FlatStyle.Flat;
+            btnAppointmentsMenu.Font = new Font("Segoe UI", 10F);
+            btnAppointmentsMenu.ForeColor = Color.FromArgb(226, 232, 240);
+            btnAppointmentsMenu.Location = new Point(15, 345);
+            btnAppointmentsMenu.Name = "btnAppointmentsMenu";
+            btnAppointmentsMenu.Padding = new Padding(20, 0, 0, 0);
+            btnAppointmentsMenu.Size = new Size(250, 45);
+            btnAppointmentsMenu.TabIndex = 5;
+            btnAppointmentsMenu.Text = "  📅  Appointments";
+            btnAppointmentsMenu.TextAlign = ContentAlignment.MiddleLeft;
+            btnAppointmentsMenu.UseVisualStyleBackColor = false;
+            btnAppointmentsMenu.Click += BtnAppointmentsMenu_Click;
+            // 
+            // btnBillingMenu
+            // 
+            btnBillingMenu.BackColor = Color.Transparent;
+            btnBillingMenu.Cursor = Cursors.Hand;
+            btnBillingMenu.FlatAppearance.BorderSize = 0;
+            btnBillingMenu.FlatAppearance.MouseOverBackColor = Color.FromArgb(45, 55, 72);
+            btnBillingMenu.FlatStyle = FlatStyle.Flat;
+            btnBillingMenu.Font = new Font("Segoe UI", 10F);
+            btnBillingMenu.ForeColor = Color.FromArgb(226, 232, 240);
+            btnBillingMenu.Location = new Point(15, 400);
+            btnBillingMenu.Name = "btnBillingMenu";
+            btnBillingMenu.Padding = new Padding(20, 0, 0, 0);
+            btnBillingMenu.Size = new Size(250, 45);
+            btnBillingMenu.TabIndex = 6;
+            btnBillingMenu.Text = "  💰  Billing And Payments";
+            btnBillingMenu.TextAlign = ContentAlignment.MiddleLeft;
+            btnBillingMenu.UseVisualStyleBackColor = false;
+            btnBillingMenu.Click += BtnBillingMenu_Click;
+            // 
+            // btnLogout
+            // 
+            btnLogout.BackColor = Color.FromArgb(74, 85, 104);
+            btnLogout.Cursor = Cursors.Hand;
+            btnLogout.FlatAppearance.BorderSize = 0;
+            btnLogout.FlatAppearance.MouseOverBackColor = Color.FromArgb(160, 174, 192);
+            btnLogout.FlatStyle = FlatStyle.Flat;
+            btnLogout.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnLogout.ForeColor = Color.White;
+            btnLogout.Location = new Point(15, 774);
+            btnLogout.Name = "btnLogout";
+            btnLogout.Size = new Size(250, 50);
+            btnLogout.TabIndex = 7;
+            btnLogout.Text = "🚪 LOGOUT";
+            btnLogout.UseVisualStyleBackColor = false;
+            btnLogout.Click += BtnLogout_Click;
+            // 
+            // panelMainContent
+            // 
+            panelMainContent.BackColor = Color.FromArgb(247, 250, 252);
+            panelMainContent.Controls.Add(tabControl);
+            panelMainContent.Controls.Add(panelHeader);
+            panelMainContent.Dock = DockStyle.Fill;
+            panelMainContent.Location = new Point(280, 0);
+            panelMainContent.Name = "panelMainContent";
+            panelMainContent.Size = new Size(1213, 854);
+            panelMainContent.TabIndex = 0;
+            // 
+            // tabControl
+            // 
+            tabControl.Appearance = TabAppearance.FlatButtons;
+            tabControl.Controls.Add(tabUsersMain);
+            tabControl.Controls.Add(tabAppointments);
+            tabControl.Controls.Add(tabBilling);
+            tabControl.Dock = DockStyle.Fill;
+            tabControl.ItemSize = new Size(120, 30);
+            tabControl.Location = new Point(0, 70);
+            tabControl.Name = "tabControl";
+            tabControl.SelectedIndex = 0;
+            tabControl.Size = new Size(1213, 784);
+            tabControl.SizeMode = TabSizeMode.Fixed;
+            tabControl.TabIndex = 0;
+            // 
+            // tabUsersMain
+            // 
+            tabUsersMain.BackColor = Color.FromArgb(247, 250, 252);
+            tabUsersMain.Controls.Add(tabUsers);
+            tabUsersMain.Controls.Add(panelUserButtons);
+            tabUsersMain.Location = new Point(4, 34);
+            tabUsersMain.Name = "tabUsersMain";
+            tabUsersMain.Padding = new Padding(20);
+            tabUsersMain.Size = new Size(1205, 746);
+            tabUsersMain.TabIndex = 0;
+            // 
+            // tabUsers
+            // 
+            tabUsers.Controls.Add(tabAllUsers);
+            tabUsers.Controls.Add(tabAdmins);
+            tabUsers.Controls.Add(tabDoctors);
+            tabUsers.Controls.Add(tabPatients);
+            tabUsers.Controls.Add(tabStaff);
+            tabUsers.Dock = DockStyle.Fill;
+            tabUsers.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            tabUsers.Location = new Point(20, 100);
+            tabUsers.Name = "tabUsers";
+            tabUsers.SelectedIndex = 0;
+            tabUsers.Size = new Size(1165, 626);
+            tabUsers.TabIndex = 0;
+            // 
+            // tabAllUsers
+            // 
+            tabAllUsers.BackColor = Color.White;
+            tabAllUsers.Location = new Point(4, 26);
+            tabAllUsers.Name = "tabAllUsers";
+            tabAllUsers.Padding = new Padding(15);
+            tabAllUsers.Size = new Size(1157, 596);
+            tabAllUsers.TabIndex = 0;
+            tabAllUsers.Text = "📋 All Users";
+            // 
+            // tabAdmins
+            // 
+            tabAdmins.BackColor = Color.White;
+            tabAdmins.Location = new Point(4, 26);
+            tabAdmins.Name = "tabAdmins";
+            tabAdmins.Padding = new Padding(15);
+            tabAdmins.Size = new Size(1157, 596);
+            tabAdmins.TabIndex = 1;
+            tabAdmins.Text = "👔 Admins";
+            // 
+            // tabDoctors
+            // 
+            tabDoctors.BackColor = Color.White;
+            tabDoctors.Location = new Point(4, 26);
+            tabDoctors.Name = "tabDoctors";
+            tabDoctors.Padding = new Padding(15);
+            tabDoctors.Size = new Size(1157, 596);
+            tabDoctors.TabIndex = 2;
+            tabDoctors.Text = "\U0001fa7a Doctors";
+            // 
+            // tabPatients
+            // 
+            tabPatients.BackColor = Color.White;
+            tabPatients.Location = new Point(4, 26);
+            tabPatients.Name = "tabPatients";
+            tabPatients.Padding = new Padding(15);
+            tabPatients.Size = new Size(1157, 596);
+            tabPatients.TabIndex = 3;
+            tabPatients.Text = "🏥 Patients";
+            // 
+            // tabStaff
+            // 
+            tabStaff.BackColor = Color.White;
+            tabStaff.Location = new Point(4, 26);
+            tabStaff.Name = "tabStaff";
+            tabStaff.Padding = new Padding(15);
+            tabStaff.Size = new Size(1157, 596);
+            tabStaff.TabIndex = 4;
+            tabStaff.Text = "👨‍💼 Staff";
+            // 
+            // panelUserButtons
+            // 
+            panelUserButtons.BackColor = Color.White;
+            panelUserButtons.Controls.Add(btnRefreshUsers);
+            panelUserButtons.Controls.Add(btnDeleteUser);
+            panelUserButtons.Controls.Add(btnEditUser);
+            panelUserButtons.Controls.Add(btnAddUser);
+            panelUserButtons.Controls.Add(buttonShadow);
+            panelUserButtons.Dock = DockStyle.Top;
+            panelUserButtons.Location = new Point(20, 20);
+            panelUserButtons.Name = "panelUserButtons";
+            panelUserButtons.Padding = new Padding(20, 15, 20, 15);
+            panelUserButtons.Size = new Size(1165, 80);
+            panelUserButtons.TabIndex = 2;
+            // 
+            // btnRefreshUsers
+            // 
+            btnRefreshUsers.BackColor = Color.FromArgb(113, 128, 150);
+            btnRefreshUsers.Cursor = Cursors.Hand;
+            btnRefreshUsers.FlatAppearance.BorderSize = 0;
+            btnRefreshUsers.FlatAppearance.MouseOverBackColor = Color.FromArgb(90, 103, 122);
+            btnRefreshUsers.FlatStyle = FlatStyle.Flat;
+            btnRefreshUsers.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnRefreshUsers.ForeColor = Color.White;
+            btnRefreshUsers.Location = new Point(560, 15);
+            btnRefreshUsers.Name = "btnRefreshUsers";
+            btnRefreshUsers.Size = new Size(150, 45);
+            btnRefreshUsers.TabIndex = 0;
+            btnRefreshUsers.Text = "🔄 Refresh";
+            btnRefreshUsers.UseVisualStyleBackColor = false;
+            btnRefreshUsers.Click += BtnRefresh_Click;
+            // 
+            // btnDeleteUser
+            // 
+            btnDeleteUser.BackColor = Color.FromArgb(229, 62, 62);
+            btnDeleteUser.Cursor = Cursors.Hand;
+            btnDeleteUser.FlatAppearance.BorderSize = 0;
+            btnDeleteUser.FlatAppearance.MouseOverBackColor = Color.FromArgb(197, 48, 48);
+            btnDeleteUser.FlatStyle = FlatStyle.Flat;
+            btnDeleteUser.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnDeleteUser.ForeColor = Color.White;
+            btnDeleteUser.Location = new Point(380, 15);
+            btnDeleteUser.Name = "btnDeleteUser";
+            btnDeleteUser.Size = new Size(170, 45);
+            btnDeleteUser.TabIndex = 1;
+            btnDeleteUser.Text = "🗑️ Delete User";
+            btnDeleteUser.UseVisualStyleBackColor = false;
+            btnDeleteUser.Click += BtnDeleteUser_Click;
+            // 
+            // btnEditUser
+            // 
+            btnEditUser.BackColor = Color.FromArgb(66, 153, 225);
+            btnEditUser.Cursor = Cursors.Hand;
+            btnEditUser.FlatAppearance.BorderSize = 0;
+            btnEditUser.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
+            btnEditUser.FlatStyle = FlatStyle.Flat;
+            btnEditUser.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnEditUser.ForeColor = Color.White;
+            btnEditUser.Location = new Point(200, 15);
+            btnEditUser.Name = "btnEditUser";
+            btnEditUser.Size = new Size(170, 45);
+            btnEditUser.TabIndex = 2;
+            btnEditUser.Text = "✏️ Edit User";
+            btnEditUser.UseVisualStyleBackColor = false;
+            btnEditUser.Click += BtnEditUser_Click;
+            // 
+            // btnAddUser
+            // 
+            btnAddUser.BackColor = Color.FromArgb(72, 187, 120);
+            btnAddUser.Cursor = Cursors.Hand;
+            btnAddUser.FlatAppearance.BorderSize = 0;
+            btnAddUser.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 161, 105);
+            btnAddUser.FlatStyle = FlatStyle.Flat;
+            btnAddUser.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnAddUser.ForeColor = Color.White;
+            btnAddUser.Location = new Point(20, 15);
+            btnAddUser.Name = "btnAddUser";
+            btnAddUser.Size = new Size(170, 45);
+            btnAddUser.TabIndex = 3;
+            btnAddUser.Text = "➕ Add User";
+            btnAddUser.UseVisualStyleBackColor = false;
+            btnAddUser.Click += BtnAddUser_Click;
+            // 
+            // buttonShadow
+            // 
+            buttonShadow.BackColor = Color.FromArgb(226, 232, 240);
+            buttonShadow.Dock = DockStyle.Bottom;
+            buttonShadow.Location = new Point(20, 64);
+            buttonShadow.Name = "buttonShadow";
+            buttonShadow.Size = new Size(1125, 1);
+            buttonShadow.TabIndex = 4;
+            // 
+            // tabAppointments
+            // 
+            tabAppointments.BackColor = Color.FromArgb(247, 250, 252);
+            tabAppointments.Controls.Add(panelAppointmentButtons);
+            tabAppointments.Location = new Point(4, 34);
+            tabAppointments.Name = "tabAppointments";
+            tabAppointments.Padding = new Padding(20);
+            tabAppointments.Size = new Size(1205, 746);
+            tabAppointments.TabIndex = 1;
+            // 
+            // panelAppointmentButtons
+            // 
+            panelAppointmentButtons.BackColor = Color.White;
+            panelAppointmentButtons.Controls.Add(btnRefreshAppointments);
+            panelAppointmentButtons.Controls.Add(btnDeleteAppointment);
+            panelAppointmentButtons.Controls.Add(btnEditAppointment);
+            panelAppointmentButtons.Controls.Add(btnAddAppointment);
+            panelAppointmentButtons.Controls.Add(apptBtnShadow);
+            panelAppointmentButtons.Dock = DockStyle.Top;
+            panelAppointmentButtons.Location = new Point(20, 20);
+            panelAppointmentButtons.Name = "panelAppointmentButtons";
+            panelAppointmentButtons.Padding = new Padding(20, 15, 20, 15);
+            panelAppointmentButtons.Size = new Size(1165, 80);
+            panelAppointmentButtons.TabIndex = 1;
+            // 
+            // btnRefreshAppointments
+            // 
+            btnRefreshAppointments.BackColor = Color.FromArgb(113, 128, 150);
+            btnRefreshAppointments.Cursor = Cursors.Hand;
+            btnRefreshAppointments.FlatAppearance.BorderSize = 0;
+            btnRefreshAppointments.FlatAppearance.MouseOverBackColor = Color.FromArgb(90, 103, 122);
+            btnRefreshAppointments.FlatStyle = FlatStyle.Flat;
+            btnRefreshAppointments.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnRefreshAppointments.ForeColor = Color.White;
+            btnRefreshAppointments.Location = new Point(560, 15);
+            btnRefreshAppointments.Name = "btnRefreshAppointments";
+            btnRefreshAppointments.Size = new Size(150, 45);
+            btnRefreshAppointments.TabIndex = 0;
+            btnRefreshAppointments.Text = "🔄 Refresh";
+            btnRefreshAppointments.UseVisualStyleBackColor = false;
+            btnRefreshAppointments.Click += BtnRefresh_Click;
+            // 
+            // btnDeleteAppointment
+            // 
+            btnDeleteAppointment.BackColor = Color.FromArgb(229, 62, 62);
+            btnDeleteAppointment.Cursor = Cursors.Hand;
+            btnDeleteAppointment.FlatAppearance.BorderSize = 0;
+            btnDeleteAppointment.FlatAppearance.MouseOverBackColor = Color.FromArgb(197, 48, 48);
+            btnDeleteAppointment.FlatStyle = FlatStyle.Flat;
+            btnDeleteAppointment.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnDeleteAppointment.ForeColor = Color.White;
+            btnDeleteAppointment.Location = new Point(390, 15);
+            btnDeleteAppointment.Name = "btnDeleteAppointment";
+            btnDeleteAppointment.Size = new Size(160, 45);
+            btnDeleteAppointment.TabIndex = 1;
+            btnDeleteAppointment.Text = "❌ Cancel";
+            btnDeleteAppointment.UseVisualStyleBackColor = false;
+            btnDeleteAppointment.Click += BtnDeleteAppointment_Click;
+            // 
+            // btnEditAppointment
+            // 
+            btnEditAppointment.BackColor = Color.FromArgb(66, 153, 225);
+            btnEditAppointment.Cursor = Cursors.Hand;
+            btnEditAppointment.FlatAppearance.BorderSize = 0;
+            btnEditAppointment.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
+            btnEditAppointment.FlatStyle = FlatStyle.Flat;
+            btnEditAppointment.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnEditAppointment.ForeColor = Color.White;
+            btnEditAppointment.Location = new Point(200, 15);
+            btnEditAppointment.Name = "btnEditAppointment";
+            btnEditAppointment.Size = new Size(180, 45);
+            btnEditAppointment.TabIndex = 2;
+            btnEditAppointment.Text = "📝 Update Status";
+            btnEditAppointment.UseVisualStyleBackColor = false;
+            btnEditAppointment.Click += BtnEditAppointment_Click;
+            // 
+            // btnAddAppointment
+            // 
+            btnAddAppointment.BackColor = Color.FromArgb(72, 187, 120);
+            btnAddAppointment.Cursor = Cursors.Hand;
+            btnAddAppointment.FlatAppearance.BorderSize = 0;
+            btnAddAppointment.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 161, 105);
+            btnAddAppointment.FlatStyle = FlatStyle.Flat;
+            btnAddAppointment.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnAddAppointment.ForeColor = Color.White;
+            btnAddAppointment.Location = new Point(20, 15);
+            btnAddAppointment.Name = "btnAddAppointment";
+            btnAddAppointment.Size = new Size(170, 45);
+            btnAddAppointment.TabIndex = 3;
+            btnAddAppointment.Text = "➕ Schedule";
+            btnAddAppointment.UseVisualStyleBackColor = false;
+            btnAddAppointment.Click += BtnAddAppointment_Click;
+            // 
+            // apptBtnShadow
+            // 
+            apptBtnShadow.BackColor = Color.FromArgb(226, 232, 240);
+            apptBtnShadow.Dock = DockStyle.Bottom;
+            apptBtnShadow.Location = new Point(20, 64);
+            apptBtnShadow.Name = "apptBtnShadow";
+            apptBtnShadow.Size = new Size(1125, 1);
+            apptBtnShadow.TabIndex = 4;
+            // 
+            // tabBilling
+            // 
+            tabBilling.BackColor = Color.FromArgb(247, 250, 252);
+            tabBilling.Controls.Add(panelBillingButtons);
+            tabBilling.Location = new Point(4, 34);
+            tabBilling.Name = "tabBilling";
+            tabBilling.Padding = new Padding(20);
+            tabBilling.Size = new Size(1205, 746);
+            tabBilling.TabIndex = 2;
+            // 
+            // panelBillingButtons
+            // 
+            panelBillingButtons.BackColor = Color.White;
+            panelBillingButtons.Controls.Add(btnRefreshBilling);
+            panelBillingButtons.Controls.Add(btnUpdateBill);
+            panelBillingButtons.Controls.Add(btnAddBill);
+            panelBillingButtons.Controls.Add(billBtnShadow);
+            panelBillingButtons.Dock = DockStyle.Top;
+            panelBillingButtons.Location = new Point(20, 20);
+            panelBillingButtons.Name = "panelBillingButtons";
+            panelBillingButtons.Padding = new Padding(20, 15, 20, 15);
+            panelBillingButtons.Size = new Size(1165, 80);
+            panelBillingButtons.TabIndex = 1;
+            // 
+            // btnRefreshBilling
+            // 
+            btnRefreshBilling.BackColor = Color.FromArgb(113, 128, 150);
+            btnRefreshBilling.Cursor = Cursors.Hand;
+            btnRefreshBilling.FlatAppearance.BorderSize = 0;
+            btnRefreshBilling.FlatAppearance.MouseOverBackColor = Color.FromArgb(90, 103, 122);
+            btnRefreshBilling.FlatStyle = FlatStyle.Flat;
+            btnRefreshBilling.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnRefreshBilling.ForeColor = Color.White;
+            btnRefreshBilling.Location = new Point(420, 15);
+            btnRefreshBilling.Name = "btnRefreshBilling";
+            btnRefreshBilling.Size = new Size(150, 45);
+            btnRefreshBilling.TabIndex = 0;
+            btnRefreshBilling.Text = "🔄 Refresh";
+            btnRefreshBilling.UseVisualStyleBackColor = false;
+            btnRefreshBilling.Click += BtnRefresh_Click;
+            // 
+            // btnUpdateBill
+            // 
+            btnUpdateBill.BackColor = Color.FromArgb(66, 153, 225);
+            btnUpdateBill.Cursor = Cursors.Hand;
+            btnUpdateBill.FlatAppearance.BorderSize = 0;
+            btnUpdateBill.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
+            btnUpdateBill.FlatStyle = FlatStyle.Flat;
+            btnUpdateBill.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnUpdateBill.ForeColor = Color.White;
+            btnUpdateBill.Location = new Point(220, 15);
+            btnUpdateBill.Name = "btnUpdateBill";
+            btnUpdateBill.Size = new Size(190, 45);
+            btnUpdateBill.TabIndex = 1;
+            btnUpdateBill.Text = "💳 Mark as Paid";
+            btnUpdateBill.UseVisualStyleBackColor = false;
+            btnUpdateBill.Click += BtnUpdateBill_Click;
+            // 
+            // btnAddBill
+            // 
+            btnAddBill.BackColor = Color.FromArgb(72, 187, 120);
+            btnAddBill.Cursor = Cursors.Hand;
+            btnAddBill.FlatAppearance.BorderSize = 0;
+            btnAddBill.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 161, 105);
+            btnAddBill.FlatStyle = FlatStyle.Flat;
+            btnAddBill.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnAddBill.ForeColor = Color.White;
+            btnAddBill.Location = new Point(20, 15);
+            btnAddBill.Name = "btnAddBill";
+            btnAddBill.Size = new Size(190, 45);
+            btnAddBill.TabIndex = 2;
+            btnAddBill.Text = "➕ Create Invoice";
+            btnAddBill.UseVisualStyleBackColor = false;
+            btnAddBill.Click += BtnAddBill_Click;
+            // 
+            // billBtnShadow
+            // 
+            billBtnShadow.BackColor = Color.FromArgb(226, 232, 240);
+            billBtnShadow.Dock = DockStyle.Bottom;
+            billBtnShadow.Location = new Point(20, 64);
+            billBtnShadow.Name = "billBtnShadow";
+            billBtnShadow.Size = new Size(1125, 1);
+            billBtnShadow.TabIndex = 3;
+            // 
+            // panelHeader
+            // 
+            panelHeader.BackColor = SystemColors.HotTrack;
+            panelHeader.Controls.Add(panelUniversalSearch);
+            panelHeader.Controls.Add(label1);
+            panelHeader.Controls.Add(lblHospitalName);
+            panelHeader.Controls.Add(panelHeaderRight);
+            panelHeader.Dock = DockStyle.Top;
+            panelHeader.Location = new Point(0, 0);
+            panelHeader.Name = "panelHeader";
+            panelHeader.Size = new Size(1213, 70);
+            panelHeader.TabIndex = 1;
+            // 
+            // panelUniversalSearch
+            // 
+            panelUniversalSearch.BackColor = Color.White;
+            panelUniversalSearch.BorderStyle = BorderStyle.FixedSingle;
+            panelUniversalSearch.Controls.Add(lblUniversalSearchIcon);
+            panelUniversalSearch.Controls.Add(btnClearUniversalSearch);
+            panelUniversalSearch.Controls.Add(txtUniversalSearch);
+            panelUniversalSearch.Location = new Point(296, 15);
+            panelUniversalSearch.Name = "panelUniversalSearch";
+            panelUniversalSearch.Size = new Size(588, 45);
+            panelUniversalSearch.TabIndex = 4;
+            // 
+            // lblUniversalSearchIcon
+            // 
+            lblUniversalSearchIcon.AutoSize = true;
+            lblUniversalSearchIcon.Cursor = Cursors.IBeam;
+            lblUniversalSearchIcon.Font = new Font("Segoe UI", 14F);
+            lblUniversalSearchIcon.ForeColor = Color.FromArgb(154, 160, 166);
+            lblUniversalSearchIcon.Location = new Point(18, 10);
+            lblUniversalSearchIcon.Name = "lblUniversalSearchIcon";
+            lblUniversalSearchIcon.Size = new Size(33, 25);
+            lblUniversalSearchIcon.TabIndex = 0;
+            lblUniversalSearchIcon.Text = "🔍";
+            lblUniversalSearchIcon.Click += LblUniversalSearchIcon_Click;
+            // 
+            // btnClearUniversalSearch
+            // 
+            btnClearUniversalSearch.BackColor = Color.Transparent;
+            btnClearUniversalSearch.Cursor = Cursors.Hand;
+            btnClearUniversalSearch.FlatAppearance.BorderSize = 0;
+            btnClearUniversalSearch.FlatAppearance.MouseOverBackColor = Color.FromArgb(240, 240, 240);
+            btnClearUniversalSearch.FlatStyle = FlatStyle.Flat;
+            btnClearUniversalSearch.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnClearUniversalSearch.ForeColor = Color.FromArgb(128, 134, 139);
+            btnClearUniversalSearch.Location = new Point(543, 5);
+            btnClearUniversalSearch.Name = "btnClearUniversalSearch";
+            btnClearUniversalSearch.Size = new Size(40, 32);
+            btnClearUniversalSearch.TabIndex = 2;
+            btnClearUniversalSearch.Text = "✕";
+            btnClearUniversalSearch.UseVisualStyleBackColor = false;
+            btnClearUniversalSearch.Visible = false;
+            btnClearUniversalSearch.Click += BtnClearUniversalSearch_Click;
+            // 
+            // txtUniversalSearch
+            // 
+            txtUniversalSearch.BackColor = Color.White;
+            txtUniversalSearch.BorderStyle = BorderStyle.None;
+            txtUniversalSearch.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            txtUniversalSearch.Location = new Point(57, 13);
+            txtUniversalSearch.Name = "txtUniversalSearch";
+            txtUniversalSearch.PlaceholderText = "Search users, appointments, billing...";
+            txtUniversalSearch.Size = new Size(478, 22);
+            txtUniversalSearch.TabIndex = 1;
+            txtUniversalSearch.TextChanged += TxtUniversalSearch_TextChanged;
+            txtUniversalSearch.KeyDown += TxtUniversalSearch_KeyDown;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 9F);
+            label1.ForeColor = Color.FromArgb(224, 224, 224);
+            label1.Location = new Point(28, 42);
+            label1.Name = "label1";
+            label1.Size = new Size(112, 15);
+            label1.TabIndex = 3;
+            label1.Text = "Management Portal";
+            // 
+            // lblHospitalName
+            // 
+            lblHospitalName.AutoSize = true;
+            lblHospitalName.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblHospitalName.ForeColor = Color.FromArgb(224, 224, 224);
+            lblHospitalName.Location = new Point(28, 8);
+            lblHospitalName.Name = "lblHospitalName";
+            lblHospitalName.Size = new Size(247, 32);
+            lblHospitalName.TabIndex = 0;
+            lblHospitalName.Text = "St. Joseph's Hospital";
+            // 
+            // panelHeaderRight
+            // 
+            panelHeaderRight.BackColor = Color.Transparent;
+            panelHeaderRight.Dock = DockStyle.Right;
+            panelHeaderRight.Location = new Point(1213, 0);
+            panelHeaderRight.Name = "panelHeaderRight";
+            panelHeaderRight.Size = new Size(0, 70);
+            panelHeaderRight.TabIndex = 1;
+            panelHeaderRight.Visible = false;
+            // 
+            // AdminDashboard
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(247, 250, 252);
+            ClientSize = new Size(1493, 854);
+            Controls.Add(panelMainContent);
+            Controls.Add(panelSidebar);
+            MinimumSize = new Size(1200, 700);
+            Name = "AdminDashboard";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "St. Joseph's Hospital - Admin Dashboard";
+            panelSidebar.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).EndInit();
+            panelMainContent.ResumeLayout(false);
+            tabControl.ResumeLayout(false);
+            tabUsersMain.ResumeLayout(false);
+            tabUsers.ResumeLayout(false);
+            panelUserButtons.ResumeLayout(false);
+            tabAppointments.ResumeLayout(false);
+            panelAppointmentButtons.ResumeLayout(false);
+            tabBilling.ResumeLayout(false);
+            panelBillingButtons.ResumeLayout(false);
+            panelHeader.ResumeLayout(false);
+            panelHeader.PerformLayout();
+            panelUniversalSearch.ResumeLayout(false);
+            panelUniversalSearch.PerformLayout();
+            ResumeLayout(false);
+        }
+
+        private System.Windows.Forms.DataGridView CreateStyledDataGridView()
+        {
+            Color headerBg = Color.FromArgb(66, 153, 225);
+            Color cellBg = Color.White;
+            Color cellText = Color.FromArgb(26, 32, 44);
+            Color selectedBg = Color.FromArgb(191, 219, 254);
+            Color selectedText = Color.FromArgb(26, 32, 44);
+            Color gridColor = Color.FromArgb(226, 232, 240);
+
+            System.Windows.Forms.DataGridViewCellStyle headerStyle = new System.Windows.Forms.DataGridViewCellStyle();
+            headerStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            headerStyle.BackColor = headerBg;
+            headerStyle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            headerStyle.ForeColor = Color.White;
+            headerStyle.SelectionBackColor = headerBg;
+            headerStyle.SelectionForeColor = Color.White;
+            headerStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            headerStyle.Padding = new System.Windows.Forms.Padding(12, 8, 12, 8);
+
+            System.Windows.Forms.DataGridViewCellStyle cellStyle = new System.Windows.Forms.DataGridViewCellStyle();
+            cellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            cellStyle.BackColor = cellBg;
+            cellStyle.Font = new System.Drawing.Font("Segoe UI", 10F);
+            cellStyle.ForeColor = cellText;
+            cellStyle.SelectionBackColor = selectedBg;
+            cellStyle.SelectionForeColor = selectedText;
+            cellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            cellStyle.Padding = new System.Windows.Forms.Padding(12, 5, 12, 5);
+
+            var dgv = new System.Windows.Forms.DataGridView();
+            dgv.AllowUserToAddRows = false;
+            dgv.AllowUserToDeleteRows = false;
+            dgv.AllowUserToResizeRows = false;
+            dgv.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            dgv.BackgroundColor = cellBg;
+            dgv.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dgv.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            dgv.ColumnHeadersDefaultCellStyle = headerStyle;
+            dgv.ColumnHeadersHeight = 50;
+            dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dgv.DefaultCellStyle = cellStyle;
+            dgv.Dock = System.Windows.Forms.DockStyle.Fill;
+            dgv.EnableHeadersVisualStyles = false;
+            dgv.GridColor = gridColor;
+            dgv.MultiSelect = false;
+            dgv.ReadOnly = true;
+            dgv.RowHeadersVisible = false;
+            dgv.RowTemplate.Height = 45;
+            dgv.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+
+            // Enable double buffering for smoother rendering
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.SetProperty,
+                null, dgv, new object[] { true });
+
+            return dgv;
+        }
+        private Label label1;
+        private Panel panelHeaderRight;
     }
+}

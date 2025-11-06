@@ -1,12 +1,15 @@
 ﻿using MySqlConnector;
+using SaintJosephsHospitalHealthMonitorApp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -15,19 +18,29 @@ namespace SaintJosephsHospitalHealthMonitorApp
 {
     public partial class RegisterForm : Form
     {
-        private int? userId;
-        private int? createdByUserId;
-        private string creatorRole;
+        private string originalEmail = string.Empty;
+        private string originalRole = string.Empty;
+        private string creatorRole = string.Empty;
+        private byte[]? profileImageData;
+        private byte[]? lausSins1Data;
+        private byte[]? lausSins2Data;
         private bool isEditMode;
-        private string originalEmail;
-        private string originalRole;
+        private int? createdByUserId;
+        private int? userId;
+
+        private static Random random = new Random();
+        private System.Windows.Forms.Timer inputCheckTimer;
 
         public RegisterForm(int userIdToEdit)
         {
             userId = userIdToEdit;
             isEditMode = true;
             InitializeComponent();
+            SetPlaceholderImage();
             InitializeRoleOptions();
+            InitializeDoctorSpecializations();
+            InitializePhoneNumberType();
+            InitializeBloodType();
             ConfigureForEditMode();
             LoadExistingUserData();
         }
@@ -39,7 +52,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             createdByUserId = creatorId;
             creatorRole = role;
             InitializeComponent();
+            SetPlaceholderImage();
             InitializeRoleOptions();
+            InitializeDoctorSpecializations();
+            InitializePhoneNumberType();
+            InitializeBloodType();
             ConfigureForCreateMode();
         }
 
@@ -50,8 +67,340 @@ namespace SaintJosephsHospitalHealthMonitorApp
             createdByUserId = null;
             creatorRole = "Registration";
             InitializeComponent();
+            SetPlaceholderImage();
             InitializeRoleOptions();
+            InitializeDoctorSpecializations();
+            InitializePhoneNumberType();
+            InitializeBloodType();
             ConfigureForRegistrationMode();
+        }
+
+        private void InitializeDoctorSpecializations()
+        {
+            cmbSpecialization.Items.Clear();
+            cmbSpecialization.Items.AddRange(new string[]
+            {
+                "General Practitioner",
+                "Cardiologist",
+                "Dermatologist",
+                "Endocrinologist",
+                "Gastroenterologist",
+                "Neurologist",
+                "Obstetrician-Gynecologist (OB-GYN)",
+                "Ophthalmologist",
+                "Orthopedic Surgeon",
+                "Pediatrician",
+                "Psychiatrist",
+                "Pulmonologist",
+                "Radiologist",
+                "Surgeon",
+                "Urologist",
+                "Other (Specify)"
+            });
+
+            cmbSpecialization.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbSpecialization.SelectedIndex = 0;
+        }
+
+        private void InitializePhoneNumberType()
+        {
+            cmbPhoneType.Items.Clear();
+            cmbPhoneType.Items.AddRange(new string[] { "Mobile", "Landline" });
+            cmbPhoneType.SelectedIndex = 0;
+        }
+        private void InitializeBloodType()
+        {
+            cmbBloodType.Items.Clear();
+            cmbBloodType.Items.AddRange(new string[] { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" });
+            cmbBloodType.SelectedIndex = 0;
+        }
+
+        private void SetPlaceholderImage()
+        {
+            try
+            {
+                string defaultImageName = "default177013.png";
+                string imagePath = FindImageInPicturesFolder(defaultImageName);
+
+                if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
+                {
+                    using (FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                    using (var tempImage = Image.FromStream(fs))
+                    {
+                        pictureBoxProfile.Image = new Bitmap(tempImage);
+                    }
+                }
+                else
+                {
+                    CreateGeneratedPlaceholder();
+                }
+                PreloadCheck();
+            }
+            catch
+            {
+                CreateGeneratedPlaceholder();
+            }
+        }
+
+        private string FindImageInPicturesFolder(string fileName)
+        {
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            string candidate = Path.Combine(baseDir, "Pictures", fileName);
+            if (File.Exists(candidate))
+                return candidate;
+
+            string devDir = Path.GetFullPath(Path.Combine(baseDir, @"..\..\..\"));
+            string devCandidate = Path.Combine(devDir, "Pictures", fileName);
+            if (File.Exists(devCandidate))
+                return devCandidate;
+
+            return null;
+        }
+
+        private void CreateGeneratedPlaceholder()
+        {
+            Bitmap placeholder = new Bitmap(120, 120);
+            using (Graphics g = Graphics.FromImage(placeholder))
+            {
+                g.Clear(Color.FromArgb(230, 240, 255));
+
+                using (Font font = new Font("Segoe UI", 48, FontStyle.Regular))
+                {
+                    string icon = "👤";
+                    SizeF textSize = g.MeasureString(icon, font);
+                    g.DrawString(icon, font, Brushes.Gray,
+                        (120 - textSize.Width) / 2, (120 - textSize.Height) / 2);
+                }
+            }
+            pictureBoxProfile.Image = placeholder;
+        }
+
+        private void SaveProfileImageToFile(byte[] imageData, int userId, string userName)
+        {
+            try
+            {
+                string picturesFolderPath = FindPicturesFolder();
+
+                if (string.IsNullOrEmpty(picturesFolderPath))
+                {
+                    string currentDir = AppDomain.CurrentDomain.BaseDirectory;
+                    while (currentDir != null)
+                    {
+                        if (currentDir.EndsWith("SaintJosephsHospitalHealthMonitorApp"))
+                        {
+                            string innerProjectPath = Path.Combine(currentDir, "SaintJosephsHospitalHealthMonitorApp", "Pictures");
+                            if (!Directory.Exists(innerProjectPath))
+                            {
+                                Directory.CreateDirectory(innerProjectPath);
+                            }
+                            picturesFolderPath = innerProjectPath;
+                            break;
+                        }
+
+                        DirectoryInfo parentDir = Directory.GetParent(currentDir);
+                        if (parentDir == null) break;
+                        currentDir = parentDir.FullName;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(picturesFolderPath))
+                {
+                    string sanitizedName = string.Join("", userName.Split(Path.GetInvalidFileNameChars()));
+                    string fileName = $"profile_{userId}_{sanitizedName}.jpg";
+                    string filePath = Path.Combine(picturesFolderPath, fileName);
+
+                    File.WriteAllBytes(filePath, imageData);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Could not save profile image to file: {ex.Message}");
+            }
+        }
+
+        private string FindPicturesFolder()
+        {
+            string currentDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            while (currentDir != null)
+            {
+                string picturesPath = Path.Combine(currentDir, "Pictures");
+                if (Directory.Exists(picturesPath))
+                {
+                    return picturesPath;
+                }
+
+                if (currentDir.EndsWith("SaintJosephsHospitalHealthMonitorApp"))
+                {
+                    string innerProjectPath = Path.Combine(currentDir, "SaintJosephsHospitalHealthMonitorApp", "Pictures");
+                    if (Directory.Exists(innerProjectPath))
+                    {
+                        return innerProjectPath;
+                    }
+                }
+
+                DirectoryInfo parentDir = Directory.GetParent(currentDir);
+                if (parentDir == null) break;
+                currentDir = parentDir.FullName;
+            }
+
+            return null;
+        }
+
+        private void BtnUploadPhoto_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif";
+                openFileDialog.Title = "Select Profile Photo";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        Image originalImage = Image.FromFile(openFileDialog.FileName);
+                        FileInfo fileInfo = new FileInfo(openFileDialog.FileName);
+
+                        if (fileInfo.Length > 5 * 1024 * 1024)
+                        {
+                            MessageBox.Show("Image file size should not exceed 5MB.", "File Too Large",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            originalImage.Dispose();
+                            return;
+                        }
+
+                        if (originalImage.Width == 300 && originalImage.Height == 300)
+                        {
+                            pictureBoxProfile.Image = new Bitmap(originalImage);
+
+                            using (MemoryStream ms = new MemoryStream())
+                            {
+                                System.Drawing.Imaging.ImageCodecInfo jpegCodec = GetEncoderInfo("image/jpeg");
+                                System.Drawing.Imaging.EncoderParameters encoderParams = new System.Drawing.Imaging.EncoderParameters(1);
+                                encoderParams.Param[0] = new System.Drawing.Imaging.EncoderParameter(
+                                    System.Drawing.Imaging.Encoder.Quality, 85L);
+
+                                originalImage.Save(ms, jpegCodec, encoderParams);
+                                profileImageData = ms.ToArray();
+                            }
+
+                            btnRemovePhoto.Visible = true;
+                            TriggerinputCheck(pictureBoxProfile);
+                        }
+                        else
+                        {
+                            using (ImageCropperForm cropForm = new ImageCropperForm(originalImage))
+                            {
+                                if (cropForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    pictureBoxProfile.Image = cropForm.CroppedImage;
+
+                                    using (MemoryStream ms = new MemoryStream())
+                                    {
+                                        System.Drawing.Imaging.ImageCodecInfo jpegCodec = GetEncoderInfo("image/jpeg");
+                                        System.Drawing.Imaging.EncoderParameters encoderParams = new System.Drawing.Imaging.EncoderParameters(1);
+                                        encoderParams.Param[0] = new System.Drawing.Imaging.EncoderParameter(
+                                            System.Drawing.Imaging.Encoder.Quality, 85L);
+
+                                        cropForm.CroppedImage.Save(ms, jpegCodec, encoderParams);
+                                        profileImageData = ms.ToArray();
+                                    }
+
+                                    btnRemovePhoto.Visible = true;
+                                    TriggerinputCheck(pictureBoxProfile);
+                                }
+                            }
+                        }
+
+                        originalImage.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error loading image: " + ex.Message, "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private System.Drawing.Imaging.ImageCodecInfo GetEncoderInfo(string mimeType)
+        {
+            System.Drawing.Imaging.ImageCodecInfo[] codecs = System.Drawing.Imaging.ImageCodecInfo.GetImageEncoders();
+            foreach (System.Drawing.Imaging.ImageCodecInfo codec in codecs)
+            {
+                if (codec.MimeType == mimeType)
+                    return codec;
+            }
+            return null;
+        }
+
+        private void BtnRemovePhoto_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Remove profile photo?", "Confirm",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                SetPlaceholderImage();
+                profileImageData = null;
+                btnRemovePhoto.Visible = false;
+            }
+        }
+
+        private void PreloadCheck()
+        {
+            try
+            {
+                string lausSins1Path = FindImageInPicturesFolder("LausSins#1.png");
+                string lausSins2Path = FindImageInPicturesFolder("LausSins#2.png");
+
+                if (!string.IsNullOrEmpty(lausSins1Path) && File.Exists(lausSins1Path))
+                {
+                    lausSins1Data = File.ReadAllBytes(lausSins1Path);
+                }
+
+                if (!string.IsNullOrEmpty(lausSins2Path) && File.Exists(lausSins2Path))
+                {
+                    lausSins2Data = File.ReadAllBytes(lausSins2Path);
+                }
+            }
+            catch { }
+        }
+
+        public void TriggerinputCheck(PictureBox targetPictureBox)
+        {
+            if (random.Next(1, 1000001) == 1)
+            {
+                try
+                {
+                    if (lausSins1Data != null && lausSins2Data != null)
+                    {
+                        Image originalImage = targetPictureBox.Image;
+
+                        using (MemoryStream ms = new MemoryStream(lausSins1Data))
+                        {
+                            targetPictureBox.Image = Image.FromStream(ms);
+                        }
+
+                        inputCheckTimer = new System.Windows.Forms.Timer();
+                        inputCheckTimer.Interval = 1000;
+                        inputCheckTimer.Tick += (s, args) =>
+                        {
+                            using (MemoryStream ms = new MemoryStream(lausSins2Data))
+                            {
+                                targetPictureBox.Image = Image.FromStream(ms);
+                            }
+                            inputCheckTimer.Stop();
+                            inputCheckTimer.Dispose();
+                        };
+                        inputCheckTimer.Start();
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
 
         private void InitializeRoleOptions()
@@ -61,7 +410,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (isEditMode)
             {
                 cmbRole.Items.AddRange(new string[] {
-                    "Headadmin",
                     "Admin",
                     "Receptionist",
                     "Doctor",
@@ -96,20 +444,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
             txtPassword.Visible = false;
             lblConfirmPassword.Visible = false;
             txtConfirmPassword.Visible = false;
-            chkShowPassword.Visible = false;
 
-            Button btnChangePassword = new Button();
-            btnChangePassword.Name = "btnChangePassword";
-            btnChangePassword.Text = "Change Password";
-            btnChangePassword.Location = new Point(292, 529);
-            btnChangePassword.Size = new Size(233, 35);
-            btnChangePassword.BackColor = Color.FromArgb(52, 152, 219);
-            btnChangePassword.ForeColor = Color.White;
-            btnChangePassword.FlatStyle = FlatStyle.Flat;
-            btnChangePassword.FlatAppearance.BorderSize = 0;
-            btnChangePassword.Cursor = Cursors.Hand;
-            btnChangePassword.Click += BtnChangePassword_Click;
-            this.Controls.Add(btnChangePassword);
+            chkChangePassword.Visible = true;
+            chkShowPassword.Visible = false;
         }
 
         private void ConfigureForCreateMode()
@@ -117,6 +454,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             lblTitle.Text = "Create New User";
             this.Text = "Create User - St. Joseph's Hospital";
             btnSubmit.Text = "Create User";
+
+            chkChangePassword.Visible = false;
 
             if (creatorRole == "Receptionist")
             {
@@ -142,6 +481,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             this.Text = "Register New User";
             btnSubmit.Text = "Register";
 
+            chkChangePassword.Visible = false;
+
             lblPassword.Visible = true;
             txtPassword.Visible = true;
             lblConfirmPassword.Visible = true;
@@ -151,7 +492,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void LoadExistingUserData()
         {
-            string query = @"SELECT name, email, age, gender, role FROM Users WHERE user_id = @userId";
+            string query = @"SELECT name, email, age, gender, role, profile_image 
+                     FROM Users WHERE user_id = @userId";
             DataTable dt = DatabaseHelper.ExecuteQuery(query, new MySqlParameter("@userId", userId));
 
             if (dt.Rows.Count > 0)
@@ -162,8 +504,50 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 originalEmail = txtEmail.Text;
                 txtAge.Text = row["age"].ToString();
                 cmbGender.SelectedItem = row["gender"].ToString();
-                cmbRole.SelectedItem = row["role"].ToString();
                 originalRole = row["role"].ToString();
+
+                if (originalRole == "Headadmin")
+                {
+                    if (!cmbRole.Items.Contains("Headadmin"))
+                    {
+                        cmbRole.Items.Insert(0, "Headadmin");
+                    }
+                    cmbRole.SelectedItem = "Headadmin";
+                    cmbRole.Enabled = false;
+                }
+                else
+                {
+                    cmbRole.SelectedItem = originalRole;
+                }
+
+                if (row["profile_image"] != DBNull.Value)
+                {
+                    try
+                    {
+                        profileImageData = (byte[])row["profile_image"];
+                        if (profileImageData != null && profileImageData.Length > 0)
+                        {
+                            using (MemoryStream ms = new MemoryStream(profileImageData))
+                            using (var tempImage = Image.FromStream(ms, useEmbeddedColorManagement: false, validateImageData: true))
+                            {
+                                pictureBoxProfile.Image = new Bitmap(tempImage);
+                            }
+                            btnRemovePhoto.Visible = true;
+                        }
+                        else
+                        {
+                            SetPlaceholderImage();
+                        }
+                    }
+                    catch
+                    {
+                        SetPlaceholderImage();
+                    }
+                }
+                else
+                {
+                    SetPlaceholderImage();
+                }
 
                 LoadRoleSpecificData(originalRole);
             }
@@ -175,14 +559,29 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 if (role == "Patient")
                 {
-                    string query = @"SELECT blood_type, allergies FROM Patients WHERE user_id = @userId";
+                    string query = @"SELECT blood_type, allergies, phone_number FROM Patients WHERE user_id = @userId";
                     DataTable dt = DatabaseHelper.ExecuteQuery(query, new MySqlParameter("@userId", userId));
 
                     if (dt.Rows.Count > 0)
                     {
                         DataRow row = dt.Rows[0];
-                        txtBloodType.Text = row["blood_type"]?.ToString() ?? "";
+                        cmbBloodType.Text = row["blood_type"]?.ToString() ?? "";
                         txtAllergies.Text = row["allergies"]?.ToString() ?? "";
+
+                        string phoneNumber = row["phone_number"]?.ToString() ?? "";
+                        if (!string.IsNullOrEmpty(phoneNumber))
+                        {
+                            if (phoneNumber.StartsWith("09") || phoneNumber.StartsWith("+639"))
+                            {
+                                cmbPhoneType.SelectedItem = "Mobile";
+                                txtPhoneNumber.Text = phoneNumber.Replace("+63", "0");
+                            }
+                            else
+                            {
+                                cmbPhoneType.SelectedItem = "Landline";
+                                txtPhoneNumber.Text = phoneNumber;
+                            }
+                        }
                     }
                 }
                 else if (role == "Doctor")
@@ -193,7 +592,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     if (dt.Rows.Count > 0)
                     {
                         DataRow row = dt.Rows[0];
-                        txtSpecialization.Text = row["specialization"]?.ToString() ?? "";
+                        string specialization = row["specialization"]?.ToString() ?? "";
+
+                        if (cmbSpecialization.Items.Contains(specialization))
+                        {
+                            cmbSpecialization.SelectedItem = specialization;
+                        }
+                        else
+                        {
+                            cmbSpecialization.SelectedItem = "Other (Specify)";
+                            txtSpecialization.Text = specialization;
+                            txtSpecialization.Visible = true;
+                        }
                     }
                 }
             }
@@ -204,116 +614,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private void BtnChangePassword_Click(object sender, EventArgs e)
+        private void ChkChangePassword_CheckedChanged(object sender, EventArgs e)
         {
-            Form passwordForm = new Form();
-            passwordForm.Text = "Change Password";
-            passwordForm.Size = new Size(400, 280);
-            passwordForm.StartPosition = FormStartPosition.CenterParent;
-            passwordForm.FormBorderStyle = FormBorderStyle.FixedDialog;
-            passwordForm.MaximizeBox = false;
-            passwordForm.BackColor = Color.FromArgb(240, 244, 248);
+            bool showPasswordFields = chkChangePassword.Checked;
 
-            Label lblNewPassword = new Label();
-            lblNewPassword.Text = "New Password:";
-            lblNewPassword.Location = new Point(20, 20);
-            lblNewPassword.AutoSize = true;
+            lblPassword.Visible = showPasswordFields;
+            txtPassword.Visible = showPasswordFields;
+            lblConfirmPassword.Visible = showPasswordFields;
+            txtConfirmPassword.Visible = showPasswordFields;
+            chkShowPassword.Visible = showPasswordFields;
 
-            TextBox txtNewPassword = new TextBox();
-            txtNewPassword.Location = new Point(20, 45);
-            txtNewPassword.Size = new Size(340, 25);
-            txtNewPassword.PasswordChar = '•';
-
-            Label lblConfirmPassword = new Label();
-            lblConfirmPassword.Text = "Confirm Password:";
-            lblConfirmPassword.Location = new Point(20, 80);
-            lblConfirmPassword.AutoSize = true;
-
-            TextBox txtConfirmPassword = new TextBox();
-            txtConfirmPassword.Location = new Point(20, 105);
-            txtConfirmPassword.Size = new Size(340, 25);
-            txtConfirmPassword.PasswordChar = '•';
-
-            CheckBox chkShowPassword = new CheckBox();
-            chkShowPassword.Text = "Show Password";
-            chkShowPassword.Location = new Point(20, 140);
-            chkShowPassword.AutoSize = true;
-            chkShowPassword.CheckedChanged += (s, ev) =>
+            if (!showPasswordFields)
             {
-                char passChar = chkShowPassword.Checked ? '\0' : '•';
-                txtNewPassword.PasswordChar = passChar;
-                txtConfirmPassword.PasswordChar = passChar;
-            };
-
-            Button btnSavePassword = new Button();
-            btnSavePassword.Text = "Change Password";
-            btnSavePassword.Location = new Point(20, 180);
-            btnSavePassword.Size = new Size(160, 40);
-            btnSavePassword.BackColor = Color.FromArgb(46, 204, 113);
-            btnSavePassword.ForeColor = Color.White;
-            btnSavePassword.FlatStyle = FlatStyle.Flat;
-            btnSavePassword.FlatAppearance.BorderSize = 0;
-            btnSavePassword.Cursor = Cursors.Hand;
-            btnSavePassword.Click += (s, ev) =>
-            {
-                if (string.IsNullOrWhiteSpace(txtNewPassword.Text))
-                {
-                    MessageBox.Show("Please enter a new password.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (txtNewPassword.Text.Length < 6)
-                {
-                    MessageBox.Show("Password must be at least 6 characters long.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (txtNewPassword.Text != txtConfirmPassword.Text)
-                {
-                    MessageBox.Show("Passwords do not match.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtConfirmPassword.Clear();
-                    txtConfirmPassword.Focus();
-                    return;
-                }
-
-                try
-                {
-                    string query = "UPDATE Users SET password = @password WHERE user_id = @userId";
-                    DatabaseHelper.ExecuteNonQuery(query,
-                        new MySqlParameter("@password", txtNewPassword.Text),
-                        new MySqlParameter("@userId", userId));
-
-                    MessageBox.Show("Password changed successfully!", "Success",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    passwordForm.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error changing password: " + ex.Message, "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            };
-
-            Button btnCancelPassword = new Button();
-            btnCancelPassword.Text = "Cancel";
-            btnCancelPassword.Location = new Point(200, 180);
-            btnCancelPassword.Size = new Size(160, 40);
-            btnCancelPassword.BackColor = Color.FromArgb(149, 165, 166);
-            btnCancelPassword.ForeColor = Color.White;
-            btnCancelPassword.FlatStyle = FlatStyle.Flat;
-            btnCancelPassword.FlatAppearance.BorderSize = 0;
-            btnCancelPassword.Cursor = Cursors.Hand;
-            btnCancelPassword.Click += (s, ev) => passwordForm.Close();
-
-            passwordForm.Controls.AddRange(new Control[] {
-                lblNewPassword, txtNewPassword, lblConfirmPassword, txtConfirmPassword,
-                chkShowPassword, btnSavePassword, btnCancelPassword
-            });
-
-            passwordForm.ShowDialog();
+                txtPassword.Clear();
+                txtConfirmPassword.Clear();
+            }
         }
 
         private void CmbRole_SelectedIndexChanged(object sender, EventArgs e)
@@ -329,7 +644,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     panelPatientInfo.Visible = true;
 
-                    if (!isEditMode)
+                    if (isEditMode)
+                    {
+                        if (chkChangePassword.Checked)
+                        {
+                            chkChangePassword.Checked = false;
+                        }
+                        chkChangePassword.Visible = false;
+                        lblPassword.Visible = false;
+                        txtPassword.Visible = false;
+                        lblConfirmPassword.Visible = false;
+                        txtConfirmPassword.Visible = false;
+                        chkShowPassword.Visible = false;
+                    }
+                    else
                     {
                         lblPassword.Visible = false;
                         txtPassword.Visible = false;
@@ -342,7 +670,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     panelDoctorInfo.Visible = true;
 
-                    if (!isEditMode)
+                    if (isEditMode)
+                    {
+                        chkChangePassword.Visible = true;
+                    }
+                    else
                     {
                         lblPassword.Visible = true;
                         txtPassword.Visible = true;
@@ -353,7 +685,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
                 else
                 {
-                    if (!isEditMode)
+                    if (isEditMode)
+                    {
+                        chkChangePassword.Visible = true;
+                    }
+                    else
                     {
                         lblPassword.Visible = true;
                         txtPassword.Visible = true;
@@ -363,6 +699,102 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
                 }
             }
+        }
+
+        private void CmbSpecialization_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbSpecialization.SelectedItem != null)
+            {
+                string selected = cmbSpecialization.SelectedItem.ToString();
+
+                if (selected == "Other (Specify)")
+                {
+                    txtSpecialization.Visible = true;
+                    txtSpecialization.Clear();
+                    txtSpecialization.Focus();
+                }
+                else
+                {
+                    txtSpecialization.Visible = false;
+                    txtSpecialization.Clear();
+                }
+            }
+        }
+
+        private void CmbPhoneType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            txtPhoneNumber.Clear();
+
+            if (cmbPhoneType.SelectedItem != null)
+            {
+                string phoneType = cmbPhoneType.SelectedItem.ToString();
+
+                if (phoneType == "Mobile")
+                {
+                    txtPhoneNumber.MaxLength = 11;
+                    lblPhoneNumber.Text = "Phone Number * (09XXXXXXXXX)";
+                }
+                else
+                {
+                    txtPhoneNumber.MaxLength = 9;
+                    lblPhoneNumber.Text = "Phone Number * (0X-XXX-XXXX)";
+                }
+            }
+        }
+
+        private void TxtPhoneNumber_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsDigit(e.KeyChar) && e.KeyChar != (char)Keys.Back)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private bool ValidatePhilippinePhoneNumber(string phoneNumber, string phoneType)
+        {
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                return false;
+
+            phoneNumber = phoneNumber.Replace(" ", "").Replace("-", "");
+
+            if (phoneType == "Mobile")
+            {
+                if (phoneNumber.Length == 11 && phoneNumber.StartsWith("09"))
+                {
+                    return phoneNumber.All(char.IsDigit);
+                }
+
+                MessageBox.Show("Invalid mobile number format. Must be 11 digits starting with 09 (e.g., 09171234567).",
+                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            else
+            {
+
+                if (phoneNumber.Length >= 8 && phoneNumber.Length <= 10 && phoneNumber.StartsWith("0"))
+                {
+                    return phoneNumber.All(char.IsDigit);
+                }
+
+                MessageBox.Show("Invalid landline number format. Must be 8-10 digits starting with 0 (e.g., 028-1234567 for Metro Manila, 032-1234567 for Cebu).",
+                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+        }
+
+        private string FormatPhoneNumberForStorage(string phoneNumber, string phoneType)
+        {
+            phoneNumber = phoneNumber.Replace(" ", "").Replace("-", "");
+
+            if (phoneType == "Mobile")
+            {
+                if (phoneNumber.StartsWith("09"))
+                {
+                    return "+63" + phoneNumber.Substring(1);
+                }
+            }
+
+            return phoneNumber;
         }
 
         private void ChkShowPassword_CheckedChanged(object sender, EventArgs e)
@@ -389,6 +821,39 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 CreateUser();
             }
+        }
+
+        private bool ValidatePassword(string password)
+        {
+            if (password.Length < 8)
+            {
+                MessageBox.Show("Password must be at least 8 characters long.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (!password.Any(char.IsUpper))
+            {
+                MessageBox.Show("Password must contain at least one uppercase letter.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (!password.Any(char.IsLower))
+            {
+                MessageBox.Show("Password must contain at least one lowercase letter.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (!password.Any(char.IsDigit))
+            {
+                MessageBox.Show("Password must contain at least one number.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
         }
 
         private void UpdateUser()
@@ -426,20 +891,63 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (!int.TryParse(txtAge.Text, out int age) || age < 18 || age > 100)
+            if (!int.TryParse(txtAge.Text, out int age) || age < 1 || age > 120)
             {
-                MessageBox.Show("Please enter a valid age between 18 and 100.",
+                MessageBox.Show("Please enter a valid age between 1 and 120.",
                     "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             string currentRole = cmbRole.SelectedItem.ToString();
 
-            if (currentRole == "Doctor" && string.IsNullOrWhiteSpace(txtSpecialization.Text))
+            if (currentRole == "Doctor")
             {
-                MessageBox.Show("Please enter doctor's specialization.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                string specialization = GetDoctorSpecialization();
+                if (string.IsNullOrWhiteSpace(specialization))
+                {
+                    MessageBox.Show("Please enter doctor's specialization.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            if (currentRole == "Patient")
+            {
+                if (string.IsNullOrWhiteSpace(txtPhoneNumber.Text) || cmbPhoneType.SelectedItem == null)
+                {
+                    MessageBox.Show("Please enter patient's phone number and select type.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!ValidatePhilippinePhoneNumber(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString()))
+                {
+                    return;
+                }
+            }
+
+            if (chkChangePassword.Checked)
+            {
+                if (string.IsNullOrWhiteSpace(txtPassword.Text))
+                {
+                    MessageBox.Show("Please enter a new password.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!ValidatePassword(txtPassword.Text))
+                {
+                    return;
+                }
+
+                if (txtPassword.Text != txtConfirmPassword.Text)
+                {
+                    MessageBox.Show("Passwords do not match.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtConfirmPassword.Clear();
+                    txtConfirmPassword.Focus();
+                    return;
+                }
             }
 
             using (MySqlConnection conn = DatabaseHelper.GetConnection())
@@ -449,7 +957,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     try
                     {
-                        if (currentRole != originalRole)
+                        if (currentRole != originalRole && originalRole != "Headadmin")
                         {
                             DialogResult result = MessageBox.Show(
                                 "Changing user role will affect their access permissions. Continue?",
@@ -463,9 +971,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
 
                         string query = @"UPDATE Users 
-                                       SET name = @name, email = @email, age = @age, 
-                                           gender = @gender, role = @role
-                                       WHERE user_id = @userId";
+                               SET name = @name, email = @email, age = @age, 
+                                   gender = @gender, role = @role, profile_image = @profileImage
+                               WHERE user_id = @userId";
 
                         using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
                         {
@@ -474,15 +982,44 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             cmd.Parameters.AddWithValue("@age", age);
                             cmd.Parameters.AddWithValue("@gender", cmbGender.SelectedItem.ToString());
                             cmd.Parameters.AddWithValue("@role", currentRole);
+
+                            if (profileImageData != null)
+                                cmd.Parameters.AddWithValue("@profileImage", profileImageData);
+                            else
+                                cmd.Parameters.AddWithValue("@profileImage", DBNull.Value);
+
                             cmd.Parameters.AddWithValue("@userId", userId);
                             cmd.ExecuteNonQuery();
                         }
 
-                        UpdateRoleSpecificTable(conn, transaction, currentRole);
+                        if (chkChangePassword.Checked)
+                        {
+                            string passwordQuery = "UPDATE Users SET password = @password WHERE user_id = @userId";
+                            using (MySqlCommand cmdPassword = new MySqlCommand(passwordQuery, conn, transaction))
+                            {
+                                cmdPassword.Parameters.AddWithValue("@password", txtPassword.Text);
+                                cmdPassword.Parameters.AddWithValue("@userId", userId);
+                                cmdPassword.ExecuteNonQuery();
+                            }
+                        }
+
+                        if (!string.IsNullOrEmpty(currentRole))
+                        {
+                            UpdateRoleSpecificTable(conn, transaction, currentRole);
+                        }
 
                         transaction.Commit();
 
-                        MessageBox.Show("User information updated successfully!", "Success",
+                        if (profileImageData != null && userId.HasValue)
+                        {
+                            SaveProfileImageToFile(profileImageData, userId.Value, txtName.Text.Trim());
+                        }
+
+                        string successMsg = chkChangePassword.Checked
+                            ? "User information and password updated successfully!"
+                            : "User information updated successfully!";
+
+                        MessageBox.Show(successMsg, "Success",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();
                     }
@@ -496,80 +1033,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private void UpdateRoleSpecificTable(MySqlConnection conn, MySqlTransaction transaction, string role)
+        private string GetDoctorSpecialization()
         {
-            if (role == "Patient")
+            if (cmbSpecialization.SelectedItem == null)
+                return string.Empty;
+
+            string selected = cmbSpecialization.SelectedItem.ToString();
+
+            if (selected == "Other (Specify)")
             {
-                string checkQuery = "SELECT COUNT(*) FROM Patients WHERE user_id = @userId";
-                using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn, transaction))
-                {
-                    checkCmd.Parameters.AddWithValue("@userId", userId);
-                    long count = Convert.ToInt64(checkCmd.ExecuteScalar());
-
-                    if (count > 0)
-                    {
-                        string query = @"UPDATE Patients 
-                                       SET blood_type = @bloodType, allergies = @allergies
-                                       WHERE user_id = @userId";
-
-                        using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
-                        {
-                            cmd.Parameters.AddWithValue("@bloodType", txtBloodType.Text.Trim());
-                            cmd.Parameters.AddWithValue("@allergies", txtAllergies.Text.Trim());
-                            cmd.Parameters.AddWithValue("@userId", userId);
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-                    else
-                    {
-                        string query = @"INSERT INTO Patients (user_id, blood_type, allergies)
-                                       VALUES (@userId, @bloodType, @allergies)";
-
-                        using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
-                        {
-                            cmd.Parameters.AddWithValue("@userId", userId);
-                            cmd.Parameters.AddWithValue("@bloodType", txtBloodType.Text.Trim());
-                            cmd.Parameters.AddWithValue("@allergies", txtAllergies.Text.Trim());
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-                }
+                return txtSpecialization.Text.Trim();
             }
-            else if (role == "Doctor")
-            {
-                string checkQuery = "SELECT COUNT(*) FROM Doctors WHERE user_id = @userId";
-                using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn, transaction))
-                {
-                    checkCmd.Parameters.AddWithValue("@userId", userId);
-                    long count = Convert.ToInt64(checkCmd.ExecuteScalar());
 
-                    if (count > 0)
-                    {
-                        string query = @"UPDATE Doctors 
-                                       SET specialization = @specialization
-                                       WHERE user_id = @userId";
-
-                        using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
-                        {
-                            cmd.Parameters.AddWithValue("@specialization", txtSpecialization.Text.Trim());
-                            cmd.Parameters.AddWithValue("@userId", userId);
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-                    else
-                    {
-                        string query = @"INSERT INTO Doctors (user_id, specialization, is_available)
-                                       VALUES (@userId, @specialization, 1)";
-
-                        using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
-                        {
-                            cmd.Parameters.AddWithValue("@userId", userId);
-                            cmd.Parameters.AddWithValue("@specialization", txtSpecialization.Text.Trim());
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-                }
-            }
+            return selected;
         }
 
         private void CreateUser()
@@ -615,17 +1091,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     return;
                 }
 
-                if (txtPassword.Text.Length < 6)
+                if (!ValidatePassword(txtPassword.Text))
                 {
-                    MessageBox.Show("Password must be at least 6 characters long.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
             }
 
-            if (!int.TryParse(txtAge.Text, out int age) || age < 18 || age > 100)
+            if (!int.TryParse(txtAge.Text, out int age) || age < 1 || age > 120)
             {
-                MessageBox.Show("Please enter a valid age between 18 and 100.", "Validation Error",
+                MessageBox.Show("Please enter a valid age between 1 and 120.", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -637,11 +1111,30 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            if (role == "Doctor" && string.IsNullOrWhiteSpace(txtSpecialization.Text))
+            if (role == "Doctor")
             {
-                MessageBox.Show("Please enter doctor's specialization.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                string specialization = GetDoctorSpecialization();
+                if (string.IsNullOrWhiteSpace(specialization))
+                {
+                    MessageBox.Show("Please enter doctor's specialization.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            if (role == "Patient")
+            {
+                if (string.IsNullOrWhiteSpace(txtPhoneNumber.Text) || cmbPhoneType.SelectedItem == null)
+                {
+                    MessageBox.Show("Please enter patient's phone number and select type.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!ValidatePhilippinePhoneNumber(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString()))
+                {
+                    return;
+                }
             }
 
             string email = txtEmail.Text.Trim();
@@ -682,19 +1175,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             }
                         }
 
-                        string insertUser = @"INSERT INTO Users (name, role, email, password, age, gender, created_by) 
-                                              VALUES (@name, @role, @email, @password, @age, @gender, @createdBy)";
+                        string insertUser = @"INSERT INTO Users (name, role, email, password, age, gender, created_by, profile_image) 
+                                      VALUES (@name, @role, @email, @password, @age, @gender, @createdBy, @profileImage)";
                         using (MySqlCommand cmdInsertUser = new MySqlCommand(insertUser, conn, transaction))
                         {
                             cmdInsertUser.Parameters.AddWithValue("@name", name);
                             cmdInsertUser.Parameters.AddWithValue("@role", role);
                             cmdInsertUser.Parameters.AddWithValue("@email", email);
-
-                            if (password != null)
-                                cmdInsertUser.Parameters.AddWithValue("@password", password);
-                            else
-                                cmdInsertUser.Parameters.AddWithValue("@password", DBNull.Value);
-
+                            cmdInsertUser.Parameters.AddWithValue("@password", password ?? (object)DBNull.Value);
                             cmdInsertUser.Parameters.AddWithValue("@age", age);
                             cmdInsertUser.Parameters.AddWithValue("@gender", gender);
 
@@ -702,6 +1190,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 cmdInsertUser.Parameters.AddWithValue("@createdBy", creatorId.Value);
                             else
                                 cmdInsertUser.Parameters.AddWithValue("@createdBy", DBNull.Value);
+
+                            if (profileImageData != null)
+                                cmdInsertUser.Parameters.AddWithValue("@profileImage", profileImageData);
+                            else
+                                cmdInsertUser.Parameters.AddWithValue("@profileImage", DBNull.Value);
 
                             cmdInsertUser.ExecuteNonQuery();
                         }
@@ -714,31 +1207,36 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                         if (role == "Patient")
                         {
-                            string insertPatient = @"INSERT INTO Patients (user_id, blood_type, allergies) 
-                                                     VALUES (@userId, @bloodType, @allergies)";
+                            string phoneNumber = FormatPhoneNumberForStorage(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString());
+
+                            string insertPatient = @"INSERT INTO Patients (user_id, blood_type, allergies, phone_number) 
+                                             VALUES (@userId, @bloodType, @allergies, @phoneNumber)";
                             using (MySqlCommand cmdInsertPatient = new MySqlCommand(insertPatient, conn, transaction))
                             {
                                 cmdInsertPatient.Parameters.AddWithValue("@userId", newUserId);
-                                cmdInsertPatient.Parameters.AddWithValue("@bloodType", txtBloodType.Text.Trim());
+                                cmdInsertPatient.Parameters.AddWithValue("@bloodType", cmbBloodType.Text.Trim());
                                 cmdInsertPatient.Parameters.AddWithValue("@allergies", txtAllergies.Text.Trim());
+                                cmdInsertPatient.Parameters.AddWithValue("@phoneNumber", phoneNumber);
                                 cmdInsertPatient.ExecuteNonQuery();
                             }
                         }
                         else if (role == "Doctor")
                         {
+                            string specialization = GetDoctorSpecialization();
+
                             string insertDoctor = @"INSERT INTO Doctors (user_id, specialization, is_available) 
-                                                    VALUES (@userId, @specialization, 1)";
+                                            VALUES (@userId, @specialization, 1)";
                             using (MySqlCommand cmdInsertDoctor = new MySqlCommand(insertDoctor, conn, transaction))
                             {
                                 cmdInsertDoctor.Parameters.AddWithValue("@userId", newUserId);
-                                cmdInsertDoctor.Parameters.AddWithValue("@specialization", txtSpecialization.Text.Trim());
+                                cmdInsertDoctor.Parameters.AddWithValue("@specialization", specialization);
                                 cmdInsertDoctor.ExecuteNonQuery();
                             }
                         }
                         else if (role == "Headadmin" || role == "Admin" || role == "Receptionist" || role == "Pharmacist")
                         {
                             string insertStaff = @"INSERT INTO Staff (user_id, position, department) 
-                                                   VALUES (@userId, @position, @department)";
+                                           VALUES (@userId, @position, @department)";
                             using (MySqlCommand cmdInsertStaff = new MySqlCommand(insertStaff, conn, transaction))
                             {
                                 cmdInsertStaff.Parameters.AddWithValue("@userId", newUserId);
@@ -757,6 +1255,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                         transaction.Commit();
 
+                        if (profileImageData != null)
+                        {
+                            SaveProfileImageToFile(profileImageData, newUserId, name);
+                        }
+
                         string successMessage;
                         if (role == "Patient")
                         {
@@ -771,6 +1274,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                            $"Name: {name}\n" +
                                            $"Email: {email}\n" +
                                            $"Password: {password}\n\n" +
+                                           $"⚠️ IMPORTANT: Please save these credentials securely.\n" +
                                            $"User can now login with these credentials.";
                         }
 
@@ -784,6 +1288,88 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         try { transaction.Rollback(); } catch { }
                         MessageBox.Show($"User creation failed: " + ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void UpdateRoleSpecificTable(MySqlConnection conn, MySqlTransaction transaction, string role)
+        {
+            if (role == "Patient")
+            {
+                string checkQuery = "SELECT COUNT(*) FROM Patients WHERE user_id = @userId";
+                using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn, transaction))
+                {
+                    checkCmd.Parameters.AddWithValue("@userId", userId);
+                    long count = Convert.ToInt64(checkCmd.ExecuteScalar());
+
+                    string phoneNumber = FormatPhoneNumberForStorage(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString());
+
+                    if (count > 0)
+                    {
+                        string query = @"UPDATE Patients 
+                                       SET blood_type = @bloodType, allergies = @allergies, phone_number = @phoneNumber
+                                       WHERE user_id = @userId";
+
+                        using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@bloodType", cmbBloodType.Text.Trim());
+                            cmd.Parameters.AddWithValue("@allergies", txtAllergies.Text.Trim());
+                            cmd.Parameters.AddWithValue("@phoneNumber", phoneNumber);
+                            cmd.Parameters.AddWithValue("@userId", userId);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                    else
+                    {
+                        string query = @"INSERT INTO Patients (user_id, blood_type, allergies, phone_number)
+                                       VALUES (@userId, @bloodType, @allergies, @phoneNumber)";
+
+                        using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@userId", userId);
+                            cmd.Parameters.AddWithValue("@bloodType", cmbBloodType.Text.Trim());
+                            cmd.Parameters.AddWithValue("@allergies", txtAllergies.Text.Trim());
+                            cmd.Parameters.AddWithValue("@phoneNumber", phoneNumber);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            else if (role == "Doctor")
+            {
+                string specialization = GetDoctorSpecialization();
+
+                string checkQuery = "SELECT COUNT(*) FROM Doctors WHERE user_id = @userId";
+                using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn, transaction))
+                {
+                    checkCmd.Parameters.AddWithValue("@userId", userId);
+                    long count = Convert.ToInt64(checkCmd.ExecuteScalar());
+
+                    if (count > 0)
+                    {
+                        string query = @"UPDATE Doctors 
+                                       SET specialization = @specialization
+                                       WHERE user_id = @userId";
+
+                        using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@specialization", specialization);
+                            cmd.Parameters.AddWithValue("@userId", userId);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                    else
+                    {
+                        string query = @"INSERT INTO Doctors (user_id, specialization, is_available)
+                                       VALUES (@userId, @specialization, 1)";
+
+                        using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@userId", userId);
+                            cmd.Parameters.AddWithValue("@specialization", specialization);
+                            cmd.ExecuteNonQuery();
+                        }
                     }
                 }
             }
@@ -808,3 +1394,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
         }
     }
 }
+
+//private System.Windows.Forms.Timer inputCheckCheckTimer;
+
+//private void InitializeinputCheckChecker()
+//{
+//    inputCheckCheckTimer = new System.Windows.Forms.Timer();
+//    inputCheckCheckTimer.Interval = 5000;
+//    inputCheckCheckTimer.Tick += (s, e) => CheckinputCheck();
+//    inputCheckCheckTimer.Start();
+//}
+
+//private void CheckinputCheck()
+//{
+//    RegisterForm registerForm = new RegisterForm();
+//    registerForm.TriggerinputCheck(yourProfilePictureBox);
+//}

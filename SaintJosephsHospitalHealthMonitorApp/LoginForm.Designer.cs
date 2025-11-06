@@ -2,161 +2,289 @@
 {
     partial class LoginForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.TextBox txtEmail;
-        private System.Windows.Forms.TextBox txtPassword;
-        private System.Windows.Forms.Button btnLogin;
+        private System.Windows.Forms.Panel panelMain;
+        private System.Windows.Forms.Panel panelLeft;
+        private System.Windows.Forms.Panel panelRight;
         private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Label lblSubtitle;
         private System.Windows.Forms.Label lblEmail;
+        private System.Windows.Forms.TextBox txtEmail;
+        private System.Windows.Forms.Panel panelEmailBorder;
         private System.Windows.Forms.Label lblPassword;
-        private System.Windows.Forms.Panel panelHeader;
-        private System.Windows.Forms.Label lblHint;
+        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.Panel panelPasswordBorder;
+        private System.Windows.Forms.Button btnLogin;
+        private System.Windows.Forms.Label lblError;
+        private System.Windows.Forms.Label lblBrandLogo;
+        private System.Windows.Forms.Label lblBrandName;
+        private System.Windows.Forms.Label lblFooter;
+        private System.Windows.Forms.Panel panelEmailContainer;
+        private System.Windows.Forms.Panel panelPasswordContainer;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
-            {
                 components.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
-            panelHeader = new Panel();
+            panelMain = new Panel();
+            panelLeft = new Panel();
+            lblBrandLogo = new Label();
+            lblBrandName = new Label();
+            lblFooter = new Label();
+            panelRight = new Panel();
+            lblError = new Label();
             lblTitle = new Label();
+            lblSubtitle = new Label();
             lblEmail = new Label();
+            panelEmailContainer = new Panel();
+            panelEmailBorder = new Panel();
             txtEmail = new TextBox();
             lblPassword = new Label();
+            panelPasswordContainer = new Panel();
+            panelPasswordBorder = new Panel();
             txtPassword = new TextBox();
             btnLogin = new Button();
-            lblHint = new Label();
-            panelHeader.SuspendLayout();
+            panelMain.SuspendLayout();
+            panelLeft.SuspendLayout();
+            panelRight.SuspendLayout();
+            panelEmailContainer.SuspendLayout();
+            panelPasswordContainer.SuspendLayout();
             SuspendLayout();
             // 
-            // panelHeader
+            // panelMain
             // 
-            panelHeader.BackColor = Color.FromArgb(41, 128, 185);
-            panelHeader.Controls.Add(lblTitle);
-            panelHeader.Location = new Point(0, 0);
-            panelHeader.Margin = new Padding(4, 3, 4, 3);
-            panelHeader.Name = "panelHeader";
-            panelHeader.Size = new Size(525, 115);
-            panelHeader.TabIndex = 0;
+            panelMain.BackColor = Color.FromArgb(247, 250, 252);
+            panelMain.Controls.Add(panelRight);
+            panelMain.Controls.Add(panelLeft);
+            panelMain.Dock = DockStyle.Fill;
+            panelMain.Location = new Point(0, 0);
+            panelMain.Name = "panelMain";
+            panelMain.Size = new Size(1000, 600);
+            panelMain.TabIndex = 0;
+            // 
+            // panelLeft
+            // 
+            panelLeft.BackColor = Color.FromArgb(26, 32, 44);
+            panelLeft.Controls.Add(lblFooter);
+            panelLeft.Controls.Add(lblBrandName);
+            panelLeft.Controls.Add(lblBrandLogo);
+            panelLeft.Dock = DockStyle.Left;
+            panelLeft.Location = new Point(0, 0);
+            panelLeft.Name = "panelLeft";
+            panelLeft.Size = new Size(450, 600);
+            panelLeft.TabIndex = 0;
+            // 
+            // lblBrandLogo
+            // 
+            lblBrandLogo.Font = new Font("Segoe UI", 72F, FontStyle.Bold);
+            lblBrandLogo.ForeColor = Color.FromArgb(66, 153, 225);
+            lblBrandLogo.Location = new Point(0, 150);
+            lblBrandLogo.Name = "lblBrandLogo";
+            lblBrandLogo.Size = new Size(450, 120);
+            lblBrandLogo.TabIndex = 0;
+            lblBrandLogo.Text = "⚕️";
+            lblBrandLogo.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // lblBrandName
+            // 
+            lblBrandName.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
+            lblBrandName.ForeColor = Color.White;
+            lblBrandName.Location = new Point(30, 280);
+            lblBrandName.Name = "lblBrandName";
+            lblBrandName.Size = new Size(390, 80);
+            lblBrandName.TabIndex = 1;
+            lblBrandName.Text = "ST. JOSEPH'S HOSPITAL\nManagement System";
+            lblBrandName.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // lblFooter
+            // 
+            lblFooter.Font = new Font("Segoe UI", 9F);
+            lblFooter.ForeColor = Color.FromArgb(160, 174, 192);
+            lblFooter.Location = new Point(0, 560);
+            lblFooter.Name = "lblFooter";
+            lblFooter.Size = new Size(450, 30);
+            lblFooter.TabIndex = 2;
+            lblFooter.Text = "© 2025 St. Joseph's Hospital. All rights reserved.";
+            lblFooter.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // panelRight
+            // 
+            panelRight.BackColor = Color.FromArgb(247, 250, 252);
+            panelRight.Controls.Add(lblError);
+            panelRight.Controls.Add(btnLogin);
+            panelRight.Controls.Add(panelPasswordContainer);
+            panelRight.Controls.Add(lblPassword);
+            panelRight.Controls.Add(panelEmailContainer);
+            panelRight.Controls.Add(lblEmail);
+            panelRight.Controls.Add(lblSubtitle);
+            panelRight.Controls.Add(lblTitle);
+            panelRight.Dock = DockStyle.Fill;
+            panelRight.Location = new Point(450, 0);
+            panelRight.Name = "panelRight";
+            panelRight.Padding = new Padding(60, 100, 60, 100);
+            panelRight.Size = new Size(550, 600);
+            panelRight.TabIndex = 1;
+            // 
+            // lblError
+            // 
+            lblError.BackColor = Color.Transparent;
+            lblError.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+            lblError.ForeColor = Color.FromArgb(229, 62, 62);
+            lblError.Location = new Point(65, 388);
+            lblError.Name = "lblError";
+            lblError.Size = new Size(420, 20);
+            lblError.TabIndex = 6;
+            lblError.Text = "Error message here";
+            lblError.TextAlign = ContentAlignment.MiddleLeft;
+            lblError.Visible = false;
             // 
             // lblTitle
             // 
-            lblTitle.AutoSize = true;
-            lblTitle.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblTitle.ForeColor = Color.White;
-            lblTitle.Location = new Point(58, 40);
-            lblTitle.Margin = new Padding(4, 0, 4, 0);
+            lblTitle.Font = new Font("Segoe UI", 28F, FontStyle.Bold);
+            lblTitle.ForeColor = Color.FromArgb(26, 32, 44);
+            lblTitle.Location = new Point(60, 100);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(354, 32);
+            lblTitle.Size = new Size(430, 50);
             lblTitle.TabIndex = 0;
-            lblTitle.Text = "Hospital Management System";
+            lblTitle.Text = "Sign In";
+            lblTitle.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // lblSubtitle
+            // 
+            lblSubtitle.Font = new Font("Segoe UI", 10F);
+            lblSubtitle.ForeColor = Color.FromArgb(113, 128, 150);
+            lblSubtitle.Location = new Point(60, 155);
+            lblSubtitle.Name = "lblSubtitle";
+            lblSubtitle.Size = new Size(430, 25);
+            lblSubtitle.TabIndex = 1;
+            lblSubtitle.Text = "Access the Hospital Management System";
+            lblSubtitle.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // lblEmail
             // 
-            lblEmail.AutoSize = true;
-            lblEmail.Font = new Font("Segoe UI", 11F);
-            lblEmail.Location = new Point(58, 162);
-            lblEmail.Margin = new Padding(4, 0, 4, 0);
+            lblEmail.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblEmail.ForeColor = Color.FromArgb(74, 85, 104);
+            lblEmail.Location = new Point(60, 215);
             lblEmail.Name = "lblEmail";
-            lblEmail.Size = new Size(106, 20);
-            lblEmail.TabIndex = 1;
-            lblEmail.Text = "Email Address:";
+            lblEmail.Size = new Size(430, 25);
+            lblEmail.TabIndex = 2;
+            lblEmail.Text = "EMAIL ADDRESS";
+            lblEmail.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // panelEmailContainer
+            // 
+            panelEmailContainer.BackColor = Color.White;
+            panelEmailContainer.Controls.Add(txtEmail);
+            panelEmailContainer.Controls.Add(panelEmailBorder);
+            panelEmailContainer.Location = new Point(60, 245);
+            panelEmailContainer.Name = "panelEmailContainer";
+            panelEmailContainer.Size = new Size(430, 45);
+            panelEmailContainer.TabIndex = 3;
+            // 
+            // panelEmailBorder
+            // 
+            panelEmailBorder.BackColor = Color.FromArgb(226, 232, 240);
+            panelEmailBorder.Dock = DockStyle.Bottom;
+            panelEmailBorder.Location = new Point(0, 43);
+            panelEmailBorder.Name = "panelEmailBorder";
+            panelEmailBorder.Size = new Size(430, 2);
+            panelEmailBorder.TabIndex = 1;
             // 
             // txtEmail
             // 
-            txtEmail.Font = new Font("Segoe UI", 11F);
-            txtEmail.Location = new Point(58, 196);
-            txtEmail.Margin = new Padding(4, 3, 4, 3);
+            txtEmail.BackColor = Color.White;
+            txtEmail.BorderStyle = BorderStyle.None;
+            txtEmail.Font = new Font("Segoe UI", 12F);
+            txtEmail.ForeColor = Color.FromArgb(26, 32, 44);
+            txtEmail.Location = new Point(15, 12);
             txtEmail.Name = "txtEmail";
-            txtEmail.Size = new Size(396, 27);
-            txtEmail.TabIndex = 2;
+            txtEmail.Size = new Size(400, 22);
+            txtEmail.TabIndex = 0;
             // 
             // lblPassword
             // 
-            lblPassword.AutoSize = true;
-            lblPassword.Font = new Font("Segoe UI", 11F);
-            lblPassword.Location = new Point(58, 254);
-            lblPassword.Margin = new Padding(4, 0, 4, 0);
+            lblPassword.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblPassword.ForeColor = Color.FromArgb(74, 85, 104);
+            lblPassword.Location = new Point(60, 310);
             lblPassword.Name = "lblPassword";
-            lblPassword.Size = new Size(73, 20);
-            lblPassword.TabIndex = 3;
-            lblPassword.Text = "Password:";
+            lblPassword.Size = new Size(430, 25);
+            lblPassword.TabIndex = 4;
+            lblPassword.Text = "PASSWORD";
+            lblPassword.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // panelPasswordContainer
+            // 
+            panelPasswordContainer.BackColor = Color.White;
+            panelPasswordContainer.Controls.Add(txtPassword);
+            panelPasswordContainer.Controls.Add(panelPasswordBorder);
+            panelPasswordContainer.Location = new Point(60, 340);
+            panelPasswordContainer.Name = "panelPasswordContainer";
+            panelPasswordContainer.Size = new Size(430, 45);
+            panelPasswordContainer.TabIndex = 5;
+            // 
+            // panelPasswordBorder
+            // 
+            panelPasswordBorder.BackColor = Color.FromArgb(226, 232, 240);
+            panelPasswordBorder.Dock = DockStyle.Bottom;
+            panelPasswordBorder.Location = new Point(0, 43);
+            panelPasswordBorder.Name = "panelPasswordBorder";
+            panelPasswordBorder.Size = new Size(430, 2);
+            panelPasswordBorder.TabIndex = 1;
             // 
             // txtPassword
             // 
-            txtPassword.Font = new Font("Segoe UI", 11F);
-            txtPassword.Location = new Point(58, 288);
-            txtPassword.Margin = new Padding(4, 3, 4, 3);
+            txtPassword.BackColor = Color.White;
+            txtPassword.BorderStyle = BorderStyle.None;
+            txtPassword.Font = new Font("Segoe UI", 12F);
+            txtPassword.ForeColor = Color.FromArgb(26, 32, 44);
+            txtPassword.Location = new Point(15, 12);
             txtPassword.Name = "txtPassword";
-            txtPassword.PasswordChar = '•';
-            txtPassword.Size = new Size(396, 27);
-            txtPassword.TabIndex = 4;
+            txtPassword.PasswordChar = '●';
+            txtPassword.Size = new Size(400, 22);
+            txtPassword.TabIndex = 0;
             // 
             // btnLogin
             // 
-            btnLogin.BackColor = Color.FromArgb(46, 204, 113);
+            btnLogin.BackColor = Color.FromArgb(66, 153, 225);
             btnLogin.Cursor = Cursors.Hand;
             btnLogin.FlatAppearance.BorderSize = 0;
+            btnLogin.FlatAppearance.MouseDownBackColor = Color.FromArgb(49, 130, 206);
             btnLogin.FlatStyle = FlatStyle.Flat;
             btnLogin.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             btnLogin.ForeColor = Color.White;
-            btnLogin.Location = new Point(58, 358);
-            btnLogin.Margin = new Padding(4, 3, 4, 3);
+            btnLogin.Location = new Point(60, 420);
             btnLogin.Name = "btnLogin";
-            btnLogin.Size = new Size(397, 52);
-            btnLogin.TabIndex = 5;
-            btnLogin.Text = "Login";
+            btnLogin.Size = new Size(430, 50);
+            btnLogin.TabIndex = 2;
+            btnLogin.Text = "SIGN IN";
             btnLogin.UseVisualStyleBackColor = false;
             btnLogin.Click += BtnLogin_Click;
-            // 
-            // lblHint
-            // 
-            lblHint.AutoSize = true;
-            lblHint.Font = new Font("Segoe UI", 8F, FontStyle.Italic);
-            lblHint.ForeColor = Color.Gray;
-            lblHint.Location = new Point(58, 419);
-            lblHint.Margin = new Padding(4, 0, 4, 0);
-            lblHint.Name = "lblHint";
-            lblHint.Size = new Size(296, 104);
-            lblHint.TabIndex = 6;
-            lblHint.Text = resources.GetString("lblHint.Text");
             // 
             // LoginForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(240, 244, 248);
-            ClientSize = new Size(506, 532);
-            Controls.Add(lblHint);
-            Controls.Add(btnLogin);
-            Controls.Add(txtPassword);
-            Controls.Add(lblPassword);
-            Controls.Add(txtEmail);
-            Controls.Add(lblEmail);
-            Controls.Add(panelHeader);
+            BackColor = Color.FromArgb(247, 250, 252);
+            ClientSize = new Size(1000, 600);
+            Controls.Add(panelMain);
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            Margin = new Padding(4, 3, 4, 3);
             MaximizeBox = false;
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Hospital Management System - Login";
-            panelHeader.ResumeLayout(false);
-            panelHeader.PerformLayout();
+            Text = "St. Joseph's Hospital - Login";
+            panelMain.ResumeLayout(false);
+            panelLeft.ResumeLayout(false);
+            panelRight.ResumeLayout(false);
+            panelEmailContainer.ResumeLayout(false);
+            panelEmailContainer.PerformLayout();
+            panelPasswordContainer.ResumeLayout(false);
+            panelPasswordContainer.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
     }
 }

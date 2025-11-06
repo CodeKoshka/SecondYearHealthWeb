@@ -8,10 +8,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 {
     public class DatabaseHelper
     {
-        //this the heart of the program itself its the program that handles the database itself
-        //this is XAMPP MySQL connections (raming issue dito peste)
-        private static string serverConnectionString = "Server=localhost;Port=3306;User=root;Password=;";
-        private static string databaseConnectionString = "Server=localhost;Port=3306;Database=hospital_db;User=root;Password=;";
+        private static string serverConnectionString = "Server=localhost;Port=3306;User=root;Password=;ConnectionTimeout=5;";
+        private static string databaseConnectionString = "Server=localhost;Port=3306;Database=hospital_db;User=root;Password=;ConnectionTimeout=5;";
 
         public static MySqlConnection GetConnection()
         {
@@ -21,10 +19,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
         public static void InitializeDatabase()
         {
             MySqlConnection conn = null;
-            //thallas idea and code to use try and catch to make sure the program doesnt crash when it catches a error
+
             try
             {
-
                 conn = new MySqlConnection(serverConnectionString);
                 conn.Open();
 
@@ -34,12 +31,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 conn.Close();
                 conn.Dispose();
 
-
                 conn = new MySqlConnection(databaseConnectionString);
                 conn.Open();
 
-                //some of this tables are broken so far future fixes when i get a chance
-                //this creates the Users table
                 string createUsersTable = @"
                 CREATE TABLE IF NOT EXISTS Users (
                     user_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -49,13 +43,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     password VARCHAR(255) NOT NULL,
                     age INT,
                     gender VARCHAR(10),
+                    profile_image LONGBLOB NULL,
                     created_by INT NULL,
                     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     is_active TINYINT(1) DEFAULT 1,
                     FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                //this creates the patients table
                 string createPatientsTable = @"
                     CREATE TABLE IF NOT EXISTS Patients (
                         patient_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -68,7 +62,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                //this creates the doctors table
                 string createDoctorsTable = @"
                     CREATE TABLE IF NOT EXISTS Doctors (
                         doctor_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -79,7 +72,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                //this creates PatientQueue table
                 string createQueueTable = @"
                     CREATE TABLE IF NOT EXISTS patientqueue (
                         queue_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -99,7 +91,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         FOREIGN KEY (registered_by) REFERENCES Users(user_id) ON DELETE SET NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                //this creates Appointments table
                 string createAppointmentsTable = @"
                     CREATE TABLE IF NOT EXISTS Appointments (
                         appointment_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -114,7 +105,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                //this creates the medicalrecords table
                 string createMedicalRecordsTable = @"
                     CREATE TABLE IF NOT EXISTS medicalrecords (
                         record_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -129,7 +119,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id) ON DELETE CASCADE
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                //this creates the ENHANCED billing table with all new features
                 string createBillingTable = @"
                     CREATE TABLE IF NOT EXISTS Billing (
                         bill_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -150,7 +139,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                //this creates the staff table
                 string createStaffTable = @"
                     CREATE TABLE IF NOT EXISTS Staff (
                         staff_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -159,7 +147,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         department VARCHAR(50),
                         FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-
 
                 string createMedicineInventoryTable = @"
                 CREATE TABLE IF NOT EXISTS MedicineInventory (
@@ -187,7 +174,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-
                 string createMedicationOrdersTable = @"
                 CREATE TABLE IF NOT EXISTS MedicationOrders (
                     order_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -214,7 +200,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (dispensed_by) REFERENCES Users(user_id) ON DELETE SET NULL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-
                 string createDispensingRecordsTable = @"
                 CREATE TABLE IF NOT EXISTS DispensingRecords (
                     dispense_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -236,7 +221,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
                     FOREIGN KEY (dispensed_by) REFERENCES Users(user_id) ON DELETE RESTRICT
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-
 
                 string createMedicationReturnsTable = @"
                 CREATE TABLE IF NOT EXISTS MedicationReturns (
@@ -264,7 +248,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (approved_by) REFERENCES Users(user_id) ON DELETE SET NULL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-
                 string createControlledSubstanceLogTable = @"
                 CREATE TABLE IF NOT EXISTS ControlledSubstanceLog (
                     log_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -287,7 +270,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (witness_by) REFERENCES Users(user_id) ON DELETE SET NULL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-
                 string createStockAdjustmentTable = @"
                 CREATE TABLE IF NOT EXISTS StockAdjustment (
                     adjustment_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -305,18 +287,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (adjusted_by) REFERENCES Users(user_id) ON DELETE RESTRICT
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string updateBillingTable = @"
-                        ALTER TABLE Billing 
-                        ADD COLUMN IF NOT EXISTS subtotal DECIMAL(10,2) DEFAULT 0.00 AFTER amount,
-                        ADD COLUMN IF NOT EXISTS discount_percent DECIMAL(5,2) DEFAULT 0.00 AFTER subtotal,
-                        ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(10,2) DEFAULT 0.00 AFTER discount_percent,
-                        ADD COLUMN IF NOT EXISTS tax_percent DECIMAL(5,2) DEFAULT 0.00 AFTER discount_amount,
-                        ADD COLUMN IF NOT EXISTS tax_amount DECIMAL(10,2) DEFAULT 0.00 AFTER tax_percent,
-                        MODIFY COLUMN description TEXT,
-                        ADD COLUMN IF NOT EXISTS payment_method VARCHAR(50) DEFAULT 'Cash' AFTER description,
-                        ADD COLUMN IF NOT EXISTS notes TEXT AFTER payment_method";
-
-                //this is execute table creation
                 ExecuteNonQueryInternal(conn, createUsersTable);
                 ExecuteNonQueryInternal(conn, createPatientsTable);
                 ExecuteNonQueryInternal(conn, createDoctorsTable);
@@ -331,97 +301,30 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 ExecuteNonQueryInternal(conn, createMedicationReturnsTable);
                 ExecuteNonQueryInternal(conn, createControlledSubstanceLogTable);
                 ExecuteNonQueryInternal(conn, createStockAdjustmentTable);
-                ExecuteNonQueryInternal(conn, updateBillingTable);
 
-                //this is to insert default admin user
-                string checkHeadadmin = "SELECT COUNT(*) FROM Users WHERE email = 'Headadmin@hospital.com'";
-                object adminResult = ExecuteScalarInternal(conn, checkHeadadmin);
-                long HeadadminExists = Convert.ToInt64(adminResult);
-
-                if (HeadadminExists == 0)
-                {
-                    string insertHeadadmin = @"
-        INSERT INTO Users (name, role, email, password, age, gender, created_by)
-        VALUES ('Hospital Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', 30, 'Other', NULL)";
-                    ExecuteNonQueryInternal(conn, insertHeadadmin);
-                }
-
-
-                string checkReceptionist = "SELECT COUNT(*) FROM Users WHERE email = 'receptionist@hospital.com'";
-                object receptionistResult = ExecuteScalarInternal(conn, checkReceptionist);
-                long receptionistExists = Convert.ToInt64(receptionistResult);
-
-                if (receptionistExists == 0)
-                {
-                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com'";
-                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
-                    long adminId = Convert.ToInt64(adminIdResult);
-
-                    string insertreceptionist = @"
-        INSERT INTO Users (name, role, email, password, age, gender, created_by)
-        VALUES ('receptionist User', 'Receptionist', 'receptionist@hospital.com', 'receptionist123', 28, 'Female', @createdBy)";
-                    MySqlCommand cmdReceptionist = new MySqlCommand(insertreceptionist, conn);
-                    cmdReceptionist.Parameters.AddWithValue("@createdBy", adminId);
-                    cmdReceptionist.ExecuteNonQuery();
-                }
-
-                string checkPharmacist = "SELECT COUNT(*) FROM Users WHERE email = 'pharmacist@hospital.com'";
-                object pharmacistResult = ExecuteScalarInternal(conn, checkPharmacist);
-                long pharmacistExists = Convert.ToInt64(pharmacistResult);
-
-                if (pharmacistExists == 0)
-                {
-                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com'";
-                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
-                    long adminId = Convert.ToInt64(adminIdResult);
-
-                    string insertPharmacist = @"
-        INSERT INTO Users (name, role, email, password, age, gender, created_by)
-        VALUES ('Pharmacy Staff', 'Pharmacist', 'pharmacist@hospital.com', 'pharmacist123', 30, 'Other', @createdBy)";
-                    MySqlCommand cmdPharmacist = new MySqlCommand(insertPharmacist, conn);
-                    cmdPharmacist.Parameters.AddWithValue("@createdBy", adminId);
-                    cmdPharmacist.ExecuteNonQuery();
-
-
-                    string getPharmacistId = "SELECT user_id FROM Users WHERE email = 'pharmacist@hospital.com'";
-                    object pharmacistIdResult = ExecuteScalarInternal(conn, getPharmacistId);
-                    long pharmacistId = Convert.ToInt64(pharmacistIdResult);
-
-
-                    string insertPharmacistStaff = @"
-        INSERT INTO Staff (user_id, position, department)
-        VALUES (@userId, 'Pharmacist', 'Pharmacy')";
-                    MySqlCommand cmdPharmacistStaff = new MySqlCommand(insertPharmacistStaff, conn);
-                    cmdPharmacistStaff.Parameters.AddWithValue("@userId", pharmacistId);
-                    cmdPharmacistStaff.ExecuteNonQuery();
-                }
-
-                MessageBox.Show("Database initialized successfully!", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                InsertDefaultUsers(conn);
             }
             catch (MySqlException ex)
             {
-                //we used dollar signs $ instead of doing this "(ex.example + "something")" since sometimes using that method 
-                //dont work and have to do a work around this is way easier than using that method
+                string errorMsg = $"MySQL Error #{ex.Number}: {ex.Message}\n\n";
 
-                //added by this just incase something went wrong
-                string errorMsg = $"MySQL Error #{ex.Number}:\n{ex.Message}\n\n";
-                if (ex.Number == 0)
+                if (ex.Number == 0 || ex.Number == 2003)
                 {
-                    errorMsg += "Cannot connect to MySQL!\n\n";
-                    errorMsg += "Solutions:\n";
-                    errorMsg += "1. Start XAMPP Control Panel\n";
+                    errorMsg = "Cannot connect to MySQL!\n\n";
+                    errorMsg += "XAMPP MySQL is not running.\n\n";
+                    errorMsg += "Required Steps:\n";
+                    errorMsg += "1. Open XAMPP Control Panel\n";
                     errorMsg += "2. Click 'Start' next to MySQL\n";
                     errorMsg += "3. Wait for green 'Running' status\n";
-                    errorMsg += "4. Try again";
+                    errorMsg += "4. Try again\n\n";
+                    errorMsg += $"Technical: MySQL Error #{ex.Number}";
                 }
 
-                MessageBox.Show(errorMsg, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new Exception(errorMsg, ex);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error:\n{ex.GetType().Name}\n\n{ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new Exception($"Database Error: {ex.Message}", ex);
             }
             finally
             {
@@ -433,7 +336,136 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        //this is the internal helper methods
+        private static byte[] LoadDefaultProfileImage()
+        {
+            try
+            {
+                string currentDir = AppDomain.CurrentDomain.BaseDirectory;
+
+                while (currentDir != null)
+                {
+                    string picturesPath = Path.Combine(currentDir, "Pictures", "default177013.png");
+                    if (File.Exists(picturesPath))
+                    {
+                        return File.ReadAllBytes(picturesPath);
+                    }
+
+                    if (currentDir.EndsWith("SaintJosephsHospitalHealthMonitorApp"))
+                    {
+                        string innerProjectPath = Path.Combine(currentDir, "SaintJosephsHospitalHealthMonitorApp", "Pictures", "default177013.png");
+                        if (File.Exists(innerProjectPath))
+                        {
+                            return File.ReadAllBytes(innerProjectPath);
+                        }
+                    }
+
+                    DirectoryInfo parentDir = Directory.GetParent(currentDir);
+                    if (parentDir == null) break;
+                    currentDir = parentDir.FullName;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Could not load default profile image: {ex.Message}");
+            }
+
+            return null;
+        }
+
+        private static void InsertDefaultUsers(MySqlConnection conn)
+        {
+            byte[] defaultImage = LoadDefaultProfileImage();
+
+            string checkHeadadmin = "SELECT COUNT(*) FROM Users WHERE email = 'Headadmin@hospital.com'";
+            object adminResult = ExecuteScalarInternal(conn, checkHeadadmin);
+            long HeadadminExists = Convert.ToInt64(adminResult);
+
+            if (HeadadminExists == 0)
+            {
+                string insertHeadadmin = @"
+            INSERT INTO Users (name, role, email, password, age, gender, created_by, profile_image)
+            VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', 30, 'Other', NULL, @profileImage)";
+
+                using (MySqlCommand cmd = new MySqlCommand(insertHeadadmin, conn))
+                {
+                    if (defaultImage != null)
+                        cmd.Parameters.AddWithValue("@profileImage", defaultImage);
+                    else
+                        cmd.Parameters.AddWithValue("@profileImage", DBNull.Value);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            string checkReceptionist = "SELECT COUNT(*) FROM Users WHERE email = 'Receptionist@hospital.com'";
+            object receptionistResult = ExecuteScalarInternal(conn, checkReceptionist);
+            long receptionistExists = Convert.ToInt64(receptionistResult);
+
+            if (receptionistExists == 0)
+            {
+                string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com'";
+                object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
+                long adminId = Convert.ToInt64(adminIdResult);
+
+                string insertreceptionist = @"
+            INSERT INTO Users (name, role, email, password, age, gender, created_by, profile_image)
+            VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', 28, 'Female', @createdBy, @profileImage)";
+
+                using (MySqlCommand cmdReceptionist = new MySqlCommand(insertreceptionist, conn))
+                {
+                    cmdReceptionist.Parameters.AddWithValue("@createdBy", adminId);
+
+                    if (defaultImage != null)
+                        cmdReceptionist.Parameters.AddWithValue("@profileImage", defaultImage);
+                    else
+                        cmdReceptionist.Parameters.AddWithValue("@profileImage", DBNull.Value);
+
+                    cmdReceptionist.ExecuteNonQuery();
+                }
+            }
+
+            string checkPharmacist = "SELECT COUNT(*) FROM Users WHERE email = 'Pharmacist@hospital.com'";
+            object pharmacistResult = ExecuteScalarInternal(conn, checkPharmacist);
+            long pharmacistExists = Convert.ToInt64(pharmacistResult);
+
+            if (pharmacistExists == 0)
+            {
+                string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com'";
+                object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
+                long adminId = Convert.ToInt64(adminIdResult);
+
+                string insertPharmacist = @"
+            INSERT INTO Users (name, role, email, password, age, gender, created_by, profile_image)
+            VALUES ('Pharmacist', 'Pharmacist', 'Pharmacist@hospital.com', 'pharmacist123', 30, 'Other', @createdBy, @profileImage)";
+
+                using (MySqlCommand cmdPharmacist = new MySqlCommand(insertPharmacist, conn))
+                {
+                    cmdPharmacist.Parameters.AddWithValue("@createdBy", adminId);
+
+                    if (defaultImage != null)
+                        cmdPharmacist.Parameters.AddWithValue("@profileImage", defaultImage);
+                    else
+                        cmdPharmacist.Parameters.AddWithValue("@profileImage", DBNull.Value);
+
+                    cmdPharmacist.ExecuteNonQuery();
+                }
+
+                string getPharmacistId = "SELECT user_id FROM Users WHERE email = 'Pharmacist@hospital.com'";
+                object pharmacistIdResult = ExecuteScalarInternal(conn, getPharmacistId);
+                long pharmacistId = Convert.ToInt64(pharmacistIdResult);
+
+                string insertPharmacistStaff = @"
+            INSERT INTO Staff (user_id, position, department)
+            VALUES (@userId, 'Pharmacist', 'Pharmacy')";
+
+                using (MySqlCommand cmdPharmacistStaff = new MySqlCommand(insertPharmacistStaff, conn))
+                {
+                    cmdPharmacistStaff.Parameters.AddWithValue("@userId", pharmacistId);
+                    cmdPharmacistStaff.ExecuteNonQuery();
+                }
+            }
+        }
+
         private static void ExecuteNonQueryInternal(MySqlConnection conn, string query)
         {
             using (MySqlCommand cmd = new MySqlCommand(query, conn))
@@ -450,7 +482,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        //this is public methods for application use
         public static int ExecuteNonQuery(string query, params MySqlParameter[] parameters)
         {
             try

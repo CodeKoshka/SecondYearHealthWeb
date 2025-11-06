@@ -1,3 +1,6 @@
+using System;
+using System.Windows.Forms;
+
 namespace SaintJosephsHospitalHealthMonitorApp
 {
     static class Program
@@ -8,16 +11,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            try
-            {
-                DatabaseHelper.InitializeDatabase();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Database initialization error: " + ex.Message);
-            }
-
-            Application.Run(new LoginForm());
+            Application.Run(new LoadingScreenForm());
         }
     }
 }
