@@ -35,12 +35,12 @@ If you want to **wipe or reset** the hospital database completely *(also require
    DROP DATABASE IF EXISTS `hospital_db`;
 When prompted for a password, just press Enter (there isn’t one by default).
 
-3. Restart your app it will recreate the database automatically if supported.
+3. Restart your VS2022, it will recreate the database automatically if supported.
 
 💡 Notes
 The project automatically creates the database and tables when first run.
 
-Designers are outdated.
+Designers are Semi-Outdated.
 
 The name itself is temporary.
 
