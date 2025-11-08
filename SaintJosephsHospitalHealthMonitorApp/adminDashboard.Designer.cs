@@ -10,7 +10,6 @@
         private System.Windows.Forms.Label lblRole;
         private System.Windows.Forms.Label lblHospitalName;
         private System.Windows.Forms.Label lblWelcome;
-        private System.Windows.Forms.Button btnToggleSidebar;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.Button btnUsersMenu;
         private System.Windows.Forms.Button btnAppointmentsMenu;
@@ -64,7 +63,6 @@
         private void InitializeComponent()
         {
             panelSidebar = new Panel();
-            btnToggleSidebar = new Button();
             pictureBoxProfile = new PictureBox();
             lblWelcome = new Label();
             lblRole = new Label();
@@ -126,7 +124,6 @@
             // panelSidebar
             // 
             panelSidebar.BackColor = Color.FromArgb(26, 32, 44);
-            panelSidebar.Controls.Add(btnToggleSidebar);
             panelSidebar.Controls.Add(pictureBoxProfile);
             panelSidebar.Controls.Add(lblWelcome);
             panelSidebar.Controls.Add(lblRole);
@@ -140,28 +137,12 @@
             panelSidebar.Size = new Size(280, 854);
             panelSidebar.TabIndex = 1;
             // 
-            // btnToggleSidebar
-            // 
-            btnToggleSidebar.BackColor = Color.FromArgb(45, 55, 72);
-            btnToggleSidebar.Cursor = Cursors.Hand;
-            btnToggleSidebar.FlatAppearance.BorderSize = 0;
-            btnToggleSidebar.FlatAppearance.MouseOverBackColor = Color.FromArgb(74, 85, 104);
-            btnToggleSidebar.FlatStyle = FlatStyle.Flat;
-            btnToggleSidebar.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            btnToggleSidebar.ForeColor = Color.White;
-            btnToggleSidebar.Location = new Point(230, 18);
-            btnToggleSidebar.Name = "btnToggleSidebar";
-            btnToggleSidebar.Size = new Size(35, 35);
-            btnToggleSidebar.TabIndex = 0;
-            btnToggleSidebar.Text = "‹";
-            btnToggleSidebar.UseVisualStyleBackColor = false;
-            // 
             // pictureBoxProfile
             // 
             pictureBoxProfile.BackColor = Color.White;
-            pictureBoxProfile.Location = new Point(90, 80);
+            pictureBoxProfile.Location = new Point(66, 44);
             pictureBoxProfile.Name = "pictureBoxProfile";
-            pictureBoxProfile.Size = new Size(100, 100);
+            pictureBoxProfile.Size = new Size(150, 150);
             pictureBoxProfile.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxProfile.TabIndex = 1;
             pictureBoxProfile.TabStop = false;
@@ -233,7 +214,7 @@
             btnBillingMenu.FlatAppearance.BorderSize = 0;
             btnBillingMenu.FlatAppearance.MouseOverBackColor = Color.FromArgb(45, 55, 72);
             btnBillingMenu.FlatStyle = FlatStyle.Flat;
-            btnBillingMenu.Font = new Font("Segoe UI", 10F);
+            btnBillingMenu.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnBillingMenu.ForeColor = Color.FromArgb(226, 232, 240);
             btnBillingMenu.Location = new Point(15, 400);
             btnBillingMenu.Name = "btnBillingMenu";
@@ -385,8 +366,7 @@
             btnRefreshUsers.Cursor = Cursors.Hand;
             btnRefreshUsers.FlatAppearance.BorderSize = 0;
             btnRefreshUsers.FlatAppearance.MouseOverBackColor = Color.FromArgb(90, 103, 122);
-            btnRefreshUsers.FlatStyle = FlatStyle.Flat;
-            btnRefreshUsers.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnRefreshUsers.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnRefreshUsers.ForeColor = Color.White;
             btnRefreshUsers.Location = new Point(560, 15);
             btnRefreshUsers.Name = "btnRefreshUsers";
@@ -402,8 +382,7 @@
             btnDeleteUser.Cursor = Cursors.Hand;
             btnDeleteUser.FlatAppearance.BorderSize = 0;
             btnDeleteUser.FlatAppearance.MouseOverBackColor = Color.FromArgb(197, 48, 48);
-            btnDeleteUser.FlatStyle = FlatStyle.Flat;
-            btnDeleteUser.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnDeleteUser.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnDeleteUser.ForeColor = Color.White;
             btnDeleteUser.Location = new Point(380, 15);
             btnDeleteUser.Name = "btnDeleteUser";
@@ -419,8 +398,7 @@
             btnEditUser.Cursor = Cursors.Hand;
             btnEditUser.FlatAppearance.BorderSize = 0;
             btnEditUser.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
-            btnEditUser.FlatStyle = FlatStyle.Flat;
-            btnEditUser.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnEditUser.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnEditUser.ForeColor = Color.White;
             btnEditUser.Location = new Point(200, 15);
             btnEditUser.Name = "btnEditUser";
@@ -436,8 +414,7 @@
             btnAddUser.Cursor = Cursors.Hand;
             btnAddUser.FlatAppearance.BorderSize = 0;
             btnAddUser.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 161, 105);
-            btnAddUser.FlatStyle = FlatStyle.Flat;
-            btnAddUser.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnAddUser.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnAddUser.ForeColor = Color.White;
             btnAddUser.Location = new Point(20, 15);
             btnAddUser.Name = "btnAddUser";
@@ -487,7 +464,6 @@
             btnRefreshAppointments.Cursor = Cursors.Hand;
             btnRefreshAppointments.FlatAppearance.BorderSize = 0;
             btnRefreshAppointments.FlatAppearance.MouseOverBackColor = Color.FromArgb(90, 103, 122);
-            btnRefreshAppointments.FlatStyle = FlatStyle.Flat;
             btnRefreshAppointments.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnRefreshAppointments.ForeColor = Color.White;
             btnRefreshAppointments.Location = new Point(560, 15);
@@ -504,7 +480,6 @@
             btnDeleteAppointment.Cursor = Cursors.Hand;
             btnDeleteAppointment.FlatAppearance.BorderSize = 0;
             btnDeleteAppointment.FlatAppearance.MouseOverBackColor = Color.FromArgb(197, 48, 48);
-            btnDeleteAppointment.FlatStyle = FlatStyle.Flat;
             btnDeleteAppointment.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnDeleteAppointment.ForeColor = Color.White;
             btnDeleteAppointment.Location = new Point(390, 15);
@@ -521,7 +496,6 @@
             btnEditAppointment.Cursor = Cursors.Hand;
             btnEditAppointment.FlatAppearance.BorderSize = 0;
             btnEditAppointment.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
-            btnEditAppointment.FlatStyle = FlatStyle.Flat;
             btnEditAppointment.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnEditAppointment.ForeColor = Color.White;
             btnEditAppointment.Location = new Point(200, 15);
@@ -538,7 +512,6 @@
             btnAddAppointment.Cursor = Cursors.Hand;
             btnAddAppointment.FlatAppearance.BorderSize = 0;
             btnAddAppointment.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 161, 105);
-            btnAddAppointment.FlatStyle = FlatStyle.Flat;
             btnAddAppointment.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnAddAppointment.ForeColor = Color.White;
             btnAddAppointment.Location = new Point(20, 15);
@@ -588,7 +561,6 @@
             btnRefreshBilling.Cursor = Cursors.Hand;
             btnRefreshBilling.FlatAppearance.BorderSize = 0;
             btnRefreshBilling.FlatAppearance.MouseOverBackColor = Color.FromArgb(90, 103, 122);
-            btnRefreshBilling.FlatStyle = FlatStyle.Flat;
             btnRefreshBilling.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnRefreshBilling.ForeColor = Color.White;
             btnRefreshBilling.Location = new Point(420, 15);
@@ -605,7 +577,6 @@
             btnUpdateBill.Cursor = Cursors.Hand;
             btnUpdateBill.FlatAppearance.BorderSize = 0;
             btnUpdateBill.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
-            btnUpdateBill.FlatStyle = FlatStyle.Flat;
             btnUpdateBill.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnUpdateBill.ForeColor = Color.White;
             btnUpdateBill.Location = new Point(220, 15);
@@ -622,7 +593,6 @@
             btnAddBill.Cursor = Cursors.Hand;
             btnAddBill.FlatAppearance.BorderSize = 0;
             btnAddBill.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 161, 105);
-            btnAddBill.FlatStyle = FlatStyle.Flat;
             btnAddBill.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnAddBill.ForeColor = Color.White;
             btnAddBill.Location = new Point(20, 15);

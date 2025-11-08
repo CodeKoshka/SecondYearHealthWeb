@@ -10,21 +10,48 @@ namespace SaintJosephsHospitalHealthMonitorApp
     {
         private decimal currentTotal = 0;
         private int? editingBillId = null;
+        private int? currentUserId = null;
+        private int? preselectedPatientId = null;
 
-        public BillingForm(int? billId = null)
+        public BillingForm(int? userId = null, int? patientId = null)
         {
             InitializeComponent();
-            editingBillId = billId;
+            currentUserId = userId;
+            preselectedPatientId = patientId;
+            editingBillId = null;
+
             LoadPatients();
             LoadServiceCategories();
             SetupServiceItems();
 
-            if (editingBillId.HasValue)
+            // Preselect patient if provided
+            if (preselectedPatientId.HasValue)
             {
-                LoadExistingBill(editingBillId.Value);
-                lblTitle.Text = "Edit Invoice";
-                this.Text = "Edit Invoice";
+                for (int i = 0; i < cmbPatient.Items.Count; i++)
+                {
+                    DataRowView row = (DataRowView)cmbPatient.Items[i];
+                    if (Convert.ToInt32(row["patient_id"]) == preselectedPatientId.Value)
+                    {
+                        cmbPatient.SelectedIndex = i;
+                        break;
+                    }
+                }
             }
+        }
+
+        public BillingForm(int billId, int? userId = null)
+        {
+            InitializeComponent();
+            currentUserId = userId;
+            editingBillId = billId;
+
+            LoadPatients();
+            LoadServiceCategories();
+            SetupServiceItems();
+            LoadExistingBill(billId);
+
+            lblTitle.Text = "Edit Invoice";
+            this.Text = "Edit Invoice";
         }
 
         private void LoadPatients()
@@ -353,11 +380,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 else
                 {
                     string insertQuery = @"INSERT INTO Billing 
-                                         (patient_id, amount, subtotal, discount_percent, discount_amount,
-                                          tax_percent, tax_amount, description, payment_method, status, notes, bill_date)
-                                         VALUES 
-                                         (@patientId, @amount, @subtotal, @discount, @discountAmount,
-                                          @tax, @taxAmount, @description, @paymentMethod, @status, @notes, NOW())";
+                    (patient_id, amount, subtotal, discount_percent, discount_amount,
+                    tax_percent, tax_amount, description, payment_method, status, notes, bill_date, created_by)
+                    VALUES 
+                    (@patientId, @amount, @subtotal, @discount, @discountAmount,
+                    @tax, @taxAmount, @description, @paymentMethod, @status, @notes, NOW(), @createdBy)";
+
+                    int createdBy = currentUserId ?? 1;
 
                     DatabaseHelper.ExecuteNonQuery(insertQuery,
                         new MySqlParameter("@patientId", patientId),
@@ -370,7 +399,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         new MySqlParameter("@description", description),
                         new MySqlParameter("@paymentMethod", paymentMethod),
                         new MySqlParameter("@status", status),
-                        new MySqlParameter("@notes", txtNotes.Text));
+                        new MySqlParameter("@notes", txtNotes.Text),
+                        new MySqlParameter("@createdBy", createdBy));
 
                     MessageBox.Show("Invoice created successfully!", "Success",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);

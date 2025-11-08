@@ -9,31 +9,47 @@ namespace SaintJosephsHospitalHealthMonitorApp
     public partial class AppointmentForm : Form
     {
         private int? preSelectedPatientId;
+        private int createdByUserId;
 
-        public AppointmentForm(int? patientId = null)
+        public AppointmentForm(int? patientId = null, int createdBy = 0)
         {
             preSelectedPatientId = patientId;
+            createdByUserId = createdBy;
             InitializeComponent();
             LoadDoctors();
+
             if (patientId == null)
+            {
                 LoadPatients();
+            }
+            else
+            {
+                cmbPatient.Visible = false;
+                lblPatient.Text = "Patient: (Pre-selected)";
+            }
         }
-        //this gets all patients with their user profiles
+
         private void LoadPatients()
         {
-            string query = @"SELECT p.patient_id, u.name FROM Patients p
-                           INNER JOIN Users u ON p.user_id = u.user_id";
+            string query = @"SELECT p.patient_id, u.name 
+                        FROM Patients p
+                        INNER JOIN Users u ON p.user_id = u.user_id
+                        WHERE u.is_active = 1
+                        ORDER BY u.name";
             DataTable dt = DatabaseHelper.ExecuteQuery(query);
             cmbPatient.DisplayMember = "name";
             cmbPatient.ValueMember = "patient_id";
             cmbPatient.DataSource = dt;
         }
-        //this gets the doctors with specialization appended to their name
+
         private void LoadDoctors()
         {
-            string query = @"SELECT d.doctor_id, CONCAT(u.name, ' (', d.specialization, ')') AS doctor_info
-                   FROM Doctors d
-                   INNER JOIN Users u ON d.user_id = u.user_id";
+            string query = @"SELECT d.doctor_id, 
+                        CONCAT(u.name, ' (', d.specialization, ')') AS doctor_info
+                        FROM Doctors d
+                        INNER JOIN Users u ON d.user_id = u.user_id
+                        WHERE u.is_active = 1
+                        ORDER BY u.name";
             DataTable dt = DatabaseHelper.ExecuteQuery(query);
             cmbDoctor.DisplayMember = "doctor_info";
             cmbDoctor.ValueMember = "doctor_id";
@@ -42,7 +58,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnSave_Click(object sender, EventArgs e)
         {
-            //this to make sure user selected a doctor
+            if (preSelectedPatientId == null && cmbPatient.SelectedValue == null)
+            {
+                MessageBox.Show("Please select a patient.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (cmbDoctor.SelectedValue == null)
             {
                 MessageBox.Show("Please select a doctor.", "Validation Error",
@@ -50,38 +72,44 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
+            if (dtpAppointment.Value < DateTime.Now)
+            {
+                MessageBox.Show("Appointment date cannot be in the past.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
-                //this is if patient_id was provided beforehand it will use it 
-                //Otherwise it will use a selected patient from dropdown
                 int patientId = preSelectedPatientId ?? Convert.ToInt32(cmbPatient.SelectedValue);
                 int doctorId = Convert.ToInt32(cmbDoctor.SelectedValue);
 
-                //this inserts appointment with the "Scheduled" status by default
-                string query = @"INSERT INTO Appointments (patient_id, doctor_id, appointment_date, notes, status)
-                               VALUES (@patientId, @doctorId, @date, @notes, 'Scheduled')";
+                string query = @"INSERT INTO Appointments 
+                           (patient_id, doctor_id, appointment_date, notes, status, created_by)
+                           VALUES (@patientId, @doctorId, @date, @notes, 'Scheduled', @createdBy)";
 
-                //this execute the insert command with parameters to prevent SQL injection
-                //(without this database breaks)
                 DatabaseHelper.ExecuteNonQuery(query,
                     new MySqlParameter("@patientId", patientId),
                     new MySqlParameter("@doctorId", doctorId),
                     new MySqlParameter("@date", dtpAppointment.Value),
-                    new MySqlParameter("@notes", txtNotes.Text));
+                    new MySqlParameter("@notes", txtNotes.Text.Trim()),
+                    new MySqlParameter("@createdBy", createdByUserId));
 
                 MessageBox.Show("Appointment scheduled successfully!", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: " + ex.Message, "Error",
+                MessageBox.Show($"Error: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void BtnCancel_Click(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
     }

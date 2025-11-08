@@ -2,9 +2,6 @@
 {
     partial class ReceptionistDashboard
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabQueue;
@@ -21,12 +18,10 @@
         private System.Windows.Forms.Button btnRemoveFromQueue;
         private System.Windows.Forms.Button btnRefreshQueue;
         private System.Windows.Forms.Button btnViewPatient;
+        private System.Windows.Forms.Button btnEditPatient;
         private System.Windows.Forms.Button btnRefreshPatients;
+        private System.Windows.Forms.Button btnCheckMedicalHistory;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -52,7 +47,9 @@
             btnRefreshQueue = new Button();
             dgvQueue = new DataGridView();
             tabPatients = new TabPage();
+            btnCheckMedicalHistory = new Button(); // NEW
             btnViewPatient = new Button();
+            btnEditPatient = new Button();
             btnRefreshPatients = new Button();
             dgvPatients = new DataGridView();
             panelHeader.SuspendLayout();
@@ -258,7 +255,9 @@
             // 
             // tabPatients
             // 
+            tabPatients.Controls.Add(btnCheckMedicalHistory); // NEW
             tabPatients.Controls.Add(btnViewPatient);
+            tabPatients.Controls.Add(btnEditPatient);
             tabPatients.Controls.Add(btnRefreshPatients);
             tabPatients.Controls.Add(dgvPatients);
             tabPatients.Location = new Point(4, 26);
@@ -269,6 +268,22 @@
             tabPatients.TabIndex = 1;
             tabPatients.Text = "Patient Records";
             tabPatients.UseVisualStyleBackColor = true;
+            // 
+            // btnCheckMedicalHistory
+            // 
+            btnCheckMedicalHistory.BackColor = Color.FromArgb(156, 39, 176);
+            btnCheckMedicalHistory.Cursor = Cursors.Hand;
+            btnCheckMedicalHistory.FlatAppearance.BorderSize = 0;
+            btnCheckMedicalHistory.FlatStyle = FlatStyle.Flat;
+            btnCheckMedicalHistory.ForeColor = Color.White;
+            btnCheckMedicalHistory.Location = new Point(362, 12);
+            btnCheckMedicalHistory.Margin = new Padding(4, 3, 4, 3);
+            btnCheckMedicalHistory.Name = "btnCheckMedicalHistory";
+            btnCheckMedicalHistory.Size = new Size(190, 40);
+            btnCheckMedicalHistory.TabIndex = 4;
+            btnCheckMedicalHistory.Text = "📋 Medical History";
+            btnCheckMedicalHistory.UseVisualStyleBackColor = false;
+            btnCheckMedicalHistory.Click += BtnCheckMedicalHistory_Click;
             // 
             // btnViewPatient
             // 
@@ -282,9 +297,25 @@
             btnViewPatient.Name = "btnViewPatient";
             btnViewPatient.Size = new Size(163, 40);
             btnViewPatient.TabIndex = 0;
-            btnViewPatient.Text = "View Details";
+            btnViewPatient.Text = "👁 View Details";
             btnViewPatient.UseVisualStyleBackColor = false;
             btnViewPatient.Click += BtnViewPatient_Click;
+            // 
+            // btnEditPatient
+            // 
+            btnEditPatient.BackColor = Color.FromArgb(255, 152, 0);
+            btnEditPatient.Cursor = Cursors.Hand;
+            btnEditPatient.FlatAppearance.BorderSize = 0;
+            btnEditPatient.FlatStyle = FlatStyle.Flat;
+            btnEditPatient.ForeColor = Color.White;
+            btnEditPatient.Location = new Point(187, 12);
+            btnEditPatient.Margin = new Padding(4, 3, 4, 3);
+            btnEditPatient.Name = "btnEditPatient";
+            btnEditPatient.Size = new Size(163, 40);
+            btnEditPatient.TabIndex = 1;
+            btnEditPatient.Text = "✏ Edit Details";
+            btnEditPatient.UseVisualStyleBackColor = false;
+            btnEditPatient.Click += BtnEditPatient_Click;
             // 
             // btnRefreshPatients
             // 
@@ -293,11 +324,11 @@
             btnRefreshPatients.FlatAppearance.BorderSize = 0;
             btnRefreshPatients.FlatStyle = FlatStyle.Flat;
             btnRefreshPatients.ForeColor = Color.White;
-            btnRefreshPatients.Location = new Point(187, 12);
+            btnRefreshPatients.Location = new Point(565, 12);
             btnRefreshPatients.Margin = new Padding(4, 3, 4, 3);
             btnRefreshPatients.Name = "btnRefreshPatients";
             btnRefreshPatients.Size = new Size(128, 40);
-            btnRefreshPatients.TabIndex = 1;
+            btnRefreshPatients.TabIndex = 2;
             btnRefreshPatients.Text = "Refresh";
             btnRefreshPatients.UseVisualStyleBackColor = false;
             btnRefreshPatients.Click += BtnRefresh_Click;
@@ -314,7 +345,7 @@
             dgvPatients.ReadOnly = true;
             dgvPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvPatients.Size = new Size(1283, 496);
-            dgvPatients.TabIndex = 2;
+            dgvPatients.TabIndex = 3;
             // 
             // ReceptionistDashboard
             // 

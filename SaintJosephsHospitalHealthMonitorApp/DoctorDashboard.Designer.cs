@@ -13,14 +13,11 @@
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.Button btnAppointmentsMenu;
         private System.Windows.Forms.Button btnPatientsMenu;
-        private System.Windows.Forms.Button btnRecordsMenu;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabAppointments;
         private System.Windows.Forms.TabPage tabPatients;
-        private System.Windows.Forms.TabPage tabRecords;
         private System.Windows.Forms.DataGridView dgvAppointments;
         private System.Windows.Forms.DataGridView dgvPatients;
-        private System.Windows.Forms.DataGridView dgvMedicalRecords;
         private System.Windows.Forms.Panel panelAppointmentButtons;
         private System.Windows.Forms.Button btnViewPatient;
         private System.Windows.Forms.Button btnCompleteAppt;
@@ -29,9 +26,6 @@
         private System.Windows.Forms.Button btnViewHistory;
         private System.Windows.Forms.Button btnAddRecord;
         private System.Windows.Forms.Button btnRefreshPatients;
-        private System.Windows.Forms.Panel panelRecordButtons;
-        private System.Windows.Forms.Button btnEditRecord;
-        private System.Windows.Forms.Button btnRefreshRecords;
         private System.Windows.Forms.Panel panelUniversalSearch;
         private System.Windows.Forms.TextBox txtUniversalSearch;
         private System.Windows.Forms.Button btnClearUniversalSearch;
@@ -54,7 +48,6 @@
             lblRole = new Label();
             btnAppointmentsMenu = new Button();
             btnPatientsMenu = new Button();
-            btnRecordsMenu = new Button();
             btnLogout = new Button();
             panelMainContent = new Panel();
             tabControl = new TabControl();
@@ -70,11 +63,6 @@
             btnRefreshPatients = new Button();
             btnAddRecord = new Button();
             btnViewHistory = new Button();
-            tabRecords = new TabPage();
-            dgvMedicalRecords = new DataGridView();
-            panelRecordButtons = new Panel();
-            btnRefreshRecords = new Button();
-            btnEditRecord = new Button();
             panelHeader = new Panel();
             panelUniversalSearch = new Panel();
             lblUniversalSearchIcon = new Label();
@@ -92,9 +80,6 @@
             tabPatients.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvPatients).BeginInit();
             panelPatientButtons.SuspendLayout();
-            tabRecords.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvMedicalRecords).BeginInit();
-            panelRecordButtons.SuspendLayout();
             panelHeader.SuspendLayout();
             panelUniversalSearch.SuspendLayout();
             SuspendLayout();
@@ -107,7 +92,6 @@
             panelSidebar.Controls.Add(lblRole);
             panelSidebar.Controls.Add(btnAppointmentsMenu);
             panelSidebar.Controls.Add(btnPatientsMenu);
-            panelSidebar.Controls.Add(btnRecordsMenu);
             panelSidebar.Controls.Add(btnLogout);
             panelSidebar.Dock = DockStyle.Left;
             panelSidebar.Location = new Point(0, 0);
@@ -180,29 +164,10 @@
             btnPatientsMenu.Padding = new Padding(20, 0, 0, 0);
             btnPatientsMenu.Size = new Size(250, 45);
             btnPatientsMenu.TabIndex = 5;
-            btnPatientsMenu.Text = "  👥  My Patients";
+            btnPatientsMenu.Text = "  👥  My Patients & Records";
             btnPatientsMenu.TextAlign = ContentAlignment.MiddleLeft;
             btnPatientsMenu.UseVisualStyleBackColor = false;
             btnPatientsMenu.Click += BtnPatientsMenu_Click;
-            // 
-            // btnRecordsMenu
-            // 
-            btnRecordsMenu.BackColor = Color.Transparent;
-            btnRecordsMenu.Cursor = Cursors.Hand;
-            btnRecordsMenu.FlatAppearance.BorderSize = 0;
-            btnRecordsMenu.FlatAppearance.MouseOverBackColor = Color.FromArgb(45, 55, 72);
-            btnRecordsMenu.FlatStyle = FlatStyle.Flat;
-            btnRecordsMenu.Font = new Font("Segoe UI", 10F);
-            btnRecordsMenu.ForeColor = Color.FromArgb(226, 232, 240);
-            btnRecordsMenu.Location = new Point(15, 400);
-            btnRecordsMenu.Name = "btnRecordsMenu";
-            btnRecordsMenu.Padding = new Padding(20, 0, 0, 0);
-            btnRecordsMenu.Size = new Size(250, 45);
-            btnRecordsMenu.TabIndex = 6;
-            btnRecordsMenu.Text = "  📋  Medical Records";
-            btnRecordsMenu.TextAlign = ContentAlignment.MiddleLeft;
-            btnRecordsMenu.UseVisualStyleBackColor = false;
-            btnRecordsMenu.Click += BtnRecordsMenu_Click;
             // 
             // btnLogout
             // 
@@ -237,7 +202,6 @@
             tabControl.Appearance = TabAppearance.FlatButtons;
             tabControl.Controls.Add(tabAppointments);
             tabControl.Controls.Add(tabPatients);
-            tabControl.Controls.Add(tabRecords);
             tabControl.Dock = DockStyle.Fill;
             tabControl.ItemSize = new Size(120, 30);
             tabControl.Location = new Point(0, 70);
@@ -410,7 +374,7 @@
             btnAddRecord.Name = "btnAddRecord";
             btnAddRecord.Size = new Size(190, 45);
             btnAddRecord.TabIndex = 1;
-            btnAddRecord.Text = "➕ Add Record";
+            btnAddRecord.Text = "➕ Add Medical Record";
             btnAddRecord.UseVisualStyleBackColor = false;
             btnAddRecord.Click += BtnAddMedicalRecord_Click;
             // 
@@ -427,83 +391,8 @@
             btnViewHistory.Name = "btnViewHistory";
             btnViewHistory.Size = new Size(190, 45);
             btnViewHistory.TabIndex = 2;
-            btnViewHistory.Text = "📋 View History";
+            btnViewHistory.Text = "📋 View Full History";
             btnViewHistory.UseVisualStyleBackColor = false;
-            btnViewHistory.Click += BtnViewHistory_Click;
-            // 
-            // tabRecords
-            // 
-            tabRecords.BackColor = Color.FromArgb(247, 250, 252);
-            tabRecords.Controls.Add(dgvMedicalRecords);
-            tabRecords.Controls.Add(panelRecordButtons);
-            tabRecords.Location = new Point(4, 34);
-            tabRecords.Name = "tabRecords";
-            tabRecords.Padding = new Padding(20);
-            tabRecords.Size = new Size(1196, 653);
-            tabRecords.TabIndex = 2;
-            // 
-            // dgvMedicalRecords
-            // 
-            dgvMedicalRecords.AllowUserToAddRows = false;
-            dgvMedicalRecords.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvMedicalRecords.BackgroundColor = Color.White;
-            dgvMedicalRecords.BorderStyle = BorderStyle.None;
-            dgvMedicalRecords.ColumnHeadersHeight = 50;
-            dgvMedicalRecords.Dock = DockStyle.Fill;
-            dgvMedicalRecords.Location = new Point(20, 100);
-            dgvMedicalRecords.Name = "dgvMedicalRecords";
-            dgvMedicalRecords.ReadOnly = true;
-            dgvMedicalRecords.RowHeadersVisible = false;
-            dgvMedicalRecords.RowTemplate.Height = 45;
-            dgvMedicalRecords.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMedicalRecords.Size = new Size(1156, 533);
-            dgvMedicalRecords.TabIndex = 0;
-            // 
-            // panelRecordButtons
-            // 
-            panelRecordButtons.BackColor = Color.White;
-            panelRecordButtons.Controls.Add(btnRefreshRecords);
-            panelRecordButtons.Controls.Add(btnEditRecord);
-            panelRecordButtons.Dock = DockStyle.Top;
-            panelRecordButtons.Location = new Point(20, 20);
-            panelRecordButtons.Name = "panelRecordButtons";
-            panelRecordButtons.Padding = new Padding(20, 15, 20, 15);
-            panelRecordButtons.Size = new Size(1156, 80);
-            panelRecordButtons.TabIndex = 1;
-            // 
-            // btnRefreshRecords
-            // 
-            btnRefreshRecords.BackColor = Color.FromArgb(113, 128, 150);
-            btnRefreshRecords.Cursor = Cursors.Hand;
-            btnRefreshRecords.FlatAppearance.BorderSize = 0;
-            btnRefreshRecords.FlatAppearance.MouseOverBackColor = Color.FromArgb(90, 103, 122);
-            btnRefreshRecords.FlatStyle = FlatStyle.Flat;
-            btnRefreshRecords.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnRefreshRecords.ForeColor = Color.White;
-            btnRefreshRecords.Location = new Point(230, 15);
-            btnRefreshRecords.Name = "btnRefreshRecords";
-            btnRefreshRecords.Size = new Size(150, 45);
-            btnRefreshRecords.TabIndex = 0;
-            btnRefreshRecords.Text = "🔄 Refresh";
-            btnRefreshRecords.UseVisualStyleBackColor = false;
-            btnRefreshRecords.Click += BtnRefresh_Click;
-            // 
-            // btnEditRecord
-            // 
-            btnEditRecord.BackColor = Color.FromArgb(66, 153, 225);
-            btnEditRecord.Cursor = Cursors.Hand;
-            btnEditRecord.FlatAppearance.BorderSize = 0;
-            btnEditRecord.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
-            btnEditRecord.FlatStyle = FlatStyle.Flat;
-            btnEditRecord.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnEditRecord.ForeColor = Color.White;
-            btnEditRecord.Location = new Point(20, 15);
-            btnEditRecord.Name = "btnEditRecord";
-            btnEditRecord.Size = new Size(200, 45);
-            btnEditRecord.TabIndex = 1;
-            btnEditRecord.Text = "✏️ Edit Record";
-            btnEditRecord.UseVisualStyleBackColor = false;
-            btnEditRecord.Click += BtnEditRecord_Click;
             // 
             // panelHeader
             // 
@@ -566,7 +455,7 @@
             txtUniversalSearch.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtUniversalSearch.Location = new Point(57, 13);
             txtUniversalSearch.Name = "txtUniversalSearch";
-            txtUniversalSearch.PlaceholderText = "Search appointments, patients, records...";
+            txtUniversalSearch.PlaceholderText = "Search appointments, patients...";
             txtUniversalSearch.Size = new Size(478, 22);
             txtUniversalSearch.TabIndex = 1;
             txtUniversalSearch.TextChanged += TxtUniversalSearch_TextChanged;
@@ -605,9 +494,6 @@
             tabPatients.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvPatients).EndInit();
             panelPatientButtons.ResumeLayout(false);
-            tabRecords.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)dgvMedicalRecords).EndInit();
-            panelRecordButtons.ResumeLayout(false);
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();
             panelUniversalSearch.ResumeLayout(false);

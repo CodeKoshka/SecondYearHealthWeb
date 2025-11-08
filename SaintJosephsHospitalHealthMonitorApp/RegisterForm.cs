@@ -18,6 +18,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 {
     public partial class RegisterForm : Form
     {
+        public int? NewlyCreatedPatientId { get; private set; }
         private string originalEmail = string.Empty;
         private string originalRole = string.Empty;
         private string creatorRole = string.Empty;
@@ -1070,9 +1071,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            bool requirePassword = role != "Patient";
-
-            if (requirePassword)
+            if (role != "Patient")
             {
                 if (string.IsNullOrWhiteSpace(txtPassword.Text) ||
                     string.IsNullOrWhiteSpace(txtConfirmPassword.Text))
@@ -1161,7 +1160,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             }
                         }
 
-                        string password = role == "Patient" ? null : txtPassword.Text;
+                        string password = role == "Patient" ? "PATIENT_NO_LOGIN" : txtPassword.Text;
 
                         int? creatorId = createdByUserId;
                         if (!creatorId.HasValue && creatorRole != "Registration")
@@ -1176,7 +1175,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
 
                         string insertUser = @"INSERT INTO Users (name, role, email, password, age, gender, created_by, profile_image) 
-                                      VALUES (@name, @role, @email, @password, @age, @gender, @createdBy, @profileImage)";
+                              VALUES (@name, @role, @email, @password, @age, @gender, @createdBy, @profileImage)";
                         using (MySqlCommand cmdInsertUser = new MySqlCommand(insertUser, conn, transaction))
                         {
                             cmdInsertUser.Parameters.AddWithValue("@name", name);
@@ -1205,12 +1204,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             newUserId = Convert.ToInt32(cmdGetLastId.ExecuteScalar());
                         }
 
+                        int newPatientId = 0;
+
                         if (role == "Patient")
                         {
                             string phoneNumber = FormatPhoneNumberForStorage(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString());
 
                             string insertPatient = @"INSERT INTO Patients (user_id, blood_type, allergies, phone_number) 
-                                             VALUES (@userId, @bloodType, @allergies, @phoneNumber)";
+                                     VALUES (@userId, @bloodType, @allergies, @phoneNumber)";
                             using (MySqlCommand cmdInsertPatient = new MySqlCommand(insertPatient, conn, transaction))
                             {
                                 cmdInsertPatient.Parameters.AddWithValue("@userId", newUserId);
@@ -1219,13 +1220,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 cmdInsertPatient.Parameters.AddWithValue("@phoneNumber", phoneNumber);
                                 cmdInsertPatient.ExecuteNonQuery();
                             }
+
+                            using (MySqlCommand cmdGetPatientId = new MySqlCommand("SELECT LAST_INSERT_ID()", conn, transaction))
+                            {
+                                newPatientId = Convert.ToInt32(cmdGetPatientId.ExecuteScalar());
+                            }
                         }
                         else if (role == "Doctor")
                         {
                             string specialization = GetDoctorSpecialization();
 
                             string insertDoctor = @"INSERT INTO Doctors (user_id, specialization, is_available) 
-                                            VALUES (@userId, @specialization, 1)";
+                                    VALUES (@userId, @specialization, 1)";
                             using (MySqlCommand cmdInsertDoctor = new MySqlCommand(insertDoctor, conn, transaction))
                             {
                                 cmdInsertDoctor.Parameters.AddWithValue("@userId", newUserId);
@@ -1236,7 +1242,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         else if (role == "Headadmin" || role == "Admin" || role == "Receptionist" || role == "Pharmacist")
                         {
                             string insertStaff = @"INSERT INTO Staff (user_id, position, department) 
-                                           VALUES (@userId, @position, @department)";
+                                   VALUES (@userId, @position, @department)";
                             using (MySqlCommand cmdInsertStaff = new MySqlCommand(insertStaff, conn, transaction))
                             {
                                 cmdInsertStaff.Parameters.AddWithValue("@userId", newUserId);
@@ -1263,10 +1269,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         string successMessage;
                         if (role == "Patient")
                         {
+                            NewlyCreatedPatientId = newPatientId;
+
                             successMessage = $"Patient record created successfully!\n\n" +
                                            $"Name: {name}\n" +
                                            $"Email: {email}\n\n" +
-                                           $"Note: Patients do not have login credentials.";
+                                           $"The patient intake form will now open to record visit details.";
+
+                            MessageBox.Show(successMessage, "Success",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            this.DialogResult = DialogResult.OK;
                         }
                         else
                         {
@@ -1276,10 +1289,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                            $"Password: {password}\n\n" +
                                            $"⚠️ IMPORTANT: Please save these credentials securely.\n" +
                                            $"User can now login with these credentials.";
-                        }
 
-                        MessageBox.Show(successMessage, "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show(successMessage, "Success",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            this.DialogResult = DialogResult.OK;
+                        }
 
                         this.Close();
                     }

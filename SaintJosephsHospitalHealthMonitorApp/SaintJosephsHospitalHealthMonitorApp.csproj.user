@@ -7,9 +7,6 @@
     <Compile Update="BillingForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="DoctorDashboard.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Update="AppointmentForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -19,10 +16,22 @@
     <Compile Update="AssignDoctorForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="DoctorDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="ImageCropperForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="LoadingScreenForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PatientIntakeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyReportsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyStaffDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="ReceptionistDashboard.cs">
@@ -32,9 +41,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="ViewOrderDetailsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="PharmacyReportsForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="ManagePricingForm.cs">
@@ -50,12 +56,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="ManageInventoryForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="PatientDetailsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="PharmacyStaffDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="MedicalRecordForm.cs">

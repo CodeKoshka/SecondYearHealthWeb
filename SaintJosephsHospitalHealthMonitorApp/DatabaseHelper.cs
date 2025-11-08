@@ -40,7 +40,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     name VARCHAR(100) NOT NULL,
                     role VARCHAR(20) NOT NULL,
                     email VARCHAR(100) UNIQUE NOT NULL,
-                    password VARCHAR(255) NOT NULL,
+                    password VARCHAR(255) NULL,
                     age INT,
                     gender VARCHAR(10),
                     profile_image LONGBLOB NULL,
@@ -287,6 +287,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (adjusted_by) REFERENCES Users(user_id) ON DELETE RESTRICT
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
+                string createCompletedVisitsTable = @"
+                CREATE TABLE IF NOT EXISTS CompletedVisits (
+                    archive_id INT PRIMARY KEY AUTO_INCREMENT,
+                    queue_id INT NOT NULL,
+                    patient_id INT NOT NULL,
+                    queue_date DATE NOT NULL,
+                    completed_time DATETIME,
+                    archived_by INT,
+                    archived_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    notes TEXT,
+                    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
+                    FOREIGN KEY (archived_by) REFERENCES Users(user_id) ON DELETE SET NULL
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
                 ExecuteNonQueryInternal(conn, createUsersTable);
                 ExecuteNonQueryInternal(conn, createPatientsTable);
                 ExecuteNonQueryInternal(conn, createDoctorsTable);
@@ -301,6 +315,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 ExecuteNonQueryInternal(conn, createMedicationReturnsTable);
                 ExecuteNonQueryInternal(conn, createControlledSubstanceLogTable);
                 ExecuteNonQueryInternal(conn, createStockAdjustmentTable);
+                ExecuteNonQueryInternal(conn, createCompletedVisitsTable);
 
                 InsertDefaultUsers(conn);
             }
@@ -530,6 +545,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         public static DataTable ExecuteQuery(string query, params MySqlParameter[] parameters)
         {
+            DataTable dt = new DataTable();
             try
             {
                 using (MySqlConnection conn = GetConnection())
@@ -540,21 +556,24 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         if (parameters != null && parameters.Length > 0)
                             cmd.Parameters.AddRange(parameters);
 
-                        DataTable dt = new DataTable();
                         using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
                         {
                             adapter.Fill(dt);
                         }
-                        return dt;
                     }
                 }
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show($"Database query error:\n{ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return new DataTable();
+                MessageBox.Show($"Database query error:\nError #{ex.Number}: {ex.Message}\n\nQuery: {query}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unexpected error:\n{ex.Message}\n\nQuery: {query}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return dt;
         }
     }
 }

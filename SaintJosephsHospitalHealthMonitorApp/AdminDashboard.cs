@@ -142,7 +142,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             UpdateMenuButton(btnUsersMenu, 290, "👥", "User Management");
             UpdateMenuButton(btnAppointmentsMenu, 345, "📅", "Appointments");
-            UpdateMenuButton(btnBillingMenu, 400, "💰", "Billing & Payments");
+            UpdateMenuButton(btnBillingMenu, 400, "💰", "Billing And Payments");
 
             btnLogout.BackColor = Color.FromArgb(74, 85, 104);
             btnLogout.FlatAppearance.BorderSize = 0;
@@ -150,7 +150,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             btnLogout.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnLogout.FlatAppearance.MouseOverBackColor = Color.FromArgb(160, 174, 192);
 
-            btnToggleSidebar.Visible = false;
             panelHeaderRight.Visible = false;
 
             SwitchToTab(0);

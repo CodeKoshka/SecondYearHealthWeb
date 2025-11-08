@@ -118,6 +118,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private string BuildClinicalNotes()
         {
             StringBuilder notes = new StringBuilder();
@@ -172,27 +173,30 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnTemplateRoutine_Click(object sender, EventArgs e)
         {
-            txtVitalSigns.Text = @"BP: ___/___  HR: ___  RR: ___  Temp: ___°C  SpO2: ___%  Weight: ___ kg  Height: ___ cm";
+            txtVitalSigns.Clear();
+            txtVitalSigns.Text = "BP:      HR:      RR:      Temp:     °C  SpO2:      %  Weight:      kg  Height:      cm";
+            txtPhysicalExam.Clear();
             txtPhysicalExam.Text = @"General: Alert and oriented, no acute distress
-HEENT: Normal
-Cardiovascular: Regular rhythm, no murmurs
-Respiratory: Clear bilateral breath sounds
-Abdomen: Soft, non-tender
-Extremities: No edema";
+            HEENT: Normal
+            Cardiovascular: Regular rhythm, no murmurs
+            Respiratory: Clear bilateral breath sounds
+            Abdomen: Soft, non-tender
+            Extremities: No edema";
         }
 
         private void BtnTemplateEmergency_Click(object sender, EventArgs e)
         {
-            txtVitalSigns.Text = @"BP: ___/___  HR: ___  RR: ___  Temp: ___°C  SpO2: ___%  GCS: ___";
+            txtVitalSigns.Clear();
+            txtVitalSigns.Text = "BP:      HR:      RR:      Temp:     °C  SpO2:      %  GCS:     ";
+            txtPhysicalExam.Clear();
             txtPhysicalExam.Text = @"EMERGENCY ASSESSMENT:
-Primary Survey (ABCDE):
-- Airway: 
-- Breathing: 
-- Circulation: 
-- Disability: 
-- Exposure: 
-
-Secondary Survey: ";
+            Primary Survey (ABCDE):
+            - Airway: 
+            - Breathing: 
+            - Circulation: 
+            - Disability: 
+            - Exposure: 
+            Secondary Survey: ";
         }
     }
 }

@@ -336,7 +336,7 @@
             this.txtVitalSigns.Name = "txtVitalSigns";
             this.txtVitalSigns.Size = new System.Drawing.Size(900, 45);
             this.txtVitalSigns.TabIndex = 7;
-            this.txtVitalSigns.Text = "BP: ___/___  HR: ___  RR: ___  Temp: ___°C  SpO2: ___%  Weight: ___ kg  Height: ___ cm";
+            this.txtVitalSigns.Text = "";
 
             // lblPhysicalExam
             this.lblPhysicalExam.AutoSize = true;
