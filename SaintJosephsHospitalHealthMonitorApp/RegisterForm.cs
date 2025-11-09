@@ -41,7 +41,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             InitializeRoleOptions();
             InitializeDoctorSpecializations();
             InitializePhoneNumberType();
-            InitializeBloodType();
             ConfigureForEditMode();
             LoadExistingUserData();
         }
@@ -57,7 +56,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             InitializeRoleOptions();
             InitializeDoctorSpecializations();
             InitializePhoneNumberType();
-            InitializeBloodType();
             ConfigureForCreateMode();
         }
 
@@ -72,7 +70,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             InitializeRoleOptions();
             InitializeDoctorSpecializations();
             InitializePhoneNumberType();
-            InitializeBloodType();
             ConfigureForRegistrationMode();
         }
 
@@ -108,12 +105,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             cmbPhoneType.Items.Clear();
             cmbPhoneType.Items.AddRange(new string[] { "Mobile", "Landline" });
             cmbPhoneType.SelectedIndex = 0;
-        }
-        private void InitializeBloodType()
-        {
-            cmbBloodType.Items.Clear();
-            cmbBloodType.Items.AddRange(new string[] { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" });
-            cmbBloodType.SelectedIndex = 0;
         }
 
         private void SetPlaceholderImage()
@@ -460,6 +451,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (creatorRole == "Receptionist")
             {
+                lblEmail.Text = "Email Address (Optional)";
                 lblPassword.Visible = false;
                 txtPassword.Visible = false;
                 lblConfirmPassword.Visible = false;
@@ -468,6 +460,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
             else
             {
+                lblEmail.Text = "Email Address *";
                 lblPassword.Visible = true;
                 txtPassword.Visible = true;
                 lblConfirmPassword.Visible = true;
@@ -484,6 +477,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             chkChangePassword.Visible = false;
 
+            lblEmail.Text = "Email Address *";
             lblPassword.Visible = true;
             txtPassword.Visible = true;
             lblConfirmPassword.Visible = true;
@@ -560,13 +554,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 if (role == "Patient")
                 {
-                    string query = @"SELECT blood_type, allergies, phone_number FROM Patients WHERE user_id = @userId";
+                    string query = @"SELECT allergies, phone_number FROM Patients WHERE user_id = @userId";
                     DataTable dt = DatabaseHelper.ExecuteQuery(query, new MySqlParameter("@userId", userId));
 
                     if (dt.Rows.Count > 0)
                     {
                         DataRow row = dt.Rows[0];
-                        cmbBloodType.Text = row["blood_type"]?.ToString() ?? "";
                         txtAllergies.Text = row["allergies"]?.ToString() ?? "";
 
                         string phoneNumber = row["phone_number"]?.ToString() ?? "";
@@ -643,7 +636,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 if (selectedRole == "Patient")
                 {
-                    panelPatientInfo.Visible = true;
+                    panelPatientInfo.Visible = false;
+
+                    lblEmail.Text = "Email Address (Optional)";
 
                     if (isEditMode)
                     {
@@ -671,6 +666,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     panelDoctorInfo.Visible = true;
 
+                    lblEmail.Text = "Email Address *";
+
                     if (isEditMode)
                     {
                         chkChangePassword.Visible = true;
@@ -686,6 +683,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
                 else
                 {
+                    lblEmail.Text = "Email Address *";
+
                     if (isEditMode)
                     {
                         chkChangePassword.Visible = true;
@@ -733,12 +732,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (phoneType == "Mobile")
                 {
                     txtPhoneNumber.MaxLength = 11;
-                    lblPhoneNumber.Text = "Phone Number * (09XXXXXXXXX)";
+                    lblPhoneNumber.Text = "Phone Number (09XXXXXXXXX)";
                 }
                 else
                 {
                     txtPhoneNumber.MaxLength = 9;
-                    lblPhoneNumber.Text = "Phone Number * (0X-XXX-XXXX)";
+                    lblPhoneNumber.Text = "Phone Number (0X-XXX-XXXX)";
                 }
             }
         }
@@ -754,7 +753,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private bool ValidatePhilippinePhoneNumber(string phoneNumber, string phoneType)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
-                return false;
+                return true; // Phone number is now optional for patients
 
             phoneNumber = phoneNumber.Replace(" ", "").Replace("-", "");
 
@@ -771,7 +770,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
             else
             {
-
                 if (phoneNumber.Length >= 8 && phoneNumber.Length <= 10 && phoneNumber.StartsWith("0"))
                 {
                     return phoneNumber.All(char.IsDigit);
@@ -785,6 +783,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private string FormatPhoneNumberForStorage(string phoneNumber, string phoneType)
         {
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                return "";
+
             phoneNumber = phoneNumber.Replace(" ", "").Replace("-", "");
 
             if (phoneType == "Mobile")
@@ -914,16 +915,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (currentRole == "Patient")
             {
-                if (string.IsNullOrWhiteSpace(txtPhoneNumber.Text) || cmbPhoneType.SelectedItem == null)
+                // Phone number is now optional, but validate if provided
+                if (!string.IsNullOrWhiteSpace(txtPhoneNumber.Text))
                 {
-                    MessageBox.Show("Please enter patient's phone number and select type.", "Validation Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                    if (cmbPhoneType.SelectedItem == null)
+                    {
+                        MessageBox.Show("Please select phone type.", "Validation Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                if (!ValidatePhilippinePhoneNumber(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString()))
-                {
-                    return;
+                    if (!ValidatePhilippinePhoneNumber(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString()))
+                    {
+                        return;
+                    }
                 }
             }
 
@@ -1052,7 +1057,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private void CreateUser()
         {
             if (string.IsNullOrWhiteSpace(txtName.Text) ||
-                string.IsNullOrWhiteSpace(txtEmail.Text) ||
                 string.IsNullOrWhiteSpace(txtAge.Text) ||
                 cmbRole.SelectedItem == null ||
                 cmbGender.SelectedItem == null)
@@ -1073,6 +1077,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (role != "Patient")
             {
+                if (string.IsNullOrWhiteSpace(txtEmail.Text))
+                {
+                    MessageBox.Show("Please enter an email address.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!IsValidEmail(txtEmail.Text.Trim()))
+                {
+                    MessageBox.Show("Please enter a valid email address.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 if (string.IsNullOrWhiteSpace(txtPassword.Text) ||
                     string.IsNullOrWhiteSpace(txtConfirmPassword.Text))
                 {
@@ -1103,13 +1121,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            if (!IsValidEmail(txtEmail.Text.Trim()))
-            {
-                MessageBox.Show("Please enter a valid email address.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             if (role == "Doctor")
             {
                 string specialization = GetDoctorSpecialization();
@@ -1121,11 +1132,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (role == "Patient")
+            // Validate phone number only if provided (it's optional now)
+            if (role == "Patient" && !string.IsNullOrWhiteSpace(txtPhoneNumber.Text))
             {
-                if (string.IsNullOrWhiteSpace(txtPhoneNumber.Text) || cmbPhoneType.SelectedItem == null)
+                if (cmbPhoneType.SelectedItem == null)
                 {
-                    MessageBox.Show("Please enter patient's phone number and select type.", "Validation Error",
+                    MessageBox.Show("Please select phone type.", "Validation Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -1136,7 +1148,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            string email = txtEmail.Text.Trim();
+            // CHANGED: Set email to null if not provided, instead of fake email
+            string email = string.IsNullOrWhiteSpace(txtEmail.Text) ?
+                null : // Set to null instead of fake email
+                txtEmail.Text.Trim();
+
             string name = txtName.Text.Trim();
             string gender = cmbGender.SelectedItem.ToString();
 
@@ -1147,16 +1163,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     try
                     {
-                        string checkEmail = "SELECT COUNT(*) FROM Users WHERE email = @email";
-                        using (MySqlCommand cmdCheckEmail = new MySqlCommand(checkEmail, conn, transaction))
+                        // CHANGED: Only check email if one was provided (not null)
+                        if (!string.IsNullOrEmpty(email))
                         {
-                            cmdCheckEmail.Parameters.AddWithValue("@email", email);
-                            long emailCount = Convert.ToInt64(cmdCheckEmail.ExecuteScalar());
-                            if (emailCount > 0)
+                            string checkEmail = "SELECT COUNT(*) FROM Users WHERE email = @email";
+                            using (MySqlCommand cmdCheckEmail = new MySqlCommand(checkEmail, conn, transaction))
                             {
-                                MessageBox.Show("This email is already registered.", "Validation Error",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                return;
+                                cmdCheckEmail.Parameters.AddWithValue("@email", email);
+                                long emailCount = Convert.ToInt64(cmdCheckEmail.ExecuteScalar());
+                                if (emailCount > 0)
+                                {
+                                    MessageBox.Show("This email is already registered.", "Validation Error",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                }
                             }
                         }
 
@@ -1175,12 +1195,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
 
                         string insertUser = @"INSERT INTO Users (name, role, email, password, age, gender, created_by, profile_image) 
-                              VALUES (@name, @role, @email, @password, @age, @gender, @createdBy, @profileImage)";
+                      VALUES (@name, @role, @email, @password, @age, @gender, @createdBy, @profileImage)";
                         using (MySqlCommand cmdInsertUser = new MySqlCommand(insertUser, conn, transaction))
                         {
                             cmdInsertUser.Parameters.AddWithValue("@name", name);
                             cmdInsertUser.Parameters.AddWithValue("@role", role);
-                            cmdInsertUser.Parameters.AddWithValue("@email", email);
+
+                            // CHANGED: Set email to DBNull.Value if null/empty, otherwise use the email
+                            if (string.IsNullOrEmpty(email))
+                                cmdInsertUser.Parameters.AddWithValue("@email", DBNull.Value);
+                            else
+                                cmdInsertUser.Parameters.AddWithValue("@email", email);
+
                             cmdInsertUser.Parameters.AddWithValue("@password", password ?? (object)DBNull.Value);
                             cmdInsertUser.Parameters.AddWithValue("@age", age);
                             cmdInsertUser.Parameters.AddWithValue("@gender", gender);
@@ -1208,14 +1234,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                         if (role == "Patient")
                         {
-                            string phoneNumber = FormatPhoneNumberForStorage(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString());
+                            string phoneNumber = "";
+                            if (!string.IsNullOrWhiteSpace(txtPhoneNumber.Text) && cmbPhoneType.SelectedItem != null)
+                            {
+                                phoneNumber = FormatPhoneNumberForStorage(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString());
+                            }
 
-                            string insertPatient = @"INSERT INTO Patients (user_id, blood_type, allergies, phone_number) 
-                                     VALUES (@userId, @bloodType, @allergies, @phoneNumber)";
+                            // Insert patient without blood_type - it will be added in PatientIntakeForm
+                            string insertPatient = @"INSERT INTO Patients (user_id, allergies, phone_number, medical_history) 
+                             VALUES (@userId, @allergies, @phoneNumber, '')";
                             using (MySqlCommand cmdInsertPatient = new MySqlCommand(insertPatient, conn, transaction))
                             {
                                 cmdInsertPatient.Parameters.AddWithValue("@userId", newUserId);
-                                cmdInsertPatient.Parameters.AddWithValue("@bloodType", cmbBloodType.Text.Trim());
                                 cmdInsertPatient.Parameters.AddWithValue("@allergies", txtAllergies.Text.Trim());
                                 cmdInsertPatient.Parameters.AddWithValue("@phoneNumber", phoneNumber);
                                 cmdInsertPatient.ExecuteNonQuery();
@@ -1231,7 +1261,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             string specialization = GetDoctorSpecialization();
 
                             string insertDoctor = @"INSERT INTO Doctors (user_id, specialization, is_available) 
-                                    VALUES (@userId, @specialization, 1)";
+                            VALUES (@userId, @specialization, 1)";
                             using (MySqlCommand cmdInsertDoctor = new MySqlCommand(insertDoctor, conn, transaction))
                             {
                                 cmdInsertDoctor.Parameters.AddWithValue("@userId", newUserId);
@@ -1242,7 +1272,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         else if (role == "Headadmin" || role == "Admin" || role == "Receptionist" || role == "Pharmacist")
                         {
                             string insertStaff = @"INSERT INTO Staff (user_id, position, department) 
-                                   VALUES (@userId, @position, @department)";
+                           VALUES (@userId, @position, @department)";
                             using (MySqlCommand cmdInsertStaff = new MySqlCommand(insertStaff, conn, transaction))
                             {
                                 cmdInsertStaff.Parameters.AddWithValue("@userId", newUserId);
@@ -1271,12 +1301,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         {
                             NewlyCreatedPatientId = newPatientId;
 
-                            successMessage = $"Patient record created successfully!\n\n" +
+                            // CHANGED: Show "Not provided" instead of fake email
+                            successMessage = $"✓ Patient record created successfully!\n\n" +
                                            $"Name: {name}\n" +
-                                           $"Email: {email}\n\n" +
-                                           $"The patient intake form will now open to record visit details.";
+                                           $"Phone: {(string.IsNullOrWhiteSpace(txtPhoneNumber.Text) ? "Not provided" : txtPhoneNumber.Text)}\n" +
+                                           $"Email: {(string.IsNullOrEmpty(email) ? "Not provided" : email)}\n\n" +
+                                           $"Patient is now registered in the system.";
 
-                            MessageBox.Show(successMessage, "Success",
+                            MessageBox.Show(successMessage, "Patient Created",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             this.DialogResult = DialogResult.OK;
@@ -1318,17 +1350,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     checkCmd.Parameters.AddWithValue("@userId", userId);
                     long count = Convert.ToInt64(checkCmd.ExecuteScalar());
 
-                    string phoneNumber = FormatPhoneNumberForStorage(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString());
+                    string phoneNumber = "";
+                    if (!string.IsNullOrWhiteSpace(txtPhoneNumber.Text) && cmbPhoneType.SelectedItem != null)
+                    {
+                        phoneNumber = FormatPhoneNumberForStorage(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString());
+                    }
 
                     if (count > 0)
                     {
                         string query = @"UPDATE Patients 
-                                       SET blood_type = @bloodType, allergies = @allergies, phone_number = @phoneNumber
+                                       SET allergies = @allergies, phone_number = @phoneNumber
                                        WHERE user_id = @userId";
 
                         using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
                         {
-                            cmd.Parameters.AddWithValue("@bloodType", cmbBloodType.Text.Trim());
                             cmd.Parameters.AddWithValue("@allergies", txtAllergies.Text.Trim());
                             cmd.Parameters.AddWithValue("@phoneNumber", phoneNumber);
                             cmd.Parameters.AddWithValue("@userId", userId);
@@ -1337,13 +1372,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
                     else
                     {
-                        string query = @"INSERT INTO Patients (user_id, blood_type, allergies, phone_number)
-                                       VALUES (@userId, @bloodType, @allergies, @phoneNumber)";
+                        string query = @"INSERT INTO Patients (user_id, allergies, phone_number)
+                                       VALUES (@userId, @allergies, @phoneNumber)";
 
                         using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
                         {
                             cmd.Parameters.AddWithValue("@userId", userId);
-                            cmd.Parameters.AddWithValue("@bloodType", cmbBloodType.Text.Trim());
                             cmd.Parameters.AddWithValue("@allergies", txtAllergies.Text.Trim());
                             cmd.Parameters.AddWithValue("@phoneNumber", phoneNumber);
                             cmd.ExecuteNonQuery();

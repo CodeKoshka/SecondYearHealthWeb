@@ -20,6 +20,8 @@
         private System.Windows.Forms.Label lblCurrentMeds;
         private System.Windows.Forms.TextBox txtCurrentMedications;
         private System.Windows.Forms.GroupBox grpPatientInfo;
+        private System.Windows.Forms.Label lblBloodTypeInput;
+        private System.Windows.Forms.ComboBox cmbBloodType;
         private System.Windows.Forms.Label lblPhoneType;
         private System.Windows.Forms.ComboBox cmbPhoneType;
         private System.Windows.Forms.Label lblPhone;
@@ -109,6 +111,8 @@
             lblCurrentMeds = new Label();
             txtCurrentMedications = new TextBox();
             grpPatientInfo = new GroupBox();
+            lblBloodTypeInput = new Label();
+            cmbBloodType = new ComboBox();
             lblPhoneType = new Label();
             cmbPhoneType = new ComboBox();
             lblPhone = new Label();
@@ -553,6 +557,8 @@
             // 
             // grpPatientInfo
             // 
+            grpPatientInfo.Controls.Add(lblBloodTypeInput);
+            grpPatientInfo.Controls.Add(cmbBloodType);
             grpPatientInfo.Controls.Add(lblPhoneType);
             grpPatientInfo.Controls.Add(cmbPhoneType);
             grpPatientInfo.Controls.Add(lblPhone);
@@ -569,21 +575,45 @@
             grpPatientInfo.ForeColor = Color.FromArgb(26, 32, 44);
             grpPatientInfo.Location = new Point(20, 636);
             grpPatientInfo.Name = "grpPatientInfo";
-            grpPatientInfo.Size = new Size(960, 207);
+            grpPatientInfo.Size = new Size(960, 237);
             grpPatientInfo.TabIndex = 2;
             grpPatientInfo.TabStop = false;
             grpPatientInfo.Text = "Patient Information";
+            // 
+            // lblBloodTypeInput
+            // 
+            lblBloodTypeInput.AutoSize = true;
+            lblBloodTypeInput.Font = new Font("Segoe UI", 10F);
+            lblBloodTypeInput.ForeColor = Color.FromArgb(74, 85, 104);
+            lblBloodTypeInput.Location = new Point(15, 22);
+            lblBloodTypeInput.Name = "lblBloodTypeInput";
+            lblBloodTypeInput.Size = new Size(124, 19);
+            lblBloodTypeInput.TabIndex = 0;
+            lblBloodTypeInput.Text = "Blood Type (Opt):";
+            // 
+            // cmbBloodType
+            // 
+            cmbBloodType.BackColor = Color.White;
+            cmbBloodType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbBloodType.FlatStyle = FlatStyle.Flat;
+            cmbBloodType.Font = new Font("Segoe UI", 10F);
+            cmbBloodType.FormattingEnabled = true;
+            cmbBloodType.Items.AddRange(new object[] { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" });
+            cmbBloodType.Location = new Point(15, 47);
+            cmbBloodType.Name = "cmbBloodType";
+            cmbBloodType.Size = new Size(120, 25);
+            cmbBloodType.TabIndex = 1;
             // 
             // lblPhoneType
             // 
             lblPhoneType.AutoSize = true;
             lblPhoneType.Font = new Font("Segoe UI", 10F);
             lblPhoneType.ForeColor = Color.FromArgb(74, 85, 104);
-            lblPhoneType.Location = new Point(15, 22);
+            lblPhoneType.Location = new Point(150, 22);
             lblPhoneType.Name = "lblPhoneType";
-            lblPhoneType.Size = new Size(83, 19);
-            lblPhoneType.TabIndex = 0;
-            lblPhoneType.Text = "Phone Type:";
+            lblPhoneType.Size = new Size(116, 19);
+            lblPhoneType.TabIndex = 2;
+            lblPhoneType.Text = "Phone Type (Opt):";
             // 
             // cmbPhoneType
             // 
@@ -593,31 +623,31 @@
             cmbPhoneType.Font = new Font("Segoe UI", 10F);
             cmbPhoneType.FormattingEnabled = true;
             cmbPhoneType.Items.AddRange(new object[] { "Mobile", "Landline" });
-            cmbPhoneType.Location = new Point(15, 47);
+            cmbPhoneType.Location = new Point(150, 47);
             cmbPhoneType.Name = "cmbPhoneType";
             cmbPhoneType.Size = new Size(120, 25);
-            cmbPhoneType.TabIndex = 1;
+            cmbPhoneType.TabIndex = 3;
             // 
             // lblPhone
             // 
             lblPhone.AutoSize = true;
             lblPhone.Font = new Font("Segoe UI", 10F);
             lblPhone.ForeColor = Color.FromArgb(74, 85, 104);
-            lblPhone.Location = new Point(150, 22);
+            lblPhone.Location = new Point(285, 22);
             lblPhone.Name = "lblPhone";
             lblPhone.Size = new Size(205, 19);
-            lblPhone.TabIndex = 2;
+            lblPhone.TabIndex = 4;
             lblPhone.Text = "Phone Number (09XXXXXXXXX):";
             // 
             // txtPhone
             // 
             txtPhone.BorderStyle = BorderStyle.FixedSingle;
             txtPhone.Font = new Font("Segoe UI", 10F);
-            txtPhone.Location = new Point(150, 47);
+            txtPhone.Location = new Point(285, 47);
             txtPhone.MaxLength = 11;
             txtPhone.Name = "txtPhone";
-            txtPhone.Size = new Size(315, 25);
-            txtPhone.TabIndex = 3;
+            txtPhone.Size = new Size(180, 25);
+            txtPhone.TabIndex = 5;
             // 
             // lblEmergencyContactPhoneType
             // 
@@ -626,9 +656,9 @@
             lblEmergencyContactPhoneType.ForeColor = Color.FromArgb(74, 85, 104);
             lblEmergencyContactPhoneType.Location = new Point(490, 22);
             lblEmergencyContactPhoneType.Name = "lblEmergencyContactPhoneType";
-            lblEmergencyContactPhoneType.Size = new Size(83, 19);
-            lblEmergencyContactPhoneType.TabIndex = 4;
-            lblEmergencyContactPhoneType.Text = "Phone Type:";
+            lblEmergencyContactPhoneType.Size = new Size(116, 19);
+            lblEmergencyContactPhoneType.TabIndex = 6;
+            lblEmergencyContactPhoneType.Text = "Phone Type (Opt):";
             // 
             // cmbEmergencyContactPhoneType
             // 
@@ -641,28 +671,28 @@
             cmbEmergencyContactPhoneType.Location = new Point(490, 47);
             cmbEmergencyContactPhoneType.Name = "cmbEmergencyContactPhoneType";
             cmbEmergencyContactPhoneType.Size = new Size(120, 25);
-            cmbEmergencyContactPhoneType.TabIndex = 5;
+            cmbEmergencyContactPhoneType.TabIndex = 7;
             // 
             // lblEmergencyContact
             // 
             lblEmergencyContact.AutoSize = true;
             lblEmergencyContact.Font = new Font("Segoe UI", 10F);
             lblEmergencyContact.ForeColor = Color.FromArgb(74, 85, 104);
-            lblEmergencyContact.Location = new Point(616, 22);
+            lblEmergencyContact.Location = new Point(625, 22);
             lblEmergencyContact.Name = "lblEmergencyContact";
             lblEmergencyContact.Size = new Size(231, 19);
-            lblEmergencyContact.TabIndex = 6;
+            lblEmergencyContact.TabIndex = 8;
             lblEmergencyContact.Text = "Emergency Contact (09XXXXXXXXX):";
             // 
             // txtEmergencyContact
             // 
             txtEmergencyContact.BorderStyle = BorderStyle.FixedSingle;
             txtEmergencyContact.Font = new Font("Segoe UI", 10F);
-            txtEmergencyContact.Location = new Point(616, 47);
+            txtEmergencyContact.Location = new Point(625, 47);
             txtEmergencyContact.MaxLength = 11;
             txtEmergencyContact.Name = "txtEmergencyContact";
-            txtEmergencyContact.Size = new Size(324, 25);
-            txtEmergencyContact.TabIndex = 7;
+            txtEmergencyContact.Size = new Size(315, 25);
+            txtEmergencyContact.TabIndex = 9;
             // 
             // lblAllergies
             // 
@@ -672,7 +702,7 @@
             lblAllergies.Location = new Point(15, 82);
             lblAllergies.Name = "lblAllergies";
             lblAllergies.Size = new Size(145, 19);
-            lblAllergies.TabIndex = 8;
+            lblAllergies.TabIndex = 10;
             lblAllergies.Text = "⚠️ Known Allergies:";
             // 
             // txtAllergies
@@ -682,8 +712,9 @@
             txtAllergies.Location = new Point(15, 107);
             txtAllergies.Multiline = true;
             txtAllergies.Name = "txtAllergies";
-            txtAllergies.Size = new Size(450, 94);
-            txtAllergies.TabIndex = 9;
+            txtAllergies.ScrollBars = ScrollBars.Vertical;
+            txtAllergies.Size = new Size(450, 114);
+            txtAllergies.TabIndex = 11;
             // 
             // lblMedicalHistory
             // 
@@ -693,7 +724,7 @@
             lblMedicalHistory.Location = new Point(490, 82);
             lblMedicalHistory.Name = "lblMedicalHistory";
             lblMedicalHistory.Size = new Size(107, 19);
-            lblMedicalHistory.TabIndex = 10;
+            lblMedicalHistory.TabIndex = 12;
             lblMedicalHistory.Text = "Medical History:";
             // 
             // txtMedicalHistory
@@ -703,8 +734,9 @@
             txtMedicalHistory.Location = new Point(490, 107);
             txtMedicalHistory.Multiline = true;
             txtMedicalHistory.Name = "txtMedicalHistory";
-            txtMedicalHistory.Size = new Size(450, 94);
-            txtMedicalHistory.TabIndex = 11;
+            txtMedicalHistory.ScrollBars = ScrollBars.Vertical;
+            txtMedicalHistory.Size = new Size(450, 114);
+            txtMedicalHistory.TabIndex = 13;
             // 
             // panelPriorityInfo
             // 
@@ -712,7 +744,7 @@
             panelPriorityInfo.Controls.Add(lblPriorityLabel);
             panelPriorityInfo.Controls.Add(cmbPriority);
             panelPriorityInfo.Controls.Add(lblPriorityInfo);
-            panelPriorityInfo.Location = new Point(20, 849);
+            panelPriorityInfo.Location = new Point(20, 879);
             panelPriorityInfo.Name = "panelPriorityInfo";
             panelPriorityInfo.Size = new Size(960, 70);
             panelPriorityInfo.TabIndex = 3;
@@ -758,7 +790,7 @@
             btnSaveAndQueue.FlatStyle = FlatStyle.Flat;
             btnSaveAndQueue.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             btnSaveAndQueue.ForeColor = Color.White;
-            btnSaveAndQueue.Location = new Point(20, 934);
+            btnSaveAndQueue.Location = new Point(20, 964);
             btnSaveAndQueue.Name = "btnSaveAndQueue";
             btnSaveAndQueue.Size = new Size(650, 50);
             btnSaveAndQueue.TabIndex = 4;
@@ -774,7 +806,7 @@
             btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             btnCancel.ForeColor = Color.White;
-            btnCancel.Location = new Point(680, 934);
+            btnCancel.Location = new Point(680, 964);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(300, 50);
             btnCancel.TabIndex = 5;
@@ -788,7 +820,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             BackColor = Color.FromArgb(247, 250, 252);
-            ClientSize = new Size(1004, 993);
+            ClientSize = new Size(1004, 1023);
             Controls.Add(btnCancel);
             Controls.Add(btnSaveAndQueue);
             Controls.Add(panelPriorityInfo);

@@ -2,9 +2,6 @@
 {
     partial class RegisterForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.TextBox txtName;
         private System.Windows.Forms.TextBox txtEmail;
@@ -14,7 +11,6 @@
         private System.Windows.Forms.TextBox txtAllergies;
         private System.Windows.Forms.TextBox txtSpecialization;
         private System.Windows.Forms.TextBox txtPhoneNumber;
-        private System.Windows.Forms.ComboBox cmbBloodType;
         private System.Windows.Forms.ComboBox cmbRole;
         private System.Windows.Forms.ComboBox cmbGender;
         private System.Windows.Forms.ComboBox cmbSpecialization;
@@ -34,7 +30,6 @@
         private System.Windows.Forms.Label lblAge;
         private System.Windows.Forms.Label lblGender;
         private System.Windows.Forms.Label lblRole;
-        private System.Windows.Forms.Label lblBloodType;
         private System.Windows.Forms.Label lblAllergies;
         private System.Windows.Forms.Label lblSpecialization;
         private System.Windows.Forms.Label lblPhoneNumber;
@@ -43,10 +38,6 @@
         private System.Windows.Forms.Button btnUploadPhoto;
         private System.Windows.Forms.Button btnRemovePhoto;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -84,8 +75,6 @@
             cmbPhoneType = new ComboBox();
             lblPhoneNumber = new Label();
             txtPhoneNumber = new TextBox();
-            lblBloodType = new Label();
-            cmbBloodType = new ComboBox();
             lblAllergies = new Label();
             txtAllergies = new TextBox();
             panelDoctorInfo = new Panel();
@@ -357,13 +346,11 @@
             panelPatientInfo.Controls.Add(cmbPhoneType);
             panelPatientInfo.Controls.Add(lblPhoneNumber);
             panelPatientInfo.Controls.Add(txtPhoneNumber);
-            panelPatientInfo.Controls.Add(lblBloodType);
-            panelPatientInfo.Controls.Add(cmbBloodType);
             panelPatientInfo.Controls.Add(lblAllergies);
             panelPatientInfo.Controls.Add(txtAllergies);
             panelPatientInfo.Location = new Point(30, 495);
             panelPatientInfo.Name = "panelPatientInfo";
-            panelPatientInfo.Size = new Size(540, 180);
+            panelPatientInfo.Size = new Size(540, 130);
             panelPatientInfo.TabIndex = 17;
             panelPatientInfo.Visible = false;
             // 
@@ -374,9 +361,9 @@
             lblPhoneType.ForeColor = Color.FromArgb(64, 64, 64);
             lblPhoneType.Location = new Point(15, 15);
             lblPhoneType.Name = "lblPhoneType";
-            lblPhoneType.Size = new Size(76, 15);
+            lblPhoneType.Size = new Size(99, 15);
             lblPhoneType.TabIndex = 0;
-            lblPhoneType.Text = "Phone Type *";
+            lblPhoneType.Text = "Phone Type (Opt)";
             // 
             // cmbPhoneType
             // 
@@ -398,9 +385,9 @@
             lblPhoneNumber.ForeColor = Color.FromArgb(64, 64, 64);
             lblPhoneNumber.Location = new Point(150, 15);
             lblPhoneNumber.Name = "lblPhoneNumber";
-            lblPhoneNumber.Size = new Size(161, 15);
+            lblPhoneNumber.Size = new Size(184, 15);
             lblPhoneNumber.TabIndex = 2;
-            lblPhoneNumber.Text = "Phone Number * (09XXXXXXXXX)";
+            lblPhoneNumber.Text = "Phone Number (09XXXXXXXXX)";
             // 
             // txtPhoneNumber
             // 
@@ -414,37 +401,15 @@
             txtPhoneNumber.TabIndex = 3;
             txtPhoneNumber.KeyPress += TxtPhoneNumber_KeyPress;
             // 
-            // lblBloodType
-            // 
-            lblBloodType.AutoSize = true;
-            lblBloodType.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            lblBloodType.ForeColor = Color.FromArgb(64, 64, 64);
-            lblBloodType.Location = new Point(15, 70);
-            lblBloodType.Name = "lblBloodType";
-            lblBloodType.Size = new Size(68, 15);
-            lblBloodType.TabIndex = 4;
-            lblBloodType.Text = "Blood Type";
-            // 
-            // cmbBloodType
-            // 
-            cmbBloodType.BackColor = Color.White;
-            cmbBloodType.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbBloodType.FlatStyle = FlatStyle.Flat;
-            cmbBloodType.Font = new Font("Segoe UI", 9F);
-            cmbBloodType.Location = new Point(15, 90);
-            cmbBloodType.Name = "cmbBloodType";
-            cmbBloodType.Size = new Size(120, 23);
-            cmbBloodType.TabIndex = 5;
-            // 
             // lblAllergies
             // 
             lblAllergies.AutoSize = true;
             lblAllergies.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblAllergies.ForeColor = Color.FromArgb(64, 64, 64);
-            lblAllergies.Location = new Point(15, 125);
+            lblAllergies.Location = new Point(15, 70);
             lblAllergies.Name = "lblAllergies";
             lblAllergies.Size = new Size(55, 15);
-            lblAllergies.TabIndex = 6;
+            lblAllergies.TabIndex = 4;
             lblAllergies.Text = "Allergies";
             // 
             // txtAllergies
@@ -452,10 +417,10 @@
             txtAllergies.BackColor = Color.White;
             txtAllergies.BorderStyle = BorderStyle.FixedSingle;
             txtAllergies.Font = new Font("Segoe UI", 9F);
-            txtAllergies.Location = new Point(15, 145);
+            txtAllergies.Location = new Point(15, 90);
             txtAllergies.Name = "txtAllergies";
             txtAllergies.Size = new Size(505, 23);
-            txtAllergies.TabIndex = 7;
+            txtAllergies.TabIndex = 5;
             // 
             // panelDoctorInfo
             // 
@@ -515,7 +480,7 @@
             btnSubmit.FlatStyle = FlatStyle.Flat;
             btnSubmit.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnSubmit.ForeColor = Color.White;
-            btnSubmit.Location = new Point(30, 695);
+            btnSubmit.Location = new Point(30, 640);
             btnSubmit.Name = "btnSubmit";
             btnSubmit.Size = new Size(260, 45);
             btnSubmit.TabIndex = 19;
@@ -531,7 +496,7 @@
             btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnCancel.ForeColor = Color.White;
-            btnCancel.Location = new Point(310, 695);
+            btnCancel.Location = new Point(310, 640);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(260, 45);
             btnCancel.TabIndex = 20;
@@ -544,7 +509,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(240, 245, 250);
-            ClientSize = new Size(600, 770);
+            ClientSize = new Size(600, 710);
             Controls.Add(btnRemovePhoto);
             Controls.Add(btnUploadPhoto);
             Controls.Add(pictureBoxProfile);
@@ -571,7 +536,7 @@
             Controls.Add(panelHeader);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
-            MinimumSize = new Size(616, 809);
+            MinimumSize = new Size(616, 749);
             Name = "RegisterForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "User Management - St. Joseph's Hospital";

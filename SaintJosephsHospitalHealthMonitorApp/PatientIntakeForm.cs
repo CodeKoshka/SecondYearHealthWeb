@@ -32,6 +32,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
             ConfigureForIntakeMode();
 
             cmbPriority.SelectedIndex = 0;
+            cmbBloodType.SelectedIndex = 0;
+            cmbPhoneType.SelectedIndex = 0;
+            cmbEmergencyContactPhoneType.SelectedIndex = 0;
         }
 
         public PatientIntakeForm(int pId, int recId, bool viewOnly)
@@ -64,6 +67,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             txtCurrentMedications.ReadOnly = true;
             txtAllergies.ReadOnly = true;
             txtMedicalHistory.ReadOnly = true;
+            cmbBloodType.Enabled = false;
             txtPhone.ReadOnly = true;
             cmbPhoneType.Enabled = false;
             txtEmergencyContact.ReadOnly = true;
@@ -85,10 +89,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
             btnSaveAndQueue.Visible = false;
             btnCancel.Text = "✓ CLOSE";
             btnCancel.BackColor = Color.FromArgb(66, 153, 225);
-            btnCancel.Location = new Point(20, 929);
+            btnCancel.Location = new Point(20, 964);
             btnCancel.Size = new Size(960, 50);
 
-            this.ClientSize = new Size(1004, 995);
+            this.ClientSize = new Size(1004, 1030);
         }
 
         private void ConfigureForEditMode()
@@ -97,6 +101,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             txtAllergies.ReadOnly = false;
             txtMedicalHistory.ReadOnly = false;
+            cmbBloodType.Enabled = true;
             txtPhone.ReadOnly = false;
             cmbPhoneType.Enabled = true;
             txtEmergencyContact.ReadOnly = false;
@@ -217,7 +222,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     string reasonText = dt.Rows[0]["reason_for_visit"]?.ToString() ?? "";
                     string priority = dt.Rows[0]["priority"]?.ToString() ?? "Normal";
 
-                   ParseIntakeNotes(reasonText);
+                    ParseIntakeNotes(reasonText);
 
                     if (cmbPriority.Items.Contains(priority))
                     {
@@ -355,7 +360,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 System.Diagnostics.Debug.WriteLine("Error parsing intake notes: " + ex.Message);
             }
         }
-
         private void LoadPatientBasicInfo()
         {
             try
@@ -376,7 +380,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     DataRow row = dt.Rows[0];
                     lblPatientName.Text = $"Patient: {row["name"]}";
                     lblAge.Text = $"Age: {row["age"]} | Gender: {row["gender"]}";
-                    lblBloodType.Text = $"Blood Type: {row["blood_type"]}";
+
+                    string bloodType = row["blood_type"]?.ToString() ?? "";
+                    lblBloodType.Text = string.IsNullOrEmpty(bloodType) ? "Blood Type: Not recorded" : $"Blood Type: {bloodType}";
+
+                    if (!string.IsNullOrEmpty(bloodType) && cmbBloodType.Items.Contains(bloodType))
+                    {
+                        cmbBloodType.SelectedItem = bloodType;
+                    }
+                    else
+                    {
+                        cmbBloodType.SelectedIndex = 0;
+                    }
+
+                    string email = row["email"]?.ToString() ?? "";
+                    string emailDisplay = string.IsNullOrEmpty(email) ? "Not provided" : email;
 
                     string phoneNumber = row["phone_number"]?.ToString() ?? "";
                     string phoneType = "";
@@ -392,9 +410,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
                     }
 
-                    lblContact.Text = string.IsNullOrEmpty(phoneType)
-                        ? $"Phone: {phoneNumber} | Email: {row["email"]}"
-                        : $"Phone: {phoneNumber} ({phoneType}) | Email: {row["email"]}";
+                    string phoneDisplay = string.IsNullOrEmpty(phoneNumber) ? "Not provided" : phoneNumber;
+                    if (!string.IsNullOrEmpty(phoneType))
+                    {
+                        phoneDisplay = $"{phoneNumber} ({phoneType})";
+                    }
+
+                    lblContact.Text = $"Phone: {phoneDisplay} | Email: {emailDisplay}";
 
                     string emergencyContact = row["emergency_contact"]?.ToString() ?? "";
                     string emergencyPhoneType = "";
@@ -410,9 +432,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
                     }
 
-                    lblEmergency.Text = string.IsNullOrEmpty(emergencyPhoneType)
-                        ? $"Emergency Contact: {emergencyContact}"
-                        : $"Emergency Contact: {emergencyContact} ({emergencyPhoneType})";
+                    string emergencyDisplay = string.IsNullOrEmpty(emergencyContact) ? "Not provided" : emergencyContact;
+                    if (!string.IsNullOrEmpty(emergencyPhoneType))
+                    {
+                        emergencyDisplay = $"{emergencyContact} ({emergencyPhoneType})";
+                    }
+
+                    lblEmergency.Text = $"Emergency Contact: {emergencyDisplay}";
 
                     txtAllergies.Text = row["allergies"]?.ToString() ?? "";
                     txtMedicalHistory.Text = row["medical_history"]?.ToString() ?? "";
@@ -660,8 +686,132 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 SavePatientInfoOnly();
                 return;
             }
-        }
 
+            if (string.IsNullOrWhiteSpace(txtChiefComplaint.Text))
+            {
+                MessageBox.Show("Please enter the reason for visit / chief complaint.",
+                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtChiefComplaint.Focus();
+                return;
+            }
+
+            if (cmbPriority.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a priority level.",
+                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cmbPriority.Focus();
+                return;
+            }
+
+            string priority = cmbPriority.SelectedItem.ToString();
+            bool isUrgentOrEmergency = (priority == "Urgent" || priority == "Emergency");
+
+            if (!isUrgentOrEmergency && !ValidateVitalSigns())
+            {
+                return;
+            }
+ 
+            if (!string.IsNullOrWhiteSpace(txtPhone.Text))
+            {
+                string phoneType = cmbPhoneType.SelectedItem?.ToString() ?? "Mobile";
+                if (!ValidatePhoneNumber(txtPhone.Text, phoneType))
+                {
+                    txtPhone.Focus();
+                    return;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtEmergencyContact.Text))
+            {
+                string emergencyPhoneType = cmbEmergencyContactPhoneType.SelectedItem?.ToString() ?? "Mobile";
+                if (!ValidatePhoneNumber(txtEmergencyContact.Text, emergencyPhoneType))
+                {
+                    txtEmergencyContact.Focus();
+                    return;
+                }
+            }
+
+            try
+            {
+                string phoneType = cmbPhoneType.SelectedItem?.ToString() ?? "Mobile";
+                string formattedPhone = FormatPhoneNumberForStorage(txtPhone.Text, phoneType);
+
+                string emergencyPhoneType = cmbEmergencyContactPhoneType.SelectedItem?.ToString() ?? "Mobile";
+                string formattedEmergencyContact = FormatPhoneNumberForStorage(txtEmergencyContact.Text, emergencyPhoneType);
+
+                string bloodType = cmbBloodType.SelectedItem?.ToString();
+                if (bloodType == "A+" || bloodType == "A-" || bloodType == "B+" || bloodType == "B-" ||
+                    bloodType == "AB+" || bloodType == "AB-" || bloodType == "O+" || bloodType == "O-")
+                {
+                }
+                else
+                {
+                    bloodType = null;
+                }
+
+                string updatePatient = @"
+                    UPDATE Patients 
+                    SET allergies = @allergies, 
+                        medical_history = @history,
+                        phone_number = @phone,
+                        emergency_contact = @emergency,
+                        blood_type = @bloodType
+                    WHERE patient_id = @patientId";
+
+                DatabaseHelper.ExecuteNonQuery(updatePatient,
+                    new MySqlParameter("@allergies", txtAllergies.Text ?? ""),
+                    new MySqlParameter("@history", txtMedicalHistory.Text ?? ""),
+                    new MySqlParameter("@phone", formattedPhone),
+                    new MySqlParameter("@emergency", formattedEmergencyContact),
+                    new MySqlParameter("@bloodType", string.IsNullOrEmpty(bloodType) ? (object)DBNull.Value : bloodType),
+                    new MySqlParameter("@patientId", patientId));
+
+                string getQueueNumber = @"
+                    SELECT COALESCE(MAX(queue_number), 0) + 1 
+                    FROM PatientQueue 
+                    WHERE queue_date = CURDATE()";
+
+                int queueNumber = Convert.ToInt32(DatabaseHelper.ExecuteScalar(getQueueNumber));
+
+                string intakeNotes = BuildIntakeNotes(isUrgentOrEmergency);
+
+                string insertQueue = @"
+                    INSERT INTO PatientQueue 
+                    (patient_id, queue_number, priority, status, reason_for_visit, 
+                     registered_by, queue_date, registered_time)
+                    VALUES 
+                    (@patientId, @queueNumber, @priority, 'Waiting', @reasonForVisit, 
+                     @registeredBy, CURDATE(), NOW())";
+
+                DatabaseHelper.ExecuteNonQuery(insertQueue,
+                    new MySqlParameter("@patientId", patientId),
+                    new MySqlParameter("@queueNumber", queueNumber),
+                    new MySqlParameter("@priority", priority),
+                    new MySqlParameter("@reasonForVisit", intakeNotes),
+                    new MySqlParameter("@registeredBy", receptionistId));
+
+                string patientName = lblPatientName.Text.Replace("Patient: ", "");
+
+                MessageBox.Show(
+                    $"✓ Patient added to queue successfully!\n\n" +
+                    $"Patient: {patientName}\n" +
+                    $"Queue Number: {queueNumber}\n" +
+                    $"Priority: {priority}\n" +
+                    $"Blood Type: {(string.IsNullOrEmpty(bloodType) ? "Not recorded" : bloodType)}\n\n" +
+                    $"The patient can now wait to be called.",
+                    "Success",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error adding patient to queue: " + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void SavePatientInfoOnly()
         {
             if (!string.IsNullOrWhiteSpace(txtPhone.Text))
@@ -700,12 +850,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 string emergencyPhoneType = cmbEmergencyContactPhoneType.SelectedItem?.ToString() ?? "Mobile";
                 string formattedEmergencyContact = FormatPhoneNumberForStorage(txtEmergencyContact.Text, emergencyPhoneType);
 
+                string bloodType = cmbBloodType.SelectedItem?.ToString();
+                if (bloodType == "A+" || bloodType == "A-" || bloodType == "B+" || bloodType == "B-" ||
+                    bloodType == "AB+" || bloodType == "AB-" || bloodType == "O+" || bloodType == "O-")
+                {
+                }
+                else
+                {
+                    bloodType = null;
+                }
+
                 string updatePatient = @"
                     UPDATE Patients 
                     SET allergies = @allergies, 
                         medical_history = @history,
                         phone_number = @phone,
-                        emergency_contact = @emergency
+                        emergency_contact = @emergency,
+                        blood_type = @bloodType
                     WHERE patient_id = @patientId";
 
                 DatabaseHelper.ExecuteNonQuery(updatePatient,
@@ -713,6 +874,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     new MySqlParameter("@history", txtMedicalHistory.Text ?? ""),
                     new MySqlParameter("@phone", formattedPhone),
                     new MySqlParameter("@emergency", formattedEmergencyContact),
+                    new MySqlParameter("@bloodType", string.IsNullOrEmpty(bloodType) ? (object)DBNull.Value : bloodType),
                     new MySqlParameter("@patientId", patientId));
 
                 string updatePriority = @"

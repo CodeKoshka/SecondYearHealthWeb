@@ -292,24 +292,29 @@ namespace SaintJosephsHospitalHealthMonitorApp
             loginForm.Show();
         }
 
+
         private void BtnAddPatient_Click(object sender, EventArgs e)
         {
             RegisterForm createPatientForm = new RegisterForm(currentUser.UserId, currentUser.Role);
 
             if (createPatientForm.ShowDialog() == DialogResult.OK)
             {
-                if (createPatientForm.NewlyCreatedPatientId.HasValue)
-                {
-                    int newPatientId = createPatientForm.NewlyCreatedPatientId.Value;
+                MessageBox.Show(
+                    "✓ Patient record has been created successfully!\n\n" +
+                    "The patient is now registered in the system.\n\n" +
+                    "To add them to the queue:\n" +
+                    "1. Click 'Add to Queue' button\n" +
+                    "2. Select the patient\n" +
+                    "3. Complete the intake form",
+                    "Patient Created",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
 
-                    PatientIntakeForm intakeForm = new PatientIntakeForm(newPatientId, currentUser.UserId);
-                    intakeForm.FormClosed += (s, args) => LoadData();
-                    intakeForm.ShowDialog();
-                }
-                else
-                {
-                    LoadData();
-                }
+                LoadData();
+            }
+            else
+            {
+                LoadData();
             }
         }
 

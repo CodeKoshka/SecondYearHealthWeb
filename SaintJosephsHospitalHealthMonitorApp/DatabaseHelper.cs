@@ -39,7 +39,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     user_id INT PRIMARY KEY AUTO_INCREMENT,
                     name VARCHAR(100) NOT NULL,
                     role VARCHAR(20) NOT NULL,
-                    email VARCHAR(100) UNIQUE NOT NULL,
+                    email VARCHAR(100) UNIQUE NULL,
                     password VARCHAR(255) NULL,
                     age INT,
                     gender VARCHAR(10),
@@ -579,7 +579,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 }
 
 
-/*
+/* Not Updated Many Things Change
 Members and their contributions so far in the program
 Tristan: head designer
 Marco and Puno: sub designer
@@ -618,4 +618,5 @@ Update
 4.pag tapos na doon ko lalagyan lahat ng comments mashadong tamad para maglagay
 
 sa mga designers gamitin ninyo yung mga ui ko as reference papagandahin ninyo lang
-yung probided na sa designer.cs paramakita yung design shift + f7 pag yung code f7 lang*/
+yung probided na sa designer.cs paramakita yung design shift + f7 pag yung code f7 lang
+*/
