@@ -86,6 +86,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         registered_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         called_time DATETIME NULL,
                         completed_time DATETIME NULL,
+                        equipment_checklist TEXT NULL COMMENT 'Doctor\'s equipment and services report',
                         FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
                         FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id) ON DELETE SET NULL,
                         FOREIGN KEY (registered_by) REFERENCES Users(user_id) ON DELETE SET NULL

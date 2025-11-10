@@ -14,7 +14,6 @@
         private System.Windows.Forms.GroupBox grpIntakeInfo;
         private System.Windows.Forms.Label lblChiefComplaint;
         private System.Windows.Forms.TextBox txtChiefComplaint;
-        private System.Windows.Forms.Label lblVitalSigns;
         private System.Windows.Forms.Label lblSymptoms;
         private System.Windows.Forms.TextBox txtSymptoms;
         private System.Windows.Forms.Label lblCurrentMeds;
@@ -41,28 +40,6 @@
         private System.Windows.Forms.Button btnSaveAndQueue;
         private System.Windows.Forms.Button btnCancel;
 
-        // Vital Signs Controls
-        private System.Windows.Forms.Panel panelVitalSigns;
-        private System.Windows.Forms.Label lblBP;
-        private System.Windows.Forms.TextBox txtBP1;
-        private System.Windows.Forms.Label lblSlash;
-        private System.Windows.Forms.TextBox txtBP2;
-        private System.Windows.Forms.Label lblHR;
-        private System.Windows.Forms.TextBox txtHR;
-        private System.Windows.Forms.Label lblHRUnit;
-        private System.Windows.Forms.Label lblRR;
-        private System.Windows.Forms.TextBox txtRR;
-        private System.Windows.Forms.Label lblRRUnit;
-        private System.Windows.Forms.Label lblTemp;
-        private System.Windows.Forms.TextBox txtTemp;
-        private System.Windows.Forms.Label lblTempUnit;
-        private System.Windows.Forms.Label lblSpO2;
-        private System.Windows.Forms.TextBox txtSpO2;
-        private System.Windows.Forms.Label lblSpO2Unit;
-        private System.Windows.Forms.Label lblWeight;
-        private System.Windows.Forms.TextBox txtWeight;
-        private System.Windows.Forms.Label lblWeightUnit;
-
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -85,27 +62,6 @@
             grpIntakeInfo = new GroupBox();
             lblChiefComplaint = new Label();
             txtChiefComplaint = new TextBox();
-            lblVitalSigns = new Label();
-            panelVitalSigns = new Panel();
-            lblBP = new Label();
-            txtBP1 = new TextBox();
-            lblSlash = new Label();
-            txtBP2 = new TextBox();
-            lblHR = new Label();
-            txtHR = new TextBox();
-            lblHRUnit = new Label();
-            lblRR = new Label();
-            txtRR = new TextBox();
-            lblRRUnit = new Label();
-            lblTemp = new Label();
-            txtTemp = new TextBox();
-            lblTempUnit = new Label();
-            lblSpO2 = new Label();
-            txtSpO2 = new TextBox();
-            lblSpO2Unit = new Label();
-            lblWeight = new Label();
-            txtWeight = new TextBox();
-            lblWeightUnit = new Label();
             lblSymptoms = new Label();
             txtSymptoms = new TextBox();
             lblCurrentMeds = new Label();
@@ -133,7 +89,6 @@
             btnCancel = new Button();
             panelHeader.SuspendLayout();
             grpIntakeInfo.SuspendLayout();
-            panelVitalSigns.SuspendLayout();
             grpPatientInfo.SuspendLayout();
             panelPriorityInfo.SuspendLayout();
             SuspendLayout();
@@ -161,9 +116,9 @@
             lblTitle.ForeColor = Color.White;
             lblTitle.Location = new Point(20, 15);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(289, 30);
+            lblTitle.Size = new Size(500, 30);
             lblTitle.TabIndex = 0;
-            lblTitle.Text = "📋 PATIENT INTAKE FORM";
+            lblTitle.Text = "📋 PATIENT INTAKE - ST. JOSEPH'S CARDIAC HOSPITAL";
             // 
             // lblPatientName
             // 
@@ -235,8 +190,6 @@
             // 
             grpIntakeInfo.Controls.Add(lblChiefComplaint);
             grpIntakeInfo.Controls.Add(txtChiefComplaint);
-            grpIntakeInfo.Controls.Add(lblVitalSigns);
-            grpIntakeInfo.Controls.Add(panelVitalSigns);
             grpIntakeInfo.Controls.Add(lblSymptoms);
             grpIntakeInfo.Controls.Add(txtSymptoms);
             grpIntakeInfo.Controls.Add(lblCurrentMeds);
@@ -245,7 +198,7 @@
             grpIntakeInfo.ForeColor = Color.FromArgb(26, 32, 44);
             grpIntakeInfo.Location = new Point(20, 160);
             grpIntakeInfo.Name = "grpIntakeInfo";
-            grpIntakeInfo.Size = new Size(960, 470);
+            grpIntakeInfo.Size = new Size(960, 380);
             grpIntakeInfo.TabIndex = 1;
             grpIntakeInfo.TabStop = false;
             grpIntakeInfo.Text = "Visit Information";
@@ -268,292 +221,52 @@
             txtChiefComplaint.Location = new Point(15, 55);
             txtChiefComplaint.Multiline = true;
             txtChiefComplaint.Name = "txtChiefComplaint";
-            txtChiefComplaint.Size = new Size(925, 50);
+            txtChiefComplaint.Size = new Size(925, 80);
             txtChiefComplaint.TabIndex = 1;
-            // 
-            // lblVitalSigns
-            // 
-            lblVitalSigns.AutoSize = true;
-            lblVitalSigns.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblVitalSigns.ForeColor = Color.FromArgb(229, 62, 62);
-            lblVitalSigns.Location = new Point(15, 115);
-            lblVitalSigns.Name = "lblVitalSigns";
-            lblVitalSigns.Size = new Size(92, 19);
-            lblVitalSigns.TabIndex = 2;
-            lblVitalSigns.Text = "* Vital Signs:";
-            // 
-            // panelVitalSigns
-            // 
-            panelVitalSigns.BackColor = Color.FromArgb(247, 250, 252);
-            panelVitalSigns.Controls.Add(lblBP);
-            panelVitalSigns.Controls.Add(txtBP1);
-            panelVitalSigns.Controls.Add(lblSlash);
-            panelVitalSigns.Controls.Add(txtBP2);
-            panelVitalSigns.Controls.Add(lblHR);
-            panelVitalSigns.Controls.Add(txtHR);
-            panelVitalSigns.Controls.Add(lblHRUnit);
-            panelVitalSigns.Controls.Add(lblRR);
-            panelVitalSigns.Controls.Add(txtRR);
-            panelVitalSigns.Controls.Add(lblRRUnit);
-            panelVitalSigns.Controls.Add(lblTemp);
-            panelVitalSigns.Controls.Add(txtTemp);
-            panelVitalSigns.Controls.Add(lblTempUnit);
-            panelVitalSigns.Controls.Add(lblSpO2);
-            panelVitalSigns.Controls.Add(txtSpO2);
-            panelVitalSigns.Controls.Add(lblSpO2Unit);
-            panelVitalSigns.Controls.Add(lblWeight);
-            panelVitalSigns.Controls.Add(txtWeight);
-            panelVitalSigns.Controls.Add(lblWeightUnit);
-            panelVitalSigns.Location = new Point(15, 140);
-            panelVitalSigns.Name = "panelVitalSigns";
-            panelVitalSigns.Size = new Size(925, 54);
-            panelVitalSigns.TabIndex = 3;
-            // 
-            // lblBP
-            // 
-            lblBP.AutoSize = true;
-            lblBP.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblBP.ForeColor = Color.FromArgb(74, 85, 104);
-            lblBP.Location = new Point(5, 17);
-            lblBP.Name = "lblBP";
-            lblBP.Size = new Size(31, 19);
-            lblBP.TabIndex = 0;
-            lblBP.Text = "BP:";
-            // 
-            // txtBP1
-            // 
-            txtBP1.BorderStyle = BorderStyle.FixedSingle;
-            txtBP1.Font = new Font("Segoe UI", 10F);
-            txtBP1.Location = new Point(40, 14);
-            txtBP1.Name = "txtBP1";
-            txtBP1.PlaceholderText = "120";
-            txtBP1.Size = new Size(50, 25);
-            txtBP1.TabIndex = 1;
-            // 
-            // lblSlash
-            // 
-            lblSlash.AutoSize = true;
-            lblSlash.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblSlash.ForeColor = Color.FromArgb(74, 85, 104);
-            lblSlash.Location = new Point(92, 17);
-            lblSlash.Name = "lblSlash";
-            lblSlash.Size = new Size(15, 19);
-            lblSlash.TabIndex = 2;
-            lblSlash.Text = "/";
-            // 
-            // txtBP2
-            // 
-            txtBP2.BorderStyle = BorderStyle.FixedSingle;
-            txtBP2.Font = new Font("Segoe UI", 10F);
-            txtBP2.Location = new Point(110, 14);
-            txtBP2.Name = "txtBP2";
-            txtBP2.PlaceholderText = "80";
-            txtBP2.Size = new Size(50, 25);
-            txtBP2.TabIndex = 3;
-            // 
-            // lblHR
-            // 
-            lblHR.AutoSize = true;
-            lblHR.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblHR.ForeColor = Color.FromArgb(74, 85, 104);
-            lblHR.Location = new Point(173, 17);
-            lblHR.Name = "lblHR";
-            lblHR.Size = new Size(33, 19);
-            lblHR.TabIndex = 4;
-            lblHR.Text = "HR:";
-            // 
-            // txtHR
-            // 
-            txtHR.BorderStyle = BorderStyle.FixedSingle;
-            txtHR.Font = new Font("Segoe UI", 10F);
-            txtHR.Location = new Point(208, 14);
-            txtHR.Name = "txtHR";
-            txtHR.PlaceholderText = "72";
-            txtHR.Size = new Size(50, 25);
-            txtHR.TabIndex = 5;
-            // 
-            // lblHRUnit
-            // 
-            lblHRUnit.AutoSize = true;
-            lblHRUnit.Font = new Font("Segoe UI", 9F);
-            lblHRUnit.ForeColor = Color.FromArgb(113, 128, 150);
-            lblHRUnit.Location = new Point(263, 20);
-            lblHRUnit.Name = "lblHRUnit";
-            lblHRUnit.Size = new Size(32, 15);
-            lblHRUnit.TabIndex = 6;
-            lblHRUnit.Text = "bpm";
-            // 
-            // lblRR
-            // 
-            lblRR.AutoSize = true;
-            lblRR.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblRR.ForeColor = Color.FromArgb(74, 85, 104);
-            lblRR.Location = new Point(301, 17);
-            lblRR.Name = "lblRR";
-            lblRR.Size = new Size(31, 19);
-            lblRR.TabIndex = 7;
-            lblRR.Text = "RR:";
-            // 
-            // txtRR
-            // 
-            txtRR.BorderStyle = BorderStyle.FixedSingle;
-            txtRR.Font = new Font("Segoe UI", 10F);
-            txtRR.Location = new Point(337, 14);
-            txtRR.Name = "txtRR";
-            txtRR.PlaceholderText = "18";
-            txtRR.Size = new Size(50, 25);
-            txtRR.TabIndex = 8;
-            // 
-            // lblRRUnit
-            // 
-            lblRRUnit.AutoSize = true;
-            lblRRUnit.Font = new Font("Segoe UI", 9F);
-            lblRRUnit.ForeColor = Color.FromArgb(113, 128, 150);
-            lblRRUnit.Location = new Point(393, 20);
-            lblRRUnit.Name = "lblRRUnit";
-            lblRRUnit.Size = new Size(33, 15);
-            lblRRUnit.TabIndex = 9;
-            lblRRUnit.Text = "/min";
-            // 
-            // lblTemp
-            // 
-            lblTemp.AutoSize = true;
-            lblTemp.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblTemp.ForeColor = Color.FromArgb(74, 85, 104);
-            lblTemp.Location = new Point(704, 18);
-            lblTemp.Name = "lblTemp";
-            lblTemp.Size = new Size(50, 19);
-            lblTemp.TabIndex = 10;
-            lblTemp.Text = "Temp:";
-            // 
-            // txtTemp
-            // 
-            txtTemp.BorderStyle = BorderStyle.FixedSingle;
-            txtTemp.Font = new Font("Segoe UI", 10F);
-            txtTemp.Location = new Point(759, 15);
-            txtTemp.Name = "txtTemp";
-            txtTemp.PlaceholderText = "37.0";
-            txtTemp.Size = new Size(50, 25);
-            txtTemp.TabIndex = 11;
-            // 
-            // lblTempUnit
-            // 
-            lblTempUnit.AutoSize = true;
-            lblTempUnit.Font = new Font("Segoe UI", 9F);
-            lblTempUnit.ForeColor = Color.FromArgb(113, 128, 150);
-            lblTempUnit.Location = new Point(815, 21);
-            lblTempUnit.Name = "lblTempUnit";
-            lblTempUnit.Size = new Size(20, 15);
-            lblTempUnit.TabIndex = 12;
-            lblTempUnit.Text = "°C";
-            // 
-            // lblSpO2
-            // 
-            lblSpO2.AutoSize = true;
-            lblSpO2.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblSpO2.ForeColor = Color.FromArgb(74, 85, 104);
-            lblSpO2.Location = new Point(434, 17);
-            lblSpO2.Name = "lblSpO2";
-            lblSpO2.Size = new Size(49, 19);
-            lblSpO2.TabIndex = 13;
-            lblSpO2.Text = "SpO2:";
-            // 
-            // txtSpO2
-            // 
-            txtSpO2.BorderStyle = BorderStyle.FixedSingle;
-            txtSpO2.Font = new Font("Segoe UI", 10F);
-            txtSpO2.Location = new Point(484, 14);
-            txtSpO2.Name = "txtSpO2";
-            txtSpO2.PlaceholderText = "98";
-            txtSpO2.Size = new Size(50, 25);
-            txtSpO2.TabIndex = 14;
-            // 
-            // lblSpO2Unit
-            // 
-            lblSpO2Unit.AutoSize = true;
-            lblSpO2Unit.Font = new Font("Segoe UI", 9F);
-            lblSpO2Unit.ForeColor = Color.FromArgb(113, 128, 150);
-            lblSpO2Unit.Location = new Point(539, 20);
-            lblSpO2Unit.Name = "lblSpO2Unit";
-            lblSpO2Unit.Size = new Size(17, 15);
-            lblSpO2Unit.TabIndex = 15;
-            lblSpO2Unit.Text = "%";
-            // 
-            // lblWeight
-            // 
-            lblWeight.AutoSize = true;
-            lblWeight.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblWeight.ForeColor = Color.FromArgb(74, 85, 104);
-            lblWeight.Location = new Point(560, 18);
-            lblWeight.Name = "lblWeight";
-            lblWeight.Size = new Size(61, 19);
-            lblWeight.TabIndex = 16;
-            lblWeight.Text = "Weight:";
-            // 
-            // txtWeight
-            // 
-            txtWeight.BorderStyle = BorderStyle.FixedSingle;
-            txtWeight.Font = new Font("Segoe UI", 10F);
-            txtWeight.Location = new Point(625, 15);
-            txtWeight.Name = "txtWeight";
-            txtWeight.PlaceholderText = "70";
-            txtWeight.Size = new Size(50, 25);
-            txtWeight.TabIndex = 17;
-            // 
-            // lblWeightUnit
-            // 
-            lblWeightUnit.AutoSize = true;
-            lblWeightUnit.Font = new Font("Segoe UI", 9F);
-            lblWeightUnit.ForeColor = Color.FromArgb(113, 128, 150);
-            lblWeightUnit.Location = new Point(680, 21);
-            lblWeightUnit.Name = "lblWeightUnit";
-            lblWeightUnit.Size = new Size(20, 15);
-            lblWeightUnit.TabIndex = 18;
-            lblWeightUnit.Text = "kg";
             // 
             // lblSymptoms
             // 
             lblSymptoms.AutoSize = true;
             lblSymptoms.Font = new Font("Segoe UI", 10F);
             lblSymptoms.ForeColor = Color.FromArgb(74, 85, 104);
-            lblSymptoms.Location = new Point(15, 204);
+            lblSymptoms.Location = new Point(15, 145);
             lblSymptoms.Name = "lblSymptoms";
             lblSymptoms.Size = new Size(128, 19);
-            lblSymptoms.TabIndex = 4;
+            lblSymptoms.TabIndex = 2;
             lblSymptoms.Text = "Current Symptoms:";
             // 
             // txtSymptoms
             // 
             txtSymptoms.BorderStyle = BorderStyle.FixedSingle;
             txtSymptoms.Font = new Font("Segoe UI", 10F);
-            txtSymptoms.Location = new Point(15, 229);
+            txtSymptoms.Location = new Point(15, 170);
             txtSymptoms.Multiline = true;
             txtSymptoms.Name = "txtSymptoms";
             txtSymptoms.ScrollBars = ScrollBars.Vertical;
-            txtSymptoms.Size = new Size(450, 221);
-            txtSymptoms.TabIndex = 5;
+            txtSymptoms.Size = new Size(450, 180);
+            txtSymptoms.TabIndex = 3;
             // 
             // lblCurrentMeds
             // 
             lblCurrentMeds.AutoSize = true;
             lblCurrentMeds.Font = new Font("Segoe UI", 10F);
             lblCurrentMeds.ForeColor = Color.FromArgb(74, 85, 104);
-            lblCurrentMeds.Location = new Point(490, 204);
+            lblCurrentMeds.Location = new Point(490, 145);
             lblCurrentMeds.Name = "lblCurrentMeds";
             lblCurrentMeds.Size = new Size(137, 19);
-            lblCurrentMeds.TabIndex = 6;
+            lblCurrentMeds.TabIndex = 4;
             lblCurrentMeds.Text = "Current Medications:";
             // 
             // txtCurrentMedications
             // 
             txtCurrentMedications.BorderStyle = BorderStyle.FixedSingle;
             txtCurrentMedications.Font = new Font("Segoe UI", 10F);
-            txtCurrentMedications.Location = new Point(490, 229);
+            txtCurrentMedications.Location = new Point(490, 170);
             txtCurrentMedications.Multiline = true;
             txtCurrentMedications.Name = "txtCurrentMedications";
             txtCurrentMedications.ScrollBars = ScrollBars.Vertical;
-            txtCurrentMedications.Size = new Size(450, 221);
-            txtCurrentMedications.TabIndex = 7;
+            txtCurrentMedications.Size = new Size(450, 180);
+            txtCurrentMedications.TabIndex = 5;
             // 
             // grpPatientInfo
             // 
@@ -573,7 +286,7 @@
             grpPatientInfo.Controls.Add(txtMedicalHistory);
             grpPatientInfo.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             grpPatientInfo.ForeColor = Color.FromArgb(26, 32, 44);
-            grpPatientInfo.Location = new Point(20, 636);
+            grpPatientInfo.Location = new Point(20, 546);
             grpPatientInfo.Name = "grpPatientInfo";
             grpPatientInfo.Size = new Size(960, 237);
             grpPatientInfo.TabIndex = 2;
@@ -744,7 +457,7 @@
             panelPriorityInfo.Controls.Add(lblPriorityLabel);
             panelPriorityInfo.Controls.Add(cmbPriority);
             panelPriorityInfo.Controls.Add(lblPriorityInfo);
-            panelPriorityInfo.Location = new Point(20, 879);
+            panelPriorityInfo.Location = new Point(20, 789);
             panelPriorityInfo.Name = "panelPriorityInfo";
             panelPriorityInfo.Size = new Size(960, 70);
             panelPriorityInfo.TabIndex = 3;
@@ -790,7 +503,7 @@
             btnSaveAndQueue.FlatStyle = FlatStyle.Flat;
             btnSaveAndQueue.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             btnSaveAndQueue.ForeColor = Color.White;
-            btnSaveAndQueue.Location = new Point(20, 964);
+            btnSaveAndQueue.Location = new Point(20, 874);
             btnSaveAndQueue.Name = "btnSaveAndQueue";
             btnSaveAndQueue.Size = new Size(650, 50);
             btnSaveAndQueue.TabIndex = 4;
@@ -806,7 +519,7 @@
             btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             btnCancel.ForeColor = Color.White;
-            btnCancel.Location = new Point(680, 964);
+            btnCancel.Location = new Point(680, 874);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(300, 50);
             btnCancel.TabIndex = 5;
@@ -820,7 +533,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             BackColor = Color.FromArgb(247, 250, 252);
-            ClientSize = new Size(1004, 1023);
+            ClientSize = new Size(1004, 933);
             Controls.Add(btnCancel);
             Controls.Add(btnSaveAndQueue);
             Controls.Add(panelPriorityInfo);
@@ -831,13 +544,11 @@
             MaximizeBox = false;
             Name = "PatientIntakeForm";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Patient Intake Form - St. Joseph's Hospital";
+            Text = "Patient Intake Form - St. Joseph's Cardiac Hospital";
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();
             grpIntakeInfo.ResumeLayout(false);
             grpIntakeInfo.PerformLayout();
-            panelVitalSigns.ResumeLayout(false);
-            panelVitalSigns.PerformLayout();
             grpPatientInfo.ResumeLayout(false);
             grpPatientInfo.PerformLayout();
             panelPriorityInfo.ResumeLayout(false);

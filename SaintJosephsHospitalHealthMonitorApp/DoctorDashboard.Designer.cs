@@ -393,6 +393,7 @@
             btnViewHistory.TabIndex = 2;
             btnViewHistory.Text = "📋 View Full History";
             btnViewHistory.UseVisualStyleBackColor = false;
+            btnViewHistory.Click += BtnViewHistory_Click;
             // 
             // panelHeader
             // 

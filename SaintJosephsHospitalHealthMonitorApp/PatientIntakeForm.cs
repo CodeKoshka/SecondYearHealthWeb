@@ -73,26 +73,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
             txtEmergencyContact.ReadOnly = true;
             cmbEmergencyContactPhoneType.Enabled = false;
 
-            txtBP1.ReadOnly = true;
-            txtBP2.ReadOnly = true;
-            txtHR.ReadOnly = true;
-            txtRR.ReadOnly = true;
-            txtTemp.ReadOnly = true;
-            txtSpO2.ReadOnly = true;
-            txtWeight.ReadOnly = true;
-
             cmbPriority.Enabled = false;
 
             lblChiefComplaint.Text = "Reason for Visit / Chief Complaint:";
-            lblVitalSigns.Text = "Vital Signs:";
+
+            panelPriorityInfo.Location = new Point(20, 789);
 
             btnSaveAndQueue.Visible = false;
             btnCancel.Text = "✓ CLOSE";
             btnCancel.BackColor = Color.FromArgb(66, 153, 225);
-            btnCancel.Location = new Point(20, 964);
+            btnCancel.Location = new Point(20, 869);
             btnCancel.Size = new Size(960, 50);
 
-            this.ClientSize = new Size(1004, 1030);
+            this.ClientSize = new Size(1004, 950);
         }
 
         private void ConfigureForEditMode()
@@ -110,13 +103,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             txtChiefComplaint.ReadOnly = true;
             txtSymptoms.ReadOnly = true;
             txtCurrentMedications.ReadOnly = true;
-            txtBP1.ReadOnly = true;
-            txtBP2.ReadOnly = true;
-            txtHR.ReadOnly = true;
-            txtRR.ReadOnly = true;
-            txtTemp.ReadOnly = true;
-            txtSpO2.ReadOnly = true;
-            txtWeight.ReadOnly = true;
 
             cmbPriority.Enabled = true;
 
@@ -125,7 +111,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             panelPriorityInfo.Visible = true;
 
             lblChiefComplaint.Text = "Reason for Visit / Chief Complaint:";
-            lblVitalSigns.Text = "Vital Signs:";
 
             btnSaveAndQueue.Text = "💾 SAVE CHANGES";
             btnSaveAndQueue.BackColor = Color.FromArgb(72, 187, 120);
@@ -139,7 +124,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void ConfigureForIntakeMode()
         {
-            lblTitle.Text = "📋 PATIENT INTAKE FORM";
+            lblTitle.Text = "📋 PATIENT INTAKE FORM - ST. JOSEPH'S CARDIAC HOSPITAL";
             btnSaveAndQueue.Visible = true;
             btnSaveAndQueue.Text = "✓ SAVE & ADD TO QUEUE";
             btnCancel.Text = "❌ CANCEL";
@@ -242,7 +227,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 var lines = notes.Split('\n');
                 bool inChiefComplaint = false;
-                bool inVitalSigns = false;
                 bool inSymptoms = false;
                 bool inMedications = false;
 
@@ -257,15 +241,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     if (trimmedLine.StartsWith("CHIEF COMPLAINT") || trimmedLine.StartsWith("REASON FOR VISIT"))
                     {
                         inChiefComplaint = true;
-                        inVitalSigns = false;
-                        inSymptoms = false;
-                        inMedications = false;
-                        continue;
-                    }
-                    else if (trimmedLine.StartsWith("VITAL SIGNS"))
-                    {
-                        inVitalSigns = true;
-                        inChiefComplaint = false;
                         inSymptoms = false;
                         inMedications = false;
                         continue;
@@ -274,7 +249,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     {
                         inSymptoms = true;
                         inChiefComplaint = false;
-                        inVitalSigns = false;
                         inMedications = false;
                         continue;
                     }
@@ -282,7 +256,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     {
                         inMedications = true;
                         inChiefComplaint = false;
-                        inVitalSigns = false;
                         inSymptoms = false;
                         continue;
                     }
@@ -294,50 +267,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                              trimmedLine.Contains("KNOWN ALLERGIES"))
                     {
                         inChiefComplaint = false;
-                        inVitalSigns = false;
                         inSymptoms = false;
                         inMedications = false;
                         continue;
                     }
 
-                    if (inVitalSigns && !string.IsNullOrWhiteSpace(trimmedLine))
-                    {
-                        if (trimmedLine.StartsWith("BP:"))
-                        {
-                            var bpMatch = System.Text.RegularExpressions.Regex.Match(trimmedLine, @"BP:\s*(\d+)/(\d+)");
-                            if (bpMatch.Success)
-                            {
-                                txtBP1.Text = bpMatch.Groups[1].Value;
-                                txtBP2.Text = bpMatch.Groups[2].Value;
-                            }
-                        }
-                        else if (trimmedLine.StartsWith("HR:"))
-                        {
-                            var hrMatch = System.Text.RegularExpressions.Regex.Match(trimmedLine, @"HR:\s*(\d+)");
-                            if (hrMatch.Success) txtHR.Text = hrMatch.Groups[1].Value;
-                        }
-                        else if (trimmedLine.StartsWith("RR:"))
-                        {
-                            var rrMatch = System.Text.RegularExpressions.Regex.Match(trimmedLine, @"RR:\s*(\d+)");
-                            if (rrMatch.Success) txtRR.Text = rrMatch.Groups[1].Value;
-                        }
-                        else if (trimmedLine.StartsWith("Temp:"))
-                        {
-                            var tempMatch = System.Text.RegularExpressions.Regex.Match(trimmedLine, @"Temp:\s*([\d.]+)");
-                            if (tempMatch.Success) txtTemp.Text = tempMatch.Groups[1].Value;
-                        }
-                        else if (trimmedLine.StartsWith("SpO2:"))
-                        {
-                            var spo2Match = System.Text.RegularExpressions.Regex.Match(trimmedLine, @"SpO2:\s*(\d+)");
-                            if (spo2Match.Success) txtSpO2.Text = spo2Match.Groups[1].Value;
-                        }
-                        else if (trimmedLine.StartsWith("Weight:"))
-                        {
-                            var weightMatch = System.Text.RegularExpressions.Regex.Match(trimmedLine, @"Weight:\s*([\d.]+)");
-                            if (weightMatch.Success) txtWeight.Text = weightMatch.Groups[1].Value;
-                        }
-                    }
-                    else if (inChiefComplaint && !string.IsNullOrWhiteSpace(trimmedLine))
+                    if (inChiefComplaint && !string.IsNullOrWhiteSpace(trimmedLine))
                     {
                         chiefComplaint.AppendLine(trimmedLine);
                     }
@@ -360,6 +295,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 System.Diagnostics.Debug.WriteLine("Error parsing intake notes: " + ex.Message);
             }
         }
+
         private void LoadPatientBasicInfo()
         {
             try
@@ -510,113 +446,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private bool ValidateVitalSigns()
-        {
-            if (string.IsNullOrWhiteSpace(txtBP1.Text) || string.IsNullOrWhiteSpace(txtBP2.Text))
-            {
-                MessageBox.Show("Please enter blood pressure (both systolic and diastolic).",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtBP1.Focus();
-                return false;
-            }
-
-            if (!int.TryParse(txtBP1.Text, out int systolic) || systolic < 50 || systolic > 250)
-            {
-                MessageBox.Show("Systolic blood pressure must be between 50 and 250 mmHg.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtBP1.Focus();
-                return false;
-            }
-
-            if (!int.TryParse(txtBP2.Text, out int diastolic) || diastolic < 30 || diastolic > 150)
-            {
-                MessageBox.Show("Diastolic blood pressure must be between 30 and 150 mmHg.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtBP2.Focus();
-                return false;
-            }
-
-            if (diastolic >= systolic)
-            {
-                MessageBox.Show("Diastolic pressure must be lower than systolic pressure.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtBP2.Focus();
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtHR.Text))
-            {
-                MessageBox.Show("Please enter heart rate.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtHR.Focus();
-                return false;
-            }
-
-            if (!int.TryParse(txtHR.Text, out int heartRate) || heartRate < 30 || heartRate > 220)
-            {
-                MessageBox.Show("Heart rate must be between 30 and 220 bpm.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtHR.Focus();
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtRR.Text))
-            {
-                MessageBox.Show("Please enter respiratory rate.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtRR.Focus();
-                return false;
-            }
-
-            if (!int.TryParse(txtRR.Text, out int respRate) || respRate < 5 || respRate > 60)
-            {
-                MessageBox.Show("Respiratory rate must be between 5 and 60 breaths/min.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtRR.Focus();
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtTemp.Text))
-            {
-                MessageBox.Show("Please enter body temperature.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtTemp.Focus();
-                return false;
-            }
-
-            if (!decimal.TryParse(txtTemp.Text, out decimal temp) || temp < 32 || temp > 45)
-            {
-                MessageBox.Show("Body temperature must be between 32°C and 45°C.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtTemp.Focus();
-                return false;
-            }
-
-            if (!string.IsNullOrWhiteSpace(txtSpO2.Text))
-            {
-                if (!int.TryParse(txtSpO2.Text, out int spo2) || spo2 < 50 || spo2 > 100)
-                {
-                    MessageBox.Show("Oxygen saturation (SpO2) must be between 50% and 100%.",
-                        "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtSpO2.Focus();
-                    return false;
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(txtWeight.Text))
-            {
-                if (!decimal.TryParse(txtWeight.Text, out decimal weight) || weight < 1 || weight > 500)
-                {
-                    MessageBox.Show("Weight must be between 1 kg and 500 kg.",
-                        "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtWeight.Focus();
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         private bool ValidatePhoneNumber(string phoneNumber, string phoneType)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
@@ -703,14 +532,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            string priority = cmbPriority.SelectedItem.ToString();
-            bool isUrgentOrEmergency = (priority == "Urgent" || priority == "Emergency");
-
-            if (!isUrgentOrEmergency && !ValidateVitalSigns())
-            {
-                return;
-            }
- 
             if (!string.IsNullOrWhiteSpace(txtPhone.Text))
             {
                 string phoneType = cmbPhoneType.SelectedItem?.ToString() ?? "Mobile";
@@ -773,7 +594,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 int queueNumber = Convert.ToInt32(DatabaseHelper.ExecuteScalar(getQueueNumber));
 
-                string intakeNotes = BuildIntakeNotes(isUrgentOrEmergency);
+                string intakeNotes = BuildIntakeNotes();
 
                 string insertQueue = @"
                     INSERT INTO PatientQueue 
@@ -786,7 +607,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 DatabaseHelper.ExecuteNonQuery(insertQueue,
                     new MySqlParameter("@patientId", patientId),
                     new MySqlParameter("@queueNumber", queueNumber),
-                    new MySqlParameter("@priority", priority),
+                    new MySqlParameter("@priority", cmbPriority.SelectedItem.ToString()),
                     new MySqlParameter("@reasonForVisit", intakeNotes),
                     new MySqlParameter("@registeredBy", receptionistId));
 
@@ -796,7 +617,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     $"✓ Patient added to queue successfully!\n\n" +
                     $"Patient: {patientName}\n" +
                     $"Queue Number: {queueNumber}\n" +
-                    $"Priority: {priority}\n" +
+                    $"Priority: {cmbPriority.SelectedItem}\n" +
                     $"Blood Type: {(string.IsNullOrEmpty(bloodType) ? "Not recorded" : bloodType)}\n\n" +
                     $"The patient can now wait to be called.",
                     "Success",
@@ -812,6 +633,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void SavePatientInfoOnly()
         {
             if (!string.IsNullOrWhiteSpace(txtPhone.Text))
@@ -905,34 +727,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private string BuildIntakeNotes(bool isUrgentOrEmergency = false)
+        private string BuildIntakeNotes()
         {
-            string notes = "=== PATIENT INTAKE FORM ===\n";
+            string notes = "=== PATIENT INTAKE - ST. JOSEPH'S CARDIAC HOSPITAL ===\n";
             notes += $"Date: {DateTime.Now:yyyy-MM-dd HH:mm}\n";
             notes += $"Registered by: Receptionist\n";
             notes += isNewPatient ? "Status: NEW PATIENT\n\n" : "Status: RETURNING PATIENT\n\n";
 
             notes += "CHIEF COMPLAINT / REASON FOR VISIT:\n";
             notes += txtChiefComplaint.Text + "\n\n";
-
-            notes += "VITAL SIGNS:\n";
-
-            if (isUrgentOrEmergency)
-            {
-                notes += "⚠️ PENDING - To be recorded by medical staff due to urgent/emergency priority\n\n";
-            }
-            else
-            {
-                notes += $"BP: {txtBP1.Text}/{txtBP2.Text} mmHg\n";
-                notes += $"HR: {txtHR.Text} bpm\n";
-                notes += $"RR: {txtRR.Text} /min\n";
-                notes += $"Temp: {txtTemp.Text}°C\n";
-                if (!string.IsNullOrWhiteSpace(txtSpO2.Text))
-                    notes += $"SpO2: {txtSpO2.Text}%\n";
-                if (!string.IsNullOrWhiteSpace(txtWeight.Text))
-                    notes += $"Weight: {txtWeight.Text} kg\n";
-                notes += "\n";
-            }
 
             if (!string.IsNullOrWhiteSpace(txtSymptoms.Text))
             {
@@ -970,26 +773,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 case "Emergency":
                     panelPriorityInfo.BackColor = Color.FromArgb(229, 62, 62);
-                    lblPriorityInfo.Text = "🚨 EMERGENCY - Immediate attention, vital signs optional";
-
+                    lblPriorityInfo.Text = "🚨 EMERGENCY - Immediate cardiac attention required";
                     lblChiefComplaint.Text = "* Reason for Visit / Chief Complaint:";
-                    lblVitalSigns.Text = "Vital Signs (Can be skipped for emergency):";
                     break;
 
                 case "Urgent":
                     panelPriorityInfo.BackColor = Color.FromArgb(255, 193, 7);
-                    lblPriorityInfo.Text = "⚠️ URGENT - Priority attention, vital signs optional";
-
+                    lblPriorityInfo.Text = "⚠️ URGENT - Priority cardiac assessment needed";
                     lblChiefComplaint.Text = "* Reason for Visit / Chief Complaint:";
-                    lblVitalSigns.Text = "Vital Signs (Can be skipped for urgent):";
                     break;
 
                 default:
                     panelPriorityInfo.BackColor = Color.FromArgb(72, 187, 120);
                     lblPriorityInfo.Text = "✓ NORMAL - Standard queue processing";
-
                     lblChiefComplaint.Text = "* Reason for Visit / Chief Complaint:";
-                    lblVitalSigns.Text = "* Vital Signs:";
                     break;
             }
         }

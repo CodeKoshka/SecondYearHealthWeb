@@ -6,11 +6,14 @@
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabQueue;
         private System.Windows.Forms.TabPage tabPatients;
+        private System.Windows.Forms.TabPage tabBilling;
         private System.Windows.Forms.DataGridView dgvQueue;
         private System.Windows.Forms.DataGridView dgvPatients;
+        private System.Windows.Forms.DataGridView dgvBilling;
         private System.Windows.Forms.Panel panelHeader;
         private System.Windows.Forms.Label lblWelcome;
         private System.Windows.Forms.Label lblQueueCount;
+        private System.Windows.Forms.Label lblBillingStats;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.Button btnAddToQueue;
         private System.Windows.Forms.Button btnAssignDoctor;
@@ -21,6 +24,12 @@
         private System.Windows.Forms.Button btnEditPatient;
         private System.Windows.Forms.Button btnRefreshPatients;
         private System.Windows.Forms.Button btnCheckMedicalHistory;
+        private System.Windows.Forms.Button btnViewBill;
+        private System.Windows.Forms.Button btnUpdateBill;
+        private System.Windows.Forms.Button btnProcessPayment;
+        private System.Windows.Forms.Button btnDischargePatient;
+        private System.Windows.Forms.Button btnRefreshBills;
+        private System.Windows.Forms.Button BtnAddPatient;
 
         protected override void Dispose(bool disposing)
         {
@@ -47,17 +56,27 @@
             btnRefreshQueue = new Button();
             dgvQueue = new DataGridView();
             tabPatients = new TabPage();
-            btnCheckMedicalHistory = new Button(); // NEW
+            btnCheckMedicalHistory = new Button();
             btnViewPatient = new Button();
             btnEditPatient = new Button();
             btnRefreshPatients = new Button();
             dgvPatients = new DataGridView();
+            tabBilling = new TabPage();
+            lblBillingStats = new Label();
+            btnDischargePatient = new Button();
+            btnProcessPayment = new Button();
+            btnUpdateBill = new Button();
+            btnViewBill = new Button();
+            btnRefreshBills = new Button();
+            dgvBilling = new DataGridView();
             panelHeader.SuspendLayout();
             tabControl.SuspendLayout();
             tabQueue.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvQueue).BeginInit();
             tabPatients.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvPatients).BeginInit();
+            tabBilling.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvBilling).BeginInit();
             SuspendLayout();
             // 
             // panelHeader
@@ -66,7 +85,6 @@
             panelHeader.Controls.Add(lblWelcome);
             panelHeader.Controls.Add(btnLogout);
             panelHeader.Location = new Point(0, 0);
-            panelHeader.Margin = new Padding(4, 3, 4, 3);
             panelHeader.Name = "panelHeader";
             panelHeader.Size = new Size(1400, 92);
             panelHeader.TabIndex = 0;
@@ -77,7 +95,6 @@
             lblWelcome.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
             lblWelcome.ForeColor = Color.White;
             lblWelcome.Location = new Point(35, 29);
-            lblWelcome.Margin = new Padding(4, 0, 4, 0);
             lblWelcome.Name = "lblWelcome";
             lblWelcome.Size = new Size(248, 30);
             lblWelcome.TabIndex = 0;
@@ -92,7 +109,6 @@
             btnLogout.Font = new Font("Segoe UI", 10F);
             btnLogout.ForeColor = Color.White;
             btnLogout.Location = new Point(1225, 23);
-            btnLogout.Margin = new Padding(4, 3, 4, 3);
             btnLogout.Name = "btnLogout";
             btnLogout.Size = new Size(140, 46);
             btnLogout.TabIndex = 1;
@@ -104,9 +120,9 @@
             // 
             tabControl.Controls.Add(tabQueue);
             tabControl.Controls.Add(tabPatients);
+            tabControl.Controls.Add(tabBilling);  
             tabControl.Font = new Font("Segoe UI", 10F);
             tabControl.Location = new Point(23, 115);
-            tabControl.Margin = new Padding(4, 3, 4, 3);
             tabControl.Name = "tabControl";
             tabControl.SelectedIndex = 0;
             tabControl.Size = new Size(1330, 623);
@@ -123,7 +139,6 @@
             tabQueue.Controls.Add(btnRefreshQueue);
             tabQueue.Controls.Add(dgvQueue);
             tabQueue.Location = new Point(4, 26);
-            tabQueue.Margin = new Padding(4, 3, 4, 3);
             tabQueue.Name = "tabQueue";
             tabQueue.Padding = new Padding(4, 3, 4, 3);
             tabQueue.Size = new Size(1322, 593);
@@ -139,7 +154,6 @@
             BtnAddPatient.FlatStyle = FlatStyle.Flat;
             BtnAddPatient.ForeColor = Color.White;
             BtnAddPatient.Location = new Point(533, 12);
-            BtnAddPatient.Margin = new Padding(4, 3, 4, 3);
             BtnAddPatient.Name = "BtnAddPatient";
             BtnAddPatient.Size = new Size(167, 40);
             BtnAddPatient.TabIndex = 7;
@@ -153,7 +167,6 @@
             lblQueueCount.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblQueueCount.ForeColor = Color.FromArgb(142, 68, 173);
             lblQueueCount.Location = new Point(1050, 21);
-            lblQueueCount.Margin = new Padding(4, 0, 4, 0);
             lblQueueCount.Name = "lblQueueCount";
             lblQueueCount.Size = new Size(166, 19);
             lblQueueCount.TabIndex = 6;
@@ -167,7 +180,6 @@
             btnAddToQueue.FlatStyle = FlatStyle.Flat;
             btnAddToQueue.ForeColor = Color.White;
             btnAddToQueue.Location = new Point(12, 12);
-            btnAddToQueue.Margin = new Padding(4, 3, 4, 3);
             btnAddToQueue.Name = "btnAddToQueue";
             btnAddToQueue.Size = new Size(163, 40);
             btnAddToQueue.TabIndex = 0;
@@ -183,7 +195,6 @@
             btnAssignDoctor.FlatStyle = FlatStyle.Flat;
             btnAssignDoctor.ForeColor = Color.White;
             btnAssignDoctor.Location = new Point(187, 12);
-            btnAssignDoctor.Margin = new Padding(4, 3, 4, 3);
             btnAssignDoctor.Name = "btnAssignDoctor";
             btnAssignDoctor.Size = new Size(163, 40);
             btnAssignDoctor.TabIndex = 1;
@@ -199,7 +210,6 @@
             btnCallNext.FlatStyle = FlatStyle.Flat;
             btnCallNext.ForeColor = Color.White;
             btnCallNext.Location = new Point(362, 12);
-            btnCallNext.Margin = new Padding(4, 3, 4, 3);
             btnCallNext.Name = "btnCallNext";
             btnCallNext.Size = new Size(163, 40);
             btnCallNext.TabIndex = 2;
@@ -215,7 +225,6 @@
             btnRemoveFromQueue.FlatStyle = FlatStyle.Flat;
             btnRemoveFromQueue.ForeColor = Color.White;
             btnRemoveFromQueue.Location = new Point(708, 12);
-            btnRemoveFromQueue.Margin = new Padding(4, 3, 4, 3);
             btnRemoveFromQueue.Name = "btnRemoveFromQueue";
             btnRemoveFromQueue.Size = new Size(163, 40);
             btnRemoveFromQueue.TabIndex = 3;
@@ -231,7 +240,6 @@
             btnRefreshQueue.FlatStyle = FlatStyle.Flat;
             btnRefreshQueue.ForeColor = Color.White;
             btnRefreshQueue.Location = new Point(879, 12);
-            btnRefreshQueue.Margin = new Padding(4, 3, 4, 3);
             btnRefreshQueue.Name = "btnRefreshQueue";
             btnRefreshQueue.Size = new Size(128, 40);
             btnRefreshQueue.TabIndex = 4;
@@ -246,7 +254,6 @@
             dgvQueue.BackgroundColor = Color.White;
             dgvQueue.BorderStyle = BorderStyle.None;
             dgvQueue.Location = new Point(12, 69);
-            dgvQueue.Margin = new Padding(4, 3, 4, 3);
             dgvQueue.Name = "dgvQueue";
             dgvQueue.ReadOnly = true;
             dgvQueue.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -255,13 +262,12 @@
             // 
             // tabPatients
             // 
-            tabPatients.Controls.Add(btnCheckMedicalHistory); // NEW
+            tabPatients.Controls.Add(btnCheckMedicalHistory);
             tabPatients.Controls.Add(btnViewPatient);
             tabPatients.Controls.Add(btnEditPatient);
             tabPatients.Controls.Add(btnRefreshPatients);
             tabPatients.Controls.Add(dgvPatients);
             tabPatients.Location = new Point(4, 26);
-            tabPatients.Margin = new Padding(4, 3, 4, 3);
             tabPatients.Name = "tabPatients";
             tabPatients.Padding = new Padding(4, 3, 4, 3);
             tabPatients.Size = new Size(1322, 593);
@@ -277,7 +283,6 @@
             btnCheckMedicalHistory.FlatStyle = FlatStyle.Flat;
             btnCheckMedicalHistory.ForeColor = Color.White;
             btnCheckMedicalHistory.Location = new Point(362, 12);
-            btnCheckMedicalHistory.Margin = new Padding(4, 3, 4, 3);
             btnCheckMedicalHistory.Name = "btnCheckMedicalHistory";
             btnCheckMedicalHistory.Size = new Size(190, 40);
             btnCheckMedicalHistory.TabIndex = 4;
@@ -293,7 +298,6 @@
             btnViewPatient.FlatStyle = FlatStyle.Flat;
             btnViewPatient.ForeColor = Color.White;
             btnViewPatient.Location = new Point(12, 12);
-            btnViewPatient.Margin = new Padding(4, 3, 4, 3);
             btnViewPatient.Name = "btnViewPatient";
             btnViewPatient.Size = new Size(163, 40);
             btnViewPatient.TabIndex = 0;
@@ -309,7 +313,6 @@
             btnEditPatient.FlatStyle = FlatStyle.Flat;
             btnEditPatient.ForeColor = Color.White;
             btnEditPatient.Location = new Point(187, 12);
-            btnEditPatient.Margin = new Padding(4, 3, 4, 3);
             btnEditPatient.Name = "btnEditPatient";
             btnEditPatient.Size = new Size(163, 40);
             btnEditPatient.TabIndex = 1;
@@ -325,7 +328,6 @@
             btnRefreshPatients.FlatStyle = FlatStyle.Flat;
             btnRefreshPatients.ForeColor = Color.White;
             btnRefreshPatients.Location = new Point(565, 12);
-            btnRefreshPatients.Margin = new Padding(4, 3, 4, 3);
             btnRefreshPatients.Name = "btnRefreshPatients";
             btnRefreshPatients.Size = new Size(128, 40);
             btnRefreshPatients.TabIndex = 2;
@@ -340,12 +342,127 @@
             dgvPatients.BackgroundColor = Color.White;
             dgvPatients.BorderStyle = BorderStyle.None;
             dgvPatients.Location = new Point(12, 69);
-            dgvPatients.Margin = new Padding(4, 3, 4, 3);
             dgvPatients.Name = "dgvPatients";
             dgvPatients.ReadOnly = true;
             dgvPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvPatients.Size = new Size(1283, 496);
             dgvPatients.TabIndex = 3;
+            // 
+            // tabBilling
+            // 
+            tabBilling.Controls.Add(lblBillingStats);  
+            tabBilling.Controls.Add(btnDischargePatient);
+            tabBilling.Controls.Add(btnProcessPayment);
+            tabBilling.Controls.Add(btnUpdateBill);
+            tabBilling.Controls.Add(btnViewBill);
+            tabBilling.Controls.Add(btnRefreshBills);
+            tabBilling.Controls.Add(dgvBilling);  
+            tabBilling.Location = new Point(4, 26);
+            tabBilling.Name = "tabBilling";  
+            tabBilling.Padding = new Padding(4, 3, 4, 3);
+            tabBilling.Size = new Size(1322, 593);
+            tabBilling.TabIndex = 2;
+            tabBilling.Text = "💰 Billing";  // CHANGED TEXT
+            tabBilling.UseVisualStyleBackColor = true;
+            // 
+            // lblBillingStats
+            // 
+            lblBillingStats.AutoSize = true;
+            lblBillingStats.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblBillingStats.ForeColor = Color.FromArgb(231, 76, 60);
+            lblBillingStats.Location = new Point(950, 21);
+            lblBillingStats.Name = "lblBillingStats";  
+            lblBillingStats.Size = new Size(240, 19);
+            lblBillingStats.TabIndex = 6;
+            lblBillingStats.Text = "Unpaid Bills: 0 | Total: ₱0.00";
+            // 
+            // btnDischargePatient
+            // 
+            btnDischargePatient.BackColor = Color.FromArgb(46, 204, 113);
+            btnDischargePatient.Cursor = Cursors.Hand;
+            btnDischargePatient.FlatAppearance.BorderSize = 0;
+            btnDischargePatient.FlatStyle = FlatStyle.Flat;
+            btnDischargePatient.ForeColor = Color.White;
+            btnDischargePatient.Location = new Point(563, 12);
+            btnDischargePatient.Name = "btnDischargePatient";
+            btnDischargePatient.Size = new Size(170, 40);
+            btnDischargePatient.TabIndex = 5;
+            btnDischargePatient.Text = "🚪 Discharge Patient";
+            btnDischargePatient.UseVisualStyleBackColor = false;
+            btnDischargePatient.Click += BtnDischargePatient_Click;
+            // 
+            // btnProcessPayment
+            // 
+            btnProcessPayment.BackColor = Color.FromArgb(52, 152, 219);
+            btnProcessPayment.Cursor = Cursors.Hand;
+            btnProcessPayment.FlatAppearance.BorderSize = 0;
+            btnProcessPayment.FlatStyle = FlatStyle.Flat;
+            btnProcessPayment.ForeColor = Color.White;
+            btnProcessPayment.Location = new Point(378, 12);
+            btnProcessPayment.Name = "btnProcessPayment";
+            btnProcessPayment.Size = new Size(170, 40);
+            btnProcessPayment.TabIndex = 4;
+            btnProcessPayment.Text = "💳 Process Payment";
+            btnProcessPayment.UseVisualStyleBackColor = false;
+            btnProcessPayment.Click += BtnProcessPayment_Click;
+            // 
+            // btnUpdateBill
+            // 
+            btnUpdateBill.BackColor = Color.FromArgb(243, 156, 18);
+            btnUpdateBill.Cursor = Cursors.Hand;
+            btnUpdateBill.FlatAppearance.BorderSize = 0;
+            btnUpdateBill.FlatStyle = FlatStyle.Flat;
+            btnUpdateBill.ForeColor = Color.White;
+            btnUpdateBill.Location = new Point(193, 12);
+            btnUpdateBill.Name = "btnUpdateBill";
+            btnUpdateBill.Size = new Size(170, 40);
+            btnUpdateBill.TabIndex = 3;
+            btnUpdateBill.Text = "✏️ Update Bill";
+            btnUpdateBill.UseVisualStyleBackColor = false;
+            btnUpdateBill.Click += BtnUpdateBill_Click;
+            // 
+            // btnViewBill
+            // 
+            btnViewBill.BackColor = Color.FromArgb(149, 165, 166);
+            btnViewBill.Cursor = Cursors.Hand;
+            btnViewBill.FlatAppearance.BorderSize = 0;
+            btnViewBill.FlatStyle = FlatStyle.Flat;
+            btnViewBill.ForeColor = Color.White;
+            btnViewBill.Location = new Point(12, 12);
+            btnViewBill.Name = "btnViewBill";
+            btnViewBill.Size = new Size(170, 40);
+            btnViewBill.TabIndex = 2;
+            btnViewBill.Text = "👁️ View Bill";
+            btnViewBill.UseVisualStyleBackColor = false;
+            btnViewBill.Click += BtnViewBill_Click;
+            // 
+            // btnRefreshBills
+            // 
+            btnRefreshBills.BackColor = Color.FromArgb(149, 165, 166);
+            btnRefreshBills.Cursor = Cursors.Hand;
+            btnRefreshBills.FlatAppearance.BorderSize = 0;
+            btnRefreshBills.FlatStyle = FlatStyle.Flat;
+            btnRefreshBills.ForeColor = Color.White;
+            btnRefreshBills.Location = new Point(748, 12);
+            btnRefreshBills.Name = "btnRefreshBills";
+            btnRefreshBills.Size = new Size(128, 40);
+            btnRefreshBills.TabIndex = 1;
+            btnRefreshBills.Text = "🔄 Refresh";
+            btnRefreshBills.UseVisualStyleBackColor = false;
+            btnRefreshBills.Click += BtnRefresh_Click;
+            // 
+            // dgvBilling
+            // 
+            dgvBilling.AllowUserToAddRows = false;
+            dgvBilling.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvBilling.BackgroundColor = Color.White;
+            dgvBilling.BorderStyle = BorderStyle.None;
+            dgvBilling.Location = new Point(12, 69);
+            dgvBilling.Name = "dgvBilling";
+            dgvBilling.ReadOnly = true;
+            dgvBilling.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvBilling.Size = new Size(1283, 496);
+            dgvBilling.TabIndex = 0;
             // 
             // ReceptionistDashboard
             // 
@@ -355,7 +472,6 @@
             ClientSize = new Size(1381, 763);
             Controls.Add(tabControl);
             Controls.Add(panelHeader);
-            Margin = new Padding(4, 3, 4, 3);
             Name = "ReceptionistDashboard";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Hospital Management System - Receptionist Dashboard";
@@ -367,8 +483,10 @@
             ((System.ComponentModel.ISupportInitialize)dgvQueue).EndInit();
             tabPatients.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvPatients).EndInit();
+            tabBilling.ResumeLayout(false);
+            tabBilling.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvBilling).EndInit();
             ResumeLayout(false);
         }
-        private Button BtnAddPatient;
     }
 }

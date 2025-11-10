@@ -78,24 +78,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
             cmbSpecialization.Items.Clear();
             cmbSpecialization.Items.AddRange(new string[]
             {
-                "General Practitioner",
-                "Cardiologist",
-                "Dermatologist",
-                "Endocrinologist",
-                "Gastroenterologist",
-                "Neurologist",
-                "Obstetrician-Gynecologist (OB-GYN)",
-                "Ophthalmologist",
-                "Orthopedic Surgeon",
-                "Pediatrician",
-                "Psychiatrist",
-                "Pulmonologist",
-                "Radiologist",
-                "Surgeon",
-                "Urologist",
-                "Other (Specify)"
+            "Interventional Cardiologist",
+            "Clinical Cardiologist",
+            "Electrophysiologist",
+            "Heart Failure Specialist",
+            "Cardiac Surgeon",
+            "Cardiothoracic Surgeon",
+            "Vascular Surgeon",
+            "Cardiac Anesthesiologist",
+            "Cardiac Radiologist",
+            "Cardiac Imaging Specialist",
+            "Preventive Cardiologist",
+            "Pediatric Cardiologist",
+            "Transplant Cardiologist",
+            "Cardiac Rehabilitation Specialist",
+            "Cardiac Critical Care Specialist",
+            "Other (Specify)"
             });
-
             cmbSpecialization.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbSpecialization.SelectedIndex = 0;
         }
@@ -753,7 +752,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private bool ValidatePhilippinePhoneNumber(string phoneNumber, string phoneType)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
-                return true; // Phone number is now optional for patients
+                return true;
 
             phoneNumber = phoneNumber.Replace(" ", "").Replace("-", "");
 
@@ -915,7 +914,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (currentRole == "Patient")
             {
-                // Phone number is now optional, but validate if provided
                 if (!string.IsNullOrWhiteSpace(txtPhoneNumber.Text))
                 {
                     if (cmbPhoneType.SelectedItem == null)
@@ -1132,7 +1130,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            // Validate phone number only if provided (it's optional now)
             if (role == "Patient" && !string.IsNullOrWhiteSpace(txtPhoneNumber.Text))
             {
                 if (cmbPhoneType.SelectedItem == null)
@@ -1148,11 +1145,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            // CHANGED: Set email to null if not provided, instead of fake email
-            string email = string.IsNullOrWhiteSpace(txtEmail.Text) ?
-                null : // Set to null instead of fake email
-                txtEmail.Text.Trim();
-
+            string email = string.IsNullOrWhiteSpace(txtEmail.Text) ? null : txtEmail.Text.Trim();
             string name = txtName.Text.Trim();
             string gender = cmbGender.SelectedItem.ToString();
 
@@ -1163,7 +1156,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     try
                     {
-                        // CHANGED: Only check email if one was provided (not null)
                         if (!string.IsNullOrEmpty(email))
                         {
                             string checkEmail = "SELECT COUNT(*) FROM Users WHERE email = @email";
@@ -1201,7 +1193,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             cmdInsertUser.Parameters.AddWithValue("@name", name);
                             cmdInsertUser.Parameters.AddWithValue("@role", role);
 
-                            // CHANGED: Set email to DBNull.Value if null/empty, otherwise use the email
                             if (string.IsNullOrEmpty(email))
                                 cmdInsertUser.Parameters.AddWithValue("@email", DBNull.Value);
                             else
@@ -1240,7 +1231,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 phoneNumber = FormatPhoneNumberForStorage(txtPhoneNumber.Text.Trim(), cmbPhoneType.SelectedItem.ToString());
                             }
 
-                            // Insert patient without blood_type - it will be added in PatientIntakeForm
                             string insertPatient = @"INSERT INTO Patients (user_id, allergies, phone_number, medical_history) 
                              VALUES (@userId, @allergies, @phoneNumber, '')";
                             using (MySqlCommand cmdInsertPatient = new MySqlCommand(insertPatient, conn, transaction))
@@ -1301,7 +1291,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         {
                             NewlyCreatedPatientId = newPatientId;
 
-                            // CHANGED: Show "Not provided" instead of fake email
                             successMessage = $"✓ Patient record created successfully!\n\n" +
                                            $"Name: {name}\n" +
                                            $"Phone: {(string.IsNullOrWhiteSpace(txtPhoneNumber.Text) ? "Not provided" : txtPhoneNumber.Text)}\n" +

@@ -9,7 +9,7 @@
 
 ## ⚙️ Requirements
 - Install [XAMPP](https://www.apachefriends.org/index.html)  
-- 💾 **Recommended:** Install it in your **D:\ drive** instead of **C:\**  
+- 💾 **Recommended:** Install it in your **D:\ drive** instead of **C:\ drive**  
   *(This helps avoid permission issues and missing file path errors.)*
 
 ---
