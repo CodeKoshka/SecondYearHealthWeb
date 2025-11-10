@@ -1,7 +1,7 @@
 # 🏥 Health App For Second Year Defence Baby!!!
 
 
-**Status:** 🟡 unstable version (Everything Broke Bad temporary Bandaid Fix)
+**Status:** 🟡 unstable version (Semi Broken State More Bandaid Patches Coming-Soon)
 
 **Note:** Requires **XAMPP** to run.
 

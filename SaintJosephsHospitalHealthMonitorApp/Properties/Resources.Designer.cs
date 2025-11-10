@@ -59,15 +59,5 @@ namespace SaintJosephsHospitalHealthMonitorApp.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap _3a585112_3a96_42b6_8e2b_83238efb63d0 {
-            get {
-                object obj = ResourceManager.GetObject("3a585112-3a96-42b6-8e2b-83238efb63d0", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
     }
 }

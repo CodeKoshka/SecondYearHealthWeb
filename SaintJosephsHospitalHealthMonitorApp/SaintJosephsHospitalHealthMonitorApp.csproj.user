@@ -19,6 +19,33 @@
     <Compile Update="DoctorDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="PharmacyRelated%28DONTTOUCH%29\DispenseMedicineForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyRelated%28DONTTOUCH%29\ManageInventoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyRelated%28DONTTOUCH%29\ManagePricingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyRelated%28DONTTOUCH%29\MedicationReturnForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyRelated%28DONTTOUCH%29\PharmacyReportsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyRelated%28DONTTOUCH%29\PharmacyStaffDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyRelated%28DONTTOUCH%29\ProcessOrdersForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyRelated%28DONTTOUCH%29\StockAdjustmentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyRelated%28DONTTOUCH%29\ViewOrderDetailsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="ServiceChecklistForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -34,34 +61,10 @@
     <Compile Update="PatientIntakeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="PharmacyReportsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="PharmacyStaffDashboard.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Update="ReceptionistDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="RegisterForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="ViewOrderDetailsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="ManagePricingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="StockAdjustmentForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="DispenseMedicineForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="MedicationReturnForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="ManageInventoryForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="LoginForm.cs">
