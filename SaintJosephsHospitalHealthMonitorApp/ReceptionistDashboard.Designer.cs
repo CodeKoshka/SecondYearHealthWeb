@@ -33,6 +33,7 @@
         private System.Windows.Forms.Button btnEditPatient;
         private System.Windows.Forms.Button btnCheckMedicalHistory;
         private System.Windows.Forms.Panel panelBillingButtons;
+        private System.Windows.Forms.Button btnDoctorServiceReport;
         private System.Windows.Forms.Button btnViewBill;
         private System.Windows.Forms.Button btnUpdateBill;
         private System.Windows.Forms.Button btnProcessPayment;
@@ -41,8 +42,6 @@
         private System.Windows.Forms.TextBox txtUniversalSearch;
         private System.Windows.Forms.Button btnClearUniversalSearch;
         private System.Windows.Forms.Label lblUniversalSearchIcon;
-
-        // Universal search components
         private ListBox searchSuggestionsListBox;
         private Label lblSearchStatus;
         private Panel panelSearchCategories;
@@ -537,6 +536,24 @@
             panelBillingButtons.Padding = new Padding(20, 15, 20, 15);
             panelBillingButtons.Size = new Size(1156, 80);
             panelBillingButtons.TabIndex = 1;
+            panelBillingButtons.Controls.Add(this.btnDoctorServiceReport);
+            // 
+            // btnDoctorServiceReport
+            // 
+            this.btnDoctorServiceReport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(156)))), ((int)(((byte)(39)))), ((int)(((byte)(176)))));
+            this.btnDoctorServiceReport.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnDoctorServiceReport.FlatAppearance.BorderSize = 0;
+            this.btnDoctorServiceReport.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(36)))), ((int)(((byte)(170)))));
+            this.btnDoctorServiceReport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDoctorServiceReport.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnDoctorServiceReport.ForeColor = System.Drawing.Color.White;
+            this.btnDoctorServiceReport.Location = new System.Drawing.Point(700, 15);
+            this.btnDoctorServiceReport.Name = "btnDoctorServiceReport";
+            this.btnDoctorServiceReport.Size = new System.Drawing.Size(200, 45);
+            this.btnDoctorServiceReport.TabIndex = 4;
+            this.btnDoctorServiceReport.Text = "📋 Doctor Service Report";
+            this.btnDoctorServiceReport.UseVisualStyleBackColor = false;
+            this.btnDoctorServiceReport.Click += new System.EventHandler(this.BtnDoctorServiceReport_Click);
             // 
             // btnViewBill
             // 

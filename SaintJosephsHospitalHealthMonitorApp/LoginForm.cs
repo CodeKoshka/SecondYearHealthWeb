@@ -1,10 +1,10 @@
-
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using MySqlConnector;
 using Timer = System.Windows.Forms.Timer;
+using System.Data;
 
 namespace SaintJosephsHospitalHealthMonitorApp
 {
@@ -17,11 +17,82 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private int shakeCount = 0;
         private Point originalLocation;
 
+        private static bool enableAdmin = true;
+        private static bool enableReceptionist = true;
+        private static bool enableDoctor = true;
+        private static bool enablePharmacist = false;
+
         public LoginForm()
         {
             InitializeComponent();
+            LoadDebugSettings();
             InitializeAnimations();
             SetupModernStyle();
+        }
+
+        private void LoadDebugSettings()
+        {
+            try
+            {
+                string query = "SELECT setting_key, setting_value FROM DebugSettings";
+                DataTable dt = DatabaseHelper.ExecuteQuery(query);
+
+                if (dt.Rows.Count > 0)
+                {
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        string key = row["setting_key"].ToString();
+                        bool value = row["setting_value"].ToString() == "1";
+
+                        switch (key)
+                        {
+                            case "EnableAdmin":
+                                enableAdmin = value;
+                                break;
+                            case "EnableReceptionist":
+                                enableReceptionist = value;
+                                break;
+                            case "EnableDoctor":
+                                enableDoctor = value;
+                                break;
+                            case "EnablePharmacist":
+                                enablePharmacist = value;
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load debug settings: {ex.Message}");
+            }
+        }
+
+        private void SaveDebugSettings()
+        {
+            try
+            {
+                string deleteQuery = "DELETE FROM DebugSettings";
+                DatabaseHelper.ExecuteNonQuery(deleteQuery);
+
+                string insertQuery = @"INSERT INTO DebugSettings (setting_key, setting_value) VALUES 
+                    ('EnableAdmin', @admin),
+                    ('EnableReceptionist', @receptionist),
+                    ('EnableDoctor', @doctor),
+                    ('EnablePharmacist', @pharmacist)";
+
+                DatabaseHelper.ExecuteNonQuery(insertQuery,
+                    new MySqlParameter("@admin", enableAdmin ? "1" : "0"),
+                    new MySqlParameter("@receptionist", enableReceptionist ? "1" : "0"),
+                    new MySqlParameter("@doctor", enableDoctor ? "1" : "0"),
+                    new MySqlParameter("@pharmacist", enablePharmacist ? "1" : "0")
+                );
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to save debug settings: {ex.Message}", "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void InitializeAnimations()
@@ -174,8 +245,147 @@ namespace SaintJosephsHospitalHealthMonitorApp
             t.Start();
         }
 
+        private void ShowDebugMenu()
+        {
+            Form debugForm = new Form
+            {
+                Text = "Debug Dashboard Settings",
+                Size = new Size(400, 340),
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                BackColor = Color.FromArgb(247, 250, 252)
+            };
+
+            Label lblTitle = new Label
+            {
+                Text = "Enable/Disable Dashboard Access",
+                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(26, 32, 44),
+                Location = new Point(20, 20),
+                Size = new Size(360, 30)
+            };
+
+            Label lblInfo = new Label
+            {
+                Text = "Settings are saved in database and persist across restarts",
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic),
+                ForeColor = Color.FromArgb(113, 128, 150),
+                Location = new Point(20, 50),
+                Size = new Size(360, 20)
+            };
+
+            CheckBox chkAdmin = new CheckBox
+            {
+                Text = "Admin Dashboard",
+                Checked = enableAdmin,
+                Font = new Font("Segoe UI", 10F),
+                Location = new Point(30, 80),
+                Size = new Size(340, 30),
+                ForeColor = Color.FromArgb(26, 32, 44)
+            };
+
+            CheckBox chkReceptionist = new CheckBox
+            {
+                Text = "Receptionist Dashboard",
+                Checked = enableReceptionist,
+                Font = new Font("Segoe UI", 10F),
+                Location = new Point(30, 120),
+                Size = new Size(340, 30),
+                ForeColor = Color.FromArgb(26, 32, 44)
+            };
+
+            CheckBox chkDoctor = new CheckBox
+            {
+                Text = "Doctor Dashboard",
+                Checked = enableDoctor,
+                Font = new Font("Segoe UI", 10F),
+                Location = new Point(30, 160),
+                Size = new Size(340, 30),
+                ForeColor = Color.FromArgb(26, 32, 44)
+            };
+
+            CheckBox chkPharmacist = new CheckBox
+            {
+                Text = "Pharmacist Dashboard",
+                Checked = enablePharmacist,
+                Font = new Font("Segoe UI", 10F),
+                Location = new Point(30, 200),
+                Size = new Size(340, 30),
+                ForeColor = Color.FromArgb(26, 32, 44)
+            };
+
+            Button btnSave = new Button
+            {
+                Text = "Save Settings",
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                BackColor = Color.FromArgb(66, 153, 225),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Location = new Point(230, 250),
+                Size = new Size(140, 35),
+                Cursor = Cursors.Hand
+            };
+            btnSave.FlatAppearance.BorderSize = 0;
+
+            Button btnReset = new Button
+            {
+                Text = "Reset to Default",
+                Font = new Font("Segoe UI", 9F),
+                BackColor = Color.FromArgb(203, 213, 224),
+                ForeColor = Color.FromArgb(26, 32, 44),
+                FlatStyle = FlatStyle.Flat,
+                Location = new Point(30, 250),
+                Size = new Size(120, 35),
+                Cursor = Cursors.Hand
+            };
+            btnReset.FlatAppearance.BorderSize = 0;
+
+            btnSave.Click += (s, e) =>
+            {
+                enableAdmin = chkAdmin.Checked;
+                enableReceptionist = chkReceptionist.Checked;
+                enableDoctor = chkDoctor.Checked;
+                enablePharmacist = chkPharmacist.Checked;
+
+                SaveDebugSettings();
+
+                MessageBox.Show("Debug settings saved successfully!\n\nHeadadmin access is always enabled.\nSettings are stored in database and will persist even after restart.",
+                    "Debug Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                debugForm.Close();
+            };
+
+            btnReset.Click += (s, e) =>
+            {
+                var result = MessageBox.Show("Reset all settings to default values?",
+                    "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    chkAdmin.Checked = true;
+                    chkReceptionist.Checked = true;
+                    chkDoctor.Checked = true;
+                    chkPharmacist.Checked = false;
+                }
+            };
+
+            debugForm.Controls.AddRange(new Control[] {
+                lblTitle, lblInfo, chkAdmin, chkReceptionist,
+                chkDoctor, chkPharmacist, btnSave, btnReset
+            });
+
+            debugForm.ShowDialog(this);
+        }
+
         private void BtnLogin_Click(object sender, EventArgs e)
         {
+            if (txtEmail.Text.Trim() == "--debug" && txtPassword.Text.Trim() == "--debug")
+            {
+                ShowDebugMenu();
+                return;
+            }
+
             if (string.IsNullOrEmpty(txtEmail.Text) || string.IsNullOrEmpty(txtPassword.Text))
             {
                 ShowError("Please enter both email and password.");
@@ -187,6 +397,36 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (user != null)
             {
+                bool roleEnabled = true;
+                switch (user.Role)
+                {
+                    case "Headadmin":
+                        roleEnabled = true;
+                        break;
+                    case "Admin":
+                        roleEnabled = enableAdmin;
+                        break;
+                    case "Receptionist":
+                        roleEnabled = enableReceptionist;
+                        break;
+                    case "Doctor":
+                        roleEnabled = enableDoctor;
+                        break;
+                    case "Pharmacist":
+                        roleEnabled = enablePharmacist;
+                        break;
+                    default:
+                        roleEnabled = false;
+                        break;
+                }
+
+                if (!roleEnabled)
+                {
+                    ShowError($"{user.Role} dashboard is currently disabled in debug mode.");
+                    TriggerShakeAnimation();
+                    return;
+                }
+
                 if (user.Role != "Headadmin" &&
                     user.Role != "Admin" &&
                     user.Role != "Receptionist" &&
@@ -210,7 +450,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void AnimateSuccessfulLogin(User user)
         {
-
             btnLogin.Enabled = false;
             txtEmail.Enabled = false;
             txtPassword.Enabled = false;

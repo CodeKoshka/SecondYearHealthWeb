@@ -24,7 +24,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             LoadServiceCategories();
             SetupServiceItems();
 
-            // Preselect patient if provided
             if (preselectedPatientId.HasValue)
             {
                 for (int i = 0; i < cmbPatient.Items.Count; i++)
@@ -33,6 +32,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     if (Convert.ToInt32(row["patient_id"]) == preselectedPatientId.Value)
                     {
                         cmbPatient.SelectedIndex = i;
+
+                        LoadServicesFromEquipmentReport(preselectedPatientId.Value);
                         break;
                     }
                 }
@@ -95,6 +96,167 @@ namespace SaintJosephsHospitalHealthMonitorApp
             lstServices.Columns.Add("Unit Price", 100);
             lstServices.Columns.Add("Amount", 100);
         }
+
+        private void LoadServicesFromEquipmentReport(int patientId)
+        {
+            try
+            {
+                string query = @"
+        SELECT equipment_checklist
+        FROM patientqueue
+        WHERE patient_id = @patientId 
+        AND queue_date = CURDATE()
+        AND status = 'Completed'
+        ORDER BY completed_time DESC
+        LIMIT 1";
+
+                DataTable dt = DatabaseHelper.ExecuteQuery(query,
+                    new MySqlParameter("@patientId", patientId));
+
+                if (dt.Rows.Count > 0 && dt.Rows[0]["equipment_checklist"] != DBNull.Value)
+                {
+                    string equipmentReport = dt.Rows[0]["equipment_checklist"].ToString();
+                    ParseAndAddServices(equipmentReport);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Could not load equipment report: {ex.Message}");
+            }
+        }
+
+        private void ParseAndAddServices(string report)
+        {
+            var lines = report.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var line in lines)
+            {
+                if (line.Trim().StartsWith("•"))
+                {
+                    try
+                    {
+                        string serviceLine = line.Substring(1).Trim();
+                        int categoryStart = serviceLine.LastIndexOf('(');
+                        int categoryEnd = serviceLine.LastIndexOf(')');
+
+                        if (categoryStart > 0 && categoryEnd > categoryStart)
+                        {
+                            string serviceName = serviceLine.Substring(0, categoryStart).Trim();
+                            string category = serviceLine.Substring(categoryStart + 1, categoryEnd - categoryStart - 1).Trim();
+                            decimal unitPrice = GetServicePrice(serviceName, category);
+                            int quantity = ExtractQuantityFromNextLine(lines, Array.IndexOf(lines, line));
+
+                            if (quantity == 0) quantity = 1;
+
+                            decimal amount = unitPrice * quantity;
+
+                            ListViewItem item = new ListViewItem(serviceName);
+                            item.SubItems.Add(category);
+                            item.SubItems.Add(quantity.ToString());
+                            item.SubItems.Add("₱" + unitPrice.ToString("N2"));
+                            item.SubItems.Add("₱" + amount.ToString("N2"));
+                            lstServices.Items.Add(item);
+                        }
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+            }
+
+            UpdateTotal();
+        }
+
+        private int ExtractQuantityFromNextLine(string[] lines, int currentIndex)
+        {
+            if (currentIndex + 1 < lines.Length)
+            {
+                string nextLine = lines[currentIndex + 1].Trim();
+                if (nextLine.StartsWith("Quantity:"))
+                {
+                    string qtyStr = nextLine.Replace("Quantity:", "").Trim();
+                    if (int.TryParse(qtyStr, out int qty))
+                        return qty;
+                }
+            }
+            return 1;
+        }
+
+        private decimal GetServicePrice(string serviceName, string category)
+        {
+            var servicePrices = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)
+            {{"General Consultation", 2500},
+            {"Specialist Consultation", 5000},
+            {"Follow-up Consultation", 1500},
+            {"Emergency Consultation", 7500},
+
+            {"Complete Blood Count (CBC)", 1250},
+            {"Blood Chemistry", 2000},
+            {"Urinalysis", 750},
+            {"Lipid Profile", 1750},
+            {"Blood Typing", 1000},
+            {"Liver Function Test", 2250},
+            {"Kidney Function Test", 2250},
+            {"HbA1c Test", 1800},
+
+            {"X-Ray (Single View)", 3000},
+            {"X-Ray (Two Views)", 4500},
+            {"CT Scan", 15000},
+            {"MRI", 25000},
+            {"Ultrasound", 4000},
+            {"Mammogram", 6000},
+
+            {"ECG", 2000},
+            {"Echocardiogram", 10000},
+            {"Endoscopy", 20000},
+            {"Colonoscopy", 22500},
+            {"Minor Suturing", 3750},
+            {"Wound Dressing", 1500},
+            {"IV Insertion", 1000},
+            {"Catheterization", 2500},
+            {"Nebulization", 800},
+
+            {"Antibiotics (Generic)", 750},
+            {"Pain Relief Medication", 500},
+            {"IV Fluids", 1250},
+            {"Vaccine/Immunization", 1750},
+            {"IV Antibiotics", 2000},
+            {"Emergency Medication", 3000},
+
+            {"Private Room (per day)", 10000},
+            {"Semi-Private Room (per day)", 6000},
+            {"Ward Bed (per day)", 4000},
+            {"ICU (per day)", 25000},
+            {"Emergency Room", 7500},
+            {"Observation Bed (per day)", 3000},
+        
+            {"Emergency Room Fee", 7500},
+            {"Ambulance Service", 10000},
+            {"Emergency Surgery", 100000},
+            {"Trauma Care", 15000},
+
+            {"Minor Surgery", 50000},
+            {"Major Surgery", 150000},
+            {"Operating Room Fee", 25000},
+            {"Anesthesia", 20000},
+            {"Surgical Supplies", 10000},
+
+            {"Physical Therapy Session", 3000},
+            {"Dietary Consultation", 2000},
+            {"Medical Certificate", 1000},
+            {"Medical Records Copy", 500},
+            {"Oxygen Therapy (per hour)", 500},
+            {"Cardiac Monitor (per day)", 2000},
+            {"Infusion Pump (per day)", 1500},
+            {"Medical Supplies (Sterile Gloves, Syringes, etc.)", 500}};
+
+        if (servicePrices.ContainsKey(serviceName))
+                return servicePrices[serviceName];
+
+            return 0;
+        }
+
 
         private void CmbServiceCategory_SelectedIndexChanged(object sender, EventArgs e)
         {

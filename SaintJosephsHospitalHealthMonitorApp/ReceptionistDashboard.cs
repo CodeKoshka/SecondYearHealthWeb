@@ -960,13 +960,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-                SELECT equipment_checklist
-                FROM patientqueue
-                WHERE patient_id = @patientId 
-                AND queue_date = CURDATE()
-                AND status = 'Completed'
-                ORDER BY completed_time DESC
-                LIMIT 1";
+        SELECT equipment_checklist
+        FROM patientqueue
+        WHERE patient_id = @patientId 
+        AND queue_date = CURDATE()
+        AND status = 'Completed'
+        ORDER BY completed_time DESC
+        LIMIT 1";
 
                 DataTable dt = DatabaseHelper.ExecuteQuery(query,
                     new MySqlParameter("@patientId", patientId));
@@ -988,9 +988,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     Text = $"Equipment & Services Report - {patientName}",
                     Size = new Size(900, 700),
-                    StartPosition = FormStartPosition.CenterParent,
-                    FormBorderStyle = FormBorderStyle.FixedDialog,
-                    MaximizeBox = false,
+                    StartPosition = FormStartPosition.CenterScreen,
+                    FormBorderStyle = FormBorderStyle.Sizable,
+                    MaximizeBox = true,
+                    MinimumSize = new Size(800, 600),
                     BackColor = Color.White
                 };
 
@@ -1038,7 +1039,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     Font = new Font("Consolas", 10F),
                     BorderStyle = BorderStyle.FixedSingle,
                     Text = equipmentReport,
-                    BackColor = Color.FromArgb(250, 250, 250)
+                    BackColor = Color.FromArgb(250, 250, 250),
+                    Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
                 };
 
                 Button btnCreateBill = new Button
@@ -1049,13 +1051,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     BackColor = Color.FromArgb(46, 204, 113),
                     ForeColor = Color.White,
                     FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold)
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                    Anchor = AnchorStyles.Bottom | AnchorStyles.Right
                 };
                 btnCreateBill.FlatAppearance.BorderSize = 0;
                 btnCreateBill.Click += (s, ev) =>
                 {
-                    reportView.Close();
                     BillingForm billingForm = new BillingForm(currentUser.UserId, patientId);
+                    billingForm.StartPosition = FormStartPosition.Manual;
+                    billingForm.Location = new Point(reportView.Location.X + 50, reportView.Location.Y + 50);
                     if (billingForm.ShowDialog() == DialogResult.OK)
                     {
                         LoadData();
@@ -1070,15 +1074,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     BackColor = Color.FromArgb(149, 165, 166),
                     ForeColor = Color.White,
                     FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold)
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                    Anchor = AnchorStyles.Bottom | AnchorStyles.Right
                 };
                 btnClose.FlatAppearance.BorderSize = 0;
                 btnClose.Click += (s, ev) => reportView.Close();
 
                 reportView.Controls.AddRange(new Control[] {
-                    headerPanel, rtbReport, btnCreateBill, btnClose
-                });
-                reportView.ShowDialog();
+            headerPanel, rtbReport, btnCreateBill, btnClose
+        });
+                reportView.Show();
             }
             catch (Exception ex)
             {
@@ -1156,6 +1161,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 MessageBox.Show($"Error: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void BtnDoctorServiceReport_Click(object sender, EventArgs e)
+        {
+            if (dgvBilling.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a patient to view their service report.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int patientId = Convert.ToInt32(dgvBilling.SelectedRows[0].Cells["patient_id"].Value);
+            string patientName = dgvBilling.SelectedRows[0].Cells["Patient Name"].Value.ToString();
+
+            ShowEquipmentReportFromQueue(patientId, patientName);
         }
 
         private void BtnProcessPayment_Click(object sender, EventArgs e)
@@ -1294,8 +1314,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             string status = dgvBilling.SelectedRows[0].Cells["Status"].Value.ToString();
+            int billId = Convert.ToInt32(dgvBilling.SelectedRows[0].Cells["bill_id"].Value);
+            int patientId = Convert.ToInt32(dgvBilling.SelectedRows[0].Cells["patient_id"].Value);
+            string patientName = dgvBilling.SelectedRows[0].Cells["Patient Name"].Value.ToString();
 
-            if (status == "Awaiting Bill")
+            if (status == "Awaiting Bill" || billId == 0)
             {
                 MessageBox.Show(
                     "❌ CANNOT DISCHARGE - NO BILL CREATED\n\n" +
@@ -1312,16 +1335,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 MessageBox.Show(
                     "❌ CANNOT DISCHARGE - PAYMENT REQUIRED\n\n" +
                     "The bill must be marked as PAID before discharge.\n\n" +
+                    $"Current Status: {status}\n\n" +
                     "Please process the payment first.",
                     "Payment Required",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
                 return;
             }
-
-            int billId = Convert.ToInt32(dgvBilling.SelectedRows[0].Cells["bill_id"].Value);
-            int patientId = Convert.ToInt32(dgvBilling.SelectedRows[0].Cells["patient_id"].Value);
-            string patientName = dgvBilling.SelectedRows[0].Cells["Patient Name"].Value.ToString();
 
             DialogResult confirm = MessageBox.Show(
                 $"Discharge patient: {patientName}?\n\n" +
@@ -1341,10 +1361,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string deleteQueueQuery = @"
-        DELETE FROM patientqueue 
-        WHERE patient_id = @patientId 
-        AND queue_date = CURDATE()
-        AND status = 'Completed'";
+                DELETE FROM patientqueue 
+                WHERE patient_id = @patientId 
+                AND queue_date = CURDATE()
+                AND status = 'Completed'";
 
                 DatabaseHelper.ExecuteNonQuery(deleteQueueQuery,
                     new MySqlParameter("@patientId", patientId));

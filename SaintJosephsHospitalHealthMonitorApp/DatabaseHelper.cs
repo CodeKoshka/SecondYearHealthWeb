@@ -302,6 +302,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (archived_by) REFERENCES Users(user_id) ON DELETE SET NULL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
+                string createDebugSettingsTable = @"
+                CREATE TABLE IF NOT EXISTS DebugSettings (
+                    setting_id INT PRIMARY KEY AUTO_INCREMENT,
+                    setting_key VARCHAR(50) NOT NULL UNIQUE,
+                    setting_value VARCHAR(10) NOT NULL,
+                    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
                 ExecuteNonQueryInternal(conn, createUsersTable);
                 ExecuteNonQueryInternal(conn, createPatientsTable);
                 ExecuteNonQueryInternal(conn, createDoctorsTable);
@@ -317,8 +325,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 ExecuteNonQueryInternal(conn, createControlledSubstanceLogTable);
                 ExecuteNonQueryInternal(conn, createStockAdjustmentTable);
                 ExecuteNonQueryInternal(conn, createCompletedVisitsTable);
+                ExecuteNonQueryInternal(conn, createDebugSettingsTable);
 
                 InsertDefaultUsers(conn);
+                InsertDefaultDebugSettings(conn);
             }
             catch (MySqlException ex)
             {
@@ -479,6 +489,26 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     cmdPharmacistStaff.Parameters.AddWithValue("@userId", pharmacistId);
                     cmdPharmacistStaff.ExecuteNonQuery();
                 }
+            }
+        }
+
+        private static void InsertDefaultDebugSettings(MySqlConnection conn)
+        {
+            string checkSettings = "SELECT COUNT(*) FROM DebugSettings";
+            object result = ExecuteScalarInternal(conn, checkSettings);
+            long settingsCount = Convert.ToInt64(result);
+
+            if (settingsCount == 0)
+            {
+                string insertDefaults = @"
+            INSERT INTO DebugSettings (setting_key, setting_value) VALUES 
+            ('EnableHeadadmin', '1'),
+            ('EnableAdmin', '1'),
+            ('EnableReceptionist', '1'),
+            ('EnableDoctor', '1'),
+            ('EnablePharmacist', '0')";
+
+                ExecuteNonQueryInternal(conn, insertDefaults);
             }
         }
 
