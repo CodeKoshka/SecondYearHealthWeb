@@ -19,13 +19,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private User currentUser;
         private int doctorId;
         private byte[] currentUserProfileImage;
-        private ListBox searchSuggestionsListBox;
         private System.Threading.Timer searchDebounceTimer;
         private const int SEARCH_DEBOUNCE_MS = 300;
-        private Label lblSearchStatus;
-        private Panel panelSearchCategories;
-        private CheckBox chkSearchAppointments;
-        private CheckBox chkSearchPatients;
 
         public DoctorDashboard(User user)
         {
@@ -62,8 +57,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             headerShadow.BringToFront();
 
             lblHospitalName.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblHospitalName.ForeColor = Color.FromArgb(224, 224, 224);
-            lblHospitalName.Location = new Point(28, 8);
+            lblHospitalName.ForeColor = Color.White;
+            lblHospitalName.Location = new Point(28, 20);
             lblHospitalName.AutoSize = true;
 
             lblWelcome.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
@@ -122,7 +117,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             lblWelcome.Text = $"Dr. {currentUser.Name}";
             lblRole.Text = $"Role: {currentUser.Role}";
-            lblHospitalName.Text = $"Dr. {currentUser.Name} - Doctor Portal";
+            lblHospitalName.Text = "St. Joseph's Hospital";
         }
 
         private void GetDoctorId()
@@ -148,6 +143,29 @@ namespace SaintJosephsHospitalHealthMonitorApp
             dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgv.MultiSelect = false;
             dgv.RowHeadersVisible = false;
+            dgv.EnableHeadersVisualStyles = false;
+
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(26, 188, 156);
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(10, 0, 0, 0);
+            dgv.ColumnHeadersHeight = 45;
+
+            dgv.DefaultCellStyle.BackColor = Color.White;
+            dgv.DefaultCellStyle.ForeColor = Color.FromArgb(26, 32, 44);
+            dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(26, 188, 156);
+            dgv.DefaultCellStyle.SelectionForeColor = Color.White;
+            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
+            dgv.DefaultCellStyle.Padding = new Padding(10, 5, 10, 5);
+            dgv.RowTemplate.Height = 40;
+
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 251);
+            dgv.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(26, 188, 156);
+            dgv.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
+
+            dgv.GridColor = Color.FromArgb(226, 232, 240);
+            dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
 
             typeof(DataGridView).InvokeMember("DoubleBuffered",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
@@ -156,185 +174,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void InitializeUniversalSearch()
         {
-            panelSearchCategories = new Panel();
-            panelSearchCategories.BackColor = Color.White;
-            panelSearchCategories.Height = 40;
-            panelSearchCategories.Visible = false;
-            panelSearchCategories.Name = "panelSearchCategories";
-
-            chkSearchAppointments = new CheckBox();
-            chkSearchAppointments.Text = "📅 Appointments";
-            chkSearchAppointments.Checked = true;
-            chkSearchAppointments.Font = new Font("Segoe UI", 9F);
-            chkSearchAppointments.Location = new Point(15, 10);
-            chkSearchAppointments.AutoSize = true;
-            chkSearchAppointments.CheckedChanged += (s, e) => RefreshSearchResults();
-
-            chkSearchPatients = new CheckBox();
-            chkSearchPatients.Text = "👥 Patients";
-            chkSearchPatients.Checked = true;
-            chkSearchPatients.Font = new Font("Segoe UI", 9F);
-            chkSearchPatients.Location = new Point(160, 10);
-            chkSearchPatients.AutoSize = true;
-            chkSearchPatients.CheckedChanged += (s, e) => RefreshSearchResults();
-
-            panelSearchCategories.Controls.AddRange(new Control[] {
-                chkSearchAppointments, chkSearchPatients
-            });
-
-            lblSearchStatus = new Label();
-            lblSearchStatus.Font = new Font("Segoe UI", 9F, FontStyle.Italic);
-            lblSearchStatus.ForeColor = Color.FromArgb(113, 128, 150);
-            lblSearchStatus.Visible = false;
-            lblSearchStatus.AutoSize = true;
-            lblSearchStatus.Name = "lblSearchStatus";
-
-            Panel suggestionsContainer = new Panel();
-            suggestionsContainer.BackColor = Color.Transparent;
-            suggestionsContainer.Visible = false;
-            suggestionsContainer.Name = "suggestionsContainer";
-
-            searchSuggestionsListBox = new ListBox();
-            searchSuggestionsListBox.Font = new Font("Segoe UI", 10F);
-            searchSuggestionsListBox.BorderStyle = BorderStyle.None;
-            searchSuggestionsListBox.BackColor = Color.White;
-            searchSuggestionsListBox.ForeColor = Color.FromArgb(26, 32, 44);
-            searchSuggestionsListBox.IntegralHeight = false;
-            searchSuggestionsListBox.DrawMode = DrawMode.OwnerDrawFixed;
-            searchSuggestionsListBox.ItemHeight = 50;
-            searchSuggestionsListBox.Click += SearchSuggestionsListBox_Click;
-            searchSuggestionsListBox.KeyDown += SearchSuggestionsListBox_KeyDown;
-            searchSuggestionsListBox.MouseMove += SearchSuggestionsListBox_MouseMove;
-
-            searchSuggestionsListBox.DrawItem += (s, e) =>
-            {
-                if (e.Index < 0) return;
-                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                e.DrawBackground();
-
-                bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-
-                if (isSelected)
-                {
-                    using (SolidBrush brush = new SolidBrush(Color.FromArgb(237, 242, 247)))
-                    {
-                        e.Graphics.FillRectangle(brush, e.Bounds);
-                    }
-                }
-
-                if (searchSuggestionsListBox.Items[e.Index] is UniversalSearchItem item)
-                {
-                    int photoSize = 36;
-                    int photoX = e.Bounds.X + 8;
-                    int photoY = e.Bounds.Y + (e.Bounds.Height - photoSize) / 2;
-
-                    using (SolidBrush iconBg = new SolidBrush(GetCategoryColor(item.Source)))
-                    {
-                        e.Graphics.FillEllipse(iconBg, photoX, photoY, photoSize, photoSize);
-                    }
-
-                    string icon = GetCategoryIcon(item.Source);
-                    using (Font iconFont = new Font("Segoe UI Emoji", 16F))
-                    using (SolidBrush iconBrush = new SolidBrush(Color.White))
-                    {
-                        SizeF iconSize = e.Graphics.MeasureString(icon, iconFont);
-                        e.Graphics.DrawString(icon, iconFont, iconBrush,
-                            photoX + (photoSize - iconSize.Width) / 2,
-                            photoY + (photoSize - iconSize.Height) / 2);
-                    }
-
-                    string searchTerm = txtUniversalSearch.Text.Trim();
-                    string displayText = item.DisplayText;
-
-                    using (SolidBrush textBrush = new SolidBrush(Color.FromArgb(26, 32, 44)))
-                    using (SolidBrush highlightBrush = new SolidBrush(Color.FromArgb(26, 188, 156)))
-                    using (Font boldFont = new Font(e.Font, FontStyle.Bold))
-                    {
-                        float x = photoX + photoSize + 12;
-                        float y = e.Bounds.Y + (e.Bounds.Height - e.Font.GetHeight(e.Graphics)) / 2;
-
-                        if (!string.IsNullOrEmpty(searchTerm))
-                        {
-                            int index = displayText.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase);
-                            if (index >= 0)
-                            {
-                                string before = displayText.Substring(0, index);
-                                string match = displayText.Substring(index, Math.Min(searchTerm.Length, displayText.Length - index));
-                                string after = displayText.Substring(index + match.Length);
-
-                                e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-
-                                using (StringFormat format = new StringFormat(StringFormat.GenericTypographic))
-                                {
-                                    float currentX = x;
-
-                                    if (!string.IsNullOrEmpty(before))
-                                    {
-                                        e.Graphics.DrawString(before, e.Font, textBrush, currentX, y, format);
-                                        SizeF beforeSize = e.Graphics.MeasureString(before, e.Font, new PointF(currentX, y), format);
-                                        currentX += beforeSize.Width;
-                                    }
-
-                                    if (!string.IsNullOrEmpty(match))
-                                    {
-                                        e.Graphics.DrawString(match, boldFont, highlightBrush, currentX, y, format);
-                                        SizeF matchSize = e.Graphics.MeasureString(match, boldFont, new PointF(currentX, y), format);
-                                        currentX += matchSize.Width;
-                                    }
-
-                                    if (!string.IsNullOrEmpty(after))
-                                    {
-                                        e.Graphics.DrawString(after, e.Font, textBrush, currentX, y, format);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                e.Graphics.DrawString(displayText, e.Font, textBrush, x, y);
-                            }
-                        }
-                        else
-                        {
-                            e.Graphics.DrawString(displayText, e.Font, textBrush, x, y);
-                        }
-                    }
-                }
-
-                if (e.Index < searchSuggestionsListBox.Items.Count - 1)
-                {
-                    using (Pen pen = new Pen(Color.FromArgb(226, 232, 240)))
-                    {
-                        e.Graphics.DrawLine(pen,
-                            e.Bounds.Left + 15,
-                            e.Bounds.Bottom - 1,
-                            e.Bounds.Right - 15,
-                            e.Bounds.Bottom - 1);
-                    }
-                }
-
-                e.DrawFocusRectangle();
-            };
-
-            Panel suggestionsShadow = new Panel();
-            suggestionsShadow.BackColor = Color.FromArgb(40, 0, 0, 0);
-            suggestionsShadow.Visible = false;
-            suggestionsShadow.Name = "suggestionsShadow";
-
-            this.Controls.Add(lblSearchStatus);
-            this.Controls.Add(panelSearchCategories);
-            this.Controls.Add(suggestionsShadow);
-            this.Controls.Add(suggestionsContainer);
-            suggestionsContainer.Controls.Add(searchSuggestionsListBox);
-
-            suggestionsShadow.SendToBack();
-            suggestionsContainer.BringToFront();
-            panelSearchCategories.BringToFront();
-
-            searchSuggestionsListBox.Tag = new
-            {
-                Container = suggestionsContainer,
-                Shadow = suggestionsShadow
-            };
+            InitializeSearchComponents();
+            SetupSearchSuggestionsList();
         }
 
         private Color GetCategoryColor(string source)
@@ -427,29 +268,29 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string queryQueue = @"
-                    SELECT 
-                        q.queue_id,
-                        q.queue_number,
-                        u.name AS Patient, 
-                        u.age, 
-                        u.gender,
-                        q.priority,
-                        q.status,
-                        q.registered_time,
-                        q.called_time
-                    FROM patientqueue q
-                    INNER JOIN Patients p ON q.patient_id = p.patient_id
-                    INNER JOIN Users u ON p.user_id = u.user_id
-                    WHERE q.doctor_id = @doctorId
-                    AND q.queue_date = CURDATE()
-                    AND q.status IN ('Called', 'In Progress')
-                    ORDER BY 
-                        CASE q.priority 
-                            WHEN 'Emergency' THEN 1 
-                            WHEN 'Urgent' THEN 2 
-                            ELSE 3 
-                        END, 
-                        q.called_time";
+            SELECT 
+                q.queue_id,
+                q.queue_number,
+                u.name AS Patient, 
+                u.age, 
+                u.gender,
+                q.priority,
+                q.status,
+                q.registered_time,
+                q.called_time
+                FROM patientqueue q
+                INNER JOIN Patients p ON q.patient_id = p.patient_id
+                INNER JOIN Users u ON p.user_id = u.user_id
+                WHERE q.doctor_id = @doctorId
+                AND q.queue_date = CURDATE()
+                AND q.status IN ('Called', 'In Progress')
+                ORDER BY 
+                CASE q.priority 
+                    WHEN 'Emergency' THEN 1 
+                    WHEN 'Urgent' THEN 2 
+                    ELSE 3 
+                END, 
+                q.called_time";
 
                 DataTable dtQueue = DatabaseHelper.ExecuteQuery(queryQueue,
                     new MySqlParameter("@doctorId", doctorId));
@@ -457,27 +298,38 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 dgvAppointments.DataSource = dtQueue;
 
                 string queryPatients = @"
-                    SELECT DISTINCT 
-                        p.patient_id,
-                        u.user_id, 
-                        u.name AS patient_name, 
-                        u.age, 
-                        u.gender, 
-                        IFNULL(p.blood_type, 'Unknown') AS blood_type, 
-                        IFNULL(p.allergies, 'None') AS allergies, 
-                        u.email,
-                        (SELECT COUNT(*) FROM MedicalRecords mr 
-                         WHERE mr.patient_id = p.patient_id AND mr.doctor_id = @doctorId) AS total_visits,
-                        (SELECT MAX(mr.record_date) FROM MedicalRecords mr 
-                         WHERE mr.patient_id = p.patient_id AND mr.doctor_id = @doctorId) AS last_visit
-                    FROM MedicalRecords m
-                    INNER JOIN Patients p ON m.patient_id = p.patient_id
-                    INNER JOIN Users u ON p.user_id = u.user_id
-                    WHERE m.doctor_id = @doctorId
-                    ORDER BY last_visit DESC";
+            SELECT DISTINCT 
+                p.patient_id,
+                u.user_id, 
+                u.name AS patient_name, 
+                u.age, 
+                u.gender, 
+                IFNULL(p.blood_type, 'Unknown') AS blood_type, 
+                IFNULL(p.allergies, 'None') AS allergies, 
+                u.email,
+                (SELECT COUNT(*) FROM MedicalRecords mr 
+                 WHERE mr.patient_id = p.patient_id AND mr.doctor_id = @doctorId) AS total_visits,
+                (SELECT MAX(mr.record_date) FROM MedicalRecords mr 
+                 WHERE mr.patient_id = p.patient_id AND mr.doctor_id = @doctorId) AS last_visit
+                FROM PatientQueue pq
+                INNER JOIN Patients p ON pq.patient_id = p.patient_id
+                INNER JOIN Users u ON p.user_id = u.user_id
+                WHERE pq.doctor_id = @doctorId
+                ORDER BY last_visit DESC, u.name ASC";
 
-                dgvPatients.DataSource = DatabaseHelper.ExecuteQuery(queryPatients,
+                DataTable dtPatients = DatabaseHelper.ExecuteQuery(queryPatients,
                     new MySqlParameter("@doctorId", doctorId));
+
+                dgvPatients.DataSource = dtPatients;
+
+                if (dgvAppointments.Rows.Count > 0)
+                {
+                    dgvAppointments.ClearSelection();
+                }
+                if (dgvPatients.Rows.Count > 0)
+                {
+                    dgvPatients.ClearSelection();
+                }
             }
             catch (Exception ex)
             {
@@ -587,6 +439,33 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                     LoadData();
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnServiceChecklist_Click(object sender, EventArgs e)
+        {
+            if (dgvAppointments.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a patient.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int queueId = Convert.ToInt32(dgvAppointments.SelectedRows[0].Cells["queue_id"].Value);
+            string patientName = dgvAppointments.SelectedRows[0].Cells["Patient"].Value.ToString();
+
+            try
+            {
+                string getPatientQuery = "SELECT patient_id FROM patientqueue WHERE queue_id = @queueId";
+                int patientId = Convert.ToInt32(DatabaseHelper.ExecuteScalar(getPatientQuery,
+                    new MySqlParameter("@queueId", queueId)));
+
+                OpenServiceChecklist(queueId, patientId, patientName);
             }
             catch (Exception ex)
             {
@@ -767,13 +646,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         MessageBoxIcon.Information);
                     return;
                 }
-
+                
                 Form historyForm = new Form
                 {
                     Text = $"Medical Records - {patientName}",
-                    Size = new Size(1200, 700),
+                    Size = new Size(1200, 750),
                     StartPosition = FormStartPosition.CenterParent,
-                    BackColor = Color.FromArgb(240, 244, 248)
+                    BackColor = Color.FromArgb(240, 244, 248),
+                    AutoScroll = true,
+                    MinimumSize = new Size(800, 600)
                 };
 
                 Panel headerPanel = new Panel
@@ -803,7 +684,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 Label lblInstruction = new Label
                 {
-                    Text = "Double-click a record to view full details",
+                    Text = "Double-click a record to view full details or use the button below",
                     Font = new Font("Segoe UI", 9, FontStyle.Italic),
                     ForeColor = Color.FromArgb(200, 200, 200),
                     Location = new Point(20, 75),
@@ -821,10 +702,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     AllowUserToAddRows = false,
                     ReadOnly = true,
                     SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                    MultiSelect = false,
                     AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
                     RowTemplate = { Height = 40 },
                     DataSource = dt
                 };
+
+                dgvRecords.DefaultCellStyle.SelectionBackColor = Color.FromArgb(66, 153, 225);
+                dgvRecords.DefaultCellStyle.SelectionForeColor = Color.White;
+                dgvRecords.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(66, 153, 225);
+                dgvRecords.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
 
                 dgvRecords.DataBindingComplete += (s, ev) =>
                 {
@@ -843,15 +730,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
                 };
 
+                Panel buttonPanel = new Panel
+                {
+                    Location = new Point(20, 635),
+                    Size = new Size(1150, 60),
+                    BackColor = Color.Transparent
+                };
+
                 Button btnViewDetails = new Button
                 {
                     Text = "👁️ View Full Record",
-                    Location = new Point(20, 630),
+                    Location = new Point(0, 0),
                     Size = new Size(200, 45),
                     BackColor = Color.FromArgb(66, 153, 225),
                     ForeColor = Color.White,
                     FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold)
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                    Cursor = Cursors.Hand
                 };
                 btnViewDetails.FlatAppearance.BorderSize = 0;
                 btnViewDetails.Click += (s, ev) =>
@@ -870,18 +765,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 Button btnClose = new Button
                 {
-                    Text = "Close",
-                    Location = new Point(1020, 630),
+                    Text = "✕ Close",
+                    Location = new Point(1000, 0),
                     Size = new Size(150, 45),
                     BackColor = Color.FromArgb(149, 165, 166),
                     ForeColor = Color.White,
                     FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold)
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                    Cursor = Cursors.Hand
                 };
                 btnClose.FlatAppearance.BorderSize = 0;
                 btnClose.Click += (s, ev) => historyForm.Close();
 
-                historyForm.Controls.AddRange(new Control[] { headerPanel, dgvRecords, btnViewDetails, btnClose });
+                buttonPanel.Controls.AddRange(new Control[] { btnViewDetails, btnClose });
+
+                historyForm.Controls.AddRange(new Control[] { headerPanel, dgvRecords, buttonPanel });
                 historyForm.ShowDialog();
             }
             catch (Exception ex)
@@ -1024,10 +922,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     string patientQuery = @"
                         SELECT DISTINCT p.patient_id, u.user_id, u.name, u.email, u.age, u.gender,
                                p.blood_type, 'Patients' as source
-                        FROM MedicalRecords m
-                        INNER JOIN Patients p ON m.patient_id = p.patient_id
+                        FROM PatientQueue pq
+                        INNER JOIN Patients p ON pq.patient_id = p.patient_id
                         INNER JOIN Users u ON p.user_id = u.user_id
-                        WHERE m.doctor_id = @doctorId
+                        WHERE pq.doctor_id = @doctorId
                         AND (u.name LIKE @search OR u.email LIKE @search OR p.blood_type LIKE @search)
                         ORDER BY u.name
                         LIMIT 5";
@@ -1058,80 +956,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 if (searchSuggestionsListBox.Items.Count > 0)
                 {
-                    dynamic refs = searchSuggestionsListBox.Tag;
-                    Panel container = refs.Container;
-                    Panel shadow = refs.Shadow;
-
-                    Point searchPanelLocation = this.PointToClient(panelUniversalSearch.Parent.PointToScreen(panelUniversalSearch.Location));
-                    int searchPanelBottom = searchPanelLocation.Y + panelUniversalSearch.Height;
-
-                    int width = panelUniversalSearch.Width;
-                    int itemCount = searchSuggestionsListBox.Items.Count;
-                    int maxVisibleItems = 6;
-
-                    int statusHeight = 35;
-                    int filterHeight = 40;
-                    int listHeight = Math.Min(itemCount, maxVisibleItems) * searchSuggestionsListBox.ItemHeight;
-                    int totalHeight = statusHeight + filterHeight + listHeight + 2;
-
-                    container.Location = new Point(searchPanelLocation.X, searchPanelBottom);
-                    container.Size = new Size(width, totalHeight);
-                    container.BackColor = Color.White;
-                    container.Padding = new Padding(0);
-
-                    System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
-                    int radius = 12;
-
-                    path.AddLine(0, 0, width, 0);
-                    path.AddLine(width, 0, width, totalHeight - radius);
-                    path.AddArc(width - radius, totalHeight - radius, radius, radius, 0, 90);
-                    path.AddLine(width - radius, totalHeight, radius, totalHeight);
-                    path.AddArc(0, totalHeight - radius, radius, radius, 90, 90);
-                    path.AddLine(0, totalHeight - radius, 0, 0);
-                    path.CloseFigure();
-
-                    container.Region = new Region(path);
-
-                    lblSearchStatus.Parent = container;
-                    lblSearchStatus.Location = new Point(20, 8);
-                    lblSearchStatus.AutoSize = true;
-                    lblSearchStatus.BringToFront();
-
-                    panelSearchCategories.Parent = container;
-                    panelSearchCategories.Location = new Point(0, statusHeight);
-                    panelSearchCategories.Size = new Size(width, filterHeight);
-                    panelSearchCategories.BackColor = Color.FromArgb(249, 250, 251);
-                    panelSearchCategories.Visible = true;
-                    panelSearchCategories.BorderStyle = BorderStyle.None;
-
-                    Panel filterTopBorder = panelSearchCategories.Controls.Find("filterTopBorder", false).FirstOrDefault() as Panel;
-                    if (filterTopBorder == null)
-                    {
-                        filterTopBorder = new Panel();
-                        filterTopBorder.Name = "filterTopBorder";
-                        filterTopBorder.Dock = DockStyle.Top;
-                        filterTopBorder.Height = 1;
-                        filterTopBorder.BackColor = Color.FromArgb(226, 232, 240);
-                        panelSearchCategories.Controls.Add(filterTopBorder);
-                        filterTopBorder.BringToFront();
-                    }
-
-                    searchSuggestionsListBox.Parent = container;
-                    searchSuggestionsListBox.Location = new Point(1, statusHeight + filterHeight);
-                    searchSuggestionsListBox.Size = new Size(width - 2, listHeight);
-                    searchSuggestionsListBox.BorderStyle = BorderStyle.FixedSingle;
-                    searchSuggestionsListBox.Region = null;
-
-                    shadow.Location = new Point(searchPanelLocation.X + 2, searchPanelBottom + 2);
-                    shadow.Size = new Size(width, totalHeight);
-                    shadow.Region = new Region(path.Clone() as System.Drawing.Drawing2D.GraphicsPath);
-
-                    shadow.Visible = true;
-                    container.Visible = true;
-                    lblSearchStatus.Visible = true;
-
-                    container.BringToFront();
-                    shadow.SendToBack();
+                    PositionSearchSuggestions();
                 }
                 else
                 {
@@ -1304,13 +1129,43 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             if (dgvPatients.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Please select a patient.", "Selection Required",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(
+                    "⚠️ NO PATIENT SELECTED\n\n" +
+                    "Please select a patient from the list first.\n\n" +
+                    "Steps:\n" +
+                    "1. Click on a patient row in the table\n" +
+                    "2. The selected row will be highlighted\n" +
+                    "3. Click 'Add Medical Record' again",
+                    "Selection Required",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 return;
             }
 
             int patientId = Convert.ToInt32(dgvPatients.SelectedRows[0].Cells["patient_id"].Value);
             string patientName = dgvPatients.SelectedRows[0].Cells["patient_name"].Value.ToString();
+
+            string verifyQuery = @"
+        SELECT COUNT(*) FROM PatientQueue pq
+        WHERE pq.patient_id = @patientId 
+        AND pq.doctor_id = @doctorId";
+
+            int patientCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(verifyQuery,
+                new MySqlParameter("@patientId", patientId),
+                new MySqlParameter("@doctorId", doctorId)));
+
+            if (patientCount == 0)
+            {
+                MessageBox.Show(
+                    "⚠️ PATIENT NOT IN YOUR LIST\n\n" +
+                    $"Patient: {patientName}\n\n" +
+                    "This patient has never been assigned to you.\n" +
+                    "You can only add medical records for your own patients.",
+                    "Access Denied",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
 
             MedicalRecordForm recordForm = new MedicalRecordForm(patientId, doctorId, patientName);
             recordForm.FormClosed += (s, args) => LoadData();

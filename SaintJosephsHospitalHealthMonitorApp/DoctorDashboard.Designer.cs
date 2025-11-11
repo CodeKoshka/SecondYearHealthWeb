@@ -21,6 +21,7 @@
         private System.Windows.Forms.Panel panelAppointmentButtons;
         private System.Windows.Forms.Button btnViewPatient;
         private System.Windows.Forms.Button btnCompleteAppt;
+        private System.Windows.Forms.Button btnServiceChecklist;
         private System.Windows.Forms.Button btnRefreshAppt;
         private System.Windows.Forms.Panel panelPatientButtons;
         private System.Windows.Forms.Button btnViewHistory;
@@ -30,6 +31,13 @@
         private System.Windows.Forms.TextBox txtUniversalSearch;
         private System.Windows.Forms.Button btnClearUniversalSearch;
         private System.Windows.Forms.Label lblUniversalSearchIcon;
+
+        // Universal search components
+        private ListBox searchSuggestionsListBox;
+        private Label lblSearchStatus;
+        private Panel panelSearchCategories;
+        private CheckBox chkSearchAppointments;
+        private CheckBox chkSearchPatients;
 
         protected override void Dispose(bool disposing)
         {
@@ -55,6 +63,7 @@
             dgvAppointments = new DataGridView();
             panelAppointmentButtons = new Panel();
             btnRefreshAppt = new Button();
+            btnServiceChecklist = new Button();
             btnCompleteAppt = new Button();
             btnViewPatient = new Button();
             tabPatients = new TabPage();
@@ -69,7 +78,6 @@
             btnClearUniversalSearch = new Button();
             txtUniversalSearch = new TextBox();
             lblHospitalName = new Label();
-
             panelSidebar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).BeginInit();
             panelMainContent.SuspendLayout();
@@ -164,7 +172,7 @@
             btnPatientsMenu.Padding = new Padding(20, 0, 0, 0);
             btnPatientsMenu.Size = new Size(250, 45);
             btnPatientsMenu.TabIndex = 5;
-            btnPatientsMenu.Text = "  👥  My Patients & Records";
+            btnPatientsMenu.Text = "  👥  My Patients Records";
             btnPatientsMenu.TextAlign = ContentAlignment.MiddleLeft;
             btnPatientsMenu.UseVisualStyleBackColor = false;
             btnPatientsMenu.Click += BtnPatientsMenu_Click;
@@ -243,6 +251,7 @@
             // 
             panelAppointmentButtons.BackColor = Color.White;
             panelAppointmentButtons.Controls.Add(btnRefreshAppt);
+            panelAppointmentButtons.Controls.Add(btnServiceChecklist);
             panelAppointmentButtons.Controls.Add(btnCompleteAppt);
             panelAppointmentButtons.Controls.Add(btnViewPatient);
             panelAppointmentButtons.Dock = DockStyle.Top;
@@ -261,13 +270,30 @@
             btnRefreshAppt.FlatStyle = FlatStyle.Flat;
             btnRefreshAppt.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnRefreshAppt.ForeColor = Color.White;
-            btnRefreshAppt.Location = new Point(410, 15);
+            btnRefreshAppt.Location = new Point(610, 15);
             btnRefreshAppt.Name = "btnRefreshAppt";
             btnRefreshAppt.Size = new Size(150, 45);
             btnRefreshAppt.TabIndex = 0;
             btnRefreshAppt.Text = "🔄 Refresh";
             btnRefreshAppt.UseVisualStyleBackColor = false;
             btnRefreshAppt.Click += BtnRefresh_Click;
+            // 
+            // btnServiceChecklist
+            // 
+            btnServiceChecklist.BackColor = Color.FromArgb(155, 89, 182);
+            btnServiceChecklist.Cursor = Cursors.Hand;
+            btnServiceChecklist.FlatAppearance.BorderSize = 0;
+            btnServiceChecklist.FlatAppearance.MouseOverBackColor = Color.FromArgb(142, 68, 173);
+            btnServiceChecklist.FlatStyle = FlatStyle.Flat;
+            btnServiceChecklist.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnServiceChecklist.ForeColor = Color.White;
+            btnServiceChecklist.Location = new Point(400, 15);
+            btnServiceChecklist.Name = "btnServiceChecklist";
+            btnServiceChecklist.Size = new Size(200, 45);
+            btnServiceChecklist.TabIndex = 3;
+            btnServiceChecklist.Text = "📋 Service Checklist";
+            btnServiceChecklist.UseVisualStyleBackColor = false;
+            btnServiceChecklist.Click += BtnServiceChecklist_Click;
             // 
             // btnCompleteAppt
             // 
@@ -278,7 +304,7 @@
             btnCompleteAppt.FlatStyle = FlatStyle.Flat;
             btnCompleteAppt.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnCompleteAppt.ForeColor = Color.White;
-            btnCompleteAppt.Location = new Point(210, 15);
+            btnCompleteAppt.Location = new Point(200, 15);
             btnCompleteAppt.Name = "btnCompleteAppt";
             btnCompleteAppt.Size = new Size(190, 45);
             btnCompleteAppt.TabIndex = 1;
@@ -297,7 +323,7 @@
             btnViewPatient.ForeColor = Color.White;
             btnViewPatient.Location = new Point(20, 15);
             btnViewPatient.Name = "btnViewPatient";
-            btnViewPatient.Size = new Size(180, 45);
+            btnViewPatient.Size = new Size(170, 45);
             btnViewPatient.TabIndex = 2;
             btnViewPatient.Text = "👁️ View Details";
             btnViewPatient.UseVisualStyleBackColor = false;
@@ -466,8 +492,8 @@
             // 
             lblHospitalName.AutoSize = true;
             lblHospitalName.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblHospitalName.ForeColor = Color.FromArgb(224, 224, 224);
-            lblHospitalName.Location = new Point(28, 8);
+            lblHospitalName.ForeColor = Color.White;
+            lblHospitalName.Location = new Point(28, 20);
             lblHospitalName.Name = "lblHospitalName";
             lblHospitalName.Size = new Size(247, 32);
             lblHospitalName.TabIndex = 0;
@@ -500,6 +526,280 @@
             panelUniversalSearch.ResumeLayout(false);
             panelUniversalSearch.PerformLayout();
             ResumeLayout(false);
+        }
+
+        private void InitializeSearchComponents()
+        {
+            panelSearchCategories = new Panel();
+            panelSearchCategories.BackColor = Color.White;
+            panelSearchCategories.Height = 40;
+            panelSearchCategories.Visible = false;
+            panelSearchCategories.Name = "panelSearchCategories";
+
+            chkSearchAppointments = new CheckBox();
+            chkSearchAppointments.Text = "📅 Appointments";
+            chkSearchAppointments.Checked = true;
+            chkSearchAppointments.Font = new Font("Segoe UI", 9F);
+            chkSearchAppointments.Location = new Point(15, 10);
+            chkSearchAppointments.AutoSize = true;
+            chkSearchAppointments.CheckedChanged += (s, e) => RefreshSearchResults();
+
+            chkSearchPatients = new CheckBox();
+            chkSearchPatients.Text = "👥 Patients";
+            chkSearchPatients.Checked = true;
+            chkSearchPatients.Font = new Font("Segoe UI", 9F);
+            chkSearchPatients.Location = new Point(160, 10);
+            chkSearchPatients.AutoSize = true;
+            chkSearchPatients.CheckedChanged += (s, e) => RefreshSearchResults();
+
+            panelSearchCategories.Controls.AddRange(new Control[] {
+                chkSearchAppointments, chkSearchPatients
+            });
+
+            lblSearchStatus = new Label();
+            lblSearchStatus.Font = new Font("Segoe UI", 9F, FontStyle.Italic);
+            lblSearchStatus.ForeColor = Color.FromArgb(113, 128, 150);
+            lblSearchStatus.Visible = false;
+            lblSearchStatus.AutoSize = true;
+            lblSearchStatus.Name = "lblSearchStatus";
+
+            Panel suggestionsContainer = new Panel();
+            suggestionsContainer.BackColor = Color.Transparent;
+            suggestionsContainer.Visible = false;
+            suggestionsContainer.Name = "suggestionsContainer";
+
+            Panel suggestionsShadow = new Panel();
+            suggestionsShadow.BackColor = Color.FromArgb(40, 0, 0, 0);
+            suggestionsShadow.Visible = false;
+            suggestionsShadow.Name = "suggestionsShadow";
+
+            this.Controls.Add(lblSearchStatus);
+            this.Controls.Add(panelSearchCategories);
+            this.Controls.Add(suggestionsShadow);
+            this.Controls.Add(suggestionsContainer);
+
+            suggestionsShadow.SendToBack();
+            suggestionsContainer.BringToFront();
+            panelSearchCategories.BringToFront();
+        }
+
+        private void SetupSearchSuggestionsList()
+        {
+            searchSuggestionsListBox = new ListBox();
+            searchSuggestionsListBox.Font = new Font("Segoe UI", 10F);
+            searchSuggestionsListBox.BorderStyle = BorderStyle.None;
+            searchSuggestionsListBox.BackColor = Color.White;
+            searchSuggestionsListBox.ForeColor = Color.FromArgb(26, 32, 44);
+            searchSuggestionsListBox.IntegralHeight = false;
+            searchSuggestionsListBox.DrawMode = DrawMode.OwnerDrawFixed;
+            searchSuggestionsListBox.ItemHeight = 50;
+            searchSuggestionsListBox.Click += SearchSuggestionsListBox_Click;
+            searchSuggestionsListBox.KeyDown += SearchSuggestionsListBox_KeyDown;
+            searchSuggestionsListBox.MouseMove += SearchSuggestionsListBox_MouseMove;
+
+            searchSuggestionsListBox.DrawItem += SearchSuggestionsListBox_DrawItem;
+
+            // Find the container and shadow from the Controls
+            Panel suggestionsContainer = this.Controls.Find("suggestionsContainer", true).FirstOrDefault() as Panel;
+            Panel suggestionsShadow = this.Controls.Find("suggestionsShadow", true).FirstOrDefault() as Panel;
+
+            if (suggestionsContainer != null)
+            {
+                suggestionsContainer.Controls.Add(searchSuggestionsListBox);
+            }
+
+            searchSuggestionsListBox.Tag = new
+            {
+                Container = suggestionsContainer,
+                Shadow = suggestionsShadow
+            };
+        }
+
+        private void SearchSuggestionsListBox_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index < 0) return;
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            e.DrawBackground();
+
+            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+
+            if (isSelected)
+            {
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(237, 242, 247)))
+                {
+                    e.Graphics.FillRectangle(brush, e.Bounds);
+                }
+            }
+
+            if (searchSuggestionsListBox.Items[e.Index] is UniversalSearchItem item)
+            {
+                int photoSize = 36;
+                int photoX = e.Bounds.X + 8;
+                int photoY = e.Bounds.Y + (e.Bounds.Height - photoSize) / 2;
+
+                using (SolidBrush iconBg = new SolidBrush(GetCategoryColor(item.Source)))
+                {
+                    e.Graphics.FillEllipse(iconBg, photoX, photoY, photoSize, photoSize);
+                }
+
+                string icon = GetCategoryIcon(item.Source);
+                using (Font iconFont = new Font("Segoe UI Emoji", 16F))
+                using (SolidBrush iconBrush = new SolidBrush(Color.White))
+                {
+                    SizeF iconSize = e.Graphics.MeasureString(icon, iconFont);
+                    e.Graphics.DrawString(icon, iconFont, iconBrush,
+                        photoX + (photoSize - iconSize.Width) / 2,
+                        photoY + (photoSize - iconSize.Height) / 2);
+                }
+
+                string searchTerm = txtUniversalSearch.Text.Trim();
+                string displayText = item.DisplayText;
+
+                using (SolidBrush textBrush = new SolidBrush(Color.FromArgb(26, 32, 44)))
+                using (SolidBrush highlightBrush = new SolidBrush(Color.FromArgb(26, 188, 156)))
+                using (Font boldFont = new Font(e.Font, FontStyle.Bold))
+                {
+                    float x = photoX + photoSize + 12;
+                    float y = e.Bounds.Y + (e.Bounds.Height - e.Font.GetHeight(e.Graphics)) / 2;
+
+                    if (!string.IsNullOrEmpty(searchTerm))
+                    {
+                        int index = displayText.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase);
+                        if (index >= 0)
+                        {
+                            string before = displayText.Substring(0, index);
+                            string match = displayText.Substring(index, Math.Min(searchTerm.Length, displayText.Length - index));
+                            string after = displayText.Substring(index + match.Length);
+
+                            e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+
+                            using (StringFormat format = new StringFormat(StringFormat.GenericTypographic))
+                            {
+                                float currentX = x;
+
+                                if (!string.IsNullOrEmpty(before))
+                                {
+                                    e.Graphics.DrawString(before, e.Font, textBrush, currentX, y, format);
+                                    SizeF beforeSize = e.Graphics.MeasureString(before, e.Font, new PointF(currentX, y), format);
+                                    currentX += beforeSize.Width;
+                                }
+
+                                if (!string.IsNullOrEmpty(match))
+                                {
+                                    e.Graphics.DrawString(match, boldFont, highlightBrush, currentX, y, format);
+                                    SizeF matchSize = e.Graphics.MeasureString(match, boldFont, new PointF(currentX, y), format);
+                                    currentX += matchSize.Width;
+                                }
+
+                                if (!string.IsNullOrEmpty(after))
+                                {
+                                    e.Graphics.DrawString(after, e.Font, textBrush, currentX, y, format);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            e.Graphics.DrawString(displayText, e.Font, textBrush, x, y);
+                        }
+                    }
+                    else
+                    {
+                        e.Graphics.DrawString(displayText, e.Font, textBrush, x, y);
+                    }
+                }
+            }
+
+            if (e.Index < searchSuggestionsListBox.Items.Count - 1)
+            {
+                using (Pen pen = new Pen(Color.FromArgb(226, 232, 240)))
+                {
+                    e.Graphics.DrawLine(pen,
+                        e.Bounds.Left + 15,
+                        e.Bounds.Bottom - 1,
+                        e.Bounds.Right - 15,
+                        e.Bounds.Bottom - 1);
+                }
+            }
+
+            e.DrawFocusRectangle();
+        }
+
+        private void PositionSearchSuggestions()
+        {
+            dynamic refs = searchSuggestionsListBox.Tag;
+            Panel container = refs.Container;
+            Panel shadow = refs.Shadow;
+
+            Point searchPanelLocation = this.PointToClient(panelUniversalSearch.Parent.PointToScreen(panelUniversalSearch.Location));
+            int searchPanelBottom = searchPanelLocation.Y + panelUniversalSearch.Height;
+
+            int width = panelUniversalSearch.Width;
+            int itemCount = searchSuggestionsListBox.Items.Count;
+            int maxVisibleItems = 6;
+
+            int statusHeight = 35;
+            int filterHeight = 40;
+            int listHeight = Math.Min(itemCount, maxVisibleItems) * searchSuggestionsListBox.ItemHeight;
+            int totalHeight = statusHeight + filterHeight + listHeight + 2;
+
+            container.Location = new Point(searchPanelLocation.X, searchPanelBottom);
+            container.Size = new Size(width, totalHeight);
+            container.BackColor = Color.White;
+            container.Padding = new Padding(0);
+
+            System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+            int radius = 12;
+
+            path.AddLine(0, 0, width, 0);
+            path.AddLine(width, 0, width, totalHeight - radius);
+            path.AddArc(width - radius, totalHeight - radius, radius, radius, 0, 90);
+            path.AddLine(width - radius, totalHeight, radius, totalHeight);
+            path.AddArc(0, totalHeight - radius, radius, radius, 90, 90);
+            path.AddLine(0, totalHeight - radius, 0, 0);
+            path.CloseFigure();
+
+            container.Region = new Region(path);
+
+            lblSearchStatus.Parent = container;
+            lblSearchStatus.Location = new Point(20, 8);
+            lblSearchStatus.AutoSize = true;
+            lblSearchStatus.BringToFront();
+
+            panelSearchCategories.Parent = container;
+            panelSearchCategories.Location = new Point(0, statusHeight);
+            panelSearchCategories.Size = new Size(width, filterHeight);
+            panelSearchCategories.BackColor = Color.FromArgb(249, 250, 251);
+            panelSearchCategories.Visible = true;
+            panelSearchCategories.BorderStyle = BorderStyle.None;
+
+            Panel filterTopBorder = panelSearchCategories.Controls.Find("filterTopBorder", false).FirstOrDefault() as Panel;
+            if (filterTopBorder == null)
+            {
+                filterTopBorder = new Panel();
+                filterTopBorder.Name = "filterTopBorder";
+                filterTopBorder.Dock = DockStyle.Top;
+                filterTopBorder.Height = 1;
+                filterTopBorder.BackColor = Color.FromArgb(226, 232, 240);
+                panelSearchCategories.Controls.Add(filterTopBorder);
+                filterTopBorder.BringToFront();
+            }
+
+            searchSuggestionsListBox.Parent = container;
+            searchSuggestionsListBox.Location = new Point(1, statusHeight + filterHeight);
+            searchSuggestionsListBox.Size = new Size(width - 2, listHeight);
+            searchSuggestionsListBox.BorderStyle = BorderStyle.FixedSingle;
+            searchSuggestionsListBox.Region = null;
+
+            shadow.Location = new Point(searchPanelLocation.X + 2, searchPanelBottom + 2);
+            shadow.Size = new Size(width, totalHeight);
+            shadow.Region = new Region(path.Clone() as System.Drawing.Drawing2D.GraphicsPath);
+
+            shadow.Visible = true;
+            container.Visible = true;
+            lblSearchStatus.Visible = true;
+
+            container.BringToFront();
+            shadow.SendToBack();
         }
     }
 }

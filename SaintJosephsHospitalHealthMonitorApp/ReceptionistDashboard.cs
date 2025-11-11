@@ -2,6 +2,8 @@
 using System;
 using System.Data;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace SaintJosephsHospitalHealthMonitorApp
@@ -9,19 +11,265 @@ namespace SaintJosephsHospitalHealthMonitorApp
     public partial class ReceptionistDashboard : Form
     {
         private User currentUser;
+        private byte[] currentUserProfileImage;
+        private System.Threading.Timer searchDebounceTimer;
+        private const int SEARCH_DEBOUNCE_MS = 300;
 
         public ReceptionistDashboard(User user)
         {
             currentUser = user;
             InitializeComponent();
-            lblWelcome.Text = $"Welcome, {currentUser.Name} (receptionist)";
+            ApplyStyle();
+            UpdateWelcomeMessage();
+            ConfigureAllDataGridViews();
+            InitializeUniversalSearch();
+            LoadUserProfile();
             LoadData();
+        }
+
+        private void ApplyStyle()
+        {
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+            this.UpdateStyles();
+
+            Color sidebarBg = Color.FromArgb(26, 32, 44);
+            Color accentColor = Color.FromArgb(231, 76, 60);
+
+            panelSidebar.BackColor = sidebarBg;
+            panelHeader.BackColor = accentColor;
+            panelHeader.Height = 80;
+
+            Panel headerShadow = new Panel();
+            headerShadow.Dock = DockStyle.Bottom;
+            headerShadow.Height = 1;
+            headerShadow.BackColor = Color.FromArgb(226, 232, 240);
+            panelHeader.Controls.Add(headerShadow);
+            headerShadow.BringToFront();
+
+            lblHospitalName.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            lblHospitalName.ForeColor = Color.White;
+            lblHospitalName.Location = new Point(15, 10);
+            lblHospitalName.AutoSize = true;
+
+            Label lblSubtitle = panelHeader.Controls.Find("label1", false).FirstOrDefault() as Label;
+            if (lblSubtitle != null)
+            {
+                lblSubtitle.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+                lblSubtitle.ForeColor = Color.FromArgb(255, 255, 255);
+                lblSubtitle.Location = new Point(15, 38);
+                lblSubtitle.AutoSize = true;
+            }
+
+            lblWelcome.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblWelcome.ForeColor = Color.White;
+            lblWelcome.Location = new Point(20, 200);
+            lblWelcome.AutoSize = false;
+            lblWelcome.Width = 240;
+            lblWelcome.TextAlign = ContentAlignment.MiddleCenter;
+
+            lblRole.Font = new Font("Segoe UI", 9F);
+            lblRole.ForeColor = Color.FromArgb(160, 174, 192);
+            lblRole.Location = new Point(20, 225);
+            lblRole.AutoSize = false;
+            lblRole.Width = 240;
+            lblRole.TextAlign = ContentAlignment.MiddleCenter;
+
+            UpdateMenuButton(btnQueueMenu, 290, "👥", "Patient Queue");
+            UpdateMenuButton(btnPatientsMenu, 345, "📋", "Patient Records");
+            UpdateMenuButton(btnBillingMenu, 400, "💰", "Billing & Discharge");
+
+            btnLogout.BackColor = Color.FromArgb(74, 85, 104);
+            btnLogout.FlatAppearance.BorderSize = 0;
+            btnLogout.ForeColor = Color.White;
+            btnLogout.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnLogout.FlatAppearance.MouseOverBackColor = Color.FromArgb(160, 174, 192);
+
+            SwitchToTab(0);
+        }
+
+        private void UpdateMenuButton(Button btn, int yPos, string icon, string text)
+        {
+            btn.BackColor = Color.Transparent;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(45, 55, 72);
+            btn.Font = new Font("Segoe UI", 10F, FontStyle.Regular);
+            btn.ForeColor = Color.FromArgb(226, 232, 240);
+            btn.Location = new Point(15, yPos);
+            btn.Size = new Size(250, 45);
+            btn.Text = $"  {icon}  {text}";
+            btn.TextAlign = ContentAlignment.MiddleLeft;
+            btn.Padding = new Padding(20, 0, 0, 0);
+
+            btn.MouseEnter += (s, e) =>
+            {
+                if (btn.BackColor != Color.FromArgb(231, 76, 60))
+                    btn.BackColor = Color.FromArgb(45, 55, 72);
+            };
+            btn.MouseLeave += (s, e) =>
+            {
+                if (btn.BackColor != Color.FromArgb(231, 76, 60))
+                    btn.BackColor = Color.Transparent;
+            };
+        }
+
+        private void UpdateWelcomeMessage()
+        {
+            lblWelcome.Text = $"{currentUser.Name}";
+            lblRole.Text = $"Role: {currentUser.Role}";
+            lblHospitalName.Text = "St. Joseph's Hospital";
+        }
+
+        private void ConfigureAllDataGridViews()
+        {
+            if (dgvQueue != null) ConfigureDataGridView(dgvQueue);
+            if (dgvPatients != null) ConfigureDataGridView(dgvPatients);
+            if (dgvBilling != null) ConfigureDataGridView(dgvBilling);
+        }
+
+        private void ConfigureDataGridView(DataGridView dgv)
+        {
+            dgv.AutoGenerateColumns = true;
+            dgv.AllowUserToAddRows = false;
+            dgv.AllowUserToDeleteRows = false;
+            dgv.ReadOnly = true;
+            dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgv.MultiSelect = false;
+            dgv.RowHeadersVisible = false;
+            dgv.EnableHeadersVisualStyles = false;
+            dgv.AllowUserToResizeRows = false;
+            dgv.AllowUserToOrderColumns = false;
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(231, 76, 60);
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(231, 76, 60);
+            dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 8, 12, 8);
+            dgv.ColumnHeadersHeight = 50;
+            dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dgv.DefaultCellStyle.BackColor = Color.White;
+            dgv.DefaultCellStyle.ForeColor = Color.FromArgb(26, 32, 44);
+            dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 205, 210);
+            dgv.DefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44);
+            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
+            dgv.DefaultCellStyle.Padding = new Padding(12, 5, 12, 5);
+            dgv.RowTemplate.Height = 45;
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 251);
+            dgv.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 205, 210);
+            dgv.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44);
+            dgv.GridColor = Color.FromArgb(226, 232, 240);
+            dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgv.BackgroundColor = Color.White;
+            dgv.BorderStyle = BorderStyle.None;
+            typeof(DataGridView).InvokeMember("DoubleBuffered",System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,null, dgv, new object[] { true });
+            dgv.DataBindingComplete += (s, e) =>
+            {
+                foreach (DataGridViewColumn column in dgv.Columns)
+                {
+                    column.SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
+            };
+        }
+
+        private void InitializeUniversalSearch()
+        {
+            InitializeSearchComponents();
+            SetupSearchSuggestionsList();
+        }
+
+        private Color GetCategoryColor(string source)
+        {
+            switch (source)
+            {
+                case "Queue": return Color.FromArgb(72, 187, 120);
+                case "Patients": return Color.FromArgb(66, 153, 225);
+                case "Billing": return Color.FromArgb(243, 156, 18);
+                default: return Color.FromArgb(113, 128, 150);
+            }
+        }
+
+        private string GetCategoryIcon(string source)
+        {
+            switch (source)
+            {
+                case "Queue": return "👥";
+                case "Patients": return "👤";
+                case "Billing": return "💰";
+                default: return "📄";
+            }
+        }
+
+        private void SearchSuggestionsListBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            int index = searchSuggestionsListBox.IndexFromPoint(e.Location);
+            if (index >= 0 && index != searchSuggestionsListBox.SelectedIndex)
+            {
+                searchSuggestionsListBox.SelectedIndex = index;
+            }
+        }
+
+        private void RefreshSearchResults()
+        {
+            if (!string.IsNullOrWhiteSpace(txtUniversalSearch.Text))
+            {
+                ShowUniversalSearchSuggestions(txtUniversalSearch.Text.Trim());
+            }
+        }
+
+        private void LoadUserProfile()
+        {
+            try
+            {
+                string query = "SELECT profile_image FROM Users WHERE user_id = @userId";
+                DataTable dt = DatabaseHelper.ExecuteQuery(query,
+                    new MySqlParameter("@userId", currentUser.UserId));
+
+                if (dt.Rows.Count > 0 && dt.Rows[0]["profile_image"] != DBNull.Value)
+                {
+                    currentUserProfileImage = (byte[])dt.Rows[0]["profile_image"];
+                    using (MemoryStream ms = new MemoryStream(currentUserProfileImage))
+                    {
+                        Image img = Image.FromStream(ms);
+                        pictureBoxProfile.Image = img;
+                        pictureBoxProfile.SizeMode = PictureBoxSizeMode.StretchImage;
+                    }
+                }
+                else
+                {
+                    SetDefaultProfileImage();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading profile: {ex.Message}", "Profile Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                SetDefaultProfileImage();
+            }
+        }
+
+        private void SetDefaultProfileImage()
+        {
+            Bitmap placeholder = new Bitmap(80, 80);
+            using (Graphics g = Graphics.FromImage(placeholder))
+            {
+                g.Clear(Color.FromArgb(230, 240, 255));
+                using (Font font = new Font("Segoe UI", 32, FontStyle.Regular))
+                {
+                    string icon = "👤";
+                    SizeF textSize = g.MeasureString(icon, font);
+                    g.DrawString(icon, font, Brushes.Gray,
+                        (80 - textSize.Width) / 2, (80 - textSize.Height) / 2);
+                }
+            }
+            pictureBoxProfile.Image = placeholder;
         }
 
         private void LoadData()
         {
             try
             {
+                ReorderQueueNumbers();
                 string queryQueue = @"
                 SELECT 
                 q.queue_id, 
@@ -38,13 +286,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 LEFT JOIN Doctors doc ON q.doctor_id = doc.doctor_id
                 LEFT JOIN Users d ON doc.user_id = d.user_id
                 WHERE q.queue_date = CURDATE()
+                AND q.status != 'Completed'
                 ORDER BY 
                 CASE q.priority 
                 WHEN 'Emergency' THEN 1 
                 WHEN 'Urgent' THEN 2 
                 ELSE 3 
                 END, 
-                q.queue_number";
+                q.registered_time";
 
                 DataTable dtQueue = DatabaseHelper.ExecuteQuery(queryQueue);
                 dgvQueue.DataSource = dtQueue;
@@ -73,11 +322,57 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 dgvPatients.DataSource = DatabaseHelper.ExecuteQuery(queryPatients);
 
                 LoadBillingData();
+
+                if (dgvQueue.Rows.Count > 0) dgvQueue.ClearSelection();
+                if (dgvPatients.Rows.Count > 0) dgvPatients.ClearSelection();
+                if (dgvBilling.Rows.Count > 0) dgvBilling.ClearSelection();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading data: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ReorderQueueNumbers()
+        {
+            try
+            {
+                string selectQuery = @"
+                SELECT queue_id
+                FROM patientqueue
+                WHERE queue_date = CURDATE()
+                AND status != 'Completed'
+                ORDER BY 
+                CASE priority 
+                WHEN 'Emergency' THEN 1 
+                WHEN 'Urgent' THEN 2 
+                ELSE 3 
+                END,
+                registered_time";
+
+                DataTable dt = DatabaseHelper.ExecuteQuery(selectQuery);
+
+                int newQueueNumber = 1;
+                foreach (DataRow row in dt.Rows)
+                {
+                    int queueId = Convert.ToInt32(row["queue_id"]);
+
+                    string updateQuery = @"
+                UPDATE patientqueue 
+                SET queue_number = @queueNumber 
+                WHERE queue_id = @queueId";
+
+                    DatabaseHelper.ExecuteNonQuery(updateQuery,
+                        new MySqlParameter("@queueNumber", newQueueNumber),
+                        new MySqlParameter("@queueId", queueId));
+
+                    newQueueNumber++;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Queue reorder error: {ex.Message}");
             }
         }
 
@@ -129,32 +424,354 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     dgvBilling.Columns["Total Amount"].DefaultCellStyle.Format = "₱#,##0.00";
                 }
-
-                int unpaidCount = 0;
-                int awaitingBillCount = 0;
-                decimal totalUnpaid = 0;
-
-                foreach (DataRow row in dtBills.Rows)
-                {
-                    string status = row["Status"].ToString();
-                    if (status == "Awaiting Bill")
-                    {
-                        awaitingBillCount++;
-                    }
-                    else if (status != "Paid")
-                    {
-                        unpaidCount++;
-                        totalUnpaid += Convert.ToDecimal(row["Total Amount"]);
-                    }
-                }
-
-                lblBillingStats.Text = $"Awaiting Bills: {awaitingBillCount} | Unpaid Bills: {unpaidCount} | Total: ₱{totalUnpaid:N2}";
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading billing data: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void TxtUniversalSearch_TextChanged(object sender, EventArgs e)
+        {
+            string searchText = txtUniversalSearch.Text.Trim();
+
+            btnClearUniversalSearch.Visible = !string.IsNullOrWhiteSpace(searchText);
+
+            searchDebounceTimer?.Dispose();
+
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                HideSearchSuggestions();
+                return;
+            }
+
+            searchDebounceTimer = new System.Threading.Timer(_ =>
+            {
+                this.Invoke(new Action(() =>
+                {
+                    ShowUniversalSearchSuggestions(searchText);
+                }));
+            }, null, SEARCH_DEBOUNCE_MS, System.Threading.Timeout.Infinite);
+        }
+
+        private void TxtUniversalSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (searchSuggestionsListBox == null) return;
+
+            dynamic refs = searchSuggestionsListBox.Tag;
+            if (refs == null) return;
+
+            Panel container = refs.Container;
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (container.Visible && searchSuggestionsListBox.Items.Count > 0)
+                {
+                    if (searchSuggestionsListBox.SelectedIndex < 0)
+                        searchSuggestionsListBox.SelectedIndex = 0;
+                    SelectFromUniversalSearch();
+                }
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+            else if (e.KeyCode == Keys.Down)
+            {
+                if (container.Visible && searchSuggestionsListBox.Items.Count > 0)
+                {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+
+                    if (searchSuggestionsListBox.SelectedIndex < 0)
+                        searchSuggestionsListBox.SelectedIndex = 0;
+                    else if (searchSuggestionsListBox.SelectedIndex < searchSuggestionsListBox.Items.Count - 1)
+                        searchSuggestionsListBox.SelectedIndex++;
+                }
+            }
+            else if (e.KeyCode == Keys.Up)
+            {
+                if (container.Visible && searchSuggestionsListBox.Items.Count > 0)
+                {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+
+                    if (searchSuggestionsListBox.SelectedIndex > 0)
+                        searchSuggestionsListBox.SelectedIndex--;
+                    else
+                        txtUniversalSearch.Focus();
+                }
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                HideSearchSuggestions();
+                txtUniversalSearch.Clear();
+                lblSearchStatus.Visible = false;
+                panelSearchCategories.Visible = false;
+            }
+        }
+
+        private void ShowUniversalSearchSuggestions(string searchText)
+        {
+            try
+            {
+                searchSuggestionsListBox.Items.Clear();
+                int totalResults = 0;
+
+                if (chkSearchQueue.Checked)
+                {
+                    string queueQuery = @"
+                        SELECT q.queue_id, q.patient_id, u.name AS patient_name, 
+                               q.priority, q.status, 'Queue' as source
+                        FROM patientqueue q
+                        INNER JOIN Patients p ON q.patient_id = p.patient_id
+                        INNER JOIN Users u ON p.user_id = u.user_id
+                        WHERE q.queue_date = CURDATE()
+                        AND (u.name LIKE @search OR q.status LIKE @search)
+                        ORDER BY q.queue_number
+                        LIMIT 5";
+
+                    DataTable queue = DatabaseHelper.ExecuteQuery(queueQuery,
+                        new MySqlParameter("@search", $"%{searchText}%"));
+
+                    foreach (DataRow row in queue.Rows)
+                    {
+                        searchSuggestionsListBox.Items.Add(new UniversalSearchItem
+                        {
+                            Id = Convert.ToInt32(row["queue_id"]),
+                            DisplayText = $"{row["patient_name"]} - {row["priority"]} - {row["status"]}",
+                            Source = "Queue",
+                            Data = row
+                        });
+                        totalResults++;
+                    }
+                }
+
+                if (chkSearchPatients.Checked)
+                {
+                    string patientQuery = @"
+                        SELECT p.patient_id, u.user_id, u.name, u.email, u.age, u.gender,
+                               p.blood_type, 'Patients' as source
+                        FROM Patients p
+                        INNER JOIN Users u ON p.user_id = u.user_id
+                        WHERE u.is_active = 1
+                        AND (u.name LIKE @search OR u.email LIKE @search OR p.blood_type LIKE @search)
+                        ORDER BY u.name
+                        LIMIT 5";
+
+                    DataTable patients = DatabaseHelper.ExecuteQuery(patientQuery,
+                        new MySqlParameter("@search", $"%{searchText}%"));
+
+                    foreach (DataRow row in patients.Rows)
+                    {
+                        searchSuggestionsListBox.Items.Add(new UniversalSearchItem
+                        {
+                            Id = Convert.ToInt32(row["patient_id"]),
+                            DisplayText = $"{row["name"]} - {row["age"]} yrs, {row["gender"]} - {row["blood_type"]}",
+                            Source = "Patients",
+                            Data = row
+                        });
+                        totalResults++;
+                    }
+                }
+
+                if (chkSearchBilling.Checked)
+                {
+                    string billingQuery = @"
+                        SELECT b.bill_id, b.patient_id, u.name AS patient_name,
+                               b.amount, b.status, 'Billing' as source
+                        FROM Billing b
+                        INNER JOIN Patients p ON b.patient_id = p.patient_id
+                        INNER JOIN Users u ON p.user_id = u.user_id
+                        WHERE DATE(b.bill_date) = CURDATE()
+                        AND (u.name LIKE @search OR b.status LIKE @search)
+                        ORDER BY b.bill_date DESC
+                        LIMIT 5";
+
+                    DataTable billing = DatabaseHelper.ExecuteQuery(billingQuery,
+                        new MySqlParameter("@search", $"%{searchText}%"));
+
+                    foreach (DataRow row in billing.Rows)
+                    {
+                        searchSuggestionsListBox.Items.Add(new UniversalSearchItem
+                        {
+                            Id = Convert.ToInt32(row["bill_id"]),
+                            DisplayText = $"{row["patient_name"]} - ₱{Convert.ToDecimal(row["amount"]):N2} - {row["status"]}",
+                            Source = "Billing",
+                            Data = row
+                        });
+                        totalResults++;
+                    }
+                }
+
+                lblSearchStatus.Text = totalResults > 0
+                    ? $"Found {totalResults} result{(totalResults != 1 ? "s" : "")}"
+                    : "No results found";
+                lblSearchStatus.ForeColor = totalResults > 0
+                    ? Color.FromArgb(72, 187, 120)
+                    : Color.FromArgb(229, 62, 62);
+
+                if (searchSuggestionsListBox.Items.Count > 0)
+                {
+                    PositionSearchSuggestions();
+                }
+                else
+                {
+                    HideSearchSuggestions();
+                }
+            }
+            catch (Exception ex)
+            {
+                lblSearchStatus.Text = "Search error occurred";
+                lblSearchStatus.ForeColor = Color.FromArgb(229, 62, 62);
+                MessageBox.Show($"Error showing suggestions: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LblUniversalSearchIcon_Click(object sender, EventArgs e)
+        {
+            txtUniversalSearch.Focus();
+        }
+
+        private void HideSearchSuggestions()
+        {
+            if (searchSuggestionsListBox?.Tag != null)
+            {
+                dynamic refs = searchSuggestionsListBox.Tag;
+                Panel container = refs.Container;
+                Panel shadow = refs.Shadow;
+
+                container.Visible = false;
+                shadow.Visible = false;
+            }
+        }
+
+        private void SearchSuggestionsListBox_Click(object sender, EventArgs e)
+        {
+            if (searchSuggestionsListBox.SelectedItem != null)
+            {
+                SelectFromUniversalSearch();
+            }
+        }
+
+        private void SearchSuggestionsListBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                SelectFromUniversalSearch();
+                e.Handled = true;
+            }
+        }
+
+        private void SelectFromUniversalSearch()
+        {
+            if (searchSuggestionsListBox.SelectedItem is UniversalSearchItem selectedItem)
+            {
+                HideSearchSuggestions();
+
+                switch (selectedItem.Source)
+                {
+                    case "Queue":
+                        SwitchToTab(0);
+                        FocusOnQueue(selectedItem.Id);
+                        break;
+
+                    case "Patients":
+                        SwitchToTab(1);
+                        FocusOnPatient(selectedItem.Id);
+                        break;
+
+                    case "Billing":
+                        SwitchToTab(2);
+                        FocusOnBilling(selectedItem.Data);
+                        break;
+                }
+            }
+        }
+
+        private void FocusOnQueue(int queueId)
+        {
+            foreach (DataGridViewRow row in dgvQueue.Rows)
+            {
+                if (row.Cells["queue_id"].Value != null &&
+                    Convert.ToInt32(row.Cells["queue_id"].Value) == queueId)
+                {
+                    row.Selected = true;
+                    dgvQueue.FirstDisplayedScrollingRowIndex = row.Index;
+                    dgvQueue.Focus();
+                    break;
+                }
+            }
+        }
+
+        private void FocusOnPatient(int patientId)
+        {
+            foreach (DataGridViewRow row in dgvPatients.Rows)
+            {
+                if (row.Cells["patient_id"].Value != null &&
+                    Convert.ToInt32(row.Cells["patient_id"].Value) == patientId)
+                {
+                    row.Selected = true;
+                    dgvPatients.FirstDisplayedScrollingRowIndex = row.Index;
+                    dgvPatients.Focus();
+                    break;
+                }
+            }
+        }
+
+        private void FocusOnBilling(DataRow billingData)
+        {
+            int billId = Convert.ToInt32(billingData["bill_id"]);
+
+            foreach (DataGridViewRow row in dgvBilling.Rows)
+            {
+                if (row.Cells["bill_id"].Value != null &&
+                    Convert.ToInt32(row.Cells["bill_id"].Value) == billId)
+                {
+                    row.Selected = true;
+                    dgvBilling.FirstDisplayedScrollingRowIndex = row.Index;
+                    dgvBilling.Focus();
+                    break;
+                }
+            }
+        }
+
+        private void BtnClearUniversalSearch_Click(object sender, EventArgs e)
+        {
+            txtUniversalSearch.Clear();
+            HideSearchSuggestions();
+        }
+
+        private void BtnQueueMenu_Click(object sender, EventArgs e)
+        {
+            SwitchToTab(0);
+        }
+
+        private void BtnPatientsMenu_Click(object sender, EventArgs e)
+        {
+            SwitchToTab(1);
+        }
+
+        private void BtnBillingMenu_Click(object sender, EventArgs e)
+        {
+            SwitchToTab(2);
+        }
+
+        private void SwitchToTab(int index)
+        {
+            tabControl.SelectedIndex = index;
+
+            btnQueueMenu.BackColor = Color.Transparent;
+            btnPatientsMenu.BackColor = Color.Transparent;
+            btnBillingMenu.BackColor = Color.Transparent;
+
+            btnQueueMenu.ForeColor = Color.FromArgb(226, 232, 240);
+            btnPatientsMenu.ForeColor = Color.FromArgb(226, 232, 240);
+            btnBillingMenu.ForeColor = Color.FromArgb(226, 232, 240);
+
+            Button activeBtn = index == 0 ? btnQueueMenu : (index == 1 ? btnPatientsMenu : btnBillingMenu);
+            activeBtn.BackColor = Color.FromArgb(231, 76, 60);
+            activeBtn.ForeColor = Color.White;
         }
 
         private void BtnViewBill_Click(object sender, EventArgs e)
@@ -250,7 +867,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                                     ═══════════════════════════════════════════════";
 
-                                    rtbDetails.Text = details;
+                rtbDetails.Text = details;
 
                 Button btnClose = new Button
                 {
@@ -287,11 +904,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
             int billId = Convert.ToInt32(dgvBilling.SelectedRows[0].Cells["bill_id"].Value);
             int patientId = Convert.ToInt32(dgvBilling.SelectedRows[0].Cells["patient_id"].Value);
             string patientName = dgvBilling.SelectedRows[0].Cells["Patient Name"].Value.ToString();
+
             if (status == "Awaiting Bill" || billId == 0)
             {
                 CreateBillFromCompletedVisit(patientId, patientName);
                 return;
             }
+
             string checkDescQuery = "SELECT description FROM Billing WHERE bill_id = @billId";
             DataTable dtDesc = DatabaseHelper.ExecuteQuery(checkDescQuery,
                 new MySqlParameter("@billId", billId));
@@ -457,8 +1076,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 btnClose.Click += (s, ev) => reportView.Close();
 
                 reportView.Controls.AddRange(new Control[] {
-            headerPanel, rtbReport, btnCreateBill, btnClose
-        });
+                    headerPanel, rtbReport, btnCreateBill, btnClose
+                });
                 reportView.ShowDialog();
             }
             catch (Exception ex)
@@ -582,10 +1201,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string updateQuery = @"
-        UPDATE Billing 
-        SET status = 'Paid', 
-            payment_method = @paymentMethod
-        WHERE bill_id = @billId";
+                UPDATE Billing 
+                SET status = 'Paid', 
+                    payment_method = @paymentMethod
+                WHERE bill_id = @billId";
 
                 string paymentMethod = "Cash";
                 using (var methodForm = new Form())
@@ -709,7 +1328,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 "This will:\n" +
                 "• Remove patient from today's queue\n" +
                 "• Archive the completed visit\n" +
-                "• Close the billing record\n\n" +
+                "• Close the billing record\n" +
+                "• Reorder remaining queue numbers\n\n" +
                 "Continue with discharge?",
                 "Confirm Discharge",
                 MessageBoxButtons.YesNo,
@@ -733,7 +1353,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     $"✓ Patient discharged successfully!\n\n" +
                     $"Patient: {patientName}\n" +
                     $"Date: {DateTime.Now:yyyy-MM-dd HH:mm}\n\n" +
-                    "Visit completed and archived.",
+                    "Visit completed and archived.\n" +
+                    "Queue numbers reordered automatically.",
                     "Discharge Complete",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
@@ -775,11 +1396,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 };
 
                 string query = @"
-                    SELECT p.patient_id, u.name, u.age, u.gender, p.blood_type
-                    FROM Patients p
-                    INNER JOIN Users u ON p.user_id = u.user_id
-                    WHERE u.is_active = 1
-                    ORDER BY u.name";
+                SELECT p.patient_id, u.name, u.age, u.gender, p.blood_type
+                FROM Patients p
+                INNER JOIN Users u ON p.user_id = u.user_id
+                WHERE u.is_active = 1
+                AND p.patient_id NOT IN (
+                SELECT patient_id 
+                FROM patientqueue 
+                WHERE queue_date = CURDATE())
+                ORDER BY u.name";
                 dgv.DataSource = DatabaseHelper.ExecuteQuery(query);
 
                 var btnSelect = new Button
@@ -799,6 +1424,26 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     if (dgv.SelectedRows.Count > 0)
                     {
                         int patientId = Convert.ToInt32(dgv.SelectedRows[0].Cells["patient_id"].Value);
+
+                        string checkQuery = @"
+                        SELECT COUNT(*) 
+                        FROM patientqueue 
+                        WHERE patient_id = @patientId 
+                        AND queue_date = CURDATE()";
+                        int count = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkQuery,
+                            new MySqlParameter("@patientId", patientId)));
+
+                        if (count > 0)
+                        {
+                            MessageBox.Show(
+                                "This patient is already in today's queue.\n\n" +
+                                "A patient can only be added to the queue once per day.",
+                                "Already in Queue",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+                            return;
+                        }
+
                         selectForm.DialogResult = DialogResult.OK;
                         selectForm.Tag = patientId;
                         selectForm.Close();
@@ -850,6 +1495,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             string status = dgvQueue.SelectedRows[0].Cells["status"].Value.ToString();
+            string doctorName = dgvQueue.SelectedRows[0].Cells["Doctor"].Value.ToString();
+
+            if (doctorName == "Not Assigned")
+            {
+                MessageBox.Show(
+                    "❌ CANNOT CALL PATIENT\n\n" +
+                    "A doctor must be assigned before calling the patient.\n\n" +
+                    "Please use 'Assign Doctor' button first.",
+                    "Doctor Required",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
             if (status != "Waiting")
             {
                 MessageBox.Show("This patient is already being attended or completed.", "Invalid Status",
@@ -913,7 +1572,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             DialogResult confirm = MessageBox.Show(
                 $"Remove {patientName} from queue?\n\n" +
                 $"Status: {status}\n\n" +
-                "This will permanently remove them from today's queue.\n\n" +
+                "This will permanently remove them from today's queue.\n" +
+                "Queue numbers will be automatically reordered.\n\n" +
                 "Are you sure?",
                 "Confirm Remove",
                 MessageBoxButtons.YesNo,
@@ -932,7 +1592,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 MessageBox.Show(
                     $"✓ {patientName} removed from queue.\n\n" +
-                    "They were not billed as their visit was not completed.",
+                    "Queue numbers have been reordered automatically.",
                     "Removed",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
@@ -977,11 +1637,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             intakeForm.ShowDialog();
         }
 
-        private void BtnRefresh_Click(object sender, EventArgs e)
-        {
-            LoadData();
-        }
-
         private void BtnLogout_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -1007,10 +1662,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
-                LoadData();
-            }
-            else
-            {
                 LoadData();
             }
         }
@@ -1059,6 +1710,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void ShowDetailedMedicalHistory(int patientId, string patientName, int recordCount, int visitCount)
         {
             Form historyForm = new Form
@@ -1123,31 +1775,31 @@ namespace SaintJosephsHospitalHealthMonitorApp
             };
 
             string query = @"
-        SELECT 
-            mr.record_id,
-            DATE_FORMAT(mr.record_date, '%Y-%m-%d %H:%i') AS 'Date & Time',
-            mr.visit_type AS 'Visit Type',
-            u.name AS 'Attending Doctor',
-            CASE 
-                WHEN LENGTH(mr.diagnosis) > 100 
-                THEN CONCAT(SUBSTRING(mr.diagnosis, 1, 100), '...')
-                ELSE mr.diagnosis
-            END AS 'Clinical Summary',
-            CASE 
-                WHEN mr.prescription IS NOT NULL AND mr.prescription != '' 
-                THEN 'Yes' 
-                ELSE 'No' 
-            END AS 'Rx',
-            CASE 
-                WHEN mr.lab_tests IS NOT NULL AND mr.lab_tests != '' 
-                THEN 'Yes' 
-                ELSE 'No' 
-            END AS 'Labs'
-        FROM MedicalRecords mr
-        INNER JOIN Doctors d ON mr.doctor_id = d.doctor_id
-        INNER JOIN Users u ON d.user_id = u.user_id
-        WHERE mr.patient_id = @patientId
-        ORDER BY mr.record_date DESC";
+                SELECT 
+                mr.record_id,
+                DATE_FORMAT(mr.record_date, '%Y-%m-%d %H:%i') AS 'Date & Time',
+                mr.visit_type AS 'Visit Type',
+                u.name AS 'Attending Doctor',
+                CASE 
+                    WHEN LENGTH(mr.diagnosis) > 100 
+                    THEN CONCAT(SUBSTRING(mr.diagnosis, 1, 100), '...')
+                    ELSE mr.diagnosis
+                END AS 'Clinical Summary',
+                CASE 
+                    WHEN mr.prescription IS NOT NULL AND mr.prescription != '' 
+                    THEN 'Yes' 
+                    ELSE 'No' 
+                END AS 'Rx',
+                CASE 
+                    WHEN mr.lab_tests IS NOT NULL AND mr.lab_tests != '' 
+                    THEN 'Yes' 
+                    ELSE 'No' 
+                END AS 'Labs'
+                FROM MedicalRecords mr
+                INNER JOIN Doctors d ON mr.doctor_id = d.doctor_id
+                INNER JOIN Users u ON d.user_id = u.user_id
+                WHERE mr.patient_id = @patientId
+                ORDER BY mr.record_date DESC";
 
             DataTable dt = DatabaseHelper.ExecuteQuery(query, new MySqlParameter("@patientId", patientId));
             dgvHistory.DataSource = dt;
@@ -1248,8 +1900,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             btnClose.Click += (s, ev) => historyForm.Close();
 
             historyForm.Controls.AddRange(new Control[] {
-        headerPanel, dgvHistory, btnViewDetails, btnPrint, btnClose
-    });
+                headerPanel, dgvHistory, btnViewDetails, btnPrint, btnClose
+            });
             historyForm.ShowDialog();
         }
 
@@ -1262,7 +1914,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
             );
             viewer.ShowDialog();
         }
+
+        public class UniversalSearchItem
+        {
+            public int Id { get; set; }
+            public string DisplayText { get; set; }
+            public string Source { get; set; }
+            public DataRow Data { get; set; }
+
+            public override string ToString()
+            {
+                return DisplayText;
+            }
+        }
     }
 }
-
-        

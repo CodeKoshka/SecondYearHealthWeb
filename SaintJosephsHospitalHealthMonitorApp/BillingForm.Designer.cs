@@ -383,11 +383,7 @@
             this.cmbStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.cmbStatus.FormattingEnabled = true;
-            this.cmbStatus.Items.AddRange(new object[] {
-            "Pending",
-            "Paid",
-            "Partially Paid",
-            "Cancelled"});
+            this.cmbStatus.Items.AddRange(new object[] {"Pending","Paid","Partially Paid","Cancelled"});
             this.cmbStatus.Location = new System.Drawing.Point(280, 50);
             this.cmbStatus.Name = "cmbStatus";
             this.cmbStatus.Size = new System.Drawing.Size(220, 23);
@@ -408,14 +404,7 @@
             this.cmbPaymentMethod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbPaymentMethod.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.cmbPaymentMethod.FormattingEnabled = true;
-            this.cmbPaymentMethod.Items.AddRange(new object[] {
-            "Cash",
-            "Credit Card",
-            "Debit Card",
-            "Check",
-            "Bank Transfer",
-            "Insurance",
-            "Mixed Payment"});
+            this.cmbPaymentMethod.Items.AddRange(new object[] {"Cash","Credit Card","Debit Card","Check","Bank Transfer","Insurance","Mixed Payment"});
             this.cmbPaymentMethod.Location = new System.Drawing.Point(20, 50);
             this.cmbPaymentMethod.Name = "cmbPaymentMethod";
             this.cmbPaymentMethod.Size = new System.Drawing.Size(240, 23);
