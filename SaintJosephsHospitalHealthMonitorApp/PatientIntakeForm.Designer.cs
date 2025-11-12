@@ -116,9 +116,9 @@
             lblTitle.ForeColor = Color.White;
             lblTitle.Location = new Point(20, 15);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(500, 30);
+            lblTitle.Size = new Size(486, 30);
             lblTitle.TabIndex = 0;
-            lblTitle.Text = "📋 PATIENT INTAKE - ST. JOSEPH'S CARDIAC HOSPITAL";
+            lblTitle.Text = "📋 PATIENT INTAKE - ST. JOSEPH'S HOSPITAL";
             // 
             // lblPatientName
             // 
@@ -180,7 +180,7 @@
             lblPatientStatus.AutoSize = true;
             lblPatientStatus.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblPatientStatus.ForeColor = Color.White;
-            lblPatientStatus.Location = new Point(666, 23);
+            lblPatientStatus.Location = new Point(561, 23);
             lblPatientStatus.Name = "lblPatientStatus";
             lblPatientStatus.Size = new Size(123, 20);
             lblPatientStatus.TabIndex = 6;
@@ -300,7 +300,7 @@
             lblBloodTypeInput.ForeColor = Color.FromArgb(74, 85, 104);
             lblBloodTypeInput.Location = new Point(15, 22);
             lblBloodTypeInput.Name = "lblBloodTypeInput";
-            lblBloodTypeInput.Size = new Size(124, 19);
+            lblBloodTypeInput.Size = new Size(115, 19);
             lblBloodTypeInput.TabIndex = 0;
             lblBloodTypeInput.Text = "Blood Type (Opt):";
             // 
@@ -324,7 +324,7 @@
             lblPhoneType.ForeColor = Color.FromArgb(74, 85, 104);
             lblPhoneType.Location = new Point(150, 22);
             lblPhoneType.Name = "lblPhoneType";
-            lblPhoneType.Size = new Size(116, 19);
+            lblPhoneType.Size = new Size(119, 19);
             lblPhoneType.TabIndex = 2;
             lblPhoneType.Text = "Phone Type (Opt):";
             // 
@@ -369,7 +369,7 @@
             lblEmergencyContactPhoneType.ForeColor = Color.FromArgb(74, 85, 104);
             lblEmergencyContactPhoneType.Location = new Point(490, 22);
             lblEmergencyContactPhoneType.Name = "lblEmergencyContactPhoneType";
-            lblEmergencyContactPhoneType.Size = new Size(116, 19);
+            lblEmergencyContactPhoneType.Size = new Size(119, 19);
             lblEmergencyContactPhoneType.TabIndex = 6;
             lblEmergencyContactPhoneType.Text = "Phone Type (Opt):";
             // 

@@ -124,7 +124,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void ConfigureForIntakeMode()
         {
-            lblTitle.Text = "📋 PATIENT INTAKE FORM - ST. JOSEPH'S CARDIAC HOSPITAL";
+            lblTitle.Text = "📋 PATIENT INTAKE FORM";
             btnSaveAndQueue.Visible = true;
             btnSaveAndQueue.Text = "✓ SAVE & ADD TO QUEUE";
             btnCancel.Text = "❌ CANCEL";
@@ -322,8 +322,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 string query = @"
                     SELECT u.name, u.age, u.gender, u.email,
-                           p.blood_type, p.allergies, p.medical_history,
-                           p.phone_number, p.emergency_contact
+                    p.blood_type, p.allergies, p.medical_history,
+                    p.phone_number, p.emergency_contact
                     FROM Patients p
                     INNER JOIN Users u ON p.user_id = u.user_id
                     WHERE p.patient_id = @patientId";
@@ -449,9 +449,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 isNewPatient = (visitCount == 0 && medicalRecordCount == 0);
 
+
                 if (isNewPatient)
                 {
-                    lblPatientStatus.Text = "⚕️ NEW PATIENT - First time visit";
+                    lblPatientStatus.Text = "⚕️ NEW PATIENT\nFirst time visit";
                     lblPatientStatus.ForeColor = Color.FromArgb(229, 62, 62);
                 }
                 else
@@ -468,12 +469,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                     if (todayDischargeCount > 0)
                     {
-                        lblPatientStatus.Text = $"🔄 RETURNING PATIENT - Was discharged today | Total Previous Visits: {visitCount}";
+                        lblPatientStatus.Text = $"🔄 RETURNING PATIENT\n" +
+                                                $"   Discharged today | Visits: {visitCount}";
                         lblPatientStatus.ForeColor = Color.FromArgb(243, 156, 18);
                     }
                     else
                     {
-                        lblPatientStatus.Text = $"✓ RETURNING PATIENT - Previous Visits: {visitCount}";
+                        lblPatientStatus.Text = $"✓ RETURNING PATIENT\n" +
+                                                $"  Previous Visits: {visitCount}";
                         lblPatientStatus.ForeColor = Color.FromArgb(72, 187, 120);
                     }
                 }
@@ -498,31 +501,114 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (phoneType == "Mobile")
             {
+                bool isValidFormat = false;
+                string mobileNumber = phoneNumber;
+
                 if (phoneNumber.StartsWith("09") && phoneNumber.Length == 11 && phoneNumber.All(char.IsDigit))
                 {
-                    return true;
+                    isValidFormat = true;
                 }
-
-                if (phoneNumber.StartsWith("+639") && phoneNumber.Length == 13 && phoneNumber.Substring(1).All(char.IsDigit))
+                else if (phoneNumber.StartsWith("+639") && phoneNumber.Length == 13 && phoneNumber.Substring(1).All(char.IsDigit))
                 {
-                    return true;
+                    isValidFormat = true;
+                    mobileNumber = "0" + phoneNumber.Substring(3);
                 }
 
-                MessageBox.Show("Invalid mobile number format. Must be 11 digits starting with 09 (e.g., 09171234567).",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
+                if (!isValidFormat)
+                {
+                    MessageBox.Show("Invalid mobile number format. Must be 11 digits starting with 09 (e.g., 09171234567).",
+                        "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                string prefix = mobileNumber.Substring(0, 4);
+                int prefixNum = int.Parse(prefix);
+
+                bool isValidPrefix = (prefixNum >= 813 && prefixNum <= 817) ||
+                                    (prefixNum >= 900 && prefixNum <= 907) ||
+                                    (prefixNum >= 908 && prefixNum <= 999);  
+                if (!isValidPrefix)
+                {
+                    MessageBox.Show("Invalid mobile number prefix. Please enter a valid Philippine mobile number (e.g., 0917, 0918, 0919, 0920, etc.).",
+                        "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                string lastSevenDigits = mobileNumber.Substring(4);
+                if (IsObviouslyFakeNumber(lastSevenDigits))
+                {
+                    MessageBox.Show("The phone number appears to be invalid. Please enter a valid Philippine mobile number.",
+                        "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                return true;
             }
             else
             {
-                if (phoneNumber.StartsWith("0") && phoneNumber.Length >= 8 && phoneNumber.Length <= 10 && phoneNumber.All(char.IsDigit))
+                if (!phoneNumber.StartsWith("0") || phoneNumber.Length < 8 || phoneNumber.Length > 10 || !phoneNumber.All(char.IsDigit))
                 {
-                    return true;
+                    MessageBox.Show("Invalid landline number format. Must be 8-10 digits starting with 0 (e.g., 028-1234567 for Metro Manila).",
+                        "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
                 }
 
-                MessageBox.Show("Invalid landline number format. Must be 8-10 digits starting with 0 (e.g., 028-1234567 for Metro Manila).",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
+                string areaCode = phoneNumber.Substring(0, Math.Min(3, phoneNumber.Length));
+
+                string numberPart = phoneNumber.Substring(areaCode.Length);
+                if (IsObviouslyFakeNumber(numberPart))
+                {
+                    MessageBox.Show("The phone number appears to be invalid. Please enter a valid Philippine landline number.",
+                        "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                return true;
             }
+        }
+
+        private bool IsObviouslyFakeNumber(string number)
+        {
+            if (string.IsNullOrEmpty(number) || number.Length < 4)
+                return false;
+
+            if (number.All(c => c == number[0]))
+                return true;
+
+            bool isAscending = true;
+            bool isDescending = true;
+            for (int i = 1; i < number.Length; i++)
+            {
+                if (number[i] != number[i - 1] + 1)
+                    isAscending = false;
+                if (number[i] != number[i - 1] - 1)
+                    isDescending = false;
+            }
+
+            if (isAscending || isDescending)
+                return true;
+
+            if (number.Length >= 6)
+            {
+                string pattern2 = number.Substring(0, 2);
+                string pattern3 = number.Substring(0, 3);
+
+                bool isRepeating2 = true;
+                bool isRepeating3 = true;
+
+                for (int i = 0; i < number.Length; i++)
+                {
+                    if (number[i] != pattern2[i % 2])
+                        isRepeating2 = false;
+                    if (number[i] != pattern3[i % 3])
+                        isRepeating3 = false;
+                }
+
+                if (isRepeating2 || isRepeating3)
+                    return true;
+            }
+
+            return false;
         }
 
         private string FormatPhoneNumberForStorage(string phoneNumber, string phoneType)
@@ -619,10 +705,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 string updatePatient = @"
                     UPDATE Patients 
                     SET allergies = @allergies, 
-                        medical_history = @history,
-                        phone_number = @phone,
-                        emergency_contact = @emergency,
-                        blood_type = @bloodType
+                    medical_history = @history,
+                    phone_number = @phone,
+                    emergency_contact = @emergency,
+                    blood_type = @bloodType
                     WHERE patient_id = @patientId";
 
                 DatabaseHelper.ExecuteNonQuery(updatePatient,
@@ -645,10 +731,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 string insertQueue = @"
                     INSERT INTO PatientQueue 
                     (patient_id, queue_number, priority, status, reason_for_visit, 
-                     registered_by, queue_date, registered_time)
+                    registered_by, queue_date, registered_time)
                     VALUES 
                     (@patientId, @queueNumber, @priority, 'Waiting', @reasonForVisit, 
-                     @registeredBy, CURDATE(), NOW())";
+                    @registeredBy, CURDATE(), NOW())";
 
                 DatabaseHelper.ExecuteNonQuery(insertQueue,
                     new MySqlParameter("@patientId", patientId),
@@ -736,10 +822,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 string updatePatient = @"
                     UPDATE Patients 
                     SET allergies = @allergies, 
-                        medical_history = @history,
-                        phone_number = @phone,
-                        emergency_contact = @emergency,
-                        blood_type = @bloodType
+                    medical_history = @history,
+                    phone_number = @phone,
+                    emergency_contact = @emergency,
+                    blood_type = @bloodType
                     WHERE patient_id = @patientId";
 
                 DatabaseHelper.ExecuteNonQuery(updatePatient,

@@ -27,7 +27,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     {
                         cmdCreate.ExecuteNonQuery();
                     }
-                } 
+                }
 
                 using (MySqlConnection conn = new MySqlConnection(databaseConnectionString))
                 {
@@ -124,6 +124,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     CREATE TABLE IF NOT EXISTS Billing (
                     bill_id INT PRIMARY KEY AUTO_INCREMENT,
                     patient_id INT,
+                    queue_id INT NULL COMMENT 'Links bill to specific visit/queue entry',
                     amount DECIMAL(10,2) NOT NULL,
                     subtotal DECIMAL(10,2) DEFAULT 0.00,
                     discount_percent DECIMAL(5,2) DEFAULT 0.00,
@@ -137,7 +138,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     bill_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     created_by INT,
                     FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
-                    FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
+                    FOREIGN KEY (queue_id) REFERENCES patientqueue(queue_id) ON DELETE SET NULL,
+                    FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL,
+                    INDEX idx_billing_queue (queue_id),
+                    INDEX idx_billing_patient_date (patient_id, bill_date)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
                     string createStaffTable = @"
@@ -316,7 +320,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     category_name VARCHAR(100) NOT NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                   
+
                     string createServicesTable = @"
                     CREATE TABLE IF NOT EXISTS Services (
                     service_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -327,7 +331,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     ON DELETE SET NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                    
+
                     string createBillServicesTable = @"
                     CREATE TABLE IF NOT EXISTS BillServices (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -364,6 +368,33 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                     InsertDefaultUsers(conn);
                     InsertDefaultDebugSettings(conn);
+
+                    try
+                    {
+                        string checkQueueIdColumn = @"
+                        SELECT COUNT(*) 
+                        FROM INFORMATION_SCHEMA.COLUMNS
+                        WHERE TABLE_SCHEMA = DATABASE()
+                        AND TABLE_NAME = 'medicalrecords'
+                        AND COLUMN_NAME = 'queue_id';";
+
+                        int columnExists = Convert.ToInt32(ExecuteScalar(checkQueueIdColumn));
+
+                        if (columnExists == 0)
+                        {
+                            string addQueueIdColumn = @"
+                        ALTER TABLE medicalrecords
+                        ADD COLUMN queue_id INT NULL,
+                        ADD CONSTRAINT fk_medicalrecords_queue
+                        FOREIGN KEY (queue_id) REFERENCES patientqueue(queue_id)
+                        ON DELETE SET NULL;";
+                            ExecuteNonQuery(addQueueIdColumn);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Failed to ensure queue_id column: {ex.Message}");
+                    }
                 }
             }
             catch (MySqlException ex)

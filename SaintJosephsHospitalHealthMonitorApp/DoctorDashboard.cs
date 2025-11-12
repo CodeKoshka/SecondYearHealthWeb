@@ -25,13 +25,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
         public DoctorDashboard(User user)
         {
             currentUser = user;
-            GetDoctorId();
             InitializeComponent();
             ApplyStyle();
             UpdateWelcomeMessage();
             ConfigureAllDataGridViews();
             InitializeUniversalSearch();
             LoadUserProfile();
+            GetDoctorId();
             LoadData();
         }
 
@@ -144,32 +144,83 @@ namespace SaintJosephsHospitalHealthMonitorApp
             dgv.MultiSelect = false;
             dgv.RowHeadersVisible = false;
             dgv.EnableHeadersVisualStyles = false;
+            dgv.AllowUserToResizeRows = false;
+            dgv.AllowUserToOrderColumns = false;
 
             dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(26, 188, 156);
             dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(10, 0, 0, 0);
-            dgv.ColumnHeadersHeight = 45;
+            dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(26, 188, 156);
+            dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 8, 12, 8);
+            dgv.ColumnHeadersHeight = 50;
+            dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
 
             dgv.DefaultCellStyle.BackColor = Color.White;
             dgv.DefaultCellStyle.ForeColor = Color.FromArgb(26, 32, 44);
-            dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(26, 188, 156);
-            dgv.DefaultCellStyle.SelectionForeColor = Color.White;
-            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
-            dgv.DefaultCellStyle.Padding = new Padding(10, 5, 10, 5);
-            dgv.RowTemplate.Height = 40;
+            dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(178, 235, 225);
+            dgv.DefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44);
+            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
+            dgv.DefaultCellStyle.Padding = new Padding(12, 5, 12, 5);
+            dgv.RowTemplate.Height = 45;
 
             dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 251);
-            dgv.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(26, 188, 156);
-            dgv.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
+            dgv.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(178, 235, 225);
+            dgv.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44);
 
             dgv.GridColor = Color.FromArgb(226, 232, 240);
             dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgv.BackgroundColor = Color.White;
+            dgv.BorderStyle = BorderStyle.None;
 
             typeof(DataGridView).InvokeMember("DoubleBuffered",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
                 null, dgv, new object[] { true });
+
+            dgv.CellMouseEnter += DataGridView_CellMouseEnter;
+            dgv.CellMouseLeave += DataGridView_CellMouseLeave;
+
+            dgv.DataBindingComplete += (s, ev) =>
+            {
+                foreach (DataGridViewColumn column in dgv.Columns)
+                {
+                    column.SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
+            };
+        }
+        private void DataGridView_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridView dgv = sender as DataGridView;
+                DataGridViewRow row = dgv.Rows[e.RowIndex];
+
+                if (!row.Selected)
+                {
+                    if (e.RowIndex % 2 == 0)
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(230, 247, 243);
+                    else
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(235, 250, 247);
+                }
+            }
+        }
+
+        private void DataGridView_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridView dgv = sender as DataGridView;
+                DataGridViewRow row = dgv.Rows[e.RowIndex];
+
+                if (!row.Selected)
+                {
+                    if (e.RowIndex % 2 == 0)
+                        row.DefaultCellStyle.BackColor = Color.White;
+                    else
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(249, 250, 251);
+                }
+            }
         }
 
         private void InitializeUniversalSearch()
@@ -217,34 +268,25 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void LoadUserProfile()
         {
-            try
-            {
-                string query = "SELECT profile_image FROM Users WHERE user_id = @userId";
-                DataTable dt = DatabaseHelper.ExecuteQuery(query,
-                    new MySqlParameter("@userId", currentUser.UserId));
+            string query = "SELECT profile_image FROM Users WHERE user_id = @userId";
+            DataTable dt = DatabaseHelper.ExecuteQuery(query,
+                new MySqlParameter("@userId", currentUser.UserId));
 
-                if (dt.Rows.Count > 0 && dt.Rows[0]["profile_image"] != DBNull.Value)
+            if (dt.Rows.Count > 0 && dt.Rows[0]["profile_image"] != DBNull.Value)
+            {
+                byte[] imageBytes = (byte[])dt.Rows[0]["profile_image"];
+                using (MemoryStream ms = new MemoryStream(imageBytes))
                 {
-                    currentUserProfileImage = (byte[])dt.Rows[0]["profile_image"];
-                    using (MemoryStream ms = new MemoryStream(currentUserProfileImage))
-                    {
-                        Image img = Image.FromStream(ms);
-                        pictureBoxProfile.Image = img;
-                        pictureBoxProfile.SizeMode = PictureBoxSizeMode.StretchImage;
-                    }
-                }
-                else
-                {
-                    SetDefaultProfileImage();
+                    pictureBoxProfile.Image = Image.FromStream(ms);
+                    pictureBoxProfile.SizeMode = PictureBoxSizeMode.StretchImage;
                 }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show($"Error loading profile: {ex.Message}", "Profile Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 SetDefaultProfileImage();
             }
         }
+
 
         private void SetDefaultProfileImage()
         {
@@ -268,10 +310,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string queryQueue = @"
-            SELECT 
+                SELECT 
                 q.queue_id,
+                q.patient_id,         
                 q.queue_number,
-                u.name AS Patient, 
+                u.name AS patient_name,  
                 u.age, 
                 u.gender,
                 q.priority,
@@ -286,9 +329,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 AND q.status IN ('Called', 'In Progress')
                 ORDER BY 
                 CASE q.priority 
-                    WHEN 'Emergency' THEN 1 
-                    WHEN 'Urgent' THEN 2 
-                    ELSE 3 
+                WHEN 'Emergency' THEN 1 
+                WHEN 'Urgent' THEN 2 
+                ELSE 3 
                 END, 
                 q.called_time";
 
@@ -298,7 +341,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 dgvAppointments.DataSource = dtQueue;
 
                 string queryPatients = @"
-            SELECT DISTINCT 
+                SELECT DISTINCT 
                 p.patient_id,
                 u.user_id, 
                 u.name AS patient_name, 
@@ -342,108 +385,142 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             if (dgvAppointments.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Please select a patient.", "Selection Required",
+                MessageBox.Show("Please select an appointment to complete.", "Selection Required",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
             int queueId = Convert.ToInt32(dgvAppointments.SelectedRows[0].Cells["queue_id"].Value);
-            string patientName = dgvAppointments.SelectedRows[0].Cells["Patient"].Value.ToString();
+            int patientId = Convert.ToInt32(dgvAppointments.SelectedRows[0].Cells["patient_id"].Value);
+            string patientName = dgvAppointments.SelectedRows[0].Cells["patient_name"].Value.ToString();
 
             try
             {
-                string getPatientQuery = "SELECT patient_id FROM patientqueue WHERE queue_id = @queueId";
-                int patientId = Convert.ToInt32(DatabaseHelper.ExecuteScalar(getPatientQuery,
-                    new MySqlParameter("@queueId", queueId)));
-
                 string checkRecordQuery = @"
-            SELECT COUNT(*) FROM medicalrecords 
+            SELECT COUNT(*) 
+            FROM medicalrecords 
             WHERE patient_id = @patientId 
             AND doctor_id = @doctorId 
-            AND DATE(record_date) = CURDATE()";
+            AND queue_id = @queueId";
 
                 int recordCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkRecordQuery,
                     new MySqlParameter("@patientId", patientId),
-                    new MySqlParameter("@doctorId", doctorId)));
+                    new MySqlParameter("@doctorId", doctorId),
+                    new MySqlParameter("@queueId", queueId)));
 
-                string checkEquipmentQuery = @"
-            SELECT equipment_checklist FROM patientqueue 
+                string checkChecklistQuery = @"
+            SELECT equipment_checklist 
+            FROM patientqueue 
             WHERE queue_id = @queueId";
 
-                DataTable dtEquipment = DatabaseHelper.ExecuteQuery(checkEquipmentQuery,
+                DataTable dtChecklist = DatabaseHelper.ExecuteQuery(checkChecklistQuery,
                     new MySqlParameter("@queueId", queueId));
 
-                string equipmentReport = dtEquipment.Rows[0]["equipment_checklist"]?.ToString();
-                bool hasEquipmentReport = !string.IsNullOrEmpty(equipmentReport);
-
-                if (recordCount > 0 && hasEquipmentReport)
+                bool hasChecklist = false;
+                if (dtChecklist.Rows.Count > 0)
                 {
-                    string updateQuery = @"
-                UPDATE patientqueue 
-                SET status = 'Completed', 
-                    completed_time = NOW()
-                WHERE queue_id = @queueId";
-
-                    DatabaseHelper.ExecuteNonQuery(updateQuery,
-                        new MySqlParameter("@queueId", queueId));
-
-                    MessageBox.Show(
-                        $"✅ CONSULTATION COMPLETED!\n\n" +
-                        $"Patient: {patientName}\n\n" +
-                        "✓ Medical Record: Saved\n" +
-                        "✓ Equipment Report: Saved\n" +
-                        "✓ Status: Completed\n\n" +
-                        "The patient can now proceed to billing.",
-                        "Consultation Complete",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-
-                    LoadData();
+                    string checklistData = dtChecklist.Rows[0]["equipment_checklist"]?.ToString();
+                    hasChecklist = !string.IsNullOrWhiteSpace(checklistData);
                 }
-                else if (recordCount == 0 && !hasEquipmentReport)
+
+                if (recordCount == 0 && !hasChecklist)
                 {
                     MessageBox.Show(
-                        $"⚠️ CANNOT COMPLETE CONSULTATION\n\n" +
+                        $"⚠️ CONSULTATION INCOMPLETE\n\n" +
                         $"Patient: {patientName}\n\n" +
-                        "Missing Requirements:\n" +
-                        "✗ Medical Record (Not Created)\n" +
-                        "✗ Equipment Report (Not Created)\n\n" +
-                        "Both forms must be saved before completing the consultation.\n\n" +
-                        "You can save them separately - they don't need to be done together.",
+                        "❌ Missing Medical Record\n" +
+                        "❌ Missing Equipment Report\n\n" +
+                        "REQUIRED STEPS:\n" +
+                        "1. Go to 'My Patients Records' tab\n" +
+                        "2. Select this patient and click 'Add Medical Record'\n" +
+                        "3. Complete and save the medical assessment form\n" +
+                        "4. Return to 'My Appointments' tab\n" +
+                        "5. Click 'Service Checklist' to complete the equipment report\n" +
+                        "6. Then you can mark this visit as completed\n\n" +
+                        "Both forms are required before completing the consultation.",
                         "Forms Required",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
+                    return;
                 }
                 else if (recordCount == 0)
                 {
                     MessageBox.Show(
-                        $"⚠️ CANNOT COMPLETE CONSULTATION\n\n" +
+                        $"⚠️ MEDICAL RECORD MISSING\n\n" +
                         $"Patient: {patientName}\n\n" +
-                        "Status:\n" +
-                        "✗ Medical Record (Not Created)\n" +
-                        "✓ Equipment Report (Saved)\n\n" +
-                        "Please create the medical record before completing.",
+                        "✓ Equipment Report: Completed\n" +
+                        "❌ Medical Record: Not completed\n\n" +
+                        "Please create a medical record before completing this visit:\n\n" +
+                        "1. Go to 'My Patients Records' tab\n" +
+                        "2. Select this patient\n" +
+                        "3. Click 'Add Medical Record'\n" +
+                        "4. Complete and save the cardiac assessment form\n" +
+                        "5. Return here to mark the visit as completed",
                         "Medical Record Required",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
+                    return;
                 }
-                else if (!hasEquipmentReport)
+                else if (!hasChecklist)
                 {
                     MessageBox.Show(
-                        $"⚠️ CANNOT COMPLETE CONSULTATION\n\n" +
+                        $"⚠️ EQUIPMENT REPORT MISSING\n\n" +
                         $"Patient: {patientName}\n\n" +
-                        "Status:\n" +
-                        "✓ Medical Record (Saved)\n" +
-                        "✗ Equipment Report (Not Created)\n\n" +
-                        "Please complete the equipment report before completing.",
+                        "✓ Medical Record: Completed\n" +
+                        "❌ Equipment Report: Not completed\n\n" +
+                        "Please complete the equipment checklist before finishing:\n\n" +
+                        "1. Select this patient in the appointments list\n" +
+                        "2. Click 'Service Checklist' button\n" +
+                        "3. Add all equipment and services used\n" +
+                        "4. Save the equipment report\n" +
+                        "5. Return here to mark the visit as completed",
                         "Equipment Report Required",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
+                    return;
                 }
+
+                DialogResult confirm = MessageBox.Show(
+                    $"📋 COMPLETE VISIT\n\n" +
+                    $"Patient: {patientName}\n" +
+                    $"Queue ID: #{queueId}\n\n" +
+                    "✓ Medical record completed\n" +
+                    "✓ Equipment report completed\n\n" +
+                    "Mark this visit as completed?\n\n" +
+                    "The patient will be moved to 'Completed' status and can proceed to billing.",
+                    "Confirm Completion",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (confirm != DialogResult.Yes)
+                    return;
+
+                string updateQuery = @"
+                UPDATE patientqueue 
+                SET status = 'Completed', 
+                completed_time = NOW()
+                WHERE queue_id = @queueId";
+
+                DatabaseHelper.ExecuteNonQuery(updateQuery,
+                    new MySqlParameter("@queueId", queueId));
+
+                MessageBox.Show(
+                    $"✅ VISIT COMPLETED SUCCESSFULLY\n\n" +
+                    $"Patient: {patientName}\n\n" +
+                    "Status: Completed ✓\n\n" +
+                    "Completed Documentation:\n" +
+                    "• Medical Record (Cardiac Assessment)\n" +
+                    "• Equipment & Services Report\n\n" +
+                    "The patient can now proceed to the receptionist for billing.",
+                    "Success",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                LoadData();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: " + ex.Message, "Error",
+                MessageBox.Show($"Error completing visit: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -458,7 +535,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             int queueId = Convert.ToInt32(dgvAppointments.SelectedRows[0].Cells["queue_id"].Value);
-            string patientName = dgvAppointments.SelectedRows[0].Cells["Patient"].Value.ToString();
+            string patientName = dgvAppointments.SelectedRows[0].Cells["patient_name"].Value.ToString();
 
             try
             {
@@ -475,86 +552,140 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private void StartCompleteVisitWorkflow(int queueId, int patientId, string patientName)
+        private void StartCompleteVisitWorkflow(int patientId, string patientName)
         {
-            string checkRecordQuery = @"
-        SELECT COUNT(*) FROM medicalrecords 
-        WHERE patient_id = @patientId 
-        AND doctor_id = @doctorId 
-        AND DATE(record_date) = CURDATE()";
-
-            int recordCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkRecordQuery,
-                new MySqlParameter("@patientId", patientId),
-                new MySqlParameter("@doctorId", doctorId)));
-
-            if (recordCount == 0)
+            try
             {
-                MedicalRecordForm recordForm = new MedicalRecordForm(patientId, doctorId, patientName, queueId);
+                string checkActiveQueueQuery = @"
+            SELECT queue_id, status 
+            FROM patientqueue 
+            WHERE patient_id = @patientId
+            AND discharged_time IS NULL
+            AND status IN ('Called', 'In Progress')
+            ORDER BY registered_time DESC
+            LIMIT 1";
+
+                DataTable dtActiveQueue = DatabaseHelper.ExecuteQuery(checkActiveQueueQuery,
+                    new MySqlParameter("@patientId", patientId));
+
+                int? queueId = null;
+                string status = null;
+
+                if (dtActiveQueue.Rows.Count > 0)
+                {
+                    queueId = Convert.ToInt32(dtActiveQueue.Rows[0]["queue_id"]);
+                    status = dtActiveQueue.Rows[0]["status"].ToString();
+
+                    string checkRecordQuery = @"
+                SELECT COUNT(*) 
+                FROM medicalrecords 
+                WHERE patient_id = @patientId 
+                AND doctor_id = @doctorId 
+                AND queue_id = @queueId";
+
+                    int recordCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkRecordQuery,
+                        new MySqlParameter("@patientId", patientId),
+                        new MySqlParameter("@doctorId", doctorId),
+                        new MySqlParameter("@queueId", queueId)));
+
+                    if (recordCount > 0)
+                    {
+                        MessageBox.Show(
+                            $"⚠ A medical record already exists for this active visit.\n\n" +
+                            $"Patient: {patientName}\n" +
+                            $"Queue ID: #{queueId}\n" +
+                            $"Status: {status}\n\n" +
+                            "Please complete or discharge the visit before creating another record.",
+                            "Duplicate Medical Record",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+                else
+                {
+                    string checkRecentQueueQuery = @"
+                SELECT queue_id, status, discharged_time 
+                FROM patientqueue 
+                WHERE patient_id = @patientId 
+                ORDER BY registered_time DESC
+                LIMIT 1";
+
+                    DataTable dtRecentQueue = DatabaseHelper.ExecuteQuery(checkRecentQueueQuery,
+                        new MySqlParameter("@patientId", patientId));
+
+                    if (dtRecentQueue.Rows.Count > 0)
+                    {
+                        string lastStatus = dtRecentQueue.Rows[0]["status"].ToString();
+                        int lastQueueId = Convert.ToInt32(dtRecentQueue.Rows[0]["queue_id"]);
+                        bool wasDischarged = dtRecentQueue.Rows[0]["discharged_time"] != DBNull.Value;
+
+                        if (wasDischarged || lastStatus == "Completed" || lastStatus == "Discharged")
+                        {
+                            DialogResult result = MessageBox.Show(
+                                $"⚕️ PATIENT ALREADY DISCHARGED\n\n" +
+                                $"Patient: {patientName}\n" +
+                                $"Last Visit ID: {lastQueueId}\n" +
+                                $"Status: {lastStatus}\n\n" +
+                                "This patient’s previous visit has already been discharged.\n\n" +
+                                "Would you like to create a follow-up note (not linked to a queue)?",
+                                "Discharged Patient",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Question);
+
+                            if (result != DialogResult.Yes)
+                                return;
+
+                            queueId = null;
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                $"⚠️ PATIENT NOT IN ACTIVE CONSULTATION\n\n" +
+                                $"Patient: {patientName}\n" +
+                                $"Current Status: {lastStatus}\n\n" +
+                                "Medical records can only be created for patients currently 'Called' or 'In Progress'.",
+                                "Inactive Queue",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        DialogResult result = MessageBox.Show(
+                            $"⚠️ PATIENT NOT IN QUEUE\n\n" +
+                            $"Patient: {patientName}\n\n" +
+                            "This patient has no active queue entry.\n\n" +
+                            "Would you like to create a standalone medical record?",
+                            "Patient Not Queued",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question);
+
+                        if (result != DialogResult.Yes)
+                            return;
+                    }
+                }
+
+                MedicalRecordForm recordForm = new MedicalRecordForm(patientId, doctorId, patientName, queueId ?? 0);
 
                 recordForm.FormClosed += (s, args) =>
                 {
                     if (recordForm.DialogResult == DialogResult.OK)
                     {
-                        int newRecordCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkRecordQuery,
-                            new MySqlParameter("@patientId", patientId),
-                            new MySqlParameter("@doctorId", doctorId)));
-
-                        if (newRecordCount > 0)
-                        {
-                            ServiceChecklistForm checklistForm = new ServiceChecklistForm(queueId, patientId, doctorId, patientName);
-
-                            checklistForm.FormClosed += (s2, args2) =>
-                            {
-                                if (checklistForm.DialogResult == DialogResult.OK && checklistForm.Tag != null)
-                                {
-                                    dynamic data = checklistForm.Tag;
-                                    string checklistReport = data.ChecklistReport;
-
-                                    string updateQueueQuery = @"
-                        UPDATE patientqueue 
-                        SET status = 'Completed', 
-                            completed_time = NOW(),
-                            equipment_checklist = @checklist
-                        WHERE queue_id = @queueId";
-
-                                    DatabaseHelper.ExecuteNonQuery(updateQueueQuery,
-                                        new MySqlParameter("@queueId", queueId),
-                                        new MySqlParameter("@checklist", checklistReport));
-
-                                    MessageBox.Show(
-                                        "✅ VISIT COMPLETED SUCCESSFULLY!\n\n" +
-                                        $"Patient: {patientName}\n\n" +
-                                        "✓ Medical record saved\n" +
-                                        "✓ Equipment report saved\n\n" +
-                                        "Status: Ready for billing",
-                                        "Complete",
-                                        MessageBoxButtons.OK,
-                                        MessageBoxIcon.Information);
-
-                                    LoadData();
-                                }
-                                else
-                                {
-                                    MessageBox.Show(
-                                        "⚠️ Equipment report not completed.\n\n" +
-                                        "The visit remains 'In Progress'.",
-                                        "Incomplete",
-                                        MessageBoxButtons.OK,
-                                        MessageBoxIcon.Warning);
-
-                                    LoadData();
-                                }
-                            };
-
-                            checklistForm.ShowDialog();
-                        }
+                        MessageBox.Show(
+                            $"✓ Medical record successfully saved for {patientName}.",
+                            "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
+                    LoadData();
                 };
+
                 recordForm.ShowDialog();
             }
-            else
+            catch (Exception ex)
             {
-                OpenServiceChecklist(queueId, patientId, patientName);
+                MessageBox.Show("Error: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1157,33 +1288,70 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             try
             {
-                string checkQueueQuery = @"
-            SELECT queue_id, status 
-            FROM patientqueue 
-            WHERE patient_id = @patientId 
-            AND queue_date = CURDATE()
-            ORDER BY registered_time DESC
-            LIMIT 1";
+                string checkActiveQueueQuery = @"
+                SELECT queue_id, status 
+                FROM patientqueue 
+                WHERE patient_id = @patientId
+                AND discharged_time IS NULL
+                AND status IN ('Called', 'In Progress')
+                ORDER BY registered_time DESC";
 
-                DataTable dtQueue = DatabaseHelper.ExecuteQuery(checkQueueQuery,
+                DataTable dtActiveQueue = DatabaseHelper.ExecuteQuery(checkActiveQueueQuery,
                     new MySqlParameter("@patientId", patientId));
 
                 int? queueId = null;
-                if (dtQueue.Rows.Count > 0)
-                {
-                    queueId = Convert.ToInt32(dtQueue.Rows[0]["queue_id"]);
-                    string status = dtQueue.Rows[0]["status"].ToString();
+                string status = null;
 
-                    if (status != "Called" && status != "In Progress")
+                if (dtActiveQueue.Rows.Count > 0)
+                {
+                    if (dtActiveQueue.Rows.Count > 1)
+                    {
+                        string msg = "⚠ Multiple active queue entries found for this patient:\n\n";
+                        foreach (DataRow row in dtActiveQueue.Rows)
+                            msg += $"• Queue #{row["queue_id"]} — Status: {row["status"]}\n";
+
+                        msg += "\nEnter the queue ID you want to attach this medical record to:";
+
+                        string input = Microsoft.VisualBasic.Interaction.InputBox(
+                            msg, "Select Queue ID", dtActiveQueue.Rows[0]["queue_id"].ToString());
+
+                        if (!int.TryParse(input, out int chosenQueueId))
+                        {
+                            MessageBox.Show("Invalid queue ID entered. Record creation cancelled.",
+                                "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            return;
+                        }
+
+                        queueId = chosenQueueId;
+                        status = "Called";
+                    }
+                    else
+                    {
+                        queueId = Convert.ToInt32(dtActiveQueue.Rows[0]["queue_id"]);
+                        status = dtActiveQueue.Rows[0]["status"].ToString();
+                    }
+
+                    string checkRecordQuery = @"
+                SELECT record_id 
+                FROM medicalrecords 
+                WHERE patient_id = @patientId 
+                AND doctor_id = @doctorId 
+                AND queue_id = @queueId
+                LIMIT 1";
+
+                    object existingRecord = DatabaseHelper.ExecuteScalar(checkRecordQuery,
+                        new MySqlParameter("@patientId", patientId),
+                        new MySqlParameter("@doctorId", doctorId),
+                        new MySqlParameter("@queueId", queueId));
+
+                    if (existingRecord != null && existingRecord != DBNull.Value)
                     {
                         MessageBox.Show(
-                            $"⚠️ PATIENT NOT IN ACTIVE CONSULTATION\n\n" +
+                            $"⚠ This patient already has a medical record for this active visit.\n\n" +
                             $"Patient: {patientName}\n" +
-                            $"Current Status: {status}\n\n" +
-                            "Medical records can only be created for patients who are:\n" +
-                            "• Currently 'Called' or 'In Progress'\n\n" +
-                            "You can view their past medical history instead.",
-                            "Not in Active Consultation",
+                            $"Queue ID: #{queueId}\n\n" +
+                            "You can mark this visit as completed using the 'Mark Completed' button in the Appointments tab.",
+                            "Record Already Exists",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Warning);
                         return;
@@ -1191,39 +1359,69 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
                 else
                 {
-                    DialogResult result = MessageBox.Show(
-                        $"⚠️ PATIENT NOT IN TODAY'S QUEUE\n\n" +
-                        $"Patient: {patientName}\n\n" +
-                        "This patient is not in today's queue.\n\n" +
-                        "Do you still want to create a medical record?\n" +
-                        "(This is useful for follow-up notes or documentation)",
-                        "Not in Queue",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
+                    string checkRecentQueueQuery = @"
+                SELECT queue_id, status, discharged_time 
+                FROM patientqueue 
+                WHERE patient_id = @patientId 
+                ORDER BY registered_time DESC 
+                LIMIT 1";
 
-                    if (result != DialogResult.Yes)
-                        return;
-                }
+                    DataTable dtRecentQueue = DatabaseHelper.ExecuteQuery(checkRecentQueueQuery,
+                        new MySqlParameter("@patientId", patientId));
 
-                string checkRecordQuery = @"
-            SELECT COUNT(*) FROM medicalrecords 
-            WHERE patient_id = @patientId 
-            AND doctor_id = @doctorId 
-            AND DATE(record_date) = CURDATE()";
+                    if (dtRecentQueue.Rows.Count > 0)
+                    {
+                        string lastStatus = dtRecentQueue.Rows[0]["status"].ToString();
+                        int lastQueueId = Convert.ToInt32(dtRecentQueue.Rows[0]["queue_id"]);
+                        bool wasDischarged = dtRecentQueue.Rows[0]["discharged_time"] != DBNull.Value;
 
-                int recordCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkRecordQuery,
-                    new MySqlParameter("@patientId", patientId),
-                    new MySqlParameter("@doctorId", doctorId)));
+                        if (wasDischarged || lastStatus == "Completed" || lastStatus == "Discharged")
+                        {
+                            DialogResult result = MessageBox.Show(
+                                $"⚕️ PATIENT ALREADY DISCHARGED\n\n" +
+                                $"Patient: {patientName}\n" +
+                                $"Last Visit Status: {lastStatus}\n" +
+                                $"Queue Entry: #{lastQueueId}\n\n" +
+                                "This patient's last visit is complete.\n\n" +
+                                "Do you want to create a follow-up note (not linked to a queue)?",
+                                "Discharged Patient",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Question);
 
-                if (recordCount > 0)
-                {
-                    MessageBox.Show(
-                        $"Medical record already exists for {patientName} today.\n\n" +
-                        "You can view it by clicking 'View Full History'.",
-                        "Already Exists",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                    return;
+                            if (result != DialogResult.Yes)
+                                return;
+
+                            queueId = null;
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                $"⚠️ PATIENT NOT IN ACTIVE CONSULTATION\n\n" +
+                                $"Patient: {patientName}\n" +
+                                $"Current Status: {lastStatus}\n\n" +
+                                "Medical records can only be created for patients who are:\n" +
+                                "• Currently 'Called' or 'In Progress'\n\n" +
+                                "Please ensure the receptionist calls this patient first.",
+                                "Not in Active Consultation",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        DialogResult result = MessageBox.Show(
+                            $"⚠️ PATIENT NOT IN QUEUE\n\n" +
+                            $"Patient: {patientName}\n\n" +
+                            "This patient is not currently queued.\n\n" +
+                            "Do you still want to create a standalone medical record?",
+                            "Patient Not Queued",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question);
+
+                        if (result != DialogResult.Yes)
+                            return;
+                    }
                 }
 
                 MedicalRecordForm recordForm = new MedicalRecordForm(patientId, doctorId, patientName, queueId ?? 0);
@@ -1233,12 +1431,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     if (recordForm.DialogResult == DialogResult.OK)
                     {
                         MessageBox.Show(
-                            $"✓ Medical record saved for {patientName}.",
-                            "Saved",
+                            $"✓ Medical record saved successfully for {patientName}!\n\n" +
+                            "📋 Next Steps:\n" +
+                            "1. Go to 'My Appointments' tab\n" +
+                            "2. Select this patient\n" +
+                            "3. Click 'Mark Completed' to finish the visit\n\n" +
+                            "The patient will remain 'In Progress' until you mark them as completed.",
+                            "Record Saved",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
+
+                        LoadData();
                     }
-                    LoadData();
                 };
 
                 recordForm.ShowDialog();
@@ -1256,11 +1460,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             LoginForm loginForm = new LoginForm();
             loginForm.FormClosed += (s, args) => this.Close();
             loginForm.Show();
-        }
-
-        private void BtnRefresh_Click(object sender, EventArgs e)
-        {
-            LoadData();
         }
 
         private void BtnAppointmentsMenu_Click(object sender, EventArgs e)

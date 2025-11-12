@@ -751,12 +751,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-                    SELECT u.name, u.age, u.gender, u.email,
-                           p.blood_type, p.allergies, p.medical_history, 
-                           p.phone_number, p.emergency_contact
-                    FROM Patients p
-                    INNER JOIN Users u ON p.user_id = u.user_id
-                    WHERE p.patient_id = @patientId";
+                SELECT u.name, u.age, u.gender, u.email,
+                  p.blood_type, p.allergies, p.medical_history, 
+                   p.phone_number, p.emergency_contact
+            FROM Patients p
+            INNER JOIN Users u ON p.user_id = u.user_id
+            WHERE p.patient_id = @patientId";
 
                 DataTable dt = DatabaseHelper.ExecuteQuery(query,
                     new MySqlParameter("@patientId", patientId));
@@ -765,24 +765,27 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     DataRow row = dt.Rows[0];
 
-                    Label lblPatientInfo = new Label
+                    if (!isViewMode)
                     {
-                        Text = $"Name: {row["name"]}    Date: {DateTime.Now:M/d/yy}",
-                        Font = new Font("Segoe UI", 11F, FontStyle.Bold),
-                        Location = new Point(20, 80),
-                        AutoSize = true
-                    };
+                        Label lblPatientInfo = new Label
+                        {
+                            Text = $"Patient: {row["name"]}",
+                            Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                            Location = new Point(20, 90),
+                            AutoSize = true
+                        };
 
-                    Label lblDemographics = new Label
-                    {
-                        Text = $"Age: {row["age"]} | Gender: {row["gender"]} | Blood Type: {row["blood_type"]}",
-                        Font = new Font("Segoe UI", 10F),
-                        Location = new Point(20, 105),
-                        ForeColor = Color.FromArgb(74, 85, 104),
-                        AutoSize = true
-                    };
+                        Label lblDemographics = new Label
+                        {
+                            Text = $"Age: {row["age"]} | Gender: {row["gender"]} | Blood Type: {row["blood_type"]}",
+                            Font = new Font("Segoe UI", 10F),
+                            Location = new Point(20, 115),
+                            ForeColor = Color.FromArgb(74, 85, 104),
+                            AutoSize = true
+                        };
 
-                    this.Controls.AddRange(new Control[] { lblPatientInfo, lblDemographics });
+                        this.Controls.AddRange(new Control[] { lblPatientInfo, lblDemographics });
+                    }
 
                     string allergies = row["allergies"]?.ToString() ?? "None";
                     if (!string.IsNullOrEmpty(allergies) && allergies.ToLower() != "none")
@@ -821,11 +824,37 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             try
             {
+                if (queueId.HasValue && queueId.Value > 0)
+                {
+                    string checkDuplicate = @"
+                    SELECT COUNT(*) 
+                    FROM MedicalRecords 
+                    WHERE patient_id = @patientId 
+                    AND doctor_id = @doctorId 
+                    AND queue_id = @queueId";
+
+                    int existingCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkDuplicate,
+                        new MySqlParameter("@patientId", patientId),
+                        new MySqlParameter("@doctorId", doctorId),
+                        new MySqlParameter("@queueId", queueId.Value)));
+
+                    if (existingCount > 0)
+                    {
+                        MessageBox.Show(
+                            "⚠ A medical record already exists for this visit.\n" +
+                            "Cannot save duplicate records.",
+                            "Duplicate Record",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+
                 string completeMedicalRecord = BuildCompleteMedicalRecord();
 
                 string query = @"INSERT INTO MedicalRecords 
-                               (patient_id, doctor_id, diagnosis, prescription, lab_tests, visit_type)
-                               VALUES (@patientId, @doctorId, @diagnosis, @prescription, @labTests, @visitType)";
+                (patient_id, doctor_id, diagnosis, prescription, lab_tests, visit_type, queue_id)
+                VALUES (@patientId, @doctorId, @diagnosis, @prescription, @labTests, @visitType, @queueId)";
 
                 DatabaseHelper.ExecuteNonQuery(query,
                     new MySqlParameter("@patientId", patientId),
@@ -833,15 +862,24 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     new MySqlParameter("@diagnosis", completeMedicalRecord),
                     new MySqlParameter("@prescription", BuildPrescriptionList()),
                     new MySqlParameter("@labTests", ""),
-                    new MySqlParameter("@visitType", DetermineVisitType()));
+                    new MySqlParameter("@visitType", DetermineVisitType()),
+                    new MySqlParameter("@queueId", queueId.HasValue ? (object)queueId.Value : DBNull.Value));
 
-                if (queueId.HasValue)
+                if (queueId.HasValue && queueId.Value > 0)
                 {
-                    string clearIntake = @"UPDATE PatientQueue 
-                                         SET reason_for_visit = 'Medical record completed and archived' 
-                                         WHERE queue_id = @queueId";
-                    DatabaseHelper.ExecuteNonQuery(clearIntake,
-                        new MySqlParameter("@queueId", queueId.Value));
+                    string updateReasonQuery = @"
+                    UPDATE patientqueue
+                    SET reason_for_visit = 
+                    CASE
+                    WHEN reason_for_visit IS NULL OR reason_for_visit = '' THEN @note
+                    ELSE CONCAT(reason_for_visit, ' | ', @note)
+                    END
+                    WHERE queue_id = @queueId
+                    AND status NOT IN ('Completed', 'Discharged')";
+
+                    DatabaseHelper.ExecuteNonQuery(updateReasonQuery,
+                        new MySqlParameter("@queueId", queueId.Value),
+                        new MySqlParameter("@note", "Medical record created - visit ongoing"));
                 }
 
                 MessageBox.Show(

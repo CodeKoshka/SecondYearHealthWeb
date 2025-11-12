@@ -8,19 +8,15 @@
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.TextBox txtConfirmPassword;
         private System.Windows.Forms.TextBox txtAge;
-        private System.Windows.Forms.TextBox txtAllergies;
         private System.Windows.Forms.TextBox txtSpecialization;
-        private System.Windows.Forms.TextBox txtPhoneNumber;
         private System.Windows.Forms.ComboBox cmbRole;
         private System.Windows.Forms.ComboBox cmbGender;
         private System.Windows.Forms.ComboBox cmbSpecialization;
-        private System.Windows.Forms.ComboBox cmbPhoneType;
         private System.Windows.Forms.Button btnSubmit;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.CheckBox chkShowPassword;
         private System.Windows.Forms.CheckBox chkChangePassword;
         private System.Windows.Forms.Panel panelHeader;
-        private System.Windows.Forms.Panel panelPatientInfo;
         private System.Windows.Forms.Panel panelDoctorInfo;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Label lblName;
@@ -30,10 +26,7 @@
         private System.Windows.Forms.Label lblAge;
         private System.Windows.Forms.Label lblGender;
         private System.Windows.Forms.Label lblRole;
-        private System.Windows.Forms.Label lblAllergies;
         private System.Windows.Forms.Label lblSpecialization;
-        private System.Windows.Forms.Label lblPhoneNumber;
-        private System.Windows.Forms.Label lblPhoneType;
         private System.Windows.Forms.PictureBox pictureBoxProfile;
         private System.Windows.Forms.Button btnUploadPhoto;
         private System.Windows.Forms.Button btnRemovePhoto;
@@ -70,13 +63,6 @@
             cmbGender = new ComboBox();
             lblRole = new Label();
             cmbRole = new ComboBox();
-            panelPatientInfo = new Panel();
-            lblPhoneType = new Label();
-            cmbPhoneType = new ComboBox();
-            lblPhoneNumber = new Label();
-            txtPhoneNumber = new TextBox();
-            lblAllergies = new Label();
-            txtAllergies = new TextBox();
             panelDoctorInfo = new Panel();
             lblSpecialization = new Label();
             cmbSpecialization = new ComboBox();
@@ -85,7 +71,6 @@
             btnCancel = new Button();
             panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).BeginInit();
-            panelPatientInfo.SuspendLayout();
             panelDoctorInfo.SuspendLayout();
             SuspendLayout();
             // 
@@ -227,7 +212,7 @@
             txtPassword.BackColor = Color.White;
             txtPassword.BorderStyle = BorderStyle.FixedSingle;
             txtPassword.Font = new Font("Segoe UI", 10F);
-            txtPassword.Location = new Point(30, 296);
+            txtPassword.Location = new Point(30, 290);
             txtPassword.Name = "txtPassword";
             txtPassword.PasswordChar = '•';
             txtPassword.Size = new Size(540, 25);
@@ -238,7 +223,7 @@
             lblConfirmPassword.AutoSize = true;
             lblConfirmPassword.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblConfirmPassword.ForeColor = Color.FromArgb(64, 64, 64);
-            lblConfirmPassword.Location = new Point(30, 330);
+            lblConfirmPassword.Location = new Point(30, 325);
             lblConfirmPassword.Name = "lblConfirmPassword";
             lblConfirmPassword.Size = new Size(141, 19);
             lblConfirmPassword.TabIndex = 8;
@@ -249,7 +234,7 @@
             txtConfirmPassword.BackColor = Color.White;
             txtConfirmPassword.BorderStyle = BorderStyle.FixedSingle;
             txtConfirmPassword.Font = new Font("Segoe UI", 10F);
-            txtConfirmPassword.Location = new Point(30, 355);
+            txtConfirmPassword.Location = new Point(30, 350);
             txtConfirmPassword.Name = "txtConfirmPassword";
             txtConfirmPassword.PasswordChar = '•';
             txtConfirmPassword.Size = new Size(540, 25);
@@ -261,7 +246,7 @@
             chkShowPassword.Cursor = Cursors.Hand;
             chkShowPassword.Font = new Font("Segoe UI", 9F);
             chkShowPassword.ForeColor = Color.FromArgb(108, 117, 125);
-            chkShowPassword.Location = new Point(30, 390);
+            chkShowPassword.Location = new Point(30, 385);
             chkShowPassword.Name = "chkShowPassword";
             chkShowPassword.Size = new Size(108, 19);
             chkShowPassword.TabIndex = 10;
@@ -274,7 +259,7 @@
             lblAge.AutoSize = true;
             lblAge.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblAge.ForeColor = Color.FromArgb(64, 64, 64);
-            lblAge.Location = new Point(30, 425);
+            lblAge.Location = new Point(30, 420);
             lblAge.Name = "lblAge";
             lblAge.Size = new Size(46, 19);
             lblAge.TabIndex = 11;
@@ -285,7 +270,7 @@
             txtAge.BackColor = Color.White;
             txtAge.BorderStyle = BorderStyle.FixedSingle;
             txtAge.Font = new Font("Segoe UI", 10F);
-            txtAge.Location = new Point(30, 450);
+            txtAge.Location = new Point(30, 445);
             txtAge.Name = "txtAge";
             txtAge.Size = new Size(120, 25);
             txtAge.TabIndex = 12;
@@ -295,7 +280,7 @@
             lblGender.AutoSize = true;
             lblGender.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblGender.ForeColor = Color.FromArgb(64, 64, 64);
-            lblGender.Location = new Point(170, 425);
+            lblGender.Location = new Point(170, 420);
             lblGender.Name = "lblGender";
             lblGender.Size = new Size(68, 19);
             lblGender.TabIndex = 13;
@@ -309,7 +294,7 @@
             cmbGender.Font = new Font("Segoe UI", 10F);
             cmbGender.FormattingEnabled = true;
             cmbGender.Items.AddRange(new object[] { "Male", "Female", "Other" });
-            cmbGender.Location = new Point(170, 450);
+            cmbGender.Location = new Point(170, 445);
             cmbGender.Name = "cmbGender";
             cmbGender.Size = new Size(180, 25);
             cmbGender.TabIndex = 14;
@@ -319,7 +304,7 @@
             lblRole.AutoSize = true;
             lblRole.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblRole.ForeColor = Color.FromArgb(64, 64, 64);
-            lblRole.Location = new Point(370, 425);
+            lblRole.Location = new Point(370, 420);
             lblRole.Name = "lblRole";
             lblRole.Size = new Size(49, 19);
             lblRole.TabIndex = 15;
@@ -332,95 +317,11 @@
             cmbRole.FlatStyle = FlatStyle.Flat;
             cmbRole.Font = new Font("Segoe UI", 10F);
             cmbRole.FormattingEnabled = true;
-            cmbRole.Location = new Point(370, 450);
+            cmbRole.Location = new Point(370, 445);
             cmbRole.Name = "cmbRole";
             cmbRole.Size = new Size(200, 25);
             cmbRole.TabIndex = 16;
             cmbRole.SelectedIndexChanged += CmbRole_SelectedIndexChanged;
-            // 
-            // panelPatientInfo
-            // 
-            panelPatientInfo.BackColor = Color.FromArgb(245, 250, 255);
-            panelPatientInfo.BorderStyle = BorderStyle.FixedSingle;
-            panelPatientInfo.Controls.Add(lblPhoneType);
-            panelPatientInfo.Controls.Add(cmbPhoneType);
-            panelPatientInfo.Controls.Add(lblPhoneNumber);
-            panelPatientInfo.Controls.Add(txtPhoneNumber);
-            panelPatientInfo.Controls.Add(lblAllergies);
-            panelPatientInfo.Controls.Add(txtAllergies);
-            panelPatientInfo.Location = new Point(30, 495);
-            panelPatientInfo.Name = "panelPatientInfo";
-            panelPatientInfo.Size = new Size(540, 130);
-            panelPatientInfo.TabIndex = 17;
-            panelPatientInfo.Visible = false;
-            // 
-            // lblPhoneType
-            // 
-            lblPhoneType.AutoSize = true;
-            lblPhoneType.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            lblPhoneType.ForeColor = Color.FromArgb(64, 64, 64);
-            lblPhoneType.Location = new Point(15, 15);
-            lblPhoneType.Name = "lblPhoneType";
-            lblPhoneType.Size = new Size(99, 15);
-            lblPhoneType.TabIndex = 0;
-            lblPhoneType.Text = "Phone Type (Opt)";
-            // 
-            // cmbPhoneType
-            // 
-            cmbPhoneType.BackColor = Color.White;
-            cmbPhoneType.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbPhoneType.FlatStyle = FlatStyle.Flat;
-            cmbPhoneType.Font = new Font("Segoe UI", 9F);
-            cmbPhoneType.FormattingEnabled = true;
-            cmbPhoneType.Location = new Point(15, 35);
-            cmbPhoneType.Name = "cmbPhoneType";
-            cmbPhoneType.Size = new Size(120, 23);
-            cmbPhoneType.TabIndex = 1;
-            cmbPhoneType.SelectedIndexChanged += CmbPhoneType_SelectedIndexChanged;
-            // 
-            // lblPhoneNumber
-            // 
-            lblPhoneNumber.AutoSize = true;
-            lblPhoneNumber.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            lblPhoneNumber.ForeColor = Color.FromArgb(64, 64, 64);
-            lblPhoneNumber.Location = new Point(150, 15);
-            lblPhoneNumber.Name = "lblPhoneNumber";
-            lblPhoneNumber.Size = new Size(184, 15);
-            lblPhoneNumber.TabIndex = 2;
-            lblPhoneNumber.Text = "Phone Number (09XXXXXXXXX)";
-            // 
-            // txtPhoneNumber
-            // 
-            txtPhoneNumber.BackColor = Color.White;
-            txtPhoneNumber.BorderStyle = BorderStyle.FixedSingle;
-            txtPhoneNumber.Font = new Font("Segoe UI", 9F);
-            txtPhoneNumber.Location = new Point(150, 35);
-            txtPhoneNumber.MaxLength = 11;
-            txtPhoneNumber.Name = "txtPhoneNumber";
-            txtPhoneNumber.Size = new Size(370, 23);
-            txtPhoneNumber.TabIndex = 3;
-            txtPhoneNumber.KeyPress += TxtPhoneNumber_KeyPress;
-            // 
-            // lblAllergies
-            // 
-            lblAllergies.AutoSize = true;
-            lblAllergies.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            lblAllergies.ForeColor = Color.FromArgb(64, 64, 64);
-            lblAllergies.Location = new Point(15, 70);
-            lblAllergies.Name = "lblAllergies";
-            lblAllergies.Size = new Size(55, 15);
-            lblAllergies.TabIndex = 4;
-            lblAllergies.Text = "Allergies";
-            // 
-            // txtAllergies
-            // 
-            txtAllergies.BackColor = Color.White;
-            txtAllergies.BorderStyle = BorderStyle.FixedSingle;
-            txtAllergies.Font = new Font("Segoe UI", 9F);
-            txtAllergies.Location = new Point(15, 90);
-            txtAllergies.Name = "txtAllergies";
-            txtAllergies.Size = new Size(505, 23);
-            txtAllergies.TabIndex = 5;
             // 
             // panelDoctorInfo
             // 
@@ -429,7 +330,7 @@
             panelDoctorInfo.Controls.Add(lblSpecialization);
             panelDoctorInfo.Controls.Add(cmbSpecialization);
             panelDoctorInfo.Controls.Add(txtSpecialization);
-            panelDoctorInfo.Location = new Point(30, 495);
+            panelDoctorInfo.Location = new Point(30, 490);
             panelDoctorInfo.Name = "panelDoctorInfo";
             panelDoctorInfo.Size = new Size(540, 120);
             panelDoctorInfo.TabIndex = 18;
@@ -480,7 +381,7 @@
             btnSubmit.FlatStyle = FlatStyle.Flat;
             btnSubmit.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnSubmit.ForeColor = Color.White;
-            btnSubmit.Location = new Point(30, 640);
+            btnSubmit.Location = new Point(30, 630);
             btnSubmit.Name = "btnSubmit";
             btnSubmit.Size = new Size(260, 45);
             btnSubmit.TabIndex = 19;
@@ -496,7 +397,7 @@
             btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnCancel.ForeColor = Color.White;
-            btnCancel.Location = new Point(310, 640);
+            btnCancel.Location = new Point(310, 630);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(260, 45);
             btnCancel.TabIndex = 20;
@@ -509,14 +410,13 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(240, 245, 250);
-            ClientSize = new Size(600, 710);
+            ClientSize = new Size(600, 700);
             Controls.Add(btnRemovePhoto);
             Controls.Add(btnUploadPhoto);
             Controls.Add(pictureBoxProfile);
             Controls.Add(btnCancel);
             Controls.Add(btnSubmit);
             Controls.Add(panelDoctorInfo);
-            Controls.Add(panelPatientInfo);
             Controls.Add(cmbRole);
             Controls.Add(lblRole);
             Controls.Add(cmbGender);
@@ -536,15 +436,13 @@
             Controls.Add(panelHeader);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
-            MinimumSize = new Size(616, 749);
+            MinimumSize = new Size(616, 739);
             Name = "RegisterForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "User Management - St. Joseph's Hospital";
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).EndInit();
-            panelPatientInfo.ResumeLayout(false);
-            panelPatientInfo.PerformLayout();
             panelDoctorInfo.ResumeLayout(false);
             panelDoctorInfo.PerformLayout();
             ResumeLayout(false);

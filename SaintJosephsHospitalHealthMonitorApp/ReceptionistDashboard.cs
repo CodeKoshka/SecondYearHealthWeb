@@ -426,78 +426,63 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void LoadBillingData()
         {
-            try
-            {
-                string queryBilling = @"
+        try
+        {
+        string queryBilling = @"
             SELECT 
-            b.bill_id,
-            q.patient_id,
-            u.name AS 'Patient Name',
-            DATE_FORMAT(IFNULL(b.bill_date, q.completed_time), '%Y-%m-%d %H:%i') AS 'Bill Date',
-    IFNULL(b.amount, 0) AS 'Total Amount',
-    CASE 
-        WHEN b.bill_id IS NULL THEN 'Awaiting Bill'
-        ELSE b.status
-    END AS 'Status',
-    IFNULL(b.payment_method, 'N/A') AS 'Payment Method',
-    CASE 
-        WHEN b.bill_id IS NULL THEN 'Create Bill Required'
-        WHEN b.status = 'Paid' THEN 'Ready for Discharge'
-        WHEN b.status = 'Cancelled' THEN 'Discharge Allowed'
-        ELSE 'Processing'
-    END AS 'Discharge Status'
-FROM (
-    SELECT q1.*
-    FROM patientqueue q1
-    INNER JOIN (
-        SELECT patient_id, MAX(completed_time) AS latest_completed
-        FROM patientqueue
-        WHERE status = 'Completed'
-        GROUP BY patient_id
-    ) latest
-    ON q1.patient_id = latest.patient_id AND q1.completed_time = latest.latest_completed
-) q
-INNER JOIN Patients p ON q.patient_id = p.patient_id
-INNER JOIN Users u ON p.user_id = u.user_id
-LEFT JOIN (
-    SELECT b1.*
-    FROM Billing b1
-    INNER JOIN (
-        SELECT patient_id, MAX(bill_date) AS latest_bill
-        FROM Billing
-        GROUP BY patient_id
-    ) latestBill
-    ON b1.patient_id = latestBill.patient_id AND b1.bill_date = latestBill.latest_bill
-) b ON b.patient_id = q.patient_id
-WHERE q.status != 'Discharged'
-ORDER BY 
-    CASE 
-        WHEN b.bill_id IS NULL THEN 1
-        WHEN b.status = 'Pending' THEN 2
-        WHEN b.status = 'Partially Paid' THEN 3
-        WHEN b.status = 'Paid' THEN 4
-        ELSE 5
-    END,
-    q.completed_time DESC";
+                b.bill_id,
+                q.patient_id,
+                q.queue_id,
+                u.name AS 'Patient Name',
+                DATE_FORMAT(IFNULL(b.bill_date, q.completed_time), '%Y-%m-%d %H:%i') AS 'Bill Date',
+                IFNULL(b.amount, 0) AS 'Total Amount',
+                CASE 
+                    WHEN b.bill_id IS NULL THEN 'Awaiting Bill'
+                    ELSE b.status
+                END AS 'Status',
+                IFNULL(b.payment_method, 'N/A') AS 'Payment Method',
+                CASE 
+                    WHEN b.bill_id IS NULL THEN 'Create Bill Required'
+                    WHEN b.status = 'Paid' THEN 'Ready for Discharge'
+                    WHEN b.status = 'Cancelled' THEN 'Discharge Allowed'
+                    ELSE 'Processing'
+                END AS 'Discharge Status'
+            FROM patientqueue q
+            INNER JOIN Patients p ON q.patient_id = p.patient_id
+            INNER JOIN Users u ON p.user_id = u.user_id
+            LEFT JOIN Billing b ON b.queue_id = q.queue_id
+            WHERE q.queue_date = CURDATE()
+            AND q.status = 'Completed'
+            ORDER BY 
+                CASE 
+                    WHEN b.bill_id IS NULL THEN 1
+                    WHEN b.status = 'Pending' THEN 2
+                    WHEN b.status = 'Partially Paid' THEN 3
+                    WHEN b.status = 'Paid' THEN 4
+                    ELSE 5
+                END,
+                q.completed_time DESC";
 
-                DataTable dtBills = DatabaseHelper.ExecuteQuery(queryBilling);
-                dgvBilling.DataSource = dtBills;
+        DataTable dtBills = DatabaseHelper.ExecuteQuery(queryBilling);
+        dgvBilling.DataSource = dtBills;
 
-                if (dgvBilling.Columns["bill_id"] != null)
-                    dgvBilling.Columns["bill_id"].Visible = false;
-                if (dgvBilling.Columns["patient_id"] != null)
-                    dgvBilling.Columns["patient_id"].Visible = false;
-                if (dgvBilling.Columns["Total Amount"] != null)
-                {
-                    dgvBilling.Columns["Total Amount"].DefaultCellStyle.Format = "₱#,##0.00";
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading billing data: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+        if (dgvBilling.Columns["bill_id"] != null)
+            dgvBilling.Columns["bill_id"].Visible = false;
+        if (dgvBilling.Columns["patient_id"] != null)
+            dgvBilling.Columns["patient_id"].Visible = false;
+        if (dgvBilling.Columns["queue_id"] != null)
+            dgvBilling.Columns["queue_id"].Visible = false;
+        if (dgvBilling.Columns["Total Amount"] != null)
+        {
+            dgvBilling.Columns["Total Amount"].DefaultCellStyle.Format = "₱#,##0.00";
         }
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($"Error loading billing data: {ex.Message}", "Error",
+            MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+}
 
         private bool HasPatientIntakeData(int patientId)
         {
@@ -608,7 +593,7 @@ ORDER BY
                 {
                     string queueQuery = @"
                         SELECT q.queue_id, q.patient_id, u.name AS patient_name, 
-                               q.priority, q.status, 'Queue' as source
+                        q.priority, q.status, 'Queue' as source
                         FROM patientqueue q
                         INNER JOIN Patients p ON q.patient_id = p.patient_id
                         INNER JOIN Users u ON p.user_id = u.user_id
@@ -637,7 +622,7 @@ ORDER BY
                 {
                     string patientQuery = @"
                         SELECT p.patient_id, u.user_id, u.name, u.email, u.age, u.gender,
-                               p.blood_type, 'Patients' as source
+                        p.blood_type, 'Patients' as source
                         FROM Patients p
                         INNER JOIN Users u ON p.user_id = u.user_id
                         WHERE u.is_active = 1
@@ -665,7 +650,7 @@ ORDER BY
                 {
                     string billingQuery = @"
                         SELECT b.bill_id, b.patient_id, u.name AS patient_name,
-                               b.amount, b.status, 'Billing' as source
+                        b.amount, b.status, 'Billing' as source
                         FROM Billing b
                         INNER JOIN Patients p ON b.patient_id = p.patient_id
                         INNER JOIN Users u ON p.user_id = u.user_id
@@ -1887,11 +1872,13 @@ ORDER BY
 
             int patientId = Convert.ToInt32(dgvPatients.SelectedRows[0].Cells["patient_id"].Value);
 
-            using (PatientIntakeForm intakeForm = new PatientIntakeForm(patientId, currentUser.UserId, viewOnly: true))
+            using (PatientIntakeForm intakeForm = new PatientIntakeForm(patientId, currentUser.UserId, viewOnly: false))
             {
-                intakeForm.ShowDialog();
+                if (intakeForm.ShowDialog() == DialogResult.OK)
+                {
+                    LoadData();
+                }
             }
-            LoadData();
         }
 
         private void BtnLogout_Click(object sender, EventArgs e)

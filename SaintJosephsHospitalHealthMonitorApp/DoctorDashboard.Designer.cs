@@ -22,11 +22,9 @@
         private System.Windows.Forms.Button btnViewPatient;
         private System.Windows.Forms.Button btnCompleteAppt;
         private System.Windows.Forms.Button btnServiceChecklist;
-        private System.Windows.Forms.Button btnRefreshAppt;
         private System.Windows.Forms.Panel panelPatientButtons;
         private System.Windows.Forms.Button btnViewHistory;
         private System.Windows.Forms.Button btnAddRecord;
-        private System.Windows.Forms.Button btnRefreshPatients;
         private System.Windows.Forms.Panel panelUniversalSearch;
         private System.Windows.Forms.TextBox txtUniversalSearch;
         private System.Windows.Forms.Button btnClearUniversalSearch;
@@ -62,14 +60,12 @@
             tabAppointments = new TabPage();
             dgvAppointments = new DataGridView();
             panelAppointmentButtons = new Panel();
-            btnRefreshAppt = new Button();
             btnServiceChecklist = new Button();
             btnCompleteAppt = new Button();
             btnViewPatient = new Button();
             tabPatients = new TabPage();
             dgvPatients = new DataGridView();
             panelPatientButtons = new Panel();
-            btnRefreshPatients = new Button();
             btnAddRecord = new Button();
             btnViewHistory = new Button();
             panelHeader = new Panel();
@@ -113,7 +109,7 @@
             pictureBoxProfile.Location = new Point(90, 80);
             pictureBoxProfile.Name = "pictureBoxProfile";
             pictureBoxProfile.Size = new Size(100, 100);
-            pictureBoxProfile.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxProfile.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBoxProfile.TabIndex = 1;
             pictureBoxProfile.TabStop = false;
             // 
@@ -250,7 +246,6 @@
             // panelAppointmentButtons
             // 
             panelAppointmentButtons.BackColor = Color.White;
-            panelAppointmentButtons.Controls.Add(btnRefreshAppt);
             panelAppointmentButtons.Controls.Add(btnServiceChecklist);
             panelAppointmentButtons.Controls.Add(btnCompleteAppt);
             panelAppointmentButtons.Controls.Add(btnViewPatient);
@@ -260,23 +255,6 @@
             panelAppointmentButtons.Padding = new Padding(20, 15, 20, 15);
             panelAppointmentButtons.Size = new Size(1156, 80);
             panelAppointmentButtons.TabIndex = 1;
-            // 
-            // btnRefreshAppt
-            // 
-            btnRefreshAppt.BackColor = Color.FromArgb(113, 128, 150);
-            btnRefreshAppt.Cursor = Cursors.Hand;
-            btnRefreshAppt.FlatAppearance.BorderSize = 0;
-            btnRefreshAppt.FlatAppearance.MouseOverBackColor = Color.FromArgb(90, 103, 122);
-            btnRefreshAppt.FlatStyle = FlatStyle.Flat;
-            btnRefreshAppt.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnRefreshAppt.ForeColor = Color.White;
-            btnRefreshAppt.Location = new Point(610, 15);
-            btnRefreshAppt.Name = "btnRefreshAppt";
-            btnRefreshAppt.Size = new Size(150, 45);
-            btnRefreshAppt.TabIndex = 0;
-            btnRefreshAppt.Text = "🔄 Refresh";
-            btnRefreshAppt.UseVisualStyleBackColor = false;
-            btnRefreshAppt.Click += BtnRefresh_Click;
             // 
             // btnServiceChecklist
             // 
@@ -360,7 +338,6 @@
             // panelPatientButtons
             // 
             panelPatientButtons.BackColor = Color.White;
-            panelPatientButtons.Controls.Add(btnRefreshPatients);
             panelPatientButtons.Controls.Add(btnAddRecord);
             panelPatientButtons.Controls.Add(btnViewHistory);
             panelPatientButtons.Dock = DockStyle.Top;
@@ -369,23 +346,6 @@
             panelPatientButtons.Padding = new Padding(20, 15, 20, 15);
             panelPatientButtons.Size = new Size(1156, 80);
             panelPatientButtons.TabIndex = 1;
-            // 
-            // btnRefreshPatients
-            // 
-            btnRefreshPatients.BackColor = Color.FromArgb(113, 128, 150);
-            btnRefreshPatients.Cursor = Cursors.Hand;
-            btnRefreshPatients.FlatAppearance.BorderSize = 0;
-            btnRefreshPatients.FlatAppearance.MouseOverBackColor = Color.FromArgb(90, 103, 122);
-            btnRefreshPatients.FlatStyle = FlatStyle.Flat;
-            btnRefreshPatients.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnRefreshPatients.ForeColor = Color.White;
-            btnRefreshPatients.Location = new Point(420, 15);
-            btnRefreshPatients.Name = "btnRefreshPatients";
-            btnRefreshPatients.Size = new Size(150, 45);
-            btnRefreshPatients.TabIndex = 0;
-            btnRefreshPatients.Text = "🔄 Refresh";
-            btnRefreshPatients.UseVisualStyleBackColor = false;
-            btnRefreshPatients.Click += BtnRefresh_Click;
             // 
             // btnAddRecord
             // 
