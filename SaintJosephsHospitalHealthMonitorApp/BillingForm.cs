@@ -360,6 +360,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     try
                     {
                         string serviceLine = line.Substring(1).Trim();
+                        int qtyMarkerIndex = serviceLine.LastIndexOf("[Qty:");
+                        int quantity = 1;
+
+                        if (qtyMarkerIndex > 0)
+                        {
+                            int qtyEndIndex = serviceLine.LastIndexOf(']');
+                            if (qtyEndIndex > qtyMarkerIndex)
+                            {
+                                string qtyString = serviceLine.Substring(qtyMarkerIndex + 5, qtyEndIndex - qtyMarkerIndex - 5).Trim();
+                                int.TryParse(qtyString, out quantity);
+
+                                serviceLine = serviceLine.Substring(0, qtyMarkerIndex).Trim();
+                            }
+                        }
+
                         int categoryStart = serviceLine.LastIndexOf('(');
                         int categoryEnd = serviceLine.LastIndexOf(')');
 
@@ -368,13 +383,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             string serviceName = serviceLine.Substring(0, categoryStart).Trim();
                             string category = serviceLine.Substring(categoryStart + 1, categoryEnd - categoryStart - 1).Trim();
                             decimal unitPrice = GetServicePrice(serviceName, category);
-                            int quantity = 1;
 
                             AddOrUpdateService(serviceName, category, quantity, unitPrice);
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        System.Diagnostics.Debug.WriteLine($"Error parsing service line: {ex.Message}");
                         continue;
                     }
                 }

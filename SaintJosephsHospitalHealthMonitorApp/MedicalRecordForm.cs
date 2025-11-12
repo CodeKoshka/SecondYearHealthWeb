@@ -69,12 +69,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private void OptimizeFormSize()
         {
             this.AutoScroll = true;
-            this.AutoScrollMinSize = new Size(1100, 1550);
+            this.AutoScrollMinSize = new Size(1100, 1320);
             this.ClientSize = new Size(1120, 700);
             this.MaximizeBox = false;
             this.StartPosition = FormStartPosition.CenterScreen;
 
-            int yPos = 100;
+            int yPos = 86;
             int spacing = 10;
 
             if (panelCardiacSymptoms != null)
@@ -134,13 +134,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (btnSave != null)
             {
-                btnSave.Top = yPos;
+                btnSave.Top = yPos + 10;
                 btnSave.Height = 50;
             }
 
             if (btnCancel != null)
             {
-                btnCancel.Top = yPos;
+                btnCancel.Top = yPos + 10;
                 btnCancel.Height = 50;
             }
             AdjustTextBoxSizes();
@@ -157,7 +157,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (txtAdditionalComments != null)
                 txtAdditionalComments.Height = 75;
         }
-
 
         private void ConfigureForViewMode()
         {
@@ -246,16 +245,24 @@ namespace SaintJosephsHospitalHealthMonitorApp
             btnSave.Visible = false;
 
             btnCancel.Text = "✓ CLOSE";
-            btnCancel.BackColor = Color.FromArgb(149, 165, 166);
-            btnCancel.Top += headerDiff;
-            btnCancel.Location = new Point(btnSave.Location.X + (btnSave.Width - btnCancel.Width) / 2, btnCancel.Top);
+            btnCancel.BackColor = Color.FromArgb(52, 152, 219);
+            btnCancel.ForeColor = Color.White;
+            btnCancel.FlatStyle = FlatStyle.Flat;
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            btnCancel.Cursor = Cursors.Hand;
+
+            btnCancel.Top += headerDiff + 10;
+            btnCancel.Left = 30;
+            btnCancel.Width = 1040;
+            btnCancel.Height = 50;
 
             Button btnPrint = new Button
             {
                 Text = "🖨️ PRINT RECORD",
-                Location = new Point(btnSave.Location.X, btnCancel.Top - 70),
-                Size = new Size(200, 50),
-                BackColor = Color.FromArgb(66, 153, 225),
+                Location = new Point(30, btnCancel.Top - 60),
+                Size = new Size(1040, 45),
+                BackColor = Color.FromArgb(149, 165, 166),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 11F, FontStyle.Bold),
@@ -326,6 +333,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     AutoSize = true,
                     BackColor = Color.Transparent
                 };
+                panelHeader.Controls.Add(lblPatientInfo);
 
                 Label lblAge = new Label
                 {
@@ -560,12 +568,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         continue;
                     }
 
-                    if (captureDetails && !line.Contains("SURGERIES") && !string.IsNullOrWhiteSpace(line.Trim()))
+                    if (line.Contains("SURGERIES/HOSPITALIZATIONS:") || line.Contains("☑ No Surgeries"))
                     {
-                        string cleaned = line.Trim();
-                        if (cleaned.StartsWith("•") || cleaned.StartsWith("  "))
+                        continue;
+                    }
+
+                    if (captureDetails && !string.IsNullOrWhiteSpace(line.Trim()))
+                    {
+                        string cleaned = line.Trim().TrimStart('•', ' ');
+                        if (!string.IsNullOrWhiteSpace(cleaned))
                         {
-                            surgeryText.AppendLine(cleaned.TrimStart('•', ' '));
+                            surgeryText.AppendLine(cleaned);
                         }
                     }
                 }
@@ -592,9 +605,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 foreach (var line in lines)
                 {
                     string trimmed = line.Trim();
+
+                    if (trimmed.Contains("CURRENT MEDICATIONS:") ||
+                        trimmed.Contains("☑ No Medication"))
+                    {
+                        continue;
+                    }
+
                     if (trimmed.StartsWith("•"))
                     {
-                        medsText.AppendLine(trimmed.Substring(1).Trim());
+                        string med = trimmed.Substring(1).Trim();
+                        if (!string.IsNullOrWhiteSpace(med))
+                        {
+                            medsText.AppendLine(med);
+                        }
                     }
                 }
 
@@ -629,7 +653,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     string trimmed = line.Trim();
                     if (trimmed.StartsWith("Other:"))
                     {
-                        txtOtherAllergies.Text = trimmed.Replace("Other:", "").Trim();
+                        string allergyText = trimmed.Replace("Other:", "").Trim();
+                        allergyText = System.Text.RegularExpressions.Regex.Replace(allergyText, @"[\u00A0-\uFFFF]+", "");
+                        txtOtherAllergies.Text = allergyText.Trim();
                         break;
                     }
                 }
@@ -679,6 +705,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             try
             {
+                if (isViewMode)
+                    return;
+
                 string query = "SELECT COUNT(*) FROM MedicalRecords WHERE patient_id = @patientId";
                 int count = Convert.ToInt32(DatabaseHelper.ExecuteScalar(query,
                     new MySqlParameter("@patientId", patientId)));
@@ -764,31 +793,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (dt.Rows.Count > 0)
                 {
                     DataRow row = dt.Rows[0];
+                    string allergies = row["allergies"]?.ToString() ?? "";
 
-                    if (!isViewMode)
+                    if (!string.IsNullOrEmpty(allergies))
                     {
-                        Label lblPatientInfo = new Label
-                        {
-                            Text = $"Patient: {row["name"]}",
-                            Font = new Font("Segoe UI", 11F, FontStyle.Bold),
-                            Location = new Point(20, 90),
-                            AutoSize = true
-                        };
-
-                        Label lblDemographics = new Label
-                        {
-                            Text = $"Age: {row["age"]} | Gender: {row["gender"]} | Blood Type: {row["blood_type"]}",
-                            Font = new Font("Segoe UI", 10F),
-                            Location = new Point(20, 115),
-                            ForeColor = Color.FromArgb(74, 85, 104),
-                            AutoSize = true
-                        };
-
-                        this.Controls.AddRange(new Control[] { lblPatientInfo, lblDemographics });
+                        allergies = System.Text.RegularExpressions.Regex.Replace(allergies, @"[\u00A0-\uFFFF]+", "");
+                        allergies = allergies.Trim();
                     }
 
-                    string allergies = row["allergies"]?.ToString() ?? "None";
-                    if (!string.IsNullOrEmpty(allergies) && allergies.ToLower() != "none")
+                    if (!string.IsNullOrEmpty(allergies) && !allergies.Equals("None", StringComparison.OrdinalIgnoreCase))
                     {
                         txtOtherAllergies.Text = allergies;
                         chkNoKnownAllergies.Checked = false;
@@ -819,6 +832,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 MessageBox.Show("Doctor signature is required.", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtDoctorSignature.Focus();
+                return;
+            }
+
+            if (!chkNoMedication.Checked && string.IsNullOrWhiteSpace(txtMedications.Text))
+            {
+                MessageBox.Show(
+                    "Please either:\n" +
+                    "• Enter current medications, OR\n" +
+                    "• Check 'No Medication' if the patient is not taking any medications",
+                    "Medication Information Required",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                txtMedications.Focus();
                 return;
             }
 
@@ -937,11 +963,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (chkCarAccident.Checked) record.AppendLine("☑ Car Accident");
             if (chkWorkInjury.Checked) record.AppendLine("☑ Work Injury");
             if (chkGradualOnset.Checked) record.AppendLine("☑ Gradual Onset");
-            if (chkOther.Checked) record.AppendLine($"☑ Other: {txtOtherCause?.Text}");
+            if (chkOther.Checked && !string.IsNullOrWhiteSpace(txtOtherCause.Text))
+                record.AppendLine($"☑ Other: {txtOtherCause.Text}");
             record.AppendLine();
 
-            record.AppendLine($"When did your problem start: {txtProblemStarted.Text}");
-            record.AppendLine();
+            if (!string.IsNullOrWhiteSpace(txtProblemStarted.Text))
+            {
+                record.AppendLine($"When did your problem start: {txtProblemStarted.Text}");
+                record.AppendLine();
+            }
 
             record.AppendLine("PAST MEDICAL HISTORY:");
             var checkedConditions = new List<string>();
@@ -989,7 +1019,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
             else if (chkYesSurgery.Checked)
             {
                 record.AppendLine("  ☑ Yes (Details below)");
-                record.AppendLine($"  {txtSurgeryDetails.Text}");
+                if (!string.IsNullOrWhiteSpace(txtSurgeryDetails.Text))
+                {
+                    var surgeryLines = txtSurgeryDetails.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var line in surgeryLines)
+                    {
+                        record.AppendLine($"  • {line.Trim()}");
+                    }
+                }
             }
             record.AppendLine();
 
@@ -1003,7 +1040,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 var medicationLines = txtMedications.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var line in medicationLines)
                 {
-                    record.AppendLine($"  • {line.Trim()}");
+                    if (!string.IsNullOrWhiteSpace(line))
+                    {
+                        record.AppendLine($"  • {line.Trim()}");
+                    }
                 }
             }
             record.AppendLine();
@@ -1020,7 +1060,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (chkBromineAllergy.Checked) record.AppendLine("  ☑ Bromine");
                 if (!string.IsNullOrWhiteSpace(txtOtherAllergies.Text))
                 {
-                    record.AppendLine($"  Other: {txtOtherAllergies.Text}");
+                    string cleanAllergy = System.Text.RegularExpressions.Regex.Replace(txtOtherAllergies.Text, @"[\u00A0-\uFFFF]+", "");
+                    record.AppendLine($"  Other: {cleanAllergy.Trim()}");
                 }
             }
             record.AppendLine();

@@ -47,7 +47,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             panelSidebar.BackColor = sidebarBg;
             panelHeader.BackColor = accentColor;
-            panelHeader.Height = 70;
+            panelHeader.Height = 80;
 
             Panel headerShadow = new Panel();
             headerShadow.Dock = DockStyle.Bottom;
@@ -56,10 +56,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
             panelHeader.Controls.Add(headerShadow);
             headerShadow.BringToFront();
 
-            lblHospitalName.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblHospitalName.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
             lblHospitalName.ForeColor = Color.White;
-            lblHospitalName.Location = new Point(28, 20);
+            lblHospitalName.Location = new Point(15, 10);
             lblHospitalName.AutoSize = true;
+
+            Label lblSubtitle = panelHeader.Controls.Find("label1", false).FirstOrDefault() as Label;
+            if (lblSubtitle != null)
+            {
+                lblSubtitle.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+                lblSubtitle.ForeColor = Color.FromArgb(255, 255, 255);
+                lblSubtitle.Location = new Point(15, 38);
+                lblSubtitle.AutoSize = true;
+            }
 
             lblWelcome.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblWelcome.ForeColor = Color.White;
@@ -83,6 +92,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
             btnLogout.ForeColor = Color.White;
             btnLogout.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnLogout.FlatAppearance.MouseOverBackColor = Color.FromArgb(160, 174, 192);
+            btnLogout.Size = new Size(250, 50);
+            btnLogout.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnLogout.Location = new Point(15, panelSidebar.Height - btnLogout.Height - 20);
 
             SwitchToTab(0);
         }
@@ -178,9 +190,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
                 null, dgv, new object[] { true });
 
-            dgv.CellMouseEnter += DataGridView_CellMouseEnter;
-            dgv.CellMouseLeave += DataGridView_CellMouseLeave;
-
             dgv.DataBindingComplete += (s, ev) =>
             {
                 foreach (DataGridViewColumn column in dgv.Columns)
@@ -188,38 +197,39 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     column.SortMode = DataGridViewColumnSortMode.NotSortable;
                 }
             };
+
+            dgv.RowPostPaint -= DgvUniversal_RowPostPaint;
+            dgv.RowPostPaint += DgvUniversal_RowPostPaint;
         }
-        private void DataGridView_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+
+        private void DgvUniversal_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
         {
-            if (e.RowIndex >= 0)
+            try
             {
                 DataGridView dgv = sender as DataGridView;
+                if (dgv == null || e.RowIndex < 0 || e.RowIndex >= dgv.Rows.Count)
+                    return;
+
                 DataGridViewRow row = dgv.Rows[e.RowIndex];
 
-                if (!row.Selected)
+                if (row.Selected)
                 {
-                    if (e.RowIndex % 2 == 0)
-                        row.DefaultCellStyle.BackColor = Color.FromArgb(230, 247, 243);
-                    else
-                        row.DefaultCellStyle.BackColor = Color.FromArgb(235, 250, 247);
+                    Color slabColor = Color.FromArgb(52, 152, 219);
+                    using (SolidBrush slabBrush = new SolidBrush(slabColor))
+                    {
+                        Rectangle slabRect = new Rectangle(
+                            e.RowBounds.Left,
+                            e.RowBounds.Top,
+                            10,
+                            e.RowBounds.Height
+                        );
+                        e.Graphics.FillRectangle(slabBrush, slabRect);
+                    }
                 }
             }
-        }
-
-        private void DataGridView_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
+            catch (Exception ex)
             {
-                DataGridView dgv = sender as DataGridView;
-                DataGridViewRow row = dgv.Rows[e.RowIndex];
-
-                if (!row.Selected)
-                {
-                    if (e.RowIndex % 2 == 0)
-                        row.DefaultCellStyle.BackColor = Color.White;
-                    else
-                        row.DefaultCellStyle.BackColor = Color.FromArgb(249, 250, 251);
-                }
+                System.Diagnostics.Debug.WriteLine($"Universal RowPostPaint error: {ex.Message}");
             }
         }
 
@@ -380,6 +390,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void BtnCompleteAppointment_Click(object sender, EventArgs e)
         {
@@ -627,7 +638,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 $"Patient: {patientName}\n" +
                                 $"Last Visit ID: {lastQueueId}\n" +
                                 $"Status: {lastStatus}\n\n" +
-                                "This patient’s previous visit has already been discharged.\n\n" +
+                                "This patient's previous visit has already been discharged.\n\n" +
                                 "Would you like to create a follow-up note (not linked to a queue)?",
                                 "Discharged Patient",
                                 MessageBoxButtons.YesNo,
@@ -795,7 +806,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         MessageBoxIcon.Information);
                     return;
                 }
-                
+
                 Form historyForm = new Form
                 {
                     Text = $"Medical Records - {patientName}",

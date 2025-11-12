@@ -78,13 +78,38 @@ namespace SaintJosephsHospitalHealthMonitorApp
             UpdateMenuButton(btnPatientsMenu, 345, "📋", "Patient Records");
             UpdateMenuButton(btnBillingMenu, 400, "💰", "Billing & Discharge");
 
+            lblQueueCount.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblQueueCount.ForeColor = Color.White;
+            lblQueueCount.AutoSize = true;
+            lblQueueCount.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblQueueCount.Location = new Point(
+                panelHeader.Width - lblQueueCount.Width - 20,
+                29
+            );
             btnLogout.BackColor = Color.FromArgb(74, 85, 104);
             btnLogout.FlatAppearance.BorderSize = 0;
             btnLogout.ForeColor = Color.White;
             btnLogout.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnLogout.FlatAppearance.MouseOverBackColor = Color.FromArgb(160, 174, 192);
+            btnLogout.Size = new Size(250, 50);
+            btnLogout.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnLogout.Location = new Point(15, panelSidebar.Height - btnLogout.Height - 20);
 
             SwitchToTab(0);
+            CenterSearchBar();
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            CenterSearchBar();
+        }
+        private void CenterSearchBar()
+        {
+            if (panelUniversalSearch != null && panelHeader != null)
+            {
+                panelUniversalSearch.Left = (panelHeader.Width - panelUniversalSearch.Width) / 2;
+            }
         }
 
         private void UpdateMenuButton(Button btn, int yPos, string icon, string text)
@@ -162,7 +187,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             dgv.BackgroundColor = Color.White;
             dgv.BorderStyle = BorderStyle.None;
-            typeof(DataGridView).InvokeMember("DoubleBuffered",System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,null, dgv, new object[] { true });
+
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
+                null, dgv, new object[] { true });
+
             dgv.DataBindingComplete += (s, e) =>
             {
                 foreach (DataGridViewColumn column in dgv.Columns)
@@ -170,6 +199,188 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     column.SortMode = DataGridViewColumnSortMode.NotSortable;
                 }
             };
+
+            if (dgv.Name == "dgvQueue")
+            {
+                dgv.CellPainting -= DgvQueue_CellPainting;
+                dgv.RowPostPaint -= DgvQueue_RowPostPaint;
+
+                dgv.CellPainting += DgvQueue_CellPainting;
+                dgv.RowPostPaint += DgvQueue_RowPostPaint;
+            }
+            else
+            {
+                dgv.RowPostPaint -= DgvUniversal_RowPostPaint;
+                dgv.RowPostPaint += DgvUniversal_RowPostPaint;
+            }
+        }
+
+        private void DgvQueue_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex < 0)
+                    return;
+
+                DataGridViewRow row = dgvQueue.Rows[e.RowIndex];
+
+                string priority = "Normal";
+                if (row.Cells["priority"] != null && row.Cells["priority"].Value != null)
+                {
+                    priority = row.Cells["priority"].Value.ToString();
+                }
+
+                Color priorityBgColor = GetPriorityBackgroundColor(priority);
+                Color cellBackColor = (e.RowIndex % 2 == 0) ? Color.White : Color.FromArgb(249, 250, 251);
+
+                Color finalBackColor;
+                if (row.Selected)
+                {
+                    finalBackColor = Color.FromArgb(255, 205, 210);
+                }
+                else
+                {
+                    finalBackColor = BlendColors(priorityBgColor, cellBackColor);
+                }
+
+                using (SolidBrush backBrush = new SolidBrush(finalBackColor))
+                {
+                    e.Graphics.FillRectangle(backBrush, e.CellBounds);
+                }
+
+                e.Paint(e.CellBounds, DataGridViewPaintParts.Border);
+
+                Rectangle contentBounds = e.CellBounds;
+                if (row.Selected && e.ColumnIndex == 0)
+                {
+                    contentBounds.X += 10;
+                    contentBounds.Width -= 10;
+                }
+
+                if (e.Value != null)
+                {
+                    TextFormatFlags flags = TextFormatFlags.Left |
+                                           TextFormatFlags.VerticalCenter |
+                                           TextFormatFlags.EndEllipsis;
+
+                    Color textColor = Color.FromArgb(26, 32, 44);
+
+                    TextRenderer.DrawText(
+                        e.Graphics,
+                        e.Value.ToString(),
+                        e.CellStyle.Font,
+                        contentBounds,
+                        textColor,
+                        flags
+                    );
+                }
+
+                e.Handled = true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"CellPainting error: {ex.Message}");
+                e.Handled = false;
+            }
+        }
+
+        private void DgvQueue_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex < 0 || e.RowIndex >= dgvQueue.Rows.Count)
+                    return;
+
+                DataGridViewRow row = dgvQueue.Rows[e.RowIndex];
+
+                if (row.Selected)
+                {
+                    Color slabColor = Color.FromArgb(52, 152, 219);
+                    using (SolidBrush slabBrush = new SolidBrush(slabColor))
+                    {
+                        Rectangle slabRect = new Rectangle(
+                            e.RowBounds.Left,
+                            e.RowBounds.Top,
+                            10,
+                            e.RowBounds.Height
+                        );
+                        e.Graphics.FillRectangle(slabBrush, slabRect);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Queue RowPostPaint error: {ex.Message}");
+            }
+        }
+
+        private void DgvUniversal_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            try
+            {
+                DataGridView dgv = sender as DataGridView;
+                if (dgv == null || e.RowIndex < 0 || e.RowIndex >= dgv.Rows.Count)
+                    return;
+
+                DataGridViewRow row = dgv.Rows[e.RowIndex];
+
+                if (row.Selected)
+                {
+                    Color slabColor = Color.FromArgb(52, 152, 219);
+                    using (SolidBrush slabBrush = new SolidBrush(slabColor))
+                    {
+                        Rectangle slabRect = new Rectangle(
+                            e.RowBounds.Left,
+                            e.RowBounds.Top,
+                            10,
+                            e.RowBounds.Height
+                        );
+                        e.Graphics.FillRectangle(slabBrush, slabRect);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Universal RowPostPaint error: {ex.Message}");
+            }
+        }
+
+        private Color GetPriorityColor(string priority)
+        {
+            switch (priority?.ToUpper())
+            {
+                case "EMERGENCY":
+                    return Color.FromArgb(231, 76, 60); 
+                case "URGENT":
+                    return Color.FromArgb(243, 156, 18); 
+                case "NORMAL":
+                default:
+                    return Color.FromArgb(46, 204, 113);
+            }
+        }
+
+        private Color GetPriorityBackgroundColor(string priority)
+        {
+            switch (priority?.ToUpper())
+            {
+                case "EMERGENCY":
+                    return Color.FromArgb(30, 231, 76, 60);
+                case "URGENT":
+                    return Color.FromArgb(30, 243, 156, 18); 
+                case "NORMAL":
+                default:
+                    return Color.FromArgb(30, 46, 204, 113); 
+            }
+        }
+
+        private Color BlendColors(Color foreground, Color background)
+        {
+            int alpha = foreground.A;
+            int r = (foreground.R * alpha + background.R * (255 - alpha)) / 255;
+            int g = (foreground.G * alpha + background.G * (255 - alpha)) / 255;
+            int b = (foreground.B * alpha + background.B * (255 - alpha)) / 255;
+
+            return Color.FromArgb(r, g, b);
         }
 
         private void InitializeUniversalSearch()
@@ -305,8 +516,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 int queueCount = dtQueue.Rows.Count;
                 lblQueueCount.Text = $"Total in Queue Today: {queueCount}";
 
+                lblQueueCount.Location = new Point(
+                    panelHeader.Width - lblQueueCount.Width - 20,
+                    29
+                );
+
                 string queryPatients = @"
-            SELECT 
+                SELECT 
                 p.patient_id, 
                 u.name, 
                 u.age, 
@@ -315,19 +531,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 IFNULL(p.phone_number, 'N/A') AS phone_number, 
                 u.email,
                 CASE 
-                    WHEN NOT EXISTS (SELECT 1 FROM PatientQueue WHERE patient_id = p.patient_id) 
-                    THEN 'Never Visited'
-                    WHEN EXISTS (SELECT 1 FROM PatientQueue WHERE patient_id = p.patient_id AND queue_date = CURDATE())
-                    THEN 'In Queue Today'
-                    ELSE CONCAT('Last Visit: ', DATE_FORMAT(
-                        (SELECT MAX(queue_date) FROM PatientQueue WHERE patient_id = p.patient_id), 
-                        '%Y-%m-%d'))
+                WHEN NOT EXISTS (SELECT 1 FROM PatientQueue WHERE patient_id = p.patient_id) 
+                THEN 'Never Visited'
+                WHEN EXISTS (SELECT 1 FROM PatientQueue WHERE patient_id = p.patient_id AND queue_date = CURDATE())
+                THEN 'In Queue Today'
+                ELSE CONCAT('Last Visit: ', DATE_FORMAT(
+                (SELECT MAX(queue_date) FROM PatientQueue WHERE patient_id = p.patient_id), 
+                '%Y-%m-%d'))
                 END AS status,
                 (SELECT COUNT(*) FROM PatientQueue WHERE patient_id = p.patient_id) as total_visits
-            FROM Patients p
-            INNER JOIN Users u ON p.user_id = u.user_id
-            WHERE u.is_active = 1
-            ORDER BY u.name";
+                FROM Patients p
+                INNER JOIN Users u ON p.user_id = u.user_id
+                WHERE u.is_active = 1
+                ORDER BY u.name";
 
                 DataTable dtPatients = DatabaseHelper.ExecuteQuery(queryPatients);
                 dgvPatients.DataSource = dtPatients;
@@ -891,13 +1107,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-        SELECT equipment_checklist
-        FROM patientqueue
-        WHERE patient_id = @patientId 
-        AND queue_date = CURDATE()
-        AND status = 'Completed'
-        ORDER BY completed_time DESC
-        LIMIT 1";
+                SELECT equipment_checklist, queue_id
+                FROM patientqueue
+                WHERE patient_id = @patientId 
+                AND queue_date = CURDATE()
+                AND status = 'Completed'
+                ORDER BY completed_time DESC
+                LIMIT 1";
 
                 DataTable dt = DatabaseHelper.ExecuteQuery(query,
                     new MySqlParameter("@patientId", patientId));
@@ -914,108 +1130,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
 
                 string equipmentReport = dt.Rows[0]["equipment_checklist"].ToString();
+                int queueId = Convert.ToInt32(dt.Rows[0]["queue_id"]);
 
-                Form reportView = new Form
+                using (ServiceChecklistForm viewForm = ServiceChecklistForm.CreateViewMode(
+                    queueId, patientId, patientName, equipmentReport))
                 {
-                    Text = $"Equipment & Services Report - {patientName}",
-                    Size = new Size(900, 700),
-                    StartPosition = FormStartPosition.CenterScreen,
-                    FormBorderStyle = FormBorderStyle.Sizable,
-                    MaximizeBox = true,
-                    MinimumSize = new Size(800, 600),
-                    BackColor = Color.White
-                };
-
-                Panel headerPanel = new Panel
-                {
-                    BackColor = Color.FromArgb(52, 152, 219),
-                    Dock = DockStyle.Top,
-                    Height = 100
-                };
-
-                Label lblTitle = new Label
-                {
-                    Text = $"📋 Equipment & Services Report - Read Only",
-                    Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                    ForeColor = Color.White,
-                    Location = new Point(20, 15),
-                    AutoSize = true
-                };
-
-                Label lblPatient = new Label
-                {
-                    Text = $"Patient: {patientName}",
-                    Font = new Font("Segoe UI", 11),
-                    ForeColor = Color.White,
-                    Location = new Point(20, 50),
-                    AutoSize = true
-                };
-
-                Label lblNote = new Label
-                {
-                    Text = "This report was created by the doctor",
-                    Font = new Font("Segoe UI", 9, FontStyle.Italic),
-                    ForeColor = Color.FromArgb(220, 220, 220),
-                    Location = new Point(20, 75),
-                    AutoSize = true
-                };
-
-                headerPanel.Controls.AddRange(new Control[] { lblTitle, lblPatient, lblNote });
-
-                RichTextBox rtbReport = new RichTextBox
-                {
-                    Location = new Point(20, 120),
-                    Size = new Size(840, 450),
-                    ReadOnly = true,
-                    Font = new Font("Consolas", 10F),
-                    BorderStyle = BorderStyle.FixedSingle,
-                    Text = equipmentReport,
-                    BackColor = Color.FromArgb(250, 250, 250),
-                    Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
-                };
-
-                Button btnCreateBill = new Button
-                {
-                    Text = "💳 Create Bill from This Report",
-                    Size = new Size(250, 45),
-                    Location = new Point(510, 590),
-                    BackColor = Color.FromArgb(46, 204, 113),
-                    ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Right
-                };
-                btnCreateBill.FlatAppearance.BorderSize = 0;
-                btnCreateBill.Click += (s, ev) =>
-                {
-                    int userId = currentUser.UserId;
-                    reportView.Close();
-                    BillingForm billingForm = new BillingForm(userId, patientId);
-                    if (billingForm.ShowDialog() == DialogResult.OK)
-                    {
-                        LoadData();
-                    }
-                };
-
-                Button btnClose = new Button
-                {
-                    Text = "Close",
-                    Size = new Size(120, 45),
-                    Location = new Point(770, 590),
-                    BackColor = Color.FromArgb(149, 165, 166),
-                    ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Right
-                };
-                btnClose.FlatAppearance.BorderSize = 0;
-                btnClose.Click += (s, ev) => reportView.Close();
-
-                reportView.Controls.AddRange(new Control[] {
-            headerPanel, rtbReport, btnCreateBill, btnClose
-        });
-
-                reportView.ShowDialog();
+                    viewForm.ShowDialog();
+                }
             }
             catch (Exception ex)
             {
@@ -1023,7 +1144,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
 
         private void CreateBillFromCompletedVisit(int patientId, string patientName)
         {

@@ -29,8 +29,6 @@
         private System.Windows.Forms.TextBox txtUniversalSearch;
         private System.Windows.Forms.Button btnClearUniversalSearch;
         private System.Windows.Forms.Label lblUniversalSearchIcon;
-
-        // Universal search components
         private ListBox searchSuggestionsListBox;
         private Label lblSearchStatus;
         private Panel panelSearchCategories;
@@ -69,6 +67,7 @@
             btnAddRecord = new Button();
             btnViewHistory = new Button();
             panelHeader = new Panel();
+            label1 = new Label();
             panelUniversalSearch = new Panel();
             lblUniversalSearchIcon = new Label();
             btnClearUniversalSearch = new Button();
@@ -175,6 +174,7 @@
             // 
             // btnLogout
             // 
+            btnLogout.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             btnLogout.BackColor = Color.FromArgb(74, 85, 104);
             btnLogout.Cursor = Cursors.Hand;
             btnLogout.FlatAppearance.BorderSize = 0;
@@ -208,10 +208,10 @@
             tabControl.Controls.Add(tabPatients);
             tabControl.Dock = DockStyle.Fill;
             tabControl.ItemSize = new Size(120, 30);
-            tabControl.Location = new Point(0, 70);
+            tabControl.Location = new Point(0, 80);
             tabControl.Name = "tabControl";
             tabControl.SelectedIndex = 0;
-            tabControl.Size = new Size(1204, 691);
+            tabControl.Size = new Size(1204, 681);
             tabControl.SizeMode = TabSizeMode.Fixed;
             tabControl.TabIndex = 0;
             // 
@@ -223,7 +223,7 @@
             tabAppointments.Location = new Point(4, 34);
             tabAppointments.Name = "tabAppointments";
             tabAppointments.Padding = new Padding(20);
-            tabAppointments.Size = new Size(1196, 653);
+            tabAppointments.Size = new Size(1196, 647);
             tabAppointments.TabIndex = 0;
             // 
             // dgvAppointments
@@ -240,7 +240,7 @@
             dgvAppointments.RowHeadersVisible = false;
             dgvAppointments.RowTemplate.Height = 45;
             dgvAppointments.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvAppointments.Size = new Size(1156, 533);
+            dgvAppointments.Size = new Size(1156, 527);
             dgvAppointments.TabIndex = 0;
             // 
             // panelAppointmentButtons
@@ -315,7 +315,7 @@
             tabPatients.Location = new Point(4, 34);
             tabPatients.Name = "tabPatients";
             tabPatients.Padding = new Padding(20);
-            tabPatients.Size = new Size(1196, 653);
+            tabPatients.Size = new Size(1196, 647);
             tabPatients.TabIndex = 1;
             // 
             // dgvPatients
@@ -332,7 +332,7 @@
             dgvPatients.RowHeadersVisible = false;
             dgvPatients.RowTemplate.Height = 45;
             dgvPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvPatients.Size = new Size(1156, 533);
+            dgvPatients.Size = new Size(1156, 527);
             dgvPatients.TabIndex = 0;
             // 
             // panelPatientButtons
@@ -384,22 +384,35 @@
             // panelHeader
             // 
             panelHeader.BackColor = Color.FromArgb(26, 188, 156);
+            panelHeader.Controls.Add(label1);
             panelHeader.Controls.Add(panelUniversalSearch);
             panelHeader.Controls.Add(lblHospitalName);
             panelHeader.Dock = DockStyle.Top;
             panelHeader.Location = new Point(0, 0);
             panelHeader.Name = "panelHeader";
-            panelHeader.Size = new Size(1204, 70);
+            panelHeader.Size = new Size(1204, 80);
             panelHeader.TabIndex = 1;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            label1.ForeColor = Color.White;
+            label1.Location = new Point(15, 41);
+            label1.Name = "label1";
+            label1.Size = new Size(157, 19);
+            label1.TabIndex = 7;
+            label1.Text = "Hospital Management";
             // 
             // panelUniversalSearch
             // 
+            panelUniversalSearch.Anchor = AnchorStyles.Top;
             panelUniversalSearch.BackColor = Color.White;
             panelUniversalSearch.BorderStyle = BorderStyle.FixedSingle;
             panelUniversalSearch.Controls.Add(lblUniversalSearchIcon);
             panelUniversalSearch.Controls.Add(btnClearUniversalSearch);
             panelUniversalSearch.Controls.Add(txtUniversalSearch);
-            panelUniversalSearch.Location = new Point(296, 15);
+            panelUniversalSearch.Location = new Point(308, 18);
             panelUniversalSearch.Name = "panelUniversalSearch";
             panelUniversalSearch.Size = new Size(588, 45);
             panelUniversalSearch.TabIndex = 4;
@@ -451,11 +464,11 @@
             // lblHospitalName
             // 
             lblHospitalName.AutoSize = true;
-            lblHospitalName.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblHospitalName.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
             lblHospitalName.ForeColor = Color.White;
-            lblHospitalName.Location = new Point(28, 20);
+            lblHospitalName.Location = new Point(15, 10);
             lblHospitalName.Name = "lblHospitalName";
-            lblHospitalName.Size = new Size(247, 32);
+            lblHospitalName.Size = new Size(223, 30);
             lblHospitalName.TabIndex = 0;
             lblHospitalName.Text = "St. Joseph's Hospital";
             // 
@@ -556,10 +569,7 @@
             searchSuggestionsListBox.Click += SearchSuggestionsListBox_Click;
             searchSuggestionsListBox.KeyDown += SearchSuggestionsListBox_KeyDown;
             searchSuggestionsListBox.MouseMove += SearchSuggestionsListBox_MouseMove;
-
             searchSuggestionsListBox.DrawItem += SearchSuggestionsListBox_DrawItem;
-
-            // Find the container and shadow from the Controls
             Panel suggestionsContainer = this.Controls.Find("suggestionsContainer", true).FirstOrDefault() as Panel;
             Panel suggestionsShadow = this.Controls.Find("suggestionsShadow", true).FirstOrDefault() as Panel;
 
@@ -761,5 +771,7 @@
             container.BringToFront();
             shadow.SendToBack();
         }
+
+        private Label label1;
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace SaintJosephsHospitalHealthMonitorApp
 {
@@ -75,15 +76,31 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (line.StartsWith("•"))
                 {
                     var serviceLine = line.Substring(1).Trim();
+                    int qtyMarkerIndex = serviceLine.LastIndexOf("[Qty:");
+                    string quantity = "1";
+
+                    if (qtyMarkerIndex > 0)
+                    {
+                        int qtyEndIndex = serviceLine.LastIndexOf(']');
+                        if (qtyEndIndex > qtyMarkerIndex)
+                        {
+                            quantity = serviceLine.Substring(qtyMarkerIndex + 5, qtyEndIndex - qtyMarkerIndex - 5).Trim();
+                            serviceLine = serviceLine.Substring(0, qtyMarkerIndex).Trim();
+                        }
+                    }
+
                     var parts = serviceLine.Split(new[] { " (" }, StringSplitOptions.None);
                     if (parts.Length >= 2)
                     {
                         string serviceName = parts[0].Trim();
-                        string category = parts[1].Replace(")", "").Trim();
+                        string categoryPart = parts[1];
+
+                        int closeParen = categoryPart.IndexOf(')');
+                        string category = closeParen > 0 ? categoryPart.Substring(0, closeParen).Trim() : categoryPart;
 
                         ListViewItem item = new ListViewItem(serviceName);
                         item.SubItems.Add(category);
-                        item.SubItems.Add("");
+                        item.SubItems.Add(quantity);
                         lstServices.Items.Add(item);
                     }
                 }
@@ -123,6 +140,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             cmbService.Items.Clear();
             cmbService.Items.Add("-- Select Service --");
+            cmbService.SelectedIndex = 0;
 
             string category = cmbCategory.SelectedItem?.ToString();
             if (string.IsNullOrEmpty(category) || category == "-- Select Category --")
@@ -252,12 +270,42 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             int quantity = (int)numQuantity.Value;
 
-            ListViewItem item = new ListViewItem(serviceName);
-            item.Checked = true;
-            item.SubItems.Add(category);
-            item.SubItems.Add(quantity.ToString());
+            ListViewItem existingItem = null;
+            foreach (ListViewItem item in lstServices.Items)
+            {
+                if (item.SubItems[0].Text.Equals(serviceName, StringComparison.OrdinalIgnoreCase) &&
+                    item.SubItems[1].Text.Equals(category, StringComparison.OrdinalIgnoreCase))
+                {
+                    existingItem = item;
+                    break;
+                }
+            }
 
-            lstServices.Items.Add(item);
+            if (existingItem != null)
+            {
+                int currentQuantity = int.Parse(existingItem.SubItems[2].Text);
+                int newQuantity = currentQuantity + quantity;
+                existingItem.SubItems[2].Text = newQuantity.ToString();
+
+                MessageBox.Show(
+                    $"Updated quantity for: {serviceName}\n\n" +
+                    $"Previous: {currentQuantity}\n" +
+                    $"Added: {quantity}\n" +
+                    $"New Total: {newQuantity}",
+                    "Quantity Updated",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            else
+            {
+                ListViewItem item = new ListViewItem(serviceName);
+                item.Checked = true;
+                item.SubItems.Add(category);
+                item.SubItems.Add(quantity.ToString());
+
+                lstServices.Items.Add(item);
+            }
+
             UpdateServiceCount();
 
             cmbService.SelectedIndex = 0;
@@ -390,8 +438,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 if (item.Checked)
                 {
-                    report.AppendLine($"• {item.SubItems[0].Text} ({item.SubItems[1].Text})");
-                    report.AppendLine($"  Quantity: {item.SubItems[2].Text}");
+                    string serviceName = item.SubItems[0].Text;
+                    string category = item.SubItems[1].Text;
+                    string quantity = item.SubItems[2].Text;
+                    report.AppendLine($"• {serviceName} ({category}) [Qty: {quantity}]");
                 }
             }
 
