@@ -18,24 +18,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         public static void InitializeDatabase()
         {
-            MySqlConnection conn = null;
-
             try
             {
-                conn = new MySqlConnection(serverConnectionString);
-                conn.Open();
+                using (MySqlConnection conn = new MySqlConnection(serverConnectionString))
+                {
+                    conn.Open();
+                    using (MySqlCommand cmdCreate = new MySqlCommand("CREATE DATABASE IF NOT EXISTS hospital_db", conn))
+                    {
+                        cmdCreate.ExecuteNonQuery();
+                    }
+                } 
 
-                MySqlCommand cmdCreate = new MySqlCommand("CREATE DATABASE IF NOT EXISTS hospital_db", conn);
-                cmdCreate.ExecuteNonQuery();
+                using (MySqlConnection conn = new MySqlConnection(databaseConnectionString))
+                {
+                    conn.Open();
 
-                conn.Close();
-                conn.Dispose();
-
-                conn = new MySqlConnection(databaseConnectionString);
-                conn.Open();
-
-                string createUsersTable = @"
-                CREATE TABLE IF NOT EXISTS Users (
+                    string createUsersTable = @"
+                    CREATE TABLE IF NOT EXISTS Users (
                     user_id INT PRIMARY KEY AUTO_INCREMENT,
                     name VARCHAR(100) NOT NULL,
                     role VARCHAR(20) NOT NULL,
@@ -48,109 +47,110 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     is_active TINYINT(1) DEFAULT 1,
                     FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createPatientsTable = @"
+                    string createPatientsTable = @"
                     CREATE TABLE IF NOT EXISTS Patients (
-                        patient_id INT PRIMARY KEY AUTO_INCREMENT,
-                        user_id INT,
-                        blood_type VARCHAR(5),
-                        allergies VARCHAR(500),
-                        medical_history TEXT,
-                        emergency_contact VARCHAR(100),
-                        phone_number VARCHAR(20),
-                        FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+                    patient_id INT PRIMARY KEY AUTO_INCREMENT,
+                    user_id INT,
+                    blood_type VARCHAR(5),
+                    allergies VARCHAR(500),
+                    medical_history TEXT,
+                    emergency_contact VARCHAR(100),
+                    phone_number VARCHAR(20),
+                    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createDoctorsTable = @"
+                    string createDoctorsTable = @"
                     CREATE TABLE IF NOT EXISTS Doctors (
-                        doctor_id INT PRIMARY KEY AUTO_INCREMENT,
-                        user_id INT,
-                        specialization VARCHAR(100),
-                        license_number VARCHAR(50),
-                        is_available TINYINT(1) DEFAULT 1,
-                        FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+                    doctor_id INT PRIMARY KEY AUTO_INCREMENT,
+                    user_id INT,
+                    specialization VARCHAR(100),
+                    license_number VARCHAR(50),
+                    is_available TINYINT(1) DEFAULT 1,
+                    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createQueueTable = @"
+                    string createQueueTable = @"
                     CREATE TABLE IF NOT EXISTS patientqueue (
-                        queue_id INT PRIMARY KEY AUTO_INCREMENT,
-                        patient_id INT,
-                        doctor_id INT NULL,
-                        queue_number INT NOT NULL,
-                        priority VARCHAR(20) DEFAULT 'Normal',
-                        status VARCHAR(20) DEFAULT 'Waiting',
-                        reason_for_visit VARCHAR(500),
-                        registered_by INT,
-                        queue_date DATE,
-                        registered_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        called_time DATETIME NULL,
-                        completed_time DATETIME NULL,
-                        equipment_checklist TEXT NULL COMMENT 'Doctor\'s equipment and services report',
-                        FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
-                        FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id) ON DELETE SET NULL,
-                        FOREIGN KEY (registered_by) REFERENCES Users(user_id) ON DELETE SET NULL
+                    queue_id INT PRIMARY KEY AUTO_INCREMENT,
+                    patient_id INT,
+                    doctor_id INT NULL,
+                    queue_number INT NOT NULL,
+                    priority VARCHAR(20) DEFAULT 'Normal',
+                    status VARCHAR(20) DEFAULT 'Waiting',
+                    reason_for_visit VARCHAR(500),
+                    registered_by INT,
+                    queue_date DATE,
+                    registered_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    called_time DATETIME NULL,
+                    completed_time DATETIME NULL,
+                    discharged_time DATETIME NULL,
+                    equipment_checklist TEXT NULL COMMENT 'Doctor\'s equipment and services report',
+                    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
+                    FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id) ON DELETE SET NULL,
+                    FOREIGN KEY (registered_by) REFERENCES Users(user_id) ON DELETE SET NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createAppointmentsTable = @"
+                    string createAppointmentsTable = @"
                     CREATE TABLE IF NOT EXISTS Appointments (
-                        appointment_id INT PRIMARY KEY AUTO_INCREMENT,
-                        patient_id INT,
-                        doctor_id INT,
-                        appointment_date DATETIME NOT NULL,
-                        status VARCHAR(20) DEFAULT 'Scheduled',
-                        notes VARCHAR(500),
-                        created_by INT,
-                        FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
-                        FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id) ON DELETE CASCADE,
-                        FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
+                    appointment_id INT PRIMARY KEY AUTO_INCREMENT,
+                    patient_id INT,
+                    doctor_id INT,
+                    appointment_date DATETIME NOT NULL,
+                    status VARCHAR(20) DEFAULT 'Scheduled',
+                    notes VARCHAR(500),
+                    created_by INT,
+                    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
+                    FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id) ON DELETE CASCADE,
+                    FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createMedicalRecordsTable = @"
+                    string createMedicalRecordsTable = @"
                     CREATE TABLE IF NOT EXISTS medicalrecords (
-                        record_id INT PRIMARY KEY AUTO_INCREMENT,
-                        patient_id INT,
-                        doctor_id INT,
-                        diagnosis TEXT,
-                        prescription TEXT,
-                        lab_tests VARCHAR(500),
-                        visit_type VARCHAR(20),
-                        record_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
-                        FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id) ON DELETE CASCADE
+                    record_id INT PRIMARY KEY AUTO_INCREMENT,
+                    patient_id INT,
+                    doctor_id INT,
+                    diagnosis TEXT,
+                    prescription TEXT,
+                    lab_tests VARCHAR(500),
+                    visit_type VARCHAR(20),
+                    record_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
+                    FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id) ON DELETE CASCADE
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createBillingTable = @"
+                    string createBillingTable = @"
                     CREATE TABLE IF NOT EXISTS Billing (
-                        bill_id INT PRIMARY KEY AUTO_INCREMENT,
-                        patient_id INT,
-                        amount DECIMAL(10,2) NOT NULL,
-                        subtotal DECIMAL(10,2) DEFAULT 0.00,
-                        discount_percent DECIMAL(5,2) DEFAULT 0.00,
-                        discount_amount DECIMAL(10,2) DEFAULT 0.00,
-                        tax_percent DECIMAL(5,2) DEFAULT 0.00,
-                        tax_amount DECIMAL(10,2) DEFAULT 0.00,
-                        status VARCHAR(20) DEFAULT 'Pending',
-                        description TEXT,
-                        payment_method VARCHAR(50) DEFAULT 'Cash',
-                        notes TEXT,
-                        bill_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        created_by INT,
-                        FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
-                        FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
+                    bill_id INT PRIMARY KEY AUTO_INCREMENT,
+                    patient_id INT,
+                    amount DECIMAL(10,2) NOT NULL,
+                    subtotal DECIMAL(10,2) DEFAULT 0.00,
+                    discount_percent DECIMAL(5,2) DEFAULT 0.00,
+                    discount_amount DECIMAL(10,2) DEFAULT 0.00,
+                    tax_percent DECIMAL(5,2) DEFAULT 0.00,
+                    tax_amount DECIMAL(10,2) DEFAULT 0.00,
+                    status VARCHAR(20) DEFAULT 'Pending',
+                    description TEXT,
+                    payment_method VARCHAR(50) DEFAULT 'Cash',
+                    notes TEXT,
+                    bill_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    created_by INT,
+                    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
+                    FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createStaffTable = @"
+                    string createStaffTable = @"
                     CREATE TABLE IF NOT EXISTS Staff (
-                        staff_id INT PRIMARY KEY AUTO_INCREMENT,
-                        user_id INT,
-                        position VARCHAR(50),
-                        department VARCHAR(50),
-                        FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+                    staff_id INT PRIMARY KEY AUTO_INCREMENT,
+                    user_id INT,
+                    position VARCHAR(50),
+                    department VARCHAR(50),
+                    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createMedicineInventoryTable = @"
-                CREATE TABLE IF NOT EXISTS MedicineInventory (
+                    string createMedicineInventoryTable = @"
+                    CREATE TABLE IF NOT EXISTS MedicineInventory (
                     medicine_id INT PRIMARY KEY AUTO_INCREMENT,
                     medicine_name VARCHAR(200) NOT NULL,
                     generic_name VARCHAR(200),
@@ -173,10 +173,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                     created_by INT,
                     FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createMedicationOrdersTable = @"
-                CREATE TABLE IF NOT EXISTS MedicationOrders (
+                    string createMedicationOrdersTable = @"
+                    CREATE TABLE IF NOT EXISTS MedicationOrders (
                     order_id INT PRIMARY KEY AUTO_INCREMENT,
                     patient_id INT NOT NULL,
                     doctor_id INT NOT NULL,
@@ -199,10 +199,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id) ON DELETE CASCADE,
                     FOREIGN KEY (validated_by) REFERENCES Users(user_id) ON DELETE SET NULL,
                     FOREIGN KEY (dispensed_by) REFERENCES Users(user_id) ON DELETE SET NULL
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createDispensingRecordsTable = @"
-                CREATE TABLE IF NOT EXISTS DispensingRecords (
+                    string createDispensingRecordsTable = @"
+                    CREATE TABLE IF NOT EXISTS DispensingRecords (
                     dispense_id INT PRIMARY KEY AUTO_INCREMENT,
                     order_id INT,
                     medicine_id INT NOT NULL,
@@ -221,10 +221,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (medicine_id) REFERENCES MedicineInventory(medicine_id) ON DELETE RESTRICT,
                     FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
                     FOREIGN KEY (dispensed_by) REFERENCES Users(user_id) ON DELETE RESTRICT
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createMedicationReturnsTable = @"
-                CREATE TABLE IF NOT EXISTS MedicationReturns (
+                    string createMedicationReturnsTable = @"
+                    CREATE TABLE IF NOT EXISTS MedicationReturns (
                     return_id INT PRIMARY KEY AUTO_INCREMENT,
                     dispense_id INT,
                     order_id INT,
@@ -247,10 +247,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
                     FOREIGN KEY (processed_by) REFERENCES Users(user_id) ON DELETE RESTRICT,
                     FOREIGN KEY (approved_by) REFERENCES Users(user_id) ON DELETE SET NULL
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createControlledSubstanceLogTable = @"
-                CREATE TABLE IF NOT EXISTS ControlledSubstanceLog (
+                    string createControlledSubstanceLogTable = @"
+                    CREATE TABLE IF NOT EXISTS ControlledSubstanceLog (
                     log_id INT PRIMARY KEY AUTO_INCREMENT,
                     medicine_id INT NOT NULL,
                     dispense_id INT,
@@ -269,10 +269,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (dispensed_by) REFERENCES Users(user_id) ON DELETE RESTRICT,
                     FOREIGN KEY (approved_by) REFERENCES Users(user_id) ON DELETE SET NULL,
                     FOREIGN KEY (witness_by) REFERENCES Users(user_id) ON DELETE SET NULL
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createStockAdjustmentTable = @"
-                CREATE TABLE IF NOT EXISTS StockAdjustment (
+                    string createStockAdjustmentTable = @"
+                    CREATE TABLE IF NOT EXISTS StockAdjustment (
                     adjustment_id INT PRIMARY KEY AUTO_INCREMENT,
                     medicine_id INT NOT NULL,
                     adjustment_type VARCHAR(50) NOT NULL,
@@ -286,10 +286,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     notes TEXT,
                     FOREIGN KEY (medicine_id) REFERENCES MedicineInventory(medicine_id) ON DELETE RESTRICT,
                     FOREIGN KEY (adjusted_by) REFERENCES Users(user_id) ON DELETE RESTRICT
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createCompletedVisitsTable = @"
-                CREATE TABLE IF NOT EXISTS CompletedVisits (
+                    string createCompletedVisitsTable = @"
+                    CREATE TABLE IF NOT EXISTS CompletedVisits (
                     archive_id INT PRIMARY KEY AUTO_INCREMENT,
                     queue_id INT NOT NULL,
                     patient_id INT NOT NULL,
@@ -300,35 +300,71 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     notes TEXT,
                     FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
                     FOREIGN KEY (archived_by) REFERENCES Users(user_id) ON DELETE SET NULL
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                string createDebugSettingsTable = @"
-                CREATE TABLE IF NOT EXISTS DebugSettings (
+                    string createDebugSettingsTable = @"
+                    CREATE TABLE IF NOT EXISTS DebugSettings (
                     setting_id INT PRIMARY KEY AUTO_INCREMENT,
                     setting_key VARCHAR(50) NOT NULL UNIQUE,
                     setting_value VARCHAR(10) NOT NULL,
                     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                ExecuteNonQueryInternal(conn, createUsersTable);
-                ExecuteNonQueryInternal(conn, createPatientsTable);
-                ExecuteNonQueryInternal(conn, createDoctorsTable);
-                ExecuteNonQueryInternal(conn, createStaffTable);
-                ExecuteNonQueryInternal(conn, createQueueTable);
-                ExecuteNonQueryInternal(conn, createAppointmentsTable);
-                ExecuteNonQueryInternal(conn, createMedicalRecordsTable);
-                ExecuteNonQueryInternal(conn, createBillingTable);
-                ExecuteNonQueryInternal(conn, createMedicineInventoryTable);
-                ExecuteNonQueryInternal(conn, createMedicationOrdersTable);
-                ExecuteNonQueryInternal(conn, createDispensingRecordsTable);
-                ExecuteNonQueryInternal(conn, createMedicationReturnsTable);
-                ExecuteNonQueryInternal(conn, createControlledSubstanceLogTable);
-                ExecuteNonQueryInternal(conn, createStockAdjustmentTable);
-                ExecuteNonQueryInternal(conn, createCompletedVisitsTable);
-                ExecuteNonQueryInternal(conn, createDebugSettingsTable);
+                    string createServiceCategoriesTable = @"
+                    CREATE TABLE IF NOT EXISTS ServiceCategories (
+                    category_id INT AUTO_INCREMENT PRIMARY KEY,
+                    category_name VARCHAR(100) NOT NULL
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                InsertDefaultUsers(conn);
-                InsertDefaultDebugSettings(conn);
+                   
+                    string createServicesTable = @"
+                    CREATE TABLE IF NOT EXISTS Services (
+                    service_id INT AUTO_INCREMENT PRIMARY KEY,
+                    category_id INT,
+                    service_name VARCHAR(150) NOT NULL,
+                    unit_price DECIMAL(10,2) DEFAULT 0.00,
+                    FOREIGN KEY (category_id) REFERENCES ServiceCategories(category_id) 
+                    ON DELETE SET NULL
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+                    
+                    string createBillServicesTable = @"
+                    CREATE TABLE IF NOT EXISTS BillServices (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    bill_id INT NOT NULL,
+                    service_id INT NOT NULL,
+                    category_id INT NULL,
+                    quantity INT DEFAULT 1,
+                    unit_price DECIMAL(10,2) DEFAULT 0.00,
+                    FOREIGN KEY (bill_id) REFERENCES Billing(bill_id) ON DELETE CASCADE,
+                    FOREIGN KEY (service_id) REFERENCES Services(service_id) ON DELETE CASCADE,
+                    FOREIGN KEY (category_id) REFERENCES ServiceCategories(category_id) ON DELETE SET NULL
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+                    ExecuteNonQueryInternal(conn, createUsersTable);
+                    ExecuteNonQueryInternal(conn, createPatientsTable);
+                    ExecuteNonQueryInternal(conn, createDoctorsTable);
+                    ExecuteNonQueryInternal(conn, createStaffTable);
+                    ExecuteNonQueryInternal(conn, createQueueTable);
+                    ExecuteNonQueryInternal(conn, createAppointmentsTable);
+                    ExecuteNonQueryInternal(conn, createMedicalRecordsTable);
+                    ExecuteNonQueryInternal(conn, createBillingTable);
+                    ExecuteNonQueryInternal(conn, createMedicineInventoryTable);
+                    ExecuteNonQueryInternal(conn, createMedicationOrdersTable);
+                    ExecuteNonQueryInternal(conn, createDispensingRecordsTable);
+                    ExecuteNonQueryInternal(conn, createMedicationReturnsTable);
+                    ExecuteNonQueryInternal(conn, createControlledSubstanceLogTable);
+                    ExecuteNonQueryInternal(conn, createStockAdjustmentTable);
+                    ExecuteNonQueryInternal(conn, createCompletedVisitsTable);
+                    ExecuteNonQueryInternal(conn, createDebugSettingsTable);
+
+                    ExecuteNonQueryInternal(conn, createServiceCategoriesTable);
+                    ExecuteNonQueryInternal(conn, createServicesTable);
+                    ExecuteNonQueryInternal(conn, createBillServicesTable);
+
+                    InsertDefaultUsers(conn);
+                    InsertDefaultDebugSettings(conn);
+                }
             }
             catch (MySqlException ex)
             {
@@ -351,14 +387,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             catch (Exception ex)
             {
                 throw new Exception($"Database Error: {ex.Message}", ex);
-            }
-            finally
-            {
-                if (conn != null && conn.State == ConnectionState.Open)
-                {
-                    conn.Close();
-                    conn.Dispose();
-                }
             }
         }
 

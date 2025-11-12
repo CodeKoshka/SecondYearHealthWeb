@@ -3,62 +3,261 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Globalization;
+using System.Linq;
 
 namespace SaintJosephsHospitalHealthMonitorApp
 {
     public partial class BillingForm : Form
     {
-        private decimal currentTotal = 0;
         private int? editingBillId = null;
         private int? currentUserId = null;
         private int? preselectedPatientId = null;
+        private int actualPatientId = 0;
+        private bool isPreselectedPatient = false;
+        private bool isViewOnly = false;
+
+        public BillingForm(int? userId, int patientId, int billId, bool viewOnly)
+        {
+            InitializeComponent();
+            currentUserId = userId;
+            editingBillId = billId;
+            isPreselectedPatient = true;
+            preselectedPatientId = patientId;
+            actualPatientId = patientId;
+            isViewOnly = viewOnly;
+
+            LoadServiceCategories();
+            SetupServiceItems();
+
+            ConfigureForPreselectPatient(actualPatientId);
+            LoadExistingBill(billId);
+            LoadBillServices(billId);
+
+            if (isViewOnly)
+            {
+                lblTitle.Text = "View Invoice";
+                this.Text = "View Invoice";
+                MakeFormReadOnly();
+            }
+            else
+            {
+                lblTitle.Text = "Edit Invoice";
+                this.Text = "Edit Invoice";
+            }
+        }
 
         public BillingForm(int? userId = null, int? patientId = null)
         {
             InitializeComponent();
             currentUserId = userId;
-            preselectedPatientId = patientId;
             editingBillId = null;
+            preselectedPatientId = patientId;
+            isViewOnly = false;
 
-            LoadPatients();
+            if (patientId.HasValue && patientId.Value > 0)
+            {
+                actualPatientId = patientId.Value;
+                isPreselectedPatient = true;
+            }
+
             LoadServiceCategories();
             SetupServiceItems();
 
-            if (preselectedPatientId.HasValue)
-            {
-                for (int i = 0; i < cmbPatient.Items.Count; i++)
-                {
-                    DataRowView row = (DataRowView)cmbPatient.Items[i];
-                    if (Convert.ToInt32(row["patient_id"]) == preselectedPatientId.Value)
-                    {
-                        cmbPatient.SelectedIndex = i;
+            if (cmbPaymentMethod.Items.Count > 0)
+                cmbPaymentMethod.SelectedIndex = 0;
 
-                        LoadServicesFromEquipmentReport(preselectedPatientId.Value);
-                        break;
-                    }
+            if (cmbStatus.Items.Count > 0)
+                cmbStatus.SelectedIndex = 0;
+
+            if (isPreselectedPatient)
+            {
+                if (!VerifyPatientCompleted(actualPatientId))
+                {
+                    MessageBox.Show(
+                        "❌ CANNOT CREATE BILL\n\n" +
+                        "This patient has not completed their visit yet.\n\n" +
+                        "The patient must be in 'Completed' status before billing.",
+                        "Patient Not Completed",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    this.Load += (s, e) => this.Close();
+                    return;
                 }
+
+                ConfigureForPreselectPatient(actualPatientId);
+                LoadServicesFromEquipmentReport(actualPatientId);
+            }
+            else
+            {
+                LoadPatientsToComboBox();
             }
         }
 
-        public BillingForm(int billId, int? userId = null)
+        public BillingForm(int? userId, int patientId, int billId)
         {
             InitializeComponent();
             currentUserId = userId;
             editingBillId = billId;
+            isPreselectedPatient = true;
+            preselectedPatientId = patientId;
+            actualPatientId = patientId;
+            isViewOnly = false;
 
-            LoadPatients();
             LoadServiceCategories();
             SetupServiceItems();
+
+            ConfigureForPreselectPatient(actualPatientId);
             LoadExistingBill(billId);
+            LoadBillServices(billId);
 
             lblTitle.Text = "Edit Invoice";
             this.Text = "Edit Invoice";
         }
 
-        private void LoadPatients()
+        private void MakeFormReadOnly()
         {
-            string query = @"SELECT p.patient_id, CONCAT(u.name, ' (ID: ', p.patient_id, ')') as display_name,
-                           u.name, p.blood_type, p.phone_number
+            cmbServiceCategory.Enabled = false;
+            cmbServiceItem.Enabled = false;
+            numQuantity.Enabled = false;
+            btnAddService.Enabled = false;
+            btnRemoveService.Enabled = false;
+            numDiscount.Enabled = false;
+            numTax.Enabled = false;
+            cmbPaymentMethod.Enabled = false;
+            cmbStatus.Enabled = false;
+            txtNotes.ReadOnly = true;
+            lstServices.Enabled = true;
+
+            btnSave.Visible = false;
+            btnCancel.Text = "Close";
+            btnCancel.Location = new Point(
+                (this.ClientSize.Width - btnCancel.Width) / 2,
+                btnCancel.Location.Y
+            );
+
+            btnPrintPreview.BackColor = Color.FromArgb(52, 152, 219);
+        }
+
+        private bool VerifyPatientCompleted(int patientId)
+        {
+            try
+            {
+                string query = @"
+                    SELECT COUNT(*) 
+                    FROM patientqueue 
+                    WHERE patient_id = @patientId 
+                    AND queue_date = CURDATE()
+                    AND status = 'Completed'";
+
+                int count = Convert.ToInt32(DatabaseHelper.ExecuteScalar(query,
+                    new MySqlParameter("@patientId", patientId)));
+
+                return count > 0;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error verifying patient status: {ex.Message}");
+                return false;
+            }
+        }
+
+        private void ConfigureForPreselectPatient(int patientId)
+        {
+            try
+            {
+                string query = @"
+                    SELECT u.name, p.blood_type, p.phone_number, u.age, u.gender
+                    FROM Patients p
+                    INNER JOIN Users u ON p.user_id = u.user_id
+                    WHERE p.patient_id = @patientId";
+
+                DataTable dt = DatabaseHelper.ExecuteQuery(query,
+                    new MySqlParameter("@patientId", patientId));
+
+                if (dt.Rows.Count > 0)
+                {
+                    string patientName = dt.Rows[0]["name"].ToString();
+
+                    string bloodType = "Unknown";
+                    if (dt.Rows[0]["blood_type"] != DBNull.Value &&
+                        !string.IsNullOrWhiteSpace(dt.Rows[0]["blood_type"]?.ToString()))
+                    {
+                        bloodType = dt.Rows[0]["blood_type"].ToString();
+                    }
+
+                    string phone = dt.Rows[0]["phone_number"]?.ToString() ?? "N/A";
+                    string age = dt.Rows[0]["age"]?.ToString() ?? "N/A";
+                    string gender = dt.Rows[0]["gender"]?.ToString() ?? "N/A";
+
+                    cmbPatient.Visible = false;
+                    cmbPatient.Enabled = false;
+
+                    Panel patientInfoPanel = new Panel
+                    {
+                        Name = "patientInfoPanel",
+                        BackColor = Color.FromArgb(237, 242, 247),
+                        Location = new Point(cmbPatient.Location.X, cmbPatient.Location.Y - 5),
+                        Size = new Size(520, 40),
+                        BorderStyle = BorderStyle.FixedSingle
+                    };
+
+                    Label lblPatientInfo = new Label
+                    {
+                        Name = "lblPatientInfo",
+                        Text = $"👤 {patientName}",
+                        Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                        ForeColor = Color.FromArgb(26, 32, 44),
+                        Location = new Point(10, 3),
+                        AutoSize = true
+                    };
+
+                    Label lblPatientDetails = new Label
+                    {
+                        Name = "lblPatientDetails",
+                        Text = $"ID: {patientId} | Age: {age} | Gender: {gender} | Blood Type: {bloodType} | Contact: {phone}",
+                        Font = new Font("Segoe UI", 8.5F),
+                        ForeColor = Color.FromArgb(74, 85, 104),
+                        Location = new Point(10, 22),
+                        AutoSize = true
+                    };
+
+                    patientInfoPanel.Controls.Add(lblPatientInfo);
+                    patientInfoPanel.Controls.Add(lblPatientDetails);
+
+                    this.Controls.Add(patientInfoPanel);
+                    patientInfoPanel.BringToFront();
+
+                    if (isViewOnly)
+                    {
+                        lblPatient.Text = "Patient Information:";
+                        lblPatient.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                        lblPatient.ForeColor = Color.FromArgb(52, 152, 219);
+                    }
+                    else if (editingBillId.HasValue)
+                    {
+                        lblPatient.Text = "Patient (Cannot be changed):";
+                        lblPatient.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                        lblPatient.ForeColor = Color.FromArgb(243, 156, 18);
+                    }
+                    else
+                    {
+                        lblPatient.Text = "Patient (Pre-selected - Cannot be changed):";
+                        lblPatient.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                        lblPatient.ForeColor = Color.FromArgb(231, 76, 60);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading patient info: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LoadPatientsToComboBox()
+        {
+            string query = @"SELECT p.patient_id, CONCAT(u.name, ' (ID: ', p.patient_id, ')') as display_name
                            FROM Patients p
                            INNER JOIN Users u ON p.user_id = u.user_id
                            WHERE u.is_active = 1
@@ -67,6 +266,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
             cmbPatient.DisplayMember = "display_name";
             cmbPatient.ValueMember = "patient_id";
             cmbPatient.DataSource = dt;
+        }
+
+        private void NumDiscount_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateTotals();
+        }
+
+        private void NumTax_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateTotals();
         }
 
         private void LoadServiceCategories()
@@ -90,11 +299,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
             lstServices.View = View.Details;
             lstServices.FullRowSelect = true;
             lstServices.GridLines = true;
+            lstServices.Columns.Clear();
             lstServices.Columns.Add("Service/Item", 250);
             lstServices.Columns.Add("Category", 120);
             lstServices.Columns.Add("Quantity", 80);
             lstServices.Columns.Add("Unit Price", 100);
             lstServices.Columns.Add("Amount", 100);
+
+            lstServices.AllowColumnReorder = false;
         }
 
         private void LoadServicesFromEquipmentReport(int patientId)
@@ -102,13 +314,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-        SELECT equipment_checklist
-        FROM patientqueue
-        WHERE patient_id = @patientId 
-        AND queue_date = CURDATE()
-        AND status = 'Completed'
-        ORDER BY completed_time DESC
-        LIMIT 1";
+                    SELECT equipment_checklist
+                    FROM patientqueue
+                    WHERE patient_id = @patientId 
+                    AND queue_date = CURDATE()
+                    AND status = 'Completed'
+                    ORDER BY completed_time DESC
+                    LIMIT 1";
 
                 DataTable dt = DatabaseHelper.ExecuteQuery(query,
                     new MySqlParameter("@patientId", patientId));
@@ -144,18 +356,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             string serviceName = serviceLine.Substring(0, categoryStart).Trim();
                             string category = serviceLine.Substring(categoryStart + 1, categoryEnd - categoryStart - 1).Trim();
                             decimal unitPrice = GetServicePrice(serviceName, category);
-                            int quantity = ExtractQuantityFromNextLine(lines, Array.IndexOf(lines, line));
+                            int quantity = 1;
 
-                            if (quantity == 0) quantity = 1;
-
-                            decimal amount = unitPrice * quantity;
-
-                            ListViewItem item = new ListViewItem(serviceName);
-                            item.SubItems.Add(category);
-                            item.SubItems.Add(quantity.ToString());
-                            item.SubItems.Add("₱" + unitPrice.ToString("N2"));
-                            item.SubItems.Add("₱" + amount.ToString("N2"));
-                            lstServices.Items.Add(item);
+                            AddOrUpdateService(serviceName, category, quantity, unitPrice);
                         }
                     }
                     catch
@@ -164,99 +367,103 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
                 }
             }
-
-            UpdateTotal();
+            UpdateTotals();
         }
 
-        private int ExtractQuantityFromNextLine(string[] lines, int currentIndex)
+        private void AddOrUpdateService(string serviceName, string category, int quantity, decimal unitPrice)
         {
-            if (currentIndex + 1 < lines.Length)
+            foreach (ListViewItem existingItem in lstServices.Items)
             {
-                string nextLine = lines[currentIndex + 1].Trim();
-                if (nextLine.StartsWith("Quantity:"))
+                if (existingItem.SubItems[0].Text == serviceName &&
+                    existingItem.SubItems[1].Text == category)
                 {
-                    string qtyStr = nextLine.Replace("Quantity:", "").Trim();
-                    if (int.TryParse(qtyStr, out int qty))
-                        return qty;
+                    int existingQty = Convert.ToInt32(existingItem.SubItems[2].Text);
+                    int newQty = existingQty + quantity;
+                    decimal amount = unitPrice * newQty;
+
+                    existingItem.SubItems[2].Text = newQty.ToString();
+                    existingItem.SubItems[4].Text = "₱" + amount.ToString("N2");
+
+                    return; 
                 }
             }
-            return 1;
+
+            decimal totalAmount = unitPrice * quantity;
+            ListViewItem item = new ListViewItem(serviceName);
+            item.SubItems.Add(category);
+            item.SubItems.Add(quantity.ToString());
+            item.SubItems.Add("₱" + unitPrice.ToString("N2"));
+            item.SubItems.Add("₱" + totalAmount.ToString("N2"));
+            lstServices.Items.Add(item);
         }
 
         private decimal GetServicePrice(string serviceName, string category)
         {
-            var servicePrices = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)
-            {{"General Consultation", 2500},
-            {"Specialist Consultation", 5000},
-            {"Follow-up Consultation", 1500},
-            {"Emergency Consultation", 7500},
+            var servicePrices = new System.Collections.Generic.Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"General Consultation", 2500},
+                {"Specialist Consultation", 5000},
+                {"Follow-up Consultation", 1500},
+                {"Emergency Consultation", 7500},
+                {"Complete Blood Count (CBC)", 1250},
+                {"Blood Chemistry", 2000},
+                {"Urinalysis", 750},
+                {"Lipid Profile", 1750},
+                {"Blood Typing", 1000},
+                {"Liver Function Test", 2250},
+                {"Kidney Function Test", 2250},
+                {"HbA1c Test", 1800},
+                {"X-Ray (Single View)", 3000},
+                {"X-Ray (Two Views)", 4500},
+                {"CT Scan", 15000},
+                {"MRI", 25000},
+                {"Ultrasound", 4000},
+                {"Mammogram", 6000},
+                {"ECG", 2000},
+                {"Echocardiogram", 10000},
+                {"Endoscopy", 20000},
+                {"Colonoscopy", 22500},
+                {"Minor Suturing", 3750},
+                {"Wound Dressing", 1500},
+                {"IV Insertion", 1000},
+                {"Catheterization", 2500},
+                {"Nebulization", 800},
+                {"Antibiotics (Generic)", 750},
+                {"Pain Relief Medication", 500},
+                {"IV Fluids", 1250},
+                {"Vaccine/Immunization", 1750},
+                {"IV Antibiotics", 2000},
+                {"Emergency Medication", 3000},
+                {"Private Room (per day)", 10000},
+                {"Semi-Private Room (per day)", 6000},
+                {"Ward Bed (per day)", 4000},
+                {"ICU (per day)", 25000},
+                {"Emergency Room", 7500},
+                {"Observation Bed (per day)", 3000},
+                {"Emergency Room Fee", 7500},
+                {"Ambulance Service", 10000},
+                {"Emergency Surgery", 100000},
+                {"Trauma Care", 15000},
+                {"Minor Surgery", 50000},
+                {"Major Surgery", 150000},
+                {"Operating Room Fee", 25000},
+                {"Anesthesia", 20000},
+                {"Surgical Supplies", 10000},
+                {"Physical Therapy Session", 3000},
+                {"Dietary Consultation", 2000},
+                {"Medical Certificate", 1000},
+                {"Medical Records Copy", 500},
+                {"Oxygen Therapy (per hour)", 500},
+                {"Cardiac Monitor (per day)", 2000},
+                {"Infusion Pump (per day)", 1500},
+                {"Medical Supplies (Sterile Gloves, Syringes, etc.)", 500}
+            };
 
-            {"Complete Blood Count (CBC)", 1250},
-            {"Blood Chemistry", 2000},
-            {"Urinalysis", 750},
-            {"Lipid Profile", 1750},
-            {"Blood Typing", 1000},
-            {"Liver Function Test", 2250},
-            {"Kidney Function Test", 2250},
-            {"HbA1c Test", 1800},
-
-            {"X-Ray (Single View)", 3000},
-            {"X-Ray (Two Views)", 4500},
-            {"CT Scan", 15000},
-            {"MRI", 25000},
-            {"Ultrasound", 4000},
-            {"Mammogram", 6000},
-
-            {"ECG", 2000},
-            {"Echocardiogram", 10000},
-            {"Endoscopy", 20000},
-            {"Colonoscopy", 22500},
-            {"Minor Suturing", 3750},
-            {"Wound Dressing", 1500},
-            {"IV Insertion", 1000},
-            {"Catheterization", 2500},
-            {"Nebulization", 800},
-
-            {"Antibiotics (Generic)", 750},
-            {"Pain Relief Medication", 500},
-            {"IV Fluids", 1250},
-            {"Vaccine/Immunization", 1750},
-            {"IV Antibiotics", 2000},
-            {"Emergency Medication", 3000},
-
-            {"Private Room (per day)", 10000},
-            {"Semi-Private Room (per day)", 6000},
-            {"Ward Bed (per day)", 4000},
-            {"ICU (per day)", 25000},
-            {"Emergency Room", 7500},
-            {"Observation Bed (per day)", 3000},
-        
-            {"Emergency Room Fee", 7500},
-            {"Ambulance Service", 10000},
-            {"Emergency Surgery", 100000},
-            {"Trauma Care", 15000},
-
-            {"Minor Surgery", 50000},
-            {"Major Surgery", 150000},
-            {"Operating Room Fee", 25000},
-            {"Anesthesia", 20000},
-            {"Surgical Supplies", 10000},
-
-            {"Physical Therapy Session", 3000},
-            {"Dietary Consultation", 2000},
-            {"Medical Certificate", 1000},
-            {"Medical Records Copy", 500},
-            {"Oxygen Therapy (per hour)", 500},
-            {"Cardiac Monitor (per day)", 2000},
-            {"Infusion Pump (per day)", 1500},
-            {"Medical Supplies (Sterile Gloves, Syringes, etc.)", 500}};
-
-        if (servicePrices.ContainsKey(serviceName))
+            if (servicePrices.ContainsKey(serviceName))
                 return servicePrices[serviceName];
 
             return 0;
         }
-
 
         private void CmbServiceCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -265,7 +472,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             string category = cmbServiceCategory.SelectedItem?.ToString();
             if (string.IsNullOrEmpty(category) || category == "-- Select Category --")
+            {
+                cmbServiceItem.SelectedIndex = 0;
                 return;
+            }
 
             switch (category)
             {
@@ -301,7 +511,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     cmbServiceItem.Items.Add("Endoscopy - ₱20,000");
                     cmbServiceItem.Items.Add("Colonoscopy - ₱22,500");
                     cmbServiceItem.Items.Add("Minor Suturing - ₱3,750");
-                    cmbServiceItem.Items.Add("Dressing Change - ₱1,500");
+                    cmbServiceItem.Items.Add("Wound Dressing - ₱1,500");
                     break;
 
                 case "Medications":
@@ -309,7 +519,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     cmbServiceItem.Items.Add("Pain Relief Medication - ₱500");
                     cmbServiceItem.Items.Add("IV Fluids - ₱1,250");
                     cmbServiceItem.Items.Add("Vaccine/Immunization - ₱1,750");
-                    cmbServiceItem.Items.Add("Custom Medication (Enter Details)");
                     break;
 
                 case "Room Charges":
@@ -340,7 +549,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     cmbServiceItem.Items.Add("Dietary Consultation - ₱2,000");
                     cmbServiceItem.Items.Add("Medical Certificate - ₱1,000");
                     cmbServiceItem.Items.Add("Medical Records Copy - ₱500");
-                    cmbServiceItem.Items.Add("Custom Service (Enter Details)");
                     break;
             }
             cmbServiceItem.SelectedIndex = 0;
@@ -348,77 +556,109 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnAddService_Click(object sender, EventArgs e)
         {
-            if (cmbServiceCategory.SelectedIndex <= 0 || cmbServiceItem.SelectedIndex <= 0)
+            try
             {
-                MessageBox.Show("Please select a service category and item.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (numQuantity.Value <= 0)
-            {
-                MessageBox.Show("Quantity must be greater than 0.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            string serviceItem = cmbServiceItem.SelectedItem.ToString();
-            string category = cmbServiceCategory.SelectedItem.ToString();
-
-            decimal unitPrice = 0;
-            string serviceName = serviceItem;
-
-            if (serviceItem.Contains(" - ₱"))
-            {
-                string[] parts = serviceItem.Split(new[] { " - ₱" }, StringSplitOptions.None);
-                serviceName = parts[0];
-                if (parts.Length > 1)
+                if (cmbServiceItem.SelectedIndex <= 0 || cmbServiceCategory.SelectedIndex <= 0)
                 {
-                    string priceStr = parts[1].Replace(",", "");
-                    decimal.TryParse(priceStr, out unitPrice);
-                }
-            }
-
-            if (serviceItem.Contains("Custom") || serviceItem.Contains("Enter Details"))
-            {
-                using (var inputForm = new InputDialog("Enter Service Details", "Service Name:", serviceName))
-                {
-                    if (inputForm.ShowDialog() == DialogResult.OK)
-                    {
-                        serviceName = inputForm.InputValue;
-                    }
-                    else return;
+                    MessageBox.Show("Please select both category and service.", "Selection Required",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
                 }
 
-                using (var priceForm = new InputDialog("Enter Price", "Unit Price:", "0"))
+                int quantity = (int)numQuantity.Value;
+                string serviceText = cmbServiceItem.Text;
+                string categoryName = cmbServiceCategory.Text;
+
+                string[] parts = serviceText.Split(new[] { " - ₱" }, StringSplitOptions.None);
+                if (parts.Length != 2)
                 {
-                    if (priceForm.ShowDialog() == DialogResult.OK)
+                    MessageBox.Show("Invalid service format.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                string serviceName = parts[0].Trim();
+                string priceStr = parts[1].Replace(",", "").Trim();
+
+                if (!decimal.TryParse(priceStr, out decimal unitPrice))
+                {
+                    MessageBox.Show("Invalid price format.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                AddOrUpdateService(serviceName, categoryName, quantity, unitPrice);
+                UpdateTotals();
+
+                bool serviceExists = false;
+                foreach (ListViewItem item in lstServices.Items)
+                {
+                    if (item.SubItems[0].Text == serviceName && item.SubItems[1].Text == categoryName)
                     {
-                        if (!decimal.TryParse(priceForm.InputValue, out unitPrice))
+                        int currentQty = Convert.ToInt32(item.SubItems[2].Text);
+                        if (currentQty > quantity)
                         {
-                            MessageBox.Show("Invalid price entered.", "Error",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
+                            serviceExists = true;
+                            MessageBox.Show(
+                                $"Service already exists!\n\n" +
+                                $"Updated quantity from {currentQty - quantity} to {currentQty}.",
+                                "Service Updated",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                            break;
                         }
                     }
-                    else return;
                 }
+
+                cmbServiceCategory.SelectedIndex = 0;
+                numQuantity.Value = 1;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error adding service: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
-            int quantity = (int)numQuantity.Value;
-            decimal amount = unitPrice * quantity;
+        private void LoadBillServices(int billId)
+        {
+            try
+            {
+                lstServices.Items.Clear();
 
-            ListViewItem item = new ListViewItem(serviceName);
-            item.SubItems.Add(category);
-            item.SubItems.Add(quantity.ToString());
-            item.SubItems.Add("₱" + unitPrice.ToString("N2"));
-            item.SubItems.Add("₱" + amount.ToString("N2"));
-            lstServices.Items.Add(item);
+                string query = @"
+                    SELECT bs.quantity, bs.unit_price, s.service_name, sc.category_name
+                    FROM BillServices bs
+                    LEFT JOIN Services s ON bs.service_id = s.service_id
+                    LEFT JOIN ServiceCategories sc ON bs.category_id = sc.category_id
+                    WHERE bs.bill_id = @billId";
 
-            UpdateTotal();
+                DataTable dt = DatabaseHelper.ExecuteQuery(query, new MySqlParameter("@billId", billId));
 
-            cmbServiceItem.SelectedIndex = 0;
-            numQuantity.Value = 1;
+                foreach (DataRow row in dt.Rows)
+                {
+                    string serviceName = row["service_name"]?.ToString() ?? "Unknown Service";
+                    string categoryName = row["category_name"]?.ToString() ?? "N/A";
+                    int quantity = Convert.ToInt32(row["quantity"]);
+                    decimal unitPrice = Convert.ToDecimal(row["unit_price"]);
+                    decimal total = quantity * unitPrice;
+
+                    ListViewItem item = new ListViewItem(serviceName);
+                    item.SubItems.Add(categoryName);
+                    item.SubItems.Add(quantity.ToString());
+                    item.SubItems.Add("₱" + unitPrice.ToString("N2"));
+                    item.SubItems.Add("₱" + total.ToString("N2"));
+
+                    lstServices.Items.Add(item);
+                }
+
+                UpdateTotals();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading bill services: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BtnRemoveService_Click(object sender, EventArgs e)
@@ -434,148 +674,224 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 lstServices.Items.Remove(item);
             }
-            UpdateTotal();
-        }
-
-        private void UpdateTotal()
-        {
-            currentTotal = 0;
-            foreach (ListViewItem item in lstServices.Items)
-            {
-                string amountStr = item.SubItems[4].Text.Replace("₱", "").Replace(",", "");
-                decimal.TryParse(amountStr, out decimal amount);
-                currentTotal += amount;
-            }
-
-            decimal discount = numDiscount.Value;
-            decimal tax = numTax.Value;
-
-            decimal discountAmount = currentTotal * (discount / 100);
-            decimal subtotalAfterDiscount = currentTotal - discountAmount;
-            decimal taxAmount = subtotalAfterDiscount * (tax / 100);
-            decimal grandTotal = subtotalAfterDiscount + taxAmount;
-
-            lblSubtotal.Text = $"Subtotal: ₱{currentTotal:N2}";
-            lblDiscountAmount.Text = $"Discount ({discount}%): -₱{discountAmount:N2}";
-            lblTaxAmount.Text = $"Tax ({tax}%): ₱{taxAmount:N2}";
-            lblGrandTotal.Text = $"Grand Total: ₱{grandTotal:N2}";
-        }
-
-        private void NumDiscount_ValueChanged(object sender, EventArgs e)
-        {
-            UpdateTotal();
-        }
-
-        private void NumTax_ValueChanged(object sender, EventArgs e)
-        {
-            UpdateTotal();
+            UpdateTotals();
         }
 
         private void BtnSave_Click(object sender, EventArgs e)
         {
-            if (cmbPatient.SelectedValue == null)
-            {
-                MessageBox.Show("Please select a patient.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (lstServices.Items.Count == 0)
-            {
-                MessageBox.Show("Please add at least one service/item.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             try
             {
-                int patientId = Convert.ToInt32(cmbPatient.SelectedValue);
-                string paymentMethod = cmbPaymentMethod.SelectedItem?.ToString() ?? "Cash";
-                string status = cmbStatus.SelectedItem?.ToString() ?? "Pending";
-
-                decimal discount = numDiscount.Value;
-                decimal tax = numTax.Value;
-                decimal discountAmount = currentTotal * (discount / 100);
-                decimal subtotalAfterDiscount = currentTotal - discountAmount;
-                decimal taxAmount = subtotalAfterDiscount * (tax / 100);
-                decimal grandTotal = subtotalAfterDiscount + taxAmount;
-
-                string description = txtNotes.Text + "\n\nServices:\n";
-                foreach (ListViewItem item in lstServices.Items)
+                if (lstServices.Items.Count == 0)
                 {
-                    description += $"- {item.SubItems[0].Text} ({item.SubItems[1].Text}) x{item.SubItems[2].Text} @ {item.SubItems[3].Text} = {item.SubItems[4].Text}\n";
+                    MessageBox.Show("Please add at least one service to the bill.", "No Services",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
+
+                decimal subtotal = CalculateSubtotal();
+                decimal discountPercent = numDiscount.Value;
+                decimal taxPercent = numTax.Value;
+                decimal discountAmount = subtotal * (discountPercent / 100);
+                decimal taxAmount = (subtotal - discountAmount) * (taxPercent / 100);
+                decimal total = subtotal - discountAmount + taxAmount;
+
+                string paymentMethod = string.IsNullOrWhiteSpace(cmbPaymentMethod.Text) ? "Unspecified" : cmbPaymentMethod.Text;
+                string status = string.IsNullOrWhiteSpace(cmbStatus.Text) ? "Pending" : cmbStatus.Text;
+                string notes = txtNotes.Text.Trim();
+
+                int createdBy = currentUserId ?? 1;
+                int patientId = isPreselectedPatient ? actualPatientId : Convert.ToInt32(cmbPatient.SelectedValue);
 
                 if (editingBillId.HasValue)
                 {
-                    string updateQuery = @"UPDATE Billing 
-                                         SET patient_id = @patientId, 
-                                             amount = @amount,
-                                             subtotal = @subtotal,
-                                             discount_percent = @discount,
-                                             discount_amount = @discountAmount,
-                                             tax_percent = @tax,
-                                             tax_amount = @taxAmount,
-                                             description = @description,
-                                             payment_method = @paymentMethod,
-                                             status = @status,
-                                             notes = @notes
-                                         WHERE bill_id = @billId";
+                    string updateQuery = @"
+                        UPDATE Billing 
+                        SET subtotal = @subtotal, discount_percent = @discountPercent, discount_amount = @discountAmount,
+                            tax_percent = @taxPercent, tax_amount = @taxAmount, amount = @amount, 
+                            payment_method = @paymentMethod, status = @status, notes = @notes
+                        WHERE bill_id = @billId";
 
                     DatabaseHelper.ExecuteNonQuery(updateQuery,
-                        new MySqlParameter("@patientId", patientId),
-                        new MySqlParameter("@amount", grandTotal),
-                        new MySqlParameter("@subtotal", currentTotal),
-                        new MySqlParameter("@discount", discount),
+                        new MySqlParameter("@subtotal", subtotal),
+                        new MySqlParameter("@discountPercent", discountPercent),
                         new MySqlParameter("@discountAmount", discountAmount),
-                        new MySqlParameter("@tax", tax),
+                        new MySqlParameter("@taxPercent", taxPercent),
                         new MySqlParameter("@taxAmount", taxAmount),
-                        new MySqlParameter("@description", description),
+                        new MySqlParameter("@amount", total),
                         new MySqlParameter("@paymentMethod", paymentMethod),
                         new MySqlParameter("@status", status),
-                        new MySqlParameter("@notes", txtNotes.Text),
+                        new MySqlParameter("@notes", notes),
                         new MySqlParameter("@billId", editingBillId.Value));
 
-                    MessageBox.Show("Invoice updated successfully!", "Success",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    SaveBillServices(editingBillId.Value);
                 }
                 else
                 {
-                    string insertQuery = @"INSERT INTO Billing 
-                    (patient_id, amount, subtotal, discount_percent, discount_amount,
-                    tax_percent, tax_amount, description, payment_method, status, notes, bill_date, created_by)
-                    VALUES 
-                    (@patientId, @amount, @subtotal, @discount, @discountAmount,
-                    @tax, @taxAmount, @description, @paymentMethod, @status, @notes, NOW(), @createdBy)";
+                    string insertQuery = @"
+                        INSERT INTO Billing (patient_id, subtotal, discount_percent, discount_amount, tax_percent, tax_amount, 
+                                             amount, payment_method, status, notes, created_by, bill_date)
+                        VALUES (@patientId, @subtotal, @discountPercent, @discountAmount, @taxPercent, @taxAmount, 
+                                @amount, @paymentMethod, @status, @notes, @createdBy, NOW());
+                        SELECT LAST_INSERT_ID();";
 
-                    int createdBy = currentUserId ?? 1;
-
-                    DatabaseHelper.ExecuteNonQuery(insertQuery,
+                    object result = DatabaseHelper.ExecuteScalar(insertQuery,
                         new MySqlParameter("@patientId", patientId),
-                        new MySqlParameter("@amount", grandTotal),
-                        new MySqlParameter("@subtotal", currentTotal),
-                        new MySqlParameter("@discount", discount),
+                        new MySqlParameter("@subtotal", subtotal),
+                        new MySqlParameter("@discountPercent", discountPercent),
                         new MySqlParameter("@discountAmount", discountAmount),
-                        new MySqlParameter("@tax", tax),
+                        new MySqlParameter("@taxPercent", taxPercent),
                         new MySqlParameter("@taxAmount", taxAmount),
-                        new MySqlParameter("@description", description),
+                        new MySqlParameter("@amount", total),
                         new MySqlParameter("@paymentMethod", paymentMethod),
                         new MySqlParameter("@status", status),
-                        new MySqlParameter("@notes", txtNotes.Text),
+                        new MySqlParameter("@notes", notes),
                         new MySqlParameter("@createdBy", createdBy));
 
-                    MessageBox.Show("Invoice created successfully!", "Success",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    int newBillId = Convert.ToInt32(result);
+                    SaveBillServices(newBillId);
                 }
+
+                MessageBox.Show("Bill saved successfully!", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error saving invoice: " + ex.Message, "Error",
+                MessageBox.Show($"Error saving bill: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void SaveBillServices(int billId)
+        {
+            try
+            {
+                string deleteQuery = "DELETE FROM BillServices WHERE bill_id = @billId";
+                DatabaseHelper.ExecuteNonQuery(deleteQuery, new MySqlParameter("@billId", billId));
+
+                foreach (ListViewItem item in lstServices.Items)
+                {
+                    string serviceName = item.SubItems[0].Text;
+                    string categoryName = item.SubItems[1].Text;
+                    int quantity = Convert.ToInt32(item.SubItems[2].Text);
+
+                    string priceText = item.SubItems[3].Text.Replace("₱", "").Replace(",", "").Trim();
+                    decimal unitPrice = Convert.ToDecimal(priceText);
+
+                    int? categoryId = GetOrCreateCategoryId(categoryName);
+                    int serviceId = GetOrCreateServiceId(serviceName, categoryId, unitPrice);
+
+                    string insertQuery = @"
+                        INSERT INTO BillServices (bill_id, service_id, category_id, quantity, unit_price)
+                        VALUES (@billId, @serviceId, @categoryId, @quantity, @unitPrice)";
+
+                    DatabaseHelper.ExecuteNonQuery(insertQuery,
+                        new MySqlParameter("@billId", billId),
+                        new MySqlParameter("@serviceId", serviceId),
+                        new MySqlParameter("@categoryId", (object)categoryId ?? DBNull.Value),
+                        new MySqlParameter("@quantity", quantity),
+                        new MySqlParameter("@unitPrice", unitPrice));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error saving bill services: {ex.Message}", ex);
+            }
+        }
+
+        private int? GetOrCreateCategoryId(string categoryName)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(categoryName) || categoryName == "N/A")
+                    return null;
+
+                string checkQuery = "SELECT category_id FROM ServiceCategories WHERE category_name = @categoryName";
+                object result = DatabaseHelper.ExecuteScalar(checkQuery,
+                    new MySqlParameter("@categoryName", categoryName));
+
+                if (result != null && result != DBNull.Value)
+                {
+                    return Convert.ToInt32(result);
+                }
+
+                string insertQuery = @"
+                    INSERT INTO ServiceCategories (category_name) VALUES (@categoryName);
+                    SELECT LAST_INSERT_ID();";
+
+                result = DatabaseHelper.ExecuteScalar(insertQuery,
+                    new MySqlParameter("@categoryName", categoryName));
+
+                return Convert.ToInt32(result);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error with category: {ex.Message}");
+                return null;
+            }
+        }
+
+        private int GetOrCreateServiceId(string serviceName, int? categoryId, decimal unitPrice)
+        {
+            try
+            {
+                string checkQuery = "SELECT service_id FROM Services WHERE service_name = @serviceName";
+                object result = DatabaseHelper.ExecuteScalar(checkQuery,
+                    new MySqlParameter("@serviceName", serviceName));
+
+                if (result != null && result != DBNull.Value)
+                {
+                    return Convert.ToInt32(result);
+                }
+
+                string insertQuery = @"
+                    INSERT INTO Services (service_name, category_id, unit_price) 
+                    VALUES (@serviceName, @categoryId, @unitPrice);
+                    SELECT LAST_INSERT_ID();";
+
+                result = DatabaseHelper.ExecuteScalar(insertQuery,
+                    new MySqlParameter("@serviceName", serviceName),
+                    new MySqlParameter("@categoryId", (object)categoryId ?? DBNull.Value),
+                    new MySqlParameter("@unitPrice", unitPrice));
+
+                return Convert.ToInt32(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error with service '{serviceName}': {ex.Message}", ex);
+            }
+        }
+
+        private decimal CalculateSubtotal()
+        {
+            decimal subtotal = 0;
+            foreach (ListViewItem item in lstServices.Items)
+            {
+                string amountText = item.SubItems[4].Text.Replace("₱", "").Replace(",", "").Trim();
+                if (decimal.TryParse(amountText, out decimal amount))
+                {
+                    subtotal += amount;
+                }
+            }
+            return subtotal;
+        }
+
+        private void UpdateTotals()
+        {
+            decimal subtotal = CalculateSubtotal();
+            decimal discountPercent = numDiscount.Value;
+            decimal discountAmount = subtotal * (discountPercent / 100m);
+            decimal taxableBase = subtotal - discountAmount;
+            decimal taxPercent = numTax.Value;
+            decimal taxAmount = taxableBase * (taxPercent / 100m);
+            decimal grandTotal = taxableBase + taxAmount;
+
+            lblSubtotal.Text = $"Subtotal: ₱{subtotal:N2}";
+            lblDiscountAmount.Text = $"Discount ({discountPercent}%): -₱{discountAmount:N2}";
+            lblTaxAmount.Text = $"Tax ({taxPercent}%): ₱{taxAmount:N2}";
+            lblGrandTotal.Text = $"Grand Total: ₱{grandTotal:N2}";
         }
 
         private void LoadExistingBill(int billId)
@@ -589,7 +905,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (dt.Rows.Count > 0)
                 {
                     DataRow row = dt.Rows[0];
-                    cmbPatient.SelectedValue = row["patient_id"];
+
+                    actualPatientId = Convert.ToInt32(row["patient_id"]);
                     txtNotes.Text = row["notes"]?.ToString() ?? "";
 
                     if (row["discount_percent"] != DBNull.Value)
@@ -599,10 +916,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         numTax.Value = Convert.ToDecimal(row["tax_percent"]);
 
                     if (row["payment_method"] != DBNull.Value)
-                        cmbPaymentMethod.SelectedItem = row["payment_method"].ToString();
+                        cmbPaymentMethod.Text = row["payment_method"].ToString();
 
                     if (row["status"] != DBNull.Value)
-                        cmbStatus.SelectedItem = row["status"].ToString();
+                        cmbStatus.Text = row["status"].ToString();
                 }
             }
             catch (Exception ex)
@@ -632,17 +949,42 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private string GenerateInvoicePreview()
         {
-            string patientName = cmbPatient.Text.Split('(')[0].Trim();
-            string preview = $"SAINT JOSEPH'S HOSPITAL\n";
-            preview += $"INVOICE PREVIEW\n";
-            preview += $"{'=',50}\n\n";
+            string patientName = "Unknown Patient";
+
+            if (isPreselectedPatient)
+            {
+                Panel patientInfoPanel = this.Controls.Find("patientInfoPanel", true).FirstOrDefault() as Panel;
+                if (patientInfoPanel != null)
+                {
+                    Label lblPatientInfo = patientInfoPanel.Controls.Find("lblPatientInfo", true).FirstOrDefault() as Label;
+                    if (lblPatientInfo != null)
+                    {
+                        patientName = lblPatientInfo.Text.Replace("👤 ", "");
+                    }
+                }
+            }
+            else
+            {
+                if (cmbPatient.SelectedItem != null)
+                {
+                    DataRowView drv = cmbPatient.SelectedItem as DataRowView;
+                    if (drv != null)
+                    {
+                        patientName = drv["display_name"].ToString().Split('(')[0].Trim();
+                    }
+                }
+            }
+
+            string preview = "SAINT JOSEPH'S HOSPITAL\n";
+            preview += "INVOICE PREVIEW\n";
+            preview += new string('=', 50) + "\n\n";
             preview += $"Patient: {patientName}\n";
             preview += $"Date: {DateTime.Now:yyyy-MM-dd HH:mm}\n";
-            preview += $"Payment Method: {cmbPaymentMethod.SelectedItem}\n";
-            preview += $"Status: {cmbStatus.SelectedItem}\n\n";
-            preview += $"{'=',50}\n";
-            preview += $"SERVICES:\n";
-            preview += $"{'=',50}\n\n";
+            preview += $"Payment Method: {cmbPaymentMethod.Text}\n";
+            preview += $"Status: {cmbStatus.Text}\n\n";
+            preview += new string('=', 50) + "\n";
+            preview += "SERVICES:\n";
+            preview += new string('=', 50) + "\n\n";
 
             foreach (ListViewItem item in lstServices.Items)
             {
@@ -651,11 +993,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 preview += $"  Qty: {item.SubItems[2].Text} x {item.SubItems[3].Text} = {item.SubItems[4].Text}\n\n";
             }
 
-            preview += $"{'=',50}\n";
+            preview += new string('=', 50) + "\n";
             preview += lblSubtotal.Text + "\n";
             preview += lblDiscountAmount.Text + "\n";
             preview += lblTaxAmount.Text + "\n";
-            preview += $"{'=',50}\n";
+            preview += new string('=', 50) + "\n";
             preview += lblGrandTotal.Text + "\n";
 
             if (!string.IsNullOrWhiteSpace(txtNotes.Text))
@@ -664,54 +1006,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             return preview;
-        }
-    }
-
-    public class InputDialog : Form
-    {
-        private TextBox txtInput;
-        private Button btnOk;
-        private Button btnCancel;
-        public string InputValue { get; private set; }
-
-        public InputDialog(string title, string prompt, string defaultValue = "")
-        {
-            this.Text = title;
-            this.Size = new Size(400, 150);
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-
-            Label lblPrompt = new Label();
-            lblPrompt.Text = prompt;
-            lblPrompt.Location = new Point(20, 20);
-            lblPrompt.Size = new Size(350, 20);
-            this.Controls.Add(lblPrompt);
-
-            txtInput = new TextBox();
-            txtInput.Location = new Point(20, 45);
-            txtInput.Size = new Size(340, 23);
-            txtInput.Text = defaultValue;
-            this.Controls.Add(txtInput);
-
-            btnOk = new Button();
-            btnOk.Text = "OK";
-            btnOk.Location = new Point(200, 80);
-            btnOk.Size = new Size(75, 30);
-            btnOk.DialogResult = DialogResult.OK;
-            btnOk.Click += (s, e) => { InputValue = txtInput.Text; };
-            this.Controls.Add(btnOk);
-
-            btnCancel = new Button();
-            btnCancel.Text = "Cancel";
-            btnCancel.Location = new Point(285, 80);
-            btnCancel.Size = new Size(75, 30);
-            btnCancel.DialogResult = DialogResult.Cancel;
-            this.Controls.Add(btnCancel);
-
-            this.AcceptButton = btnOk;
-            this.CancelButton = btnCancel;
         }
     }
 }

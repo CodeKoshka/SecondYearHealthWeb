@@ -32,7 +32,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             ConfigureForIntakeMode();
 
             cmbPriority.SelectedIndex = 0;
-            cmbBloodType.SelectedIndex = 0;
+            cmbBloodType.SelectedItem = "Unknown";
             cmbPhoneType.SelectedIndex = 0;
             cmbEmergencyContactPhoneType.SelectedIndex = 0;
         }
@@ -221,6 +221,26 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
+        private bool HasIntakeData()
+        {
+            try
+            {
+                string query = @"
+            SELECT COUNT(*) 
+            FROM PatientQueue 
+            WHERE patient_id = @patientId";
+
+                object result = DatabaseHelper.ExecuteScalar(query,
+                    new MySqlParameter("@patientId", patientId));
+
+                return Convert.ToInt32(result) > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private void ParseIntakeNotes(string notes)
         {
             try
@@ -326,7 +346,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
                     else
                     {
-                        cmbBloodType.SelectedIndex = 0;
+                        cmbBloodType.SelectedItem = "Unknown";
                     }
 
                     string email = row["email"]?.ToString() ?? "";
@@ -419,15 +439,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             try
             {
-                string query = "SELECT COUNT(*) FROM CompletedVisits WHERE patient_id = @patientId";
-                int recordCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(query,
+                string queryVisits = "SELECT COUNT(*) FROM CompletedVisits WHERE patient_id = @patientId";
+                int visitCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(queryVisits,
                     new MySqlParameter("@patientId", patientId)));
 
                 string queryRecords = "SELECT COUNT(*) FROM MedicalRecords WHERE patient_id = @patientId";
                 int medicalRecordCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(queryRecords,
                     new MySqlParameter("@patientId", patientId)));
 
-                isNewPatient = (recordCount == 0 && medicalRecordCount == 0);
+                isNewPatient = (visitCount == 0 && medicalRecordCount == 0);
 
                 if (isNewPatient)
                 {
@@ -436,15 +456,36 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
                 else
                 {
-                    lblPatientStatus.Text = "✓ RETURNING PATIENT - Has previous visits";
-                    lblPatientStatus.ForeColor = Color.FromArgb(72, 187, 120);
+                    string queryTodayDischarge = @"
+                SELECT COUNT(*) 
+                FROM CompletedVisits 
+                WHERE patient_id = @patientId 
+                AND DATE(archived_date) = CURDATE()
+                AND notes LIKE '%Discharged:%'";
+
+                    int todayDischargeCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(queryTodayDischarge,
+                        new MySqlParameter("@patientId", patientId)));
+
+                    if (todayDischargeCount > 0)
+                    {
+                        lblPatientStatus.Text = $"🔄 RETURNING PATIENT - Was discharged today | Total Previous Visits: {visitCount}";
+                        lblPatientStatus.ForeColor = Color.FromArgb(243, 156, 18);
+                    }
+                    else
+                    {
+                        lblPatientStatus.Text = $"✓ RETURNING PATIENT - Previous Visits: {visitCount}";
+                        lblPatientStatus.ForeColor = Color.FromArgb(72, 187, 120);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error checking patient status: " + ex.Message);
+                lblPatientStatus.Text = "⚠️ Unable to verify patient status";
+                lblPatientStatus.ForeColor = Color.FromArgb(243, 156, 18);
             }
         }
+
 
         private bool ValidatePhoneNumber(string phoneNumber, string phoneType)
         {
@@ -561,7 +602,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 string formattedEmergencyContact = FormatPhoneNumberForStorage(txtEmergencyContact.Text, emergencyPhoneType);
 
                 string bloodType = cmbBloodType.SelectedItem?.ToString();
-                if (bloodType == "A+" || bloodType == "A-" || bloodType == "B+" || bloodType == "B-" ||
+
+                if (bloodType == "Unknown" || string.IsNullOrEmpty(bloodType))
+                {
+                    bloodType = null;
+                }
+                else if (bloodType == "A+" || bloodType == "A-" || bloodType == "B+" || bloodType == "B-" ||
                     bloodType == "AB+" || bloodType == "AB-" || bloodType == "O+" || bloodType == "O-")
                 {
                 }
@@ -618,7 +664,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     $"Patient: {patientName}\n" +
                     $"Queue Number: {queueNumber}\n" +
                     $"Priority: {cmbPriority.SelectedItem}\n" +
-                    $"Blood Type: {(string.IsNullOrEmpty(bloodType) ? "Not recorded" : bloodType)}\n\n" +
+                    $"Blood Type: {(string.IsNullOrEmpty(bloodType) ? "Unknown" : bloodType)}\n\n" +
                     $"The patient can now wait to be called.",
                     "Success",
                     MessageBoxButtons.OK,
@@ -673,7 +719,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 string formattedEmergencyContact = FormatPhoneNumberForStorage(txtEmergencyContact.Text, emergencyPhoneType);
 
                 string bloodType = cmbBloodType.SelectedItem?.ToString();
-                if (bloodType == "A+" || bloodType == "A-" || bloodType == "B+" || bloodType == "B-" ||
+
+                if (bloodType == "Unknown" || string.IsNullOrEmpty(bloodType))
+                {
+                    bloodType = null;
+                }
+                else if (bloodType == "A+" || bloodType == "A-" || bloodType == "B+" || bloodType == "B-" ||
                     bloodType == "AB+" || bloodType == "AB-" || bloodType == "O+" || bloodType == "O-")
                 {
                 }
@@ -732,7 +783,39 @@ namespace SaintJosephsHospitalHealthMonitorApp
             string notes = "=== PATIENT INTAKE - ST. JOSEPH'S CARDIAC HOSPITAL ===\n";
             notes += $"Date: {DateTime.Now:yyyy-MM-dd HH:mm}\n";
             notes += $"Registered by: Receptionist\n";
-            notes += isNewPatient ? "Status: NEW PATIENT\n\n" : "Status: RETURNING PATIENT\n\n";
+
+            if (isNewPatient)
+            {
+                notes += "Status: NEW PATIENT - First Visit\n\n";
+            }
+            else
+            {
+                try
+                {
+                    string queryTodayDischarge = @"
+                SELECT COUNT(*) 
+                FROM CompletedVisits 
+                WHERE patient_id = @patientId 
+                AND DATE(archived_date) = CURDATE()
+                AND notes LIKE '%Discharged:%'";
+
+                    int todayDischargeCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(queryTodayDischarge,
+                        new MySqlParameter("@patientId", patientId)));
+
+                    if (todayDischargeCount > 0)
+                    {
+                        notes += "Status: RETURNING PATIENT - Re-queued after discharge today\n\n";
+                    }
+                    else
+                    {
+                        notes += "Status: RETURNING PATIENT - Has Previous Visits\n\n";
+                    }
+                }
+                catch
+                {
+                    notes += "Status: RETURNING PATIENT\n\n";
+                }
+            }
 
             notes += "CHIEF COMPLAINT / REASON FOR VISIT:\n";
             notes += txtChiefComplaint.Text + "\n\n";

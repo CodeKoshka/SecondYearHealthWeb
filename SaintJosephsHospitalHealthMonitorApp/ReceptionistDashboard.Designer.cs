@@ -42,6 +42,7 @@
         private System.Windows.Forms.TextBox txtUniversalSearch;
         private System.Windows.Forms.Button btnClearUniversalSearch;
         private System.Windows.Forms.Label lblUniversalSearchIcon;
+        private System.Windows.Forms.Button btnCreateBill;
         private ListBox searchSuggestionsListBox;
         private Label lblSearchStatus;
         private Panel panelSearchCategories;
@@ -73,7 +74,6 @@
             tabQueue = new TabPage();
             dgvQueue = new DataGridView();
             panelQueueButtons = new Panel();
-            lblQueueCount = new Label();
             btnAddToQueue = new Button();
             btnAssignDoctor = new Button();
             btnCallNext = new Button();
@@ -92,13 +92,16 @@
             btnUpdateBill = new Button();
             btnProcessPayment = new Button();
             btnDischargePatient = new Button();
+            btnDoctorServiceReport = new Button();
+            btnCreateBill = new Button();
             panelHeader = new Panel();
+            label1 = new Label();
+            lblQueueCount = new Label();
             panelUniversalSearch = new Panel();
             lblUniversalSearchIcon = new Label();
             btnClearUniversalSearch = new Button();
             txtUniversalSearch = new TextBox();
             lblHospitalName = new Label();
-            label1 = new Label();
             panelSidebar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).BeginInit();
             panelMainContent.SuspendLayout();
@@ -306,17 +309,6 @@
             panelQueueButtons.Padding = new Padding(20, 15, 20, 15);
             panelQueueButtons.Size = new Size(1156, 80);
             panelQueueButtons.TabIndex = 1;
-            // 
-            // lblQueueCount
-            // 
-            lblQueueCount.AutoSize = true;
-            lblQueueCount.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblQueueCount.ForeColor = Color.White;
-            lblQueueCount.Location = new Point(989, 29);
-            lblQueueCount.Name = "lblQueueCount";
-            lblQueueCount.Size = new Size(166, 19);
-            lblQueueCount.TabIndex = 6;
-            lblQueueCount.Text = "Total in Queue Today: 0";
             // 
             // btnAddToQueue
             // 
@@ -530,30 +522,14 @@
             panelBillingButtons.Controls.Add(btnUpdateBill);
             panelBillingButtons.Controls.Add(btnProcessPayment);
             panelBillingButtons.Controls.Add(btnDischargePatient);
+            panelBillingButtons.Controls.Add(btnDoctorServiceReport);
+            panelBillingButtons.Controls.Add(btnCreateBill);
             panelBillingButtons.Dock = DockStyle.Top;
             panelBillingButtons.Location = new Point(20, 20);
             panelBillingButtons.Name = "panelBillingButtons";
             panelBillingButtons.Padding = new Padding(20, 15, 20, 15);
             panelBillingButtons.Size = new Size(1156, 80);
             panelBillingButtons.TabIndex = 1;
-            panelBillingButtons.Controls.Add(this.btnDoctorServiceReport);
-            // 
-            // btnDoctorServiceReport
-            // 
-            this.btnDoctorServiceReport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(156)))), ((int)(((byte)(39)))), ((int)(((byte)(176)))));
-            this.btnDoctorServiceReport.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnDoctorServiceReport.FlatAppearance.BorderSize = 0;
-            this.btnDoctorServiceReport.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(36)))), ((int)(((byte)(170)))));
-            this.btnDoctorServiceReport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDoctorServiceReport.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnDoctorServiceReport.ForeColor = System.Drawing.Color.White;
-            this.btnDoctorServiceReport.Location = new System.Drawing.Point(700, 15);
-            this.btnDoctorServiceReport.Name = "btnDoctorServiceReport";
-            this.btnDoctorServiceReport.Size = new System.Drawing.Size(200, 45);
-            this.btnDoctorServiceReport.TabIndex = 4;
-            this.btnDoctorServiceReport.Text = "📋 Doctor Service Report";
-            this.btnDoctorServiceReport.UseVisualStyleBackColor = false;
-            this.btnDoctorServiceReport.Click += new System.EventHandler(this.BtnDoctorServiceReport_Click);
             // 
             // btnViewBill
             // 
@@ -564,7 +540,7 @@
             btnViewBill.FlatStyle = FlatStyle.Flat;
             btnViewBill.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnViewBill.ForeColor = Color.White;
-            btnViewBill.Location = new Point(20, 15);
+            btnViewBill.Location = new Point(541, 18);
             btnViewBill.Name = "btnViewBill";
             btnViewBill.Size = new Size(150, 45);
             btnViewBill.TabIndex = 0;
@@ -581,7 +557,7 @@
             btnUpdateBill.FlatStyle = FlatStyle.Flat;
             btnUpdateBill.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnUpdateBill.ForeColor = Color.White;
-            btnUpdateBill.Location = new Point(180, 15);
+            btnUpdateBill.Location = new Point(385, 18);
             btnUpdateBill.Name = "btnUpdateBill";
             btnUpdateBill.Size = new Size(150, 45);
             btnUpdateBill.TabIndex = 1;
@@ -598,7 +574,7 @@
             btnProcessPayment.FlatStyle = FlatStyle.Flat;
             btnProcessPayment.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnProcessPayment.ForeColor = Color.White;
-            btnProcessPayment.Location = new Point(340, 15);
+            btnProcessPayment.Location = new Point(700, 18);
             btnProcessPayment.Name = "btnProcessPayment";
             btnProcessPayment.Size = new Size(170, 45);
             btnProcessPayment.TabIndex = 2;
@@ -615,13 +591,47 @@
             btnDischargePatient.FlatStyle = FlatStyle.Flat;
             btnDischargePatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnDischargePatient.ForeColor = Color.White;
-            btnDischargePatient.Location = new Point(520, 15);
+            btnDischargePatient.Location = new Point(876, 18);
             btnDischargePatient.Name = "btnDischargePatient";
             btnDischargePatient.Size = new Size(170, 45);
             btnDischargePatient.TabIndex = 3;
             btnDischargePatient.Text = "🚪 Discharge Patient";
             btnDischargePatient.UseVisualStyleBackColor = false;
             btnDischargePatient.Click += BtnDischargePatient_Click;
+            // 
+            // btnDoctorServiceReport
+            // 
+            btnDoctorServiceReport.BackColor = Color.FromArgb(156, 39, 176);
+            btnDoctorServiceReport.Cursor = Cursors.Hand;
+            btnDoctorServiceReport.FlatAppearance.BorderSize = 0;
+            btnDoctorServiceReport.FlatAppearance.MouseOverBackColor = Color.FromArgb(142, 36, 170);
+            btnDoctorServiceReport.FlatStyle = FlatStyle.Flat;
+            btnDoctorServiceReport.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnDoctorServiceReport.ForeColor = Color.White;
+            btnDoctorServiceReport.Location = new Point(23, 18);
+            btnDoctorServiceReport.Name = "btnDoctorServiceReport";
+            btnDoctorServiceReport.Size = new Size(200, 45);
+            btnDoctorServiceReport.TabIndex = 4;
+            btnDoctorServiceReport.Text = "📋 Doctor Service Report";
+            btnDoctorServiceReport.UseVisualStyleBackColor = false;
+            btnDoctorServiceReport.Click += BtnDoctorServiceReport_Click;
+            // 
+            // btnCreateBill
+            // 
+            btnCreateBill.BackColor = Color.FromArgb(46, 204, 113);
+            btnCreateBill.Cursor = Cursors.Hand;
+            btnCreateBill.FlatAppearance.BorderSize = 0;
+            btnCreateBill.FlatAppearance.MouseOverBackColor = Color.FromArgb(39, 174, 96);
+            btnCreateBill.FlatStyle = FlatStyle.Flat;
+            btnCreateBill.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnCreateBill.ForeColor = Color.White;
+            btnCreateBill.Location = new Point(229, 18);
+            btnCreateBill.Name = "btnCreateBill";
+            btnCreateBill.Size = new Size(150, 45);
+            btnCreateBill.TabIndex = 5;
+            btnCreateBill.Text = "➕ Create Bill";
+            btnCreateBill.UseVisualStyleBackColor = false;
+            btnCreateBill.Click += BtnCreateBill_Click;
             // 
             // panelHeader
             // 
@@ -635,6 +645,28 @@
             panelHeader.Name = "panelHeader";
             panelHeader.Size = new Size(1204, 70);
             panelHeader.TabIndex = 1;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            label1.ForeColor = Color.White;
+            label1.Location = new Point(6, 41);
+            label1.Name = "label1";
+            label1.Size = new Size(157, 19);
+            label1.TabIndex = 7;
+            label1.Text = "Hospital Management\r\n";
+            // 
+            // lblQueueCount
+            // 
+            lblQueueCount.AutoSize = true;
+            lblQueueCount.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblQueueCount.ForeColor = Color.White;
+            lblQueueCount.Location = new Point(989, 29);
+            lblQueueCount.Name = "lblQueueCount";
+            lblQueueCount.Size = new Size(166, 19);
+            lblQueueCount.TabIndex = 6;
+            lblQueueCount.Text = "Total in Queue Today: 0";
             // 
             // panelUniversalSearch
             // 
@@ -702,17 +734,6 @@
             lblHospitalName.Size = new Size(247, 32);
             lblHospitalName.TabIndex = 0;
             lblHospitalName.Text = "St. Joseph's Hospital";
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            label1.ForeColor = Color.White;
-            label1.Location = new Point(15, 41);
-            label1.Name = "label1";
-            label1.Size = new Size(157, 19);
-            label1.TabIndex = 7;
-            label1.Text = "Hospital Management\r\n";
             // 
             // ReceptionistDashboard
             // 

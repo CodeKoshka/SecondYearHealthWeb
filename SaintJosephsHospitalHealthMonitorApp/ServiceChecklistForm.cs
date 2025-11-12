@@ -300,7 +300,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             if (lstServices.Items.Count == 0)
             {
-                MessageBox.Show("Please add at least one service/equipment before completing.",
+                MessageBox.Show("Please add at least one service/equipment before saving.",
                     "No Services Added", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -318,38 +318,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            string checkMedicalRecordQuery = @"
-                SELECT COUNT(*) FROM medicalrecords 
-                WHERE patient_id = @patientId 
-                AND doctor_id = @doctorId 
-                AND DATE(record_date) = CURDATE()";
-
-            int recordCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkMedicalRecordQuery,
-                new MySqlParameter("@patientId", patientId),
-                new MySqlParameter("@doctorId", doctorId)));
-
-            if (recordCount == 0)
-            {
-                MessageBox.Show(
-                    "⚠️ Medical Record Required\n\n" +
-                    "A medical record must be created before completing the equipment report.\n\n" +
-                    "Please create a medical record first, then return to complete the equipment report.",
-                    "Medical Record Missing",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                return;
-            }
-
             DialogResult confirm = MessageBox.Show(
-                $"Complete equipment & services report?\n\n" +
+                $"Save equipment & services report?\n\n" +
                 $"Patient: {patientName}\n" +
                 $"Services/Equipment: {checkedCount} item(s)\n\n" +
-                "This will:\n" +
-                "• Save the equipment/services report\n" +
-                "• Mark patient as completed\n\n" +
-                "⚠️ Both medical record and equipment report are required!\n\n" +
+                "This will save the equipment/services report.\n\n" +
+                "Note: Both the medical record and equipment report\n" +
+                "must be completed before the consultation can be marked as complete.\n\n" +
                 "Continue?",
-                "Confirm Completion",
+                "Confirm Save",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
@@ -360,26 +337,28 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 string checklistReport = BuildEquipmentReport();
 
-                string updateQueueQuery = @"
-                    UPDATE patientqueue 
-                    SET status = 'Completed', 
-                        completed_time = NOW(),
-                        equipment_checklist = @checklist
-                    WHERE queue_id = @queueId";
+                string updateQuery = @"
+                UPDATE patientqueue 
+                SET equipment_checklist = @checklist
+                WHERE queue_id = @queueId";
 
-                DatabaseHelper.ExecuteNonQuery(updateQueueQuery,
-                    new MySqlParameter("@queueId", queueId),
-                    new MySqlParameter("@checklist", checklistReport));
+                DatabaseHelper.ExecuteNonQuery(updateQuery,
+                    new MySqlParameter("@checklist", checklistReport),
+                    new MySqlParameter("@queueId", queueId));
+
+                this.Tag = new
+                {
+                    ChecklistReport = checklistReport,
+                    QueueId = queueId,
+                    PatientId = patientId
+                };
 
                 MessageBox.Show(
-                    $"✅ Equipment Report Completed Successfully!\n\n" +
+                    $"✅ Equipment Report Saved!\n\n" +
                     $"Patient: {patientName}\n" +
                     $"Services/Equipment: {checkedCount} item(s)\n\n" +
-                    "✓ Medical record saved\n" +
-                    "✓ Equipment report completed\n\n" +
-                    "Status: Ready for billing\n" +
-                    "The receptionist can now create the bill and process payment.",
-                    "Completed",
+                    "The equipment report has been saved to the database.",
+                    "Report Saved",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
@@ -389,8 +368,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"❌ Error completing report:\n\n{ex.Message}\n\n" +
-                    "No changes were saved to the database.\n" +
+                    $"❌ Error saving report:\n\n{ex.Message}\n\n" +
                     "Please try again or contact support.",
                     "Error",
                     MessageBoxButtons.OK,

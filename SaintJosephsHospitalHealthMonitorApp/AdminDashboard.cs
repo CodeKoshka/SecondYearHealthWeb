@@ -1277,7 +1277,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnAddBill_Click(object sender, EventArgs e)
         {
-            BillingForm billForm = new BillingForm();
+            int? selectedPatientId = null;
+            BillingForm billForm = new BillingForm(currentUser.UserId, selectedPatientId);
             billForm.FormClosed += (s, args) => LoadData();
             billForm.ShowDialog();
         }

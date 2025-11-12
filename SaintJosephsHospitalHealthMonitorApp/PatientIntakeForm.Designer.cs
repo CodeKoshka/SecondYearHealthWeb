@@ -311,7 +311,7 @@
             cmbBloodType.FlatStyle = FlatStyle.Flat;
             cmbBloodType.Font = new Font("Segoe UI", 10F);
             cmbBloodType.FormattingEnabled = true;
-            cmbBloodType.Items.AddRange(new object[] { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" });
+            cmbBloodType.Items.AddRange(new object[] { "Unknown", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" });
             cmbBloodType.Location = new Point(15, 47);
             cmbBloodType.Name = "cmbBloodType";
             cmbBloodType.Size = new Size(120, 25);

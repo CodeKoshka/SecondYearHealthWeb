@@ -4,9 +4,6 @@
     <Compile Update="AdminDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="BillingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Update="AppointmentForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -16,7 +13,13 @@
     <Compile Update="AssignDoctorForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="BillingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="DoctorDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InputDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="PharmacyRelated%28DONTTOUCH%29\DispenseMedicineForm.cs">

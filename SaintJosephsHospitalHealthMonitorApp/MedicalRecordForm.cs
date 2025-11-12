@@ -71,7 +71,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             this.AutoScroll = true;
             this.AutoScrollMinSize = new Size(1100, 1550);
             this.ClientSize = new Size(1120, 700);
-            this.MaximizeBox = true;
+            this.MaximizeBox = false;
             this.StartPosition = FormStartPosition.CenterScreen;
 
             int yPos = 100;
@@ -101,7 +101,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (panelSurgeries != null)
             {
                 panelSurgeries.Top = yPos;
-                panelSurgeries.Height = 130; 
+                panelSurgeries.Height = 130;
                 yPos += panelSurgeries.Height + spacing;
             }
 
@@ -165,7 +165,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             this.ClientSize = new Size(1120, 700);
             this.AutoScroll = true;
             this.BackColor = Color.FromArgb(240, 244, 248);
-            this.MaximizeBox = true;
+            this.MaximizeBox = false;
 
             panelHeader.BackColor = Color.FromArgb(44, 62, 80);
             panelHeader.Height = 150;
@@ -406,7 +406,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 Label lblDoctor = new Label
                 {
-                    Text = $"Attended Physician: Dr. {doctorName}",
+                    Text = $"Attending Physician: Dr. {doctorName}",
                     Font = new Font("Segoe UI", 9F),
                     ForeColor = Color.FromArgb(200, 220, 240),
                     Location = new Point(800, 100),
@@ -414,12 +414,264 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     BackColor = Color.Transparent
                 };
                 panelHeader.Controls.Add(lblDoctor);
+
+                ParseAndLoadSavedData(fullRecord);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading record: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
+            }
+        }
+
+        private void ParseAndLoadSavedData(string diagnosis)
+        {
+            if (string.IsNullOrEmpty(diagnosis)) return;
+
+            var lines = diagnosis.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var line in lines)
+            {
+                string trimmedLine = line.Trim();
+
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Chest Pain"))
+                    chkChestPain.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Shortness of Breath"))
+                    chkShortBreath.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Palpitations"))
+                    chkPalpitations.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Dizziness"))
+                    chkDizziness.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Fatigue"))
+                    chkFatigue.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Swelling"))
+                    chkSwelling.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Irregular Heartbeat"))
+                    chkIrregularHeartbeat.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Fainting"))
+                    chkFainting.Checked = true;
+
+                if (trimmedLine.Contains("☑ Car Accident"))
+                    chkCarAccident.Checked = true;
+                if (trimmedLine.Contains("☑ Work Injury"))
+                    chkWorkInjury.Checked = true;
+                if (trimmedLine.Contains("☑ Gradual Onset"))
+                    chkGradualOnset.Checked = true;
+                if (trimmedLine.Contains("☑ Other:"))
+                {
+                    chkOther.Checked = true;
+                    txtOtherCause.Text = trimmedLine.Replace("☑ Other:", "").Trim();
+                }
+
+                if (trimmedLine.StartsWith("When did your problem start:"))
+                {
+                    txtProblemStarted.Text = trimmedLine.Replace("When did your problem start:", "").Trim();
+                }
+
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Breathing Problems"))
+                    chkBreathingProblems.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Pregnant"))
+                    chkPregnant.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Heart Problems"))
+                    chkHeartProblems.Checked = true;
+                if (trimmedLine.Contains("☑") && (trimmedLine.Contains("Wound") || trimmedLine.Contains("Skin Problems")))
+                    chkCurrentWound.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Pacemaker"))
+                    chkPacemaker.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Diabetes"))
+                    chkDiabetes.Checked = true;
+                if (trimmedLine.Contains("☑") && (trimmedLine.Contains("Tumor") || trimmedLine.Contains("Cancer")))
+                    chkTumorCancer.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Stroke"))
+                    chkStroke.Checked = true;
+                if (trimmedLine.Contains("☑") && (trimmedLine.Contains("Bone") || trimmedLine.Contains("Joint")))
+                    chkBoneJoint.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Kidney"))
+                    chkKidneyProblems.Checked = true;
+                if (trimmedLine.Contains("☑") && (trimmedLine.Contains("Gallbladder") || trimmedLine.Contains("Liver")))
+                    chkGallbladderLiver.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Electrical Implants"))
+                    chkElectricalImplants.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Anxiety"))
+                    chkAnxietyAttacks.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Sleep Apnea"))
+                    chkSleepApnea.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Depression"))
+                    chkDepression.Checked = true;
+                if (trimmedLine.Contains("☑") && (trimmedLine.Contains("Bowel") || trimmedLine.Contains("Bladder")))
+                    chkBowelBladder.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Alcohol"))
+                    chkAlcoholUse.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Drug Use"))
+                    chkDrugUse.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Smoking"))
+                    chkSmoking.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("Headaches"))
+                    chkHeadaches.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("High Blood Pressure"))
+                    chkHighBloodPressure.Checked = true;
+                if (trimmedLine.Contains("☑") && trimmedLine.Contains("High Cholesterol"))
+                    chkHighCholesterol.Checked = true;
+
+                if (trimmedLine.Contains("☑ No Surgeries"))
+                    chkNoSurgeries.Checked = true;
+                if (trimmedLine.Contains("☑ Yes (Details below)"))
+                    chkYesSurgery.Checked = true;
+
+                if (trimmedLine.Contains("☑ No known allergies"))
+                    chkNoKnownAllergies.Checked = true;
+                if (trimmedLine.Contains("☑ Latex"))
+                    chkLatexAllergy.Checked = true;
+                if (trimmedLine.Contains("☑ Iodine"))
+                    chkIodineAllergy.Checked = true;
+                if (trimmedLine.Contains("☑ Bromine"))
+                    chkBromineAllergy.Checked = true;
+
+                if (trimmedLine.Contains("☑ No Medication"))
+                    chkNoMedication.Checked = true;
+            }
+
+            ParseSurgeryDetails(diagnosis);
+            ParseMedications(diagnosis);
+            ParseOtherAllergies(diagnosis);
+            ParseDoctorNotes(diagnosis);
+            ParseDoctorSignature(diagnosis);
+        }
+
+        private void ParseSurgeryDetails(string diagnosis)
+        {
+            int surgeryStart = diagnosis.IndexOf("SURGERIES/HOSPITALIZATIONS:");
+            int surgeryEnd = diagnosis.IndexOf("CURRENT MEDICATIONS:");
+
+            if (surgeryStart >= 0 && surgeryEnd > surgeryStart)
+            {
+                string surgerySection = diagnosis.Substring(surgeryStart, surgeryEnd - surgeryStart);
+                var lines = surgerySection.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                StringBuilder surgeryText = new StringBuilder();
+                bool captureDetails = false;
+
+                foreach (var line in lines)
+                {
+                    if (line.Contains("☑ Yes (Details below)"))
+                    {
+                        captureDetails = true;
+                        continue;
+                    }
+
+                    if (captureDetails && !line.Contains("SURGERIES") && !string.IsNullOrWhiteSpace(line.Trim()))
+                    {
+                        string cleaned = line.Trim();
+                        if (cleaned.StartsWith("•") || cleaned.StartsWith("  "))
+                        {
+                            surgeryText.AppendLine(cleaned.TrimStart('•', ' '));
+                        }
+                    }
+                }
+
+                if (surgeryText.Length > 0)
+                {
+                    txtSurgeryDetails.Text = surgeryText.ToString().Trim();
+                }
+            }
+        }
+
+        private void ParseMedications(string diagnosis)
+        {
+            int medsStart = diagnosis.IndexOf("CURRENT MEDICATIONS:");
+            int medsEnd = diagnosis.IndexOf("ALLERGIES:");
+
+            if (medsStart >= 0 && medsEnd > medsStart)
+            {
+                string medsSection = diagnosis.Substring(medsStart, medsEnd - medsStart);
+                var lines = medsSection.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                StringBuilder medsText = new StringBuilder();
+
+                foreach (var line in lines)
+                {
+                    string trimmed = line.Trim();
+                    if (trimmed.StartsWith("•"))
+                    {
+                        medsText.AppendLine(trimmed.Substring(1).Trim());
+                    }
+                }
+
+                if (medsText.Length > 0)
+                {
+                    txtMedications.Text = medsText.ToString().Trim();
+                }
+            }
+        }
+
+        private void ParseOtherAllergies(string diagnosis)
+        {
+            int allergyStart = diagnosis.IndexOf("ALLERGIES:");
+            int allergyEnd = diagnosis.IndexOf("DOCTOR'S NOTES");
+
+            if (allergyStart >= 0)
+            {
+                string allergySection;
+                if (allergyEnd > allergyStart)
+                {
+                    allergySection = diagnosis.Substring(allergyStart, allergyEnd - allergyStart);
+                }
+                else
+                {
+                    allergySection = diagnosis.Substring(allergyStart);
+                }
+
+                var lines = allergySection.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var line in lines)
+                {
+                    string trimmed = line.Trim();
+                    if (trimmed.StartsWith("Other:"))
+                    {
+                        txtOtherAllergies.Text = trimmed.Replace("Other:", "").Trim();
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void ParseDoctorNotes(string diagnosis)
+        {
+            int notesStart = diagnosis.IndexOf("DOCTOR'S NOTES / ADDITIONAL COMMENTS:");
+            int notesEnd = diagnosis.IndexOf("Physician Signature:");
+
+            if (notesStart >= 0 && notesEnd > notesStart)
+            {
+                string notesSection = diagnosis.Substring(notesStart, notesEnd - notesStart);
+                notesSection = notesSection.Replace("DOCTOR'S NOTES / ADDITIONAL COMMENTS:", "").Trim();
+
+                var lines = notesSection.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                StringBuilder cleanNotes = new StringBuilder();
+                foreach (var line in lines)
+                {
+                    string cleaned = line.TrimStart(' ', '•');
+                    if (!string.IsNullOrWhiteSpace(cleaned))
+                    {
+                        cleanNotes.AppendLine(cleaned);
+                    }
+                }
+
+                txtAdditionalComments.Text = cleanNotes.ToString().Trim();
+            }
+        }
+
+        private void ParseDoctorSignature(string diagnosis)
+        {
+            var lines = diagnosis.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var line in lines)
+            {
+                if (line.StartsWith("Physician Signature:"))
+                {
+                    txtDoctorSignature.Text = line.Replace("Physician Signature:", "").Trim();
+                    break;
+                }
             }
         }
 

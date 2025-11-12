@@ -4,8 +4,8 @@
     {
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblPatient;
-        private System.Windows.Forms.ComboBox cmbPatient;
+        private System.Windows.Forms.Label lblPatient; // Changed from lblPatientName
+        private System.Windows.Forms.ComboBox cmbPatient; // This will be hidden for preselected
         private System.Windows.Forms.GroupBox grpServices;
         private System.Windows.Forms.Label lblServiceCategory;
         private System.Windows.Forms.ComboBox cmbServiceCategory;
@@ -35,6 +35,12 @@
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnPrintPreview;
+
+        // Add this property to make cmbService accessible
+        private System.Windows.Forms.ComboBox cmbService
+        {
+            get { return cmbServiceItem; }
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -97,25 +103,26 @@
             this.lblTitle.Size = new System.Drawing.Size(216, 30);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "Create New Invoice";
-            // 
+            //
             // lblPatient
-            // 
+            //
             this.lblPatient.AutoSize = true;
             this.lblPatient.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblPatient.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
             this.lblPatient.Location = new System.Drawing.Point(20, 70);
             this.lblPatient.Name = "lblPatient";
-            this.lblPatient.Size = new System.Drawing.Size(88, 15);
+            this.lblPatient.Size = new System.Drawing.Size(50, 15);
             this.lblPatient.TabIndex = 1;
-            this.lblPatient.Text = "Select Patient:";
-            // 
+            this.lblPatient.Text = "Patient:";
+            //
             // cmbPatient
-            // 
+            //
             this.cmbPatient.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPatient.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.cmbPatient.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.cmbPatient.FormattingEnabled = true;
             this.cmbPatient.Location = new System.Drawing.Point(20, 95);
             this.cmbPatient.Name = "cmbPatient";
-            this.cmbPatient.Size = new System.Drawing.Size(520, 23);
+            this.cmbPatient.Size = new System.Drawing.Size(520, 25);
             this.cmbPatient.TabIndex = 2;
             // 
             // grpServices
@@ -269,9 +276,9 @@
             this.lblGrandTotal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.lblGrandTotal.Location = new System.Drawing.Point(20, 180);
             this.lblGrandTotal.Name = "lblGrandTotal";
-            this.lblGrandTotal.Size = new System.Drawing.Size(143, 21);
+            this.lblGrandTotal.Size = new System.Drawing.Size(161, 21);
             this.lblGrandTotal.TabIndex = 7;
-            this.lblGrandTotal.Text = "Grand Total: $0.00";
+            this.lblGrandTotal.Text = "Grand Total: ₱0.00";
             // 
             // lblTaxAmount
             // 
@@ -279,9 +286,9 @@
             this.lblTaxAmount.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblTaxAmount.Location = new System.Drawing.Point(20, 145);
             this.lblTaxAmount.Name = "lblTaxAmount";
-            this.lblTaxAmount.Size = new System.Drawing.Size(100, 19);
+            this.lblTaxAmount.Size = new System.Drawing.Size(101, 19);
             this.lblTaxAmount.TabIndex = 6;
-            this.lblTaxAmount.Text = "Tax (0%): $0.00";
+            this.lblTaxAmount.Text = "Tax (0%): ₱0.00";
             // 
             // lblDiscountAmount
             // 
@@ -289,9 +296,9 @@
             this.lblDiscountAmount.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblDiscountAmount.Location = new System.Drawing.Point(20, 115);
             this.lblDiscountAmount.Name = "lblDiscountAmount";
-            this.lblDiscountAmount.Size = new System.Drawing.Size(145, 19);
+            this.lblDiscountAmount.Size = new System.Drawing.Size(148, 19);
             this.lblDiscountAmount.TabIndex = 5;
-            this.lblDiscountAmount.Text = "Discount (0%): -$0.00";
+            this.lblDiscountAmount.Text = "Discount (0%): -₱0.00";
             // 
             // lblSubtotal
             // 
@@ -301,7 +308,7 @@
             this.lblSubtotal.Name = "lblSubtotal";
             this.lblSubtotal.Size = new System.Drawing.Size(104, 19);
             this.lblSubtotal.TabIndex = 4;
-            this.lblSubtotal.Text = "Subtotal: $0.00";
+            this.lblSubtotal.Text = "Subtotal: ₱0.00";
             // 
             // numTax
             // 
@@ -383,7 +390,7 @@
             this.cmbStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.cmbStatus.FormattingEnabled = true;
-            this.cmbStatus.Items.AddRange(new object[] {"Pending","Paid","Partially Paid","Cancelled"});
+            this.cmbStatus.Items.AddRange(new object[] { "Pending", "Paid", "Partially Paid", "Cancelled" });
             this.cmbStatus.Location = new System.Drawing.Point(280, 50);
             this.cmbStatus.Name = "cmbStatus";
             this.cmbStatus.Size = new System.Drawing.Size(220, 23);
@@ -404,7 +411,7 @@
             this.cmbPaymentMethod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbPaymentMethod.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.cmbPaymentMethod.FormattingEnabled = true;
-            this.cmbPaymentMethod.Items.AddRange(new object[] {"Cash","Credit Card","Debit Card","Check","Bank Transfer","Insurance","Mixed Payment"});
+            this.cmbPaymentMethod.Items.AddRange(new object[] { "Cash", "Credit Card", "Debit Card", "Check", "Bank Transfer", "Insurance", "Mixed Payment" });
             this.cmbPaymentMethod.Location = new System.Drawing.Point(20, 50);
             this.cmbPaymentMethod.Name = "cmbPaymentMethod";
             this.cmbPaymentMethod.Size = new System.Drawing.Size(240, 23);
