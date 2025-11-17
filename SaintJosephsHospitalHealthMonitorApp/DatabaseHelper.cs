@@ -40,7 +40,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     role VARCHAR(20) NOT NULL,
                     email VARCHAR(100) UNIQUE NULL,
                     password VARCHAR(255) NULL,
-                    age INT,
+                    date_of_birth DATE NULL COMMENT 'Date of birth for age calculation',
+                    age INT COMMENT 'Calculated age from date_of_birth',
                     gender VARCHAR(10),
                     profile_image LONGBLOB NULL,
                     created_by INT NULL,
@@ -345,6 +346,25 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (category_id) REFERENCES ServiceCategories(category_id) ON DELETE SET NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
+                    string createPaymentTransactionsTable = @"
+                    CREATE TABLE IF NOT EXISTS PaymentTransactions (
+                    transaction_id INT PRIMARY KEY AUTO_INCREMENT,
+                    bill_id INT NOT NULL,
+                    patient_id INT NOT NULL,
+                    amount_paid DECIMAL(10,2) NOT NULL,
+                    payment_method VARCHAR(50) NOT NULL,
+                    reference_number VARCHAR(100) NULL,
+                    payment_notes TEXT NULL,
+                    processed_by INT NOT NULL,
+                    payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (bill_id) REFERENCES Billing(bill_id) ON DELETE CASCADE,
+                    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id) ON DELETE CASCADE,
+                    FOREIGN KEY (processed_by) REFERENCES Users(user_id) ON DELETE RESTRICT,
+                    INDEX idx_payment_bill (bill_id),
+                    INDEX idx_payment_patient (patient_id),
+                    INDEX idx_payment_date (payment_date)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
                     ExecuteNonQueryInternal(conn, createUsersTable);
                     ExecuteNonQueryInternal(conn, createPatientsTable);
                     ExecuteNonQueryInternal(conn, createDoctorsTable);
@@ -360,6 +380,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     ExecuteNonQueryInternal(conn, createControlledSubstanceLogTable);
                     ExecuteNonQueryInternal(conn, createStockAdjustmentTable);
                     ExecuteNonQueryInternal(conn, createCompletedVisitsTable);
+                    ExecuteNonQueryInternal(conn, createPaymentTransactionsTable);
                     ExecuteNonQueryInternal(conn, createDebugSettingsTable);
 
                     ExecuteNonQueryInternal(conn, createServiceCategoriesTable);
@@ -368,6 +389,33 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                     InsertDefaultUsers(conn);
                     InsertDefaultDebugSettings(conn);
+
+
+                    try
+                    {
+                        string checkColumn = @"
+                        SELECT COUNT(*) 
+                        FROM INFORMATION_SCHEMA.COLUMNS
+                        WHERE TABLE_SCHEMA = DATABASE()
+                        AND TABLE_NAME = 'Users'
+                        AND COLUMN_NAME = 'date_of_birth';";
+
+                        int columnExists = Convert.ToInt32(ExecuteScalar(checkColumn));
+
+                        if (columnExists == 0)
+                        {
+                            string addColumn = @"
+                            ALTER TABLE Users
+                            ADD COLUMN date_of_birth DATE NULL AFTER password;";
+                            ExecuteNonQuery(addColumn);
+
+                            System.Diagnostics.Debug.WriteLine("[DatabaseHelper] Added date_of_birth column to Users table");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Failed to add date_of_birth column: {ex.Message}");
+                    }
 
                     try
                     {
@@ -467,12 +515,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (HeadadminExists == 0)
             {
+                DateTime headAdminDob = new DateTime(1995, 1, 1);
+                int headAdminAge = DateTime.Today.Year - headAdminDob.Year;
+                if (headAdminDob.Date > DateTime.Today.AddYears(-headAdminAge))
+                    headAdminAge--;
+
                 string insertHeadadmin = @"
-            INSERT INTO Users (name, role, email, password, age, gender, created_by, profile_image)
-            VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', 30, 'Other', NULL, @profileImage)";
+        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+        VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', @dob, @age, 'Other', NULL, @profileImage)";
 
                 using (MySqlCommand cmd = new MySqlCommand(insertHeadadmin, conn))
                 {
+                    cmd.Parameters.AddWithValue("@dob", headAdminDob);
+                    cmd.Parameters.AddWithValue("@age", headAdminAge);
+
                     if (defaultImage != null)
                         cmd.Parameters.AddWithValue("@profileImage", defaultImage);
                     else
@@ -492,12 +548,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
                 long adminId = Convert.ToInt64(adminIdResult);
 
+                DateTime receptionistDob = new DateTime(1997, 5, 15);
+                int receptionistAge = DateTime.Today.Year - receptionistDob.Year;
+                if (receptionistDob.Date > DateTime.Today.AddYears(-receptionistAge))
+                    receptionistAge--;
+
                 string insertreceptionist = @"
-            INSERT INTO Users (name, role, email, password, age, gender, created_by, profile_image)
-            VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', 28, 'Female', @createdBy, @profileImage)";
+        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+        VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', @dob, @age, 'Female', @createdBy, @profileImage)";
 
                 using (MySqlCommand cmdReceptionist = new MySqlCommand(insertreceptionist, conn))
                 {
+                    cmdReceptionist.Parameters.AddWithValue("@dob", receptionistDob);
+                    cmdReceptionist.Parameters.AddWithValue("@age", receptionistAge);
                     cmdReceptionist.Parameters.AddWithValue("@createdBy", adminId);
 
                     if (defaultImage != null)
@@ -519,12 +582,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
                 long adminId = Convert.ToInt64(adminIdResult);
 
+                DateTime pharmacistDob = new DateTime(1995, 3, 20);
+                int pharmacistAge = DateTime.Today.Year - pharmacistDob.Year;
+                if (pharmacistDob.Date > DateTime.Today.AddYears(-pharmacistAge))
+                    pharmacistAge--;
+
                 string insertPharmacist = @"
-            INSERT INTO Users (name, role, email, password, age, gender, created_by, profile_image)
-            VALUES ('Pharmacist', 'Pharmacist', 'Pharmacist@hospital.com', 'pharmacist123', 30, 'Other', @createdBy, @profileImage)";
+        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+        VALUES ('Pharmacist', 'Pharmacist', 'Pharmacist@hospital.com', 'pharmacist123', @dob, @age, 'Other', @createdBy, @profileImage)";
 
                 using (MySqlCommand cmdPharmacist = new MySqlCommand(insertPharmacist, conn))
                 {
+                    cmdPharmacist.Parameters.AddWithValue("@dob", pharmacistDob);
+                    cmdPharmacist.Parameters.AddWithValue("@age", pharmacistAge);
                     cmdPharmacist.Parameters.AddWithValue("@createdBy", adminId);
 
                     if (defaultImage != null)
@@ -540,8 +610,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 long pharmacistId = Convert.ToInt64(pharmacistIdResult);
 
                 string insertPharmacistStaff = @"
-            INSERT INTO Staff (user_id, position, department)
-            VALUES (@userId, 'Pharmacist', 'Pharmacy')";
+        INSERT INTO Staff (user_id, position, department)
+        VALUES (@userId, 'Pharmacist', 'Pharmacy')";
 
                 using (MySqlCommand cmdPharmacistStaff = new MySqlCommand(insertPharmacistStaff, conn))
                 {
@@ -678,35 +748,9 @@ provided the ideas for the program also helped and contributed to the code aswel
 
 known issues / (tinatamad pang ayusin) by lead programmer ramilo
 
-1.if the admin user table gets deleted it crashes the xampp and had to reinstall the whole xampp
-
-
-missing stuff / unfinished (top priority) pag di natapos magigisa tayo
-
-1. billing FIXED - enhanced with realistic features
-2. security dipa added
-
-future plans 
-
-0.need to replace the program name the name right now is temporary
-1.the laus easteregg is not been started yet
-2.logo for our hospital
-3.a new numbering id on the table
-4.might do animation transitions (if merong oras) 
-5.a better design for the forms the design right now is temporary need help with our designers
-(TJ,Puno and Marco kayo na bahala jan kaya ninyo na yan)
-
 final notes by lead programmer
 di po pwede gumamit ng sql express naging corrupted download ng sql saka localdb no choice 
 xampp po kaylangan naming gamitin instead saka mas madaling install
 
 
-Update
-1.halos fix na lahat need nalang padebug patulong nalang
-2.pag ok na lahat billing nalang need ko i update - BILLING DONE!
-3.pag fix na yung billing design na
-4.pag tapos na doon ko lalagyan lahat ng comments mashadong tamad para maglagay
-
-sa mga designers gamitin ninyo yung mga ui ko as reference papagandahin ninyo lang
-yung probided na sa designer.cs paramakita yung design shift + f7 pag yung code f7 lang
 */

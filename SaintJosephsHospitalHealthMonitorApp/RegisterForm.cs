@@ -28,6 +28,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private byte[]? lausSins1Data;
         private byte[]? lausSins2Data;
         private bool isEditMode;
+        private bool isViewMode; 
         private int? createdByUserId;
         private int? userId;
         private bool isDefaultImageLoaded = false;
@@ -35,10 +36,29 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private static Random random = new Random();
         private System.Windows.Forms.Timer inputCheckTimer;
 
+        public static RegisterForm CreateViewMode(int userIdToView)
+        {
+            return new RegisterForm(userIdToView, viewOnly: true);
+        }
+
+        public RegisterForm(int userIdToView, bool viewOnly)
+        {
+            userId = userIdToView;
+            isEditMode = false;
+            isViewMode = viewOnly;
+            InitializeComponent();
+            SetPlaceholderImage();
+            InitializeRoleOptions();
+            InitializeDoctorSpecializations();
+            ConfigureForViewMode();
+            LoadExistingUserData();
+        }
+
         public RegisterForm(int userIdToEdit)
         {
             userId = userIdToEdit;
             isEditMode = true;
+            isViewMode = false;
             InitializeComponent();
             SetPlaceholderImage();
             InitializeRoleOptions();
@@ -51,6 +71,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             userId = null;
             isEditMode = false;
+            isViewMode = false;
             createdByUserId = creatorId;
             creatorRole = role;
             InitializeComponent();
@@ -64,6 +85,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             userId = null;
             isEditMode = false;
+            isViewMode = false;
             createdByUserId = null;
             creatorRole = "Registration";
             InitializeComponent();
@@ -404,12 +426,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (isEditMode)
             {
                 cmbRole.Items.AddRange(new string[] {
-                    "Admin",
-                    "Receptionist",
-                    "Doctor",
-                    "Pharmacist",
-                    "Patient"
-                });
+                "Admin",
+                "Receptionist",
+                "Doctor",
+                "Pharmacist",
+                "Patient"
+            });
             }
             else if (creatorRole == "Registration")
             {
@@ -423,9 +445,65 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 cmbRole.Items.AddRange(new string[] { "Patient" });
             }
+            else
+            {
+                cmbRole.Items.AddRange(new string[] { "Admin", "Receptionist", "Doctor", "Pharmacist" });
+            }
 
-            if (cmbRole.Items.Count > 0 && !isEditMode)
+            if (cmbRole.Items.Count > 0 && !isEditMode && !isViewMode)
                 cmbRole.SelectedIndex = 0;
+        }
+
+        private int CalculateAge(DateTime birthDate)
+        {
+            DateTime today = DateTime.Today;
+            int age = today.Year - birthDate.Year;
+            if (birthDate.Date > today.AddYears(-age))
+                age--;
+
+            return age;
+        }
+
+        private void ConfigureForViewMode()
+        {
+            lblTitle.Text = "View User Profile";
+            this.Text = "View Profile - St. Joseph's Hospital";
+            btnSubmit.Visible = false;
+            btnCancel.Text = "✓ Close";
+
+            txtName.ReadOnly = true;
+            txtEmail.ReadOnly = true;
+            txtPassword.Visible = false;
+            lblPassword.Visible = false;
+            txtConfirmPassword.Visible = false;
+            lblConfirmPassword.Visible = false;
+            chkShowPassword.Visible = false;
+            chkChangePassword.Visible = false;
+            dtpDateOfBirth.Enabled = false;
+            cmbGender.Enabled = false;
+            cmbRole.Enabled = false;
+            cmbSpecialization.Enabled = false;
+            txtSpecialization.ReadOnly = true;
+
+            btnUploadPhoto.Visible = false;
+            btnRemovePhoto.Visible = false;
+
+            Color readOnlyBg = Color.FromArgb(245, 245, 245);
+            txtName.BackColor = readOnlyBg;
+            txtEmail.BackColor = readOnlyBg;
+            cmbGender.BackColor = readOnlyBg;
+            cmbRole.BackColor = readOnlyBg;
+            cmbSpecialization.BackColor = readOnlyBg;
+            txtSpecialization.BackColor = readOnlyBg;
+
+            Label lblViewInfo = new Label();
+            lblViewInfo.Text = "ℹ️ View Mode - Profile information is read-only";
+            lblViewInfo.Font = new Font("Segoe UI", 9F, FontStyle.Italic);
+            lblViewInfo.ForeColor = Color.FromArgb(108, 117, 125);
+            lblViewInfo.AutoSize = true;
+            lblViewInfo.Location = new Point(30, 555);
+            this.Controls.Add(lblViewInfo);
+            lblViewInfo.BringToFront();
         }
 
         private void ConfigureForEditMode()
@@ -489,7 +567,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void LoadExistingUserData()
         {
-            string query = @"SELECT name, email, age, gender, role, profile_image 
+            string query = @"SELECT name, email, date_of_birth, gender, role, profile_image 
                      FROM Users WHERE user_id = @userId";
             DataTable dt = DatabaseHelper.ExecuteQuery(query, new MySqlParameter("@userId", userId));
 
@@ -499,7 +577,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 txtName.Text = row["name"].ToString();
                 txtEmail.Text = row["email"].ToString();
                 originalEmail = txtEmail.Text;
-                txtAge.Text = row["age"].ToString();
+
+                if (row["date_of_birth"] != DBNull.Value)
+                {
+                    dtpDateOfBirth.Value = Convert.ToDateTime(row["date_of_birth"]);
+                }
+
                 cmbGender.SelectedItem = row["gender"].ToString();
                 originalRole = row["role"].ToString();
 
@@ -534,7 +617,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             {
                                 pictureBoxProfile.Image = new Bitmap(tempImage);
                             }
-                            btnRemovePhoto.Visible = true;
+
+                            if (!isViewMode)
+                            {
+                                btnRemovePhoto.Visible = true;
+                            }
                             isDefaultImageLoaded = false;
                         }
                         else
@@ -676,6 +763,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnSubmit_Click(object sender, EventArgs e)
         {
+            if (isViewMode)
+            {
+                MessageBox.Show("This form is in view-only mode. No changes can be saved.",
+                    "View Mode", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             if (isEditMode)
             {
                 UpdateUser();
@@ -689,7 +783,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private void UpdateUser()
         {
             if (string.IsNullOrWhiteSpace(txtName.Text) ||
-                string.IsNullOrWhiteSpace(txtAge.Text) ||
                 cmbRole.SelectedItem == null ||
                 cmbGender.SelectedItem == null)
             {
@@ -699,6 +792,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             string currentRole = cmbRole.SelectedItem.ToString();
+
+            if (dtpDateOfBirth.Value > DateTime.Today)
+            {
+                MessageBox.Show("Date of birth cannot be in the future.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int age = CalculateAge(dtpDateOfBirth.Value);
+            if (age < 0 || age > 120)
+            {
+                MessageBox.Show("Please enter a valid date of birth (age 0-120).", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             if (currentRole == "Patient")
             {
@@ -751,13 +859,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (!int.TryParse(txtAge.Text, out int age) || age < 1 || age > 120)
-            {
-                MessageBox.Show("Please enter a valid age between 1 and 120.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             if (currentRole == "Doctor")
             {
                 string specialization = GetDoctorSpecialization();
@@ -772,6 +873,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             string email = string.IsNullOrWhiteSpace(txtEmail.Text) ? null : txtEmail.Text.Trim();
             string name = txtName.Text.Trim();
             string gender = cmbGender.SelectedItem.ToString();
+            DateTime dateOfBirth = dtpDateOfBirth.Value.Date;
 
             using (MySqlConnection conn = DatabaseHelper.GetConnection())
             {
@@ -798,13 +900,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
 
                         string updateUser = @"UPDATE Users 
-                                            SET name = @name, 
-                                                email = @email, 
-                                                age = @age, 
-                                                gender = @gender, 
-                                                role = @role,
-                                                profile_image = @profileImage
-                                            WHERE user_id = @userId";
+                                    SET name = @name, 
+                                        email = @email, 
+                                        date_of_birth = @dateOfBirth,
+                                        age = @age, 
+                                        gender = @gender, 
+                                        role = @role,
+                                        profile_image = @profileImage
+                                    WHERE user_id = @userId";
 
                         using (MySqlCommand cmdUpdate = new MySqlCommand(updateUser, conn, transaction))
                         {
@@ -815,6 +918,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             else
                                 cmdUpdate.Parameters.AddWithValue("@email", email);
 
+                            cmdUpdate.Parameters.AddWithValue("@dateOfBirth", dateOfBirth);
                             cmdUpdate.Parameters.AddWithValue("@age", age);
                             cmdUpdate.Parameters.AddWithValue("@gender", gender);
                             cmdUpdate.Parameters.AddWithValue("@role", currentRole);
@@ -874,7 +978,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private void CreateUser()
         {
             if (string.IsNullOrWhiteSpace(txtName.Text) ||
-                string.IsNullOrWhiteSpace(txtAge.Text) ||
                 cmbRole.SelectedItem == null ||
                 cmbGender.SelectedItem == null)
             {
@@ -885,9 +988,24 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             string role = cmbRole.SelectedItem.ToString();
 
-            if (creatorRole == "Receptionist" && role != "Patient")
+            if (dtpDateOfBirth.Value > DateTime.Today)
             {
-                MessageBox.Show("Receptionists can only create Patient records.", "Access Denied",
+                MessageBox.Show("Date of birth cannot be in the future.", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int age = CalculateAge(dtpDateOfBirth.Value);
+            if (age < 0 || age > 120)
+            {
+                MessageBox.Show("Please enter a valid date of birth (age 0-120).", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (creatorRole != "Headadmin" && role == "Patient")
+            {
+                MessageBox.Show("Only Head Admin can create Patient records directly.", "Access Denied",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -940,13 +1058,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (!int.TryParse(txtAge.Text, out int age) || age < 1 || age > 120)
-            {
-                MessageBox.Show("Please enter a valid age between 1 and 120.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             if (role == "Doctor")
             {
                 string specialization = GetDoctorSpecialization();
@@ -961,6 +1072,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             string email = string.IsNullOrWhiteSpace(txtEmail.Text) ? null : txtEmail.Text.Trim();
             string name = txtName.Text.Trim();
             string gender = cmbGender.SelectedItem.ToString();
+            DateTime dateOfBirth = dtpDateOfBirth.Value.Date;
 
             using (MySqlConnection conn = DatabaseHelper.GetConnection())
             {
@@ -999,8 +1111,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             }
                         }
 
-                        string insertUser = @"INSERT INTO Users (name, role, email, password, age, gender, created_by, profile_image) 
-                      VALUES (@name, @role, @email, @password, @age, @gender, @createdBy, @profileImage)";
+                        string insertUser = @"INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image) 
+                      VALUES (@name, @role, @email, @password, @dateOfBirth, @age, @gender, @createdBy, @profileImage)";
                         using (MySqlCommand cmdInsertUser = new MySqlCommand(insertUser, conn, transaction))
                         {
                             cmdInsertUser.Parameters.AddWithValue("@name", name);
@@ -1012,6 +1124,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 cmdInsertUser.Parameters.AddWithValue("@email", email);
 
                             cmdInsertUser.Parameters.AddWithValue("@password", password ?? (object)DBNull.Value);
+                            cmdInsertUser.Parameters.AddWithValue("@dateOfBirth", dateOfBirth);
                             cmdInsertUser.Parameters.AddWithValue("@age", age);
                             cmdInsertUser.Parameters.AddWithValue("@gender", gender);
 
@@ -1100,7 +1213,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                             successMessage = $"✓ Patient record created successfully!\n\n" +
                                            $"Name: {name}\n" +
-                                           $"Email: {displayEmail}\n\n" +
+                                           $"Email: {displayEmail}\n" +
+                                           $"Age: {age} years old\n\n" +
                                            $"Patient is now registered in the system.\n" +
                                            $"Phone number and allergies can be added during intake.";
 

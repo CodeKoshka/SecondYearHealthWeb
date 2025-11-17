@@ -30,7 +30,7 @@
         private System.Windows.Forms.Label lblQueueCount;
         private System.Windows.Forms.Panel panelPatientButtons;
         private System.Windows.Forms.Button btnViewPatient;
-        private System.Windows.Forms.Button btnEditPatient;
+        private System.Windows.Forms.Button BtnEditIntake;
         private System.Windows.Forms.Button btnCheckMedicalHistory;
         private System.Windows.Forms.Panel panelBillingButtons;
         private System.Windows.Forms.Button btnDoctorServiceReport;
@@ -74,6 +74,7 @@
             tabQueue = new TabPage();
             dgvQueue = new DataGridView();
             panelQueueButtons = new Panel();
+            btnRemoveAllFromQueue = new Button();
             btnAddToQueue = new Button();
             btnAssignDoctor = new Button();
             btnCallNext = new Button();
@@ -83,7 +84,7 @@
             dgvPatients = new DataGridView();
             panelPatientButtons = new Panel();
             btnViewPatient = new Button();
-            btnEditPatient = new Button();
+            BtnEditIntake = new Button();
             btnCheckMedicalHistory = new Button();
             tabBilling = new TabPage();
             dgvBilling = new DataGridView();
@@ -102,6 +103,8 @@
             btnClearUniversalSearch = new Button();
             txtUniversalSearch = new TextBox();
             lblHospitalName = new Label();
+            BtnViewProfile = new Button();
+            btnEditPatient = new Button();
             panelSidebar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).BeginInit();
             panelMainContent.SuspendLayout();
@@ -298,6 +301,7 @@
             // panelQueueButtons
             // 
             panelQueueButtons.BackColor = Color.White;
+            panelQueueButtons.Controls.Add(btnRemoveAllFromQueue);
             panelQueueButtons.Controls.Add(btnAddToQueue);
             panelQueueButtons.Controls.Add(btnAssignDoctor);
             panelQueueButtons.Controls.Add(btnCallNext);
@@ -309,6 +313,23 @@
             panelQueueButtons.Padding = new Padding(20, 15, 20, 15);
             panelQueueButtons.Size = new Size(1156, 80);
             panelQueueButtons.TabIndex = 1;
+            // 
+            // btnRemoveAllFromQueue
+            // 
+            btnRemoveAllFromQueue.BackColor = Color.FromArgb(220, 53, 69);
+            btnRemoveAllFromQueue.Cursor = Cursors.Hand;
+            btnRemoveAllFromQueue.FlatAppearance.BorderSize = 0;
+            btnRemoveAllFromQueue.FlatAppearance.MouseOverBackColor = Color.FromArgb(200, 35, 51);
+            btnRemoveAllFromQueue.FlatStyle = FlatStyle.Flat;
+            btnRemoveAllFromQueue.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnRemoveAllFromQueue.ForeColor = Color.White;
+            btnRemoveAllFromQueue.Location = new Point(790, 15);
+            btnRemoveAllFromQueue.Name = "btnRemoveAllFromQueue";
+            btnRemoveAllFromQueue.Size = new Size(150, 45);
+            btnRemoveAllFromQueue.TabIndex = 5;
+            btnRemoveAllFromQueue.Text = "🗑️ Remove All";
+            btnRemoveAllFromQueue.UseVisualStyleBackColor = false;
+            btnRemoveAllFromQueue.Click += BtnRemoveAllFromQueue_Click;
             // 
             // btnAddToQueue
             // 
@@ -426,8 +447,10 @@
             // panelPatientButtons
             // 
             panelPatientButtons.BackColor = Color.White;
-            panelPatientButtons.Controls.Add(btnViewPatient);
             panelPatientButtons.Controls.Add(btnEditPatient);
+            panelPatientButtons.Controls.Add(BtnViewProfile);
+            panelPatientButtons.Controls.Add(btnViewPatient);
+            panelPatientButtons.Controls.Add(BtnEditIntake);
             panelPatientButtons.Controls.Add(btnCheckMedicalHistory);
             panelPatientButtons.Dock = DockStyle.Top;
             panelPatientButtons.Location = new Point(20, 20);
@@ -445,7 +468,7 @@
             btnViewPatient.FlatStyle = FlatStyle.Flat;
             btnViewPatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnViewPatient.ForeColor = Color.White;
-            btnViewPatient.Location = new Point(20, 15);
+            btnViewPatient.Location = new Point(375, 18);
             btnViewPatient.Name = "btnViewPatient";
             btnViewPatient.Size = new Size(170, 45);
             btnViewPatient.TabIndex = 0;
@@ -453,22 +476,22 @@
             btnViewPatient.UseVisualStyleBackColor = false;
             btnViewPatient.Click += BtnViewPatient_Click;
             // 
-            // btnEditPatient
+            // BtnEditIntake
             // 
-            btnEditPatient.BackColor = Color.FromArgb(255, 152, 0);
-            btnEditPatient.Cursor = Cursors.Hand;
-            btnEditPatient.FlatAppearance.BorderSize = 0;
-            btnEditPatient.FlatAppearance.MouseOverBackColor = Color.FromArgb(245, 124, 0);
-            btnEditPatient.FlatStyle = FlatStyle.Flat;
-            btnEditPatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnEditPatient.ForeColor = Color.White;
-            btnEditPatient.Location = new Point(200, 15);
-            btnEditPatient.Name = "btnEditPatient";
-            btnEditPatient.Size = new Size(170, 45);
-            btnEditPatient.TabIndex = 1;
-            btnEditPatient.Text = "✏ Edit Details";
-            btnEditPatient.UseVisualStyleBackColor = false;
-            btnEditPatient.Click += BtnEditPatient_Click;
+            BtnEditIntake.BackColor = Color.FromArgb(255, 152, 0);
+            BtnEditIntake.Cursor = Cursors.Hand;
+            BtnEditIntake.FlatAppearance.BorderSize = 0;
+            BtnEditIntake.FlatAppearance.MouseOverBackColor = Color.FromArgb(245, 124, 0);
+            BtnEditIntake.FlatStyle = FlatStyle.Flat;
+            BtnEditIntake.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            BtnEditIntake.ForeColor = Color.White;
+            BtnEditIntake.Location = new Point(551, 18);
+            BtnEditIntake.Name = "BtnEditIntake";
+            BtnEditIntake.Size = new Size(170, 45);
+            BtnEditIntake.TabIndex = 1;
+            BtnEditIntake.Text = "✏ Edit Details";
+            BtnEditIntake.UseVisualStyleBackColor = false;
+            BtnEditIntake.Click += BtnEditIntake_Click;
             // 
             // btnCheckMedicalHistory
             // 
@@ -479,7 +502,7 @@
             btnCheckMedicalHistory.FlatStyle = FlatStyle.Flat;
             btnCheckMedicalHistory.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnCheckMedicalHistory.ForeColor = Color.White;
-            btnCheckMedicalHistory.Location = new Point(380, 15);
+            btnCheckMedicalHistory.Location = new Point(727, 18);
             btnCheckMedicalHistory.Name = "btnCheckMedicalHistory";
             btnCheckMedicalHistory.Size = new Size(190, 45);
             btnCheckMedicalHistory.TabIndex = 2;
@@ -734,6 +757,39 @@
             lblHospitalName.Size = new Size(247, 32);
             lblHospitalName.TabIndex = 0;
             lblHospitalName.Text = "St. Joseph's Hospital";
+            // 
+            // BtnViewProfile
+            // 
+            BtnViewProfile.BackColor = Color.FromArgb(52, 152, 219);
+            BtnViewProfile.Cursor = Cursors.Hand;
+            BtnViewProfile.FlatAppearance.BorderSize = 0;
+            BtnViewProfile.FlatAppearance.MouseOverBackColor = Color.FromArgb(41, 128, 185);
+            BtnViewProfile.FlatStyle = FlatStyle.Flat;
+            BtnViewProfile.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            BtnViewProfile.ForeColor = Color.White;
+            BtnViewProfile.Location = new Point(23, 18);
+            BtnViewProfile.Name = "BtnViewProfile";
+            BtnViewProfile.Size = new Size(170, 45);
+            BtnViewProfile.TabIndex = 3;
+            BtnViewProfile.Text = "👁 View Profile";
+            BtnViewProfile.UseVisualStyleBackColor = false;
+            // 
+            // btnEditPatient
+            // 
+            btnEditPatient.BackColor = Color.FromArgb(255, 152, 0);
+            btnEditPatient.Cursor = Cursors.Hand;
+            btnEditPatient.FlatAppearance.BorderSize = 0;
+            btnEditPatient.FlatAppearance.MouseOverBackColor = Color.FromArgb(245, 124, 0);
+            btnEditPatient.FlatStyle = FlatStyle.Flat;
+            btnEditPatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnEditPatient.ForeColor = Color.White;
+            btnEditPatient.Location = new Point(199, 18);
+            btnEditPatient.Name = "btnEditPatient";
+            btnEditPatient.Size = new Size(170, 45);
+            btnEditPatient.TabIndex = 4;
+            btnEditPatient.Text = "✏ Edit Profile";
+            btnEditPatient.UseVisualStyleBackColor = false;
+            btnEditPatient.Click += BtnEditPatient_Click;
             // 
             // ReceptionistDashboard
             // 
@@ -1048,5 +1104,8 @@
             shadow.SendToBack();
         }
         private Label label1;
+        private Button btnRemoveAllFromQueue;
+        private Button btnEditPatient;
+        private Button BtnViewProfile;
     }
 }

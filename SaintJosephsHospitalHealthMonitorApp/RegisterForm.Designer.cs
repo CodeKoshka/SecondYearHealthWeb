@@ -7,7 +7,6 @@
         private System.Windows.Forms.TextBox txtEmail;
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.TextBox txtConfirmPassword;
-        private System.Windows.Forms.TextBox txtAge;
         private System.Windows.Forms.TextBox txtSpecialization;
         private System.Windows.Forms.ComboBox cmbRole;
         private System.Windows.Forms.ComboBox cmbGender;
@@ -58,7 +57,6 @@
             txtConfirmPassword = new TextBox();
             chkShowPassword = new CheckBox();
             lblAge = new Label();
-            txtAge = new TextBox();
             lblGender = new Label();
             cmbGender = new ComboBox();
             lblRole = new Label();
@@ -69,6 +67,7 @@
             txtSpecialization = new TextBox();
             btnSubmit = new Button();
             btnCancel = new Button();
+            dtpDateOfBirth = new DateTimePicker();
             panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).BeginInit();
             panelDoctorInfo.SuspendLayout();
@@ -261,26 +260,16 @@
             lblAge.ForeColor = Color.FromArgb(64, 64, 64);
             lblAge.Location = new Point(30, 420);
             lblAge.Name = "lblAge";
-            lblAge.Size = new Size(46, 19);
+            lblAge.Size = new Size(104, 19);
             lblAge.TabIndex = 11;
-            lblAge.Text = "Age *";
-            // 
-            // txtAge
-            // 
-            txtAge.BackColor = Color.White;
-            txtAge.BorderStyle = BorderStyle.FixedSingle;
-            txtAge.Font = new Font("Segoe UI", 10F);
-            txtAge.Location = new Point(30, 445);
-            txtAge.Name = "txtAge";
-            txtAge.Size = new Size(120, 25);
-            txtAge.TabIndex = 12;
+            lblAge.Text = "Date of Birth *";
             // 
             // lblGender
             // 
             lblGender.AutoSize = true;
             lblGender.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblGender.ForeColor = Color.FromArgb(64, 64, 64);
-            lblGender.Location = new Point(170, 420);
+            lblGender.Location = new Point(244, 420);
             lblGender.Name = "lblGender";
             lblGender.Size = new Size(68, 19);
             lblGender.TabIndex = 13;
@@ -294,9 +283,9 @@
             cmbGender.Font = new Font("Segoe UI", 10F);
             cmbGender.FormattingEnabled = true;
             cmbGender.Items.AddRange(new object[] { "Male", "Female", "Other" });
-            cmbGender.Location = new Point(170, 445);
+            cmbGender.Location = new Point(244, 445);
             cmbGender.Name = "cmbGender";
-            cmbGender.Size = new Size(180, 25);
+            cmbGender.Size = new Size(153, 25);
             cmbGender.TabIndex = 14;
             // 
             // lblRole
@@ -304,7 +293,7 @@
             lblRole.AutoSize = true;
             lblRole.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblRole.ForeColor = Color.FromArgb(64, 64, 64);
-            lblRole.Location = new Point(370, 420);
+            lblRole.Location = new Point(403, 420);
             lblRole.Name = "lblRole";
             lblRole.Size = new Size(49, 19);
             lblRole.TabIndex = 15;
@@ -317,9 +306,9 @@
             cmbRole.FlatStyle = FlatStyle.Flat;
             cmbRole.Font = new Font("Segoe UI", 10F);
             cmbRole.FormattingEnabled = true;
-            cmbRole.Location = new Point(370, 445);
+            cmbRole.Location = new Point(403, 445);
             cmbRole.Name = "cmbRole";
-            cmbRole.Size = new Size(200, 25);
+            cmbRole.Size = new Size(167, 25);
             cmbRole.TabIndex = 16;
             cmbRole.SelectedIndexChanged += CmbRole_SelectedIndexChanged;
             // 
@@ -405,12 +394,23 @@
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += BtnCancel_Click;
             // 
+            // dtpDateOfBirth
+            // 
+            dtpDateOfBirth.Location = new Point(30, 445);
+            dtpDateOfBirth.MaxDate = new DateTime(2025, 11, 17, 0, 0, 0, 0);
+            dtpDateOfBirth.MinDate = new DateTime(1900, 1, 1, 0, 0, 0, 0);
+            dtpDateOfBirth.Name = "dtpDateOfBirth";
+            dtpDateOfBirth.Size = new Size(208, 23);
+            dtpDateOfBirth.TabIndex = 12;
+            dtpDateOfBirth.Value = new DateTime(1995, 11, 17, 0, 0, 0, 0);
+            // 
             // RegisterForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(240, 245, 250);
             ClientSize = new Size(600, 700);
+            Controls.Add(dtpDateOfBirth);
             Controls.Add(btnRemovePhoto);
             Controls.Add(btnUploadPhoto);
             Controls.Add(pictureBoxProfile);
@@ -421,7 +421,6 @@
             Controls.Add(lblRole);
             Controls.Add(cmbGender);
             Controls.Add(lblGender);
-            Controls.Add(txtAge);
             Controls.Add(lblAge);
             Controls.Add(chkShowPassword);
             Controls.Add(txtConfirmPassword);
@@ -448,5 +447,6 @@
             ResumeLayout(false);
             PerformLayout();
         }
+        private DateTimePicker dtpDateOfBirth;
     }
 }

@@ -19,6 +19,9 @@
     <Compile Update="DoctorDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="PaymentProcessingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="InputDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -52,6 +55,9 @@
     <Compile Update="PharmacyRelated%28DONTTOUCH%29\ViewOrderDetailsForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="RegisterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="ServiceChecklistForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,9 +71,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="ReceptionistDashboard.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="RegisterForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="LoginForm.cs">

@@ -350,9 +350,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
             switch (priority?.ToUpper())
             {
                 case "EMERGENCY":
-                    return Color.FromArgb(231, 76, 60); 
+                    return Color.FromArgb(231, 76, 60);
                 case "URGENT":
-                    return Color.FromArgb(243, 156, 18); 
+                    return Color.FromArgb(243, 156, 18);
                 case "NORMAL":
                 default:
                     return Color.FromArgb(46, 204, 113);
@@ -366,10 +366,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 case "EMERGENCY":
                     return Color.FromArgb(30, 231, 76, 60);
                 case "URGENT":
-                    return Color.FromArgb(30, 243, 156, 18); 
+                    return Color.FromArgb(30, 243, 156, 18);
                 case "NORMAL":
                 default:
-                    return Color.FromArgb(30, 46, 204, 113); 
+                    return Color.FromArgb(30, 46, 204, 113);
             }
         }
 
@@ -642,9 +642,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void LoadBillingData()
         {
-        try
-        {
-        string queryBilling = @"
+            try
+            {
+                string queryBilling = @"
             SELECT 
                 b.bill_id,
                 q.patient_id,
@@ -679,26 +679,26 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 END,
                 q.completed_time DESC";
 
-        DataTable dtBills = DatabaseHelper.ExecuteQuery(queryBilling);
-        dgvBilling.DataSource = dtBills;
+                DataTable dtBills = DatabaseHelper.ExecuteQuery(queryBilling);
+                dgvBilling.DataSource = dtBills;
 
-        if (dgvBilling.Columns["bill_id"] != null)
-            dgvBilling.Columns["bill_id"].Visible = false;
-        if (dgvBilling.Columns["patient_id"] != null)
-            dgvBilling.Columns["patient_id"].Visible = false;
-        if (dgvBilling.Columns["queue_id"] != null)
-            dgvBilling.Columns["queue_id"].Visible = false;
-        if (dgvBilling.Columns["Total Amount"] != null)
-        {
-            dgvBilling.Columns["Total Amount"].DefaultCellStyle.Format = "₱#,##0.00";
+                if (dgvBilling.Columns["bill_id"] != null)
+                    dgvBilling.Columns["bill_id"].Visible = false;
+                if (dgvBilling.Columns["patient_id"] != null)
+                    dgvBilling.Columns["patient_id"].Visible = false;
+                if (dgvBilling.Columns["queue_id"] != null)
+                    dgvBilling.Columns["queue_id"].Visible = false;
+                if (dgvBilling.Columns["Total Amount"] != null)
+                {
+                    dgvBilling.Columns["Total Amount"].DefaultCellStyle.Format = "₱#,##0.00";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading billing data: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-    }
-    catch (Exception ex)
-    {
-        MessageBox.Show($"Error loading billing data: {ex.Message}", "Error",
-            MessageBoxButtons.OK, MessageBoxIcon.Error);
-    }
-}
 
         private bool HasPatientIntakeData(int patientId)
         {
@@ -1254,108 +1254,61 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
+            if (status == "Paid")
+            {
+                MessageBox.Show(
+                    "ℹ️ BILL ALREADY PAID\n\n" +
+                    "This bill has already been paid in full.\n\n" +
+                    "Use 'View Payment History' to see payment details.",
+                    "Already Paid",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            if (status == "Cancelled")
+            {
+                MessageBox.Show(
+                    "⚠️ BILL CANCELLED\n\n" +
+                    "This bill has been cancelled and cannot accept payments.\n\n" +
+                    "Contact administration if this is an error.",
+                    "Bill Cancelled",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
             int billId = Convert.ToInt32(dgvBilling.SelectedRows[0].Cells["bill_id"].Value);
             int patientId = Convert.ToInt32(dgvBilling.SelectedRows[0].Cells["patient_id"].Value);
             string patientName = dgvBilling.SelectedRows[0].Cells["Patient Name"].Value.ToString();
             decimal amount = Convert.ToDecimal(dgvBilling.SelectedRows[0].Cells["Total Amount"].Value);
 
-            DialogResult result = MessageBox.Show(
-                $"Process payment for {patientName}?\n\n" +
-                $"Invoice #{billId}\n" +
-                $"Amount: ₱{amount:N2}\n\n" +
-                "Mark this bill as PAID?",
-                "Confirm Payment",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-
-            if (result != DialogResult.Yes)
-                return;
-
             try
             {
-                string updateQuery = @"
-                UPDATE Billing 
-                SET status = 'Paid', 
-                    payment_method = @paymentMethod
-                WHERE bill_id = @billId";
-
-                string paymentMethod = "Cash";
-                using (var methodForm = new Form())
+                using (PaymentProcessingForm paymentForm = new PaymentProcessingForm(
+                    billId, patientId, patientName, amount, status, currentUser.UserId))
                 {
-                    methodForm.Text = "Payment Method";
-                    methodForm.Size = new Size(300, 200);
-                    methodForm.StartPosition = FormStartPosition.CenterParent;
-                    methodForm.FormBorderStyle = FormBorderStyle.FixedDialog;
-                    methodForm.MaximizeBox = false;
-
-                    Label lbl = new Label
+                    if (paymentForm.ShowDialog() == DialogResult.OK)
                     {
-                        Text = "Select Payment Method:",
-                        Location = new Point(20, 20),
-                        AutoSize = true
-                    };
+                        LoadData();
 
-                    ComboBox cmb = new ComboBox
-                    {
-                        Location = new Point(20, 50),
-                        Size = new Size(240, 25),
-                        DropDownStyle = ComboBoxStyle.DropDownList
-                    };
-                    cmb.Items.AddRange(new object[] { "Cash", "Credit Card", "Debit Card", "Check", "Bank Transfer" });
-                    cmb.SelectedIndex = 0;
-
-                    Button btnOk = new Button
-                    {
-                        Text = "OK",
-                        Location = new Point(100, 110),
-                        Size = new Size(75, 30),
-                        DialogResult = DialogResult.OK
-                    };
-
-                    Button btnCancel = new Button
-                    {
-                        Text = "Cancel",
-                        Location = new Point(185, 110),
-                        Size = new Size(75, 30),
-                        DialogResult = DialogResult.Cancel
-                    };
-
-                    methodForm.Controls.AddRange(new Control[] { lbl, cmb, btnOk, btnCancel });
-                    methodForm.AcceptButton = btnOk;
-                    methodForm.CancelButton = btnCancel;
-
-                    if (methodForm.ShowDialog() == DialogResult.OK)
-                    {
-                        paymentMethod = cmb.SelectedItem.ToString();
-                    }
-                    else
-                    {
-                        return;
+                        MessageBox.Show(
+                            "✅ Payment successfully recorded!\n\n" +
+                            "The billing status has been updated.\n" +
+                            "You can now proceed with patient discharge if fully paid.",
+                            "Success",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
                     }
                 }
-
-                DatabaseHelper.ExecuteNonQuery(updateQuery,
-                    new MySqlParameter("@paymentMethod", paymentMethod),
-                    new MySqlParameter("@billId", billId));
-
-                MessageBox.Show(
-                    $"✓ Payment processed successfully!\n\n" +
-                    $"Patient: {patientName}\n" +
-                    $"Amount Paid: ₱{amount:N2}\n" +
-                    $"Payment Method: {paymentMethod}\n\n" +
-                    "Patient is now ready for discharge.",
-                    "Payment Complete",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-
-                LoadData();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error processing payment: {ex.Message}", "Error",
+                MessageBox.Show($"Error opening payment form: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void BtnCreateBill_Click(object sender, EventArgs e)
         {
             if (dgvBilling.SelectedRows.Count == 0)
@@ -1981,6 +1934,98 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
+        private void BtnEditIntake_Click(object sender, EventArgs e)
+        {
+            if (dgvPatients.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a patient to edit.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int patientId = Convert.ToInt32(dgvPatients.SelectedRows[0].Cells["patient_id"].Value);
+            string patientName = dgvPatients.SelectedRows[0].Cells["name"].Value.ToString();
+
+            if (!HasPatientIntakeData(patientId))
+            {
+                MessageBox.Show(
+                    "No intake data found for this patient.\n\n" +
+                    "This patient has not been added to the queue yet.\n" +
+                    "Please add them to the queue first to create intake data.",
+                    "No Data Available",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            string checkQueueQuery = @"
+        SELECT COUNT(*) 
+        FROM PatientQueue 
+        WHERE patient_id = @patientId 
+        AND queue_date = CURDATE()
+        AND status != 'Discharged'";
+
+            int queueCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkQueueQuery,
+                new MySqlParameter("@patientId", patientId)));
+
+            if (queueCount == 0)
+            {
+                MessageBox.Show(
+                    $"Patient: {patientName}\n\n" +
+                    "This patient is not currently in today's queue.\n\n" +
+                    "You can only edit intake information for patients\n" +
+                    "who are currently in the queue.",
+                    "Not in Queue",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            using (PatientIntakeForm intakeForm = new PatientIntakeForm(patientId, currentUser.UserId, viewOnly: false))
+            {
+                if (intakeForm.ShowDialog() == DialogResult.OK)
+                {
+                    LoadData();
+                    MessageBox.Show(
+                        "✓ Patient information updated successfully!",
+                        "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void BtnViewProfile_Click(object sender, EventArgs e)
+        {
+            if (dgvPatients.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a patient to view their profile.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int patientId = Convert.ToInt32(dgvPatients.SelectedRows[0].Cells["patient_id"].Value);
+            string patientName = dgvPatients.SelectedRows[0].Cells["name"].Value.ToString();
+
+            string getUserIdQuery = "SELECT user_id FROM Patients WHERE patient_id = @patientId";
+            object userIdResult = DatabaseHelper.ExecuteScalar(getUserIdQuery,
+                new MySqlParameter("@patientId", patientId));
+
+            if (userIdResult == null || userIdResult == DBNull.Value)
+            {
+                MessageBox.Show("Cannot find user record for this patient.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int userId = Convert.ToInt32(userIdResult);
+
+            using (RegisterForm viewForm = RegisterForm.CreateViewMode(userId))
+            {
+                viewForm.ShowDialog();
+            }
+        }
+
         private void BtnEditPatient_Click(object sender, EventArgs e)
         {
             if (dgvPatients.SelectedRows.Count == 0)
@@ -1991,13 +2036,220 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             int patientId = Convert.ToInt32(dgvPatients.SelectedRows[0].Cells["patient_id"].Value);
+            string patientName = dgvPatients.SelectedRows[0].Cells["name"].Value.ToString();
 
-            using (PatientIntakeForm intakeForm = new PatientIntakeForm(patientId, currentUser.UserId, viewOnly: false))
+            string getUserIdQuery = "SELECT user_id FROM Patients WHERE patient_id = @patientId";
+            object userIdResult = DatabaseHelper.ExecuteScalar(getUserIdQuery,
+                new MySqlParameter("@patientId", patientId));
+
+            if (userIdResult == null || userIdResult == DBNull.Value)
             {
-                if (intakeForm.ShowDialog() == DialogResult.OK)
+                MessageBox.Show("Cannot find user record for this patient.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int userId = Convert.ToInt32(userIdResult);
+
+            DialogResult confirm = MessageBox.Show(
+                $"Edit patient record?\n\n" +
+                $"Patient: {patientName}\n\n" +
+                "You will be able to edit:\n" +
+                "• Name\n" +
+                "• Date of Birth\n" +
+                "• Gender\n" +
+                "• Email (optional)\n" +
+                "• Profile Photo\n\n" +
+                "Continue?",
+                "Edit Patient",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (confirm == DialogResult.Yes)
+            {
+                using (RegisterForm editForm = new RegisterForm(userId))
                 {
-                    LoadData();
+                    if (editForm.ShowDialog() == DialogResult.OK)
+                    {
+                        MessageBox.Show(
+                            $"✓ Patient record updated successfully!\n\n" +
+                            $"Patient: {patientName}\n\n" +
+                            "Changes have been saved to the database.",
+                            "Update Successful",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+
+                        LoadData();
+                    }
                 }
+            }
+        }
+
+        private void BtnRemoveAllFromQueue_Click(object sender, EventArgs e)
+        {
+            if (dgvQueue.Rows.Count == 0)
+            {
+                MessageBox.Show(
+                    "The queue is already empty.",
+                    "No Patients in Queue",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            string countQuery = @"
+        SELECT COUNT(*) 
+        FROM patientqueue 
+        WHERE queue_date = CURDATE() 
+        AND status != 'Completed'";
+
+            int activePatients = Convert.ToInt32(DatabaseHelper.ExecuteScalar(countQuery));
+
+            if (activePatients == 0)
+            {
+                MessageBox.Show(
+                    "⚠️ NO ACTIVE PATIENTS TO REMOVE\n\n" +
+                    "All patients in today's queue have 'Completed' status.\n\n" +
+                    "Completed patients should be processed through:\n" +
+                    "1. Billing tab → Create/Process Bill\n" +
+                    "2. Discharge Patient button\n\n" +
+                    "This ensures proper workflow and billing records.",
+                    "Use Discharge Process",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            DialogResult confirm = MessageBox.Show(
+                $"⚠️ REMOVE ALL PATIENTS FROM QUEUE?\n\n" +
+                $"Active patients to remove: {activePatients}\n\n" +
+                "This will:\n" +
+                "✓ Remove ALL non-completed patients from today's queue\n" +
+                "✓ Clear their intake data and reason for visit\n" +
+                "✓ Unassign doctors from these patients\n" +
+                "✗ Completed patients will NOT be affected\n\n" +
+                "⚠️ THIS ACTION CANNOT BE UNDONE!\n\n" +
+                "Are you absolutely sure you want to proceed?",
+                "⚠️ CRITICAL: Confirm Remove All",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
+
+            if (confirm != DialogResult.Yes)
+            {
+                return;
+            }
+
+            DialogResult doubleConfirm = MessageBox.Show(
+                "⚠️ FINAL CONFIRMATION REQUIRED\n\n" +
+                $"You are about to remove {activePatients} patient(s) from the queue.\n\n" +
+                "This will clear all their queue data for today.\n\n" +
+                "Click YES to proceed with removal.\n" +
+                "Click NO to cancel.",
+                "⚠️ Final Confirmation",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Exclamation,
+                MessageBoxDefaultButton.Button2);
+
+            if (doubleConfirm != DialogResult.Yes)
+            {
+                MessageBox.Show(
+                    "✓ Operation cancelled.\n\n" +
+                    "No patients were removed from the queue.",
+                    "Cancelled",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                using (MySqlConnection conn = DatabaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    using (MySqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            string getPatientNames = @"
+                        SELECT u.name 
+                        FROM patientqueue q
+                        INNER JOIN Patients p ON q.patient_id = p.patient_id
+                        INNER JOIN Users u ON p.user_id = u.user_id
+                        WHERE q.queue_date = CURDATE()
+                        AND q.status != 'Completed'";
+
+                            List<string> removedPatients = new List<string>();
+                            using (MySqlCommand cmdGetNames = new MySqlCommand(getPatientNames, conn, transaction))
+                            using (MySqlDataReader reader = cmdGetNames.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    removedPatients.Add(reader["name"].ToString());
+                                }
+                            }
+
+                            string deleteQuery = @"
+                        DELETE FROM patientqueue 
+                        WHERE queue_date = CURDATE() 
+                        AND status != 'Completed'";
+
+                            using (MySqlCommand cmdDelete = new MySqlCommand(deleteQuery, conn, transaction))
+                            {
+                                int rowsAffected = cmdDelete.ExecuteNonQuery();
+
+                                if (rowsAffected > 0)
+                                {
+                                    transaction.Commit();
+
+                                    string patientList = string.Join("\n• ", removedPatients);
+
+                                    MessageBox.Show(
+                                        $"✓ QUEUE CLEARED SUCCESSFULLY\n\n" +
+                                        $"Removed {rowsAffected} patient(s):\n\n• {patientList}\n\n" +
+                                        "Actions completed:\n" +
+                                        "✓ All non-completed patients removed\n" +
+                                        "✓ Queue numbers reset\n" +
+                                        "✓ Intake data cleared\n" +
+                                        "✓ Doctor assignments cleared\n\n" +
+                                        "Completed patients remain in billing for discharge processing.",
+                                        "Queue Cleared",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information);
+
+                                    LoadData();
+                                }
+                                else
+                                {
+                                    transaction.Rollback();
+                                    MessageBox.Show(
+                                        "No patients were removed.\n\n" +
+                                        "All patients may have already been processed.",
+                                        "No Changes",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            throw new Exception($"Transaction failed: {ex.Message}", ex);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"❌ ERROR CLEARING QUEUE\n\n" +
+                    $"Error: {ex.Message}\n\n" +
+                    "The operation was rolled back.\n" +
+                    "No changes were made.\n\n" +
+                    "Please try again or contact support.",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 

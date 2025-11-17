@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -12,10 +12,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
     {
         private Timer animationTimer;
         private float currentOpacity = 0f;
-        private bool isShaking = false;
-        private int shakeOffset = 0;
-        private int shakeCount = 0;
-        private Point originalLocation;
 
         private static bool enableAdmin = true;
         private static bool enableReceptionist = true;
@@ -98,7 +94,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private void InitializeAnimations()
         {
             this.Opacity = 0;
-            originalLocation = this.Location;
 
             animationTimer = new Timer();
             animationTimer.Interval = 20;
@@ -108,11 +103,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void AnimationTimer_Tick(object sender, EventArgs e)
         {
-            if (isShaking)
-            {
-                PerformShakeAnimation();
-            }
-            else if (currentOpacity < 1.0f)
+            if (currentOpacity < 1.0f)
             {
                 currentOpacity += 0.05f;
                 this.Opacity = Math.Min(currentOpacity, 1.0f);
@@ -121,25 +112,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     animationTimer.Stop();
                 }
-            }
-        }
-
-        private void PerformShakeAnimation()
-        {
-            shakeCount++;
-            int[] shakePattern = { -10, 10, -8, 8, -5, 5, -3, 3, 0 };
-
-            if (shakeCount < shakePattern.Length)
-            {
-                shakeOffset = shakePattern[shakeCount];
-                this.Location = new Point(originalLocation.X + shakeOffset, originalLocation.Y);
-            }
-            else
-            {
-                isShaking = false;
-                shakeCount = 0;
-                this.Location = originalLocation;
-                animationTimer.Stop();
             }
         }
 
@@ -247,6 +219,107 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void ShowDebugMenu()
         {
+            Form passwordForm = new Form
+            {
+                Text = "Debug Access - Head Admin Authentication",
+                Size = new Size(450, 200),
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                BackColor = Color.FromArgb(247, 250, 252)
+            };
+
+            Label lblPasswordPrompt = new Label
+            {
+                Text = "🔒 Enter Head Admin Password:",
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(26, 32, 44),
+                Location = new Point(30, 30),
+                Size = new Size(380, 30)
+            };
+
+            TextBox txtAdminPassword = new TextBox
+            {
+                Font = new Font("Segoe UI", 11F),
+                Location = new Point(30, 70),
+                Size = new Size(380, 30),
+                PasswordChar = '●',
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            Button btnVerify = new Button
+            {
+                Text = "✓ Verify",
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                BackColor = Color.FromArgb(66, 153, 225),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Location = new Point(30, 115),
+                Size = new Size(180, 40),
+                Cursor = Cursors.Hand
+            };
+            btnVerify.FlatAppearance.BorderSize = 0;
+
+            Button btnCancelPassword = new Button
+            {
+                Text = "✕ Cancel",
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                BackColor = Color.FromArgb(108, 117, 125),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Location = new Point(230, 115),
+                Size = new Size(180, 40),
+                Cursor = Cursors.Hand
+            };
+            btnCancelPassword.FlatAppearance.BorderSize = 0;
+
+            btnVerify.Click += (s, e) =>
+            {
+                string query = "SELECT password FROM Users WHERE email = 'Headadmin@hospital.com'";
+                DataTable dt = DatabaseHelper.ExecuteQuery(query);
+
+                if (dt.Rows.Count > 0)
+                {
+                    string correctPassword = dt.Rows[0]["password"].ToString();
+
+                    if (txtAdminPassword.Text == correctPassword)
+                    {
+                        passwordForm.DialogResult = DialogResult.OK;
+                        passwordForm.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("❌ Incorrect password. Access denied.", "Authentication Failed",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        txtAdminPassword.Clear();
+                        txtAdminPassword.Focus();
+                    }
+                }
+            };
+
+            btnCancelPassword.Click += (s, e) =>
+            {
+                passwordForm.DialogResult = DialogResult.Cancel;
+                passwordForm.Close();
+            };
+
+            txtAdminPassword.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    btnVerify.PerformClick();
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                }
+            };
+
+            passwordForm.Controls.AddRange(new Control[] { lblPasswordPrompt, txtAdminPassword, btnVerify, btnCancelPassword });
+
+            if (passwordForm.ShowDialog(this) != DialogResult.OK)
+                return;
+
             Form debugForm = new Form
             {
                 Text = "Debug Dashboard Settings",
@@ -351,7 +424,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 SaveDebugSettings();
 
-                MessageBox.Show("Debug settings saved successfully!\n\nHeadadmin access is always enabled.\nSettings are stored in database and will persist even after restart.",
+                MessageBox.Show("Debug settings saved successfully!\n\nHead admin access is always enabled.\nSettings are stored in database and will persist even after restart.",
                     "Debug Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 debugForm.Close();
             };
@@ -389,7 +462,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (string.IsNullOrEmpty(txtEmail.Text) || string.IsNullOrEmpty(txtPassword.Text))
             {
                 ShowError("Please enter both email and password.");
-                TriggerShakeAnimation();
                 return;
             }
 
@@ -423,7 +495,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (!roleEnabled)
                 {
                     ShowError($"{user.Role} dashboard is currently disabled in debug mode.");
-                    TriggerShakeAnimation();
                     return;
                 }
 
@@ -434,7 +505,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     user.Role != "Pharmacist")
                 {
                     ShowError("Invalid role for login. Patients cannot login here.");
-                    TriggerShakeAnimation();
                     return;
                 }
 
@@ -443,7 +513,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             else
             {
                 ShowError("Invalid email or password.");
-                TriggerShakeAnimation();
                 ClearPasswordField();
             }
         }
@@ -509,14 +578,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 };
                 fadeIn.Start();
             }
-        }
-
-        private void TriggerShakeAnimation()
-        {
-            originalLocation = this.Location;
-            isShaking = true;
-            shakeCount = 0;
-            animationTimer.Start();
         }
 
         private void ShowError(string message)
