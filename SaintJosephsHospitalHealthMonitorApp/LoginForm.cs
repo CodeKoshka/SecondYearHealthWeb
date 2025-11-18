@@ -17,6 +17,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private static bool enableReceptionist = true;
         private static bool enableDoctor = true;
         private static bool enablePharmacist = false;
+        private static bool createDefaultHeadadmin = true;
+        private static bool createDefaultAdmin = true;
+        private static bool createDefaultReceptionist = true;
+        private static bool createDefaultPharmacist = false;
+        private static bool createDefaultDoctor = false;
+        private static bool createDefaultPatient = false;
 
         public LoginForm()
         {
@@ -28,6 +34,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void LoadDebugSettings()
         {
+            bool loadedFromDatabase = false;
+
             try
             {
                 string query = "SELECT setting_key, setting_value FROM DebugSettings";
@@ -35,6 +43,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 if (dt.Rows.Count > 0)
                 {
+                    System.Diagnostics.Debug.WriteLine("[LoginForm] Loading settings from DATABASE");
+
                     foreach (DataRow row in dt.Rows)
                     {
                         string key = row["setting_key"].ToString();
@@ -54,13 +64,68 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             case "EnablePharmacist":
                                 enablePharmacist = value;
                                 break;
+                            case "CreateDefaultHeadadmin":
+                                createDefaultHeadadmin = value;
+                                break;
+                            case "CreateDefaultAdmin":
+                                createDefaultAdmin = value;
+                                break;
+                            case "CreateDefaultReceptionist":
+                                createDefaultReceptionist = value;
+                                break;
+                            case "CreateDefaultPharmacist":
+                                createDefaultPharmacist = value;
+                                break;
+                            case "CreateDefaultDoctor":
+                                createDefaultDoctor = value;
+                                break;
+                            case "CreateDefaultPatient":
+                                createDefaultPatient = value;
+                                break;
                         }
                     }
+                    loadedFromDatabase = true;
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to load debug settings: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[LoginForm] Failed to load from database: {ex.Message}");
+            }
+
+            if (!loadedFromDatabase)
+            {
+                if (DebugConfig.JsonConfigExists())
+                {
+                    System.Diagnostics.Debug.WriteLine("[LoginForm] Loading settings from JSON FILE (database unavailable/empty)");
+                    LoadFromJsonConfig();
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("[LoginForm] Using HARDCODED DEFAULTS (no database, no JSON)");
+                }
+            }
+        }
+
+        private void LoadFromJsonConfig()
+        {
+            try
+            {
+                DebugConfig config = DebugConfig.LoadFromJson();
+
+                enableAdmin = config.EnableAdmin;
+                enableReceptionist = config.EnableReceptionist;
+                enableDoctor = config.EnableDoctor;
+                enablePharmacist = config.EnablePharmacist;
+                createDefaultHeadadmin = config.CreateDefaultHeadadmin;
+                createDefaultAdmin = config.CreateDefaultAdmin;
+                createDefaultReceptionist = config.CreateDefaultReceptionist;
+                createDefaultPharmacist = config.CreateDefaultPharmacist;
+                createDefaultDoctor = config.CreateDefaultDoctor;
+                createDefaultPatient = config.CreateDefaultPatient;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[LoginForm] Failed to load JSON config: {ex.Message}");
             }
         }
 
@@ -72,21 +137,60 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 DatabaseHelper.ExecuteNonQuery(deleteQuery);
 
                 string insertQuery = @"INSERT INTO DebugSettings (setting_key, setting_value) VALUES 
-                    ('EnableAdmin', @admin),
-                    ('EnableReceptionist', @receptionist),
-                    ('EnableDoctor', @doctor),
-                    ('EnablePharmacist', @pharmacist)";
+                ('EnableAdmin', @admin),
+                ('EnableReceptionist', @receptionist),
+                ('EnableDoctor', @doctor),
+                ('EnablePharmacist', @pharmacist),
+                ('CreateDefaultHeadadmin', @createHeadadmin),
+                ('CreateDefaultAdmin', @createAdmin),
+                ('CreateDefaultReceptionist', @createReceptionist),
+                ('CreateDefaultPharmacist', @createPharmacist),
+                ('CreateDefaultDoctor', @createDoctor),
+                ('CreateDefaultPatient', @createPatient)";
 
                 DatabaseHelper.ExecuteNonQuery(insertQuery,
                     new MySqlParameter("@admin", enableAdmin ? "1" : "0"),
                     new MySqlParameter("@receptionist", enableReceptionist ? "1" : "0"),
                     new MySqlParameter("@doctor", enableDoctor ? "1" : "0"),
-                    new MySqlParameter("@pharmacist", enablePharmacist ? "1" : "0")
+                    new MySqlParameter("@pharmacist", enablePharmacist ? "1" : "0"),
+                    new MySqlParameter("@createHeadadmin", createDefaultHeadadmin ? "1" : "0"),
+                    new MySqlParameter("@createAdmin", createDefaultAdmin ? "1" : "0"),
+                    new MySqlParameter("@createReceptionist", createDefaultReceptionist ? "1" : "0"),
+                    new MySqlParameter("@createPharmacist", createDefaultPharmacist ? "1" : "0"),
+                    new MySqlParameter("@createDoctor", createDefaultDoctor ? "1" : "0"),
+                    new MySqlParameter("@createPatient", createDefaultPatient ? "1" : "0")
                 );
+
+                System.Diagnostics.Debug.WriteLine("[LoginForm] Settings saved to DATABASE");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to save debug settings: {ex.Message}", "Warning",
+                MessageBox.Show($"Failed to save to database: {ex.Message}\n\nSettings will be saved to JSON only.",
+                    "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            try
+            {
+                DebugConfig config = new DebugConfig
+                {
+                    EnableAdmin = enableAdmin,
+                    EnableReceptionist = enableReceptionist,
+                    EnableDoctor = enableDoctor,
+                    EnablePharmacist = enablePharmacist,
+                    CreateDefaultHeadadmin = createDefaultHeadadmin,
+                    CreateDefaultAdmin = createDefaultAdmin,
+                    CreateDefaultReceptionist = createDefaultReceptionist,
+                    CreateDefaultPharmacist = createDefaultPharmacist,
+                    CreateDefaultDoctor = createDefaultDoctor,
+                    CreateDefaultPatient = createDefaultPatient
+                };
+
+                config.SaveToJson();
+                System.Diagnostics.Debug.WriteLine("[LoginForm] Settings saved to JSON FILE");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to save JSON backup: {ex.Message}", "Warning",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -323,7 +427,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             Form debugForm = new Form
             {
                 Text = "Debug Dashboard Settings",
-                Size = new Size(400, 340),
+                Size = new Size(500, 550),
                 StartPosition = FormStartPosition.CenterParent,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 MaximizeBox = false,
@@ -331,22 +435,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 BackColor = Color.FromArgb(247, 250, 252)
             };
 
-            Label lblTitle = new Label
+            TabControl tabControl = new TabControl
             {
-                Text = "Enable/Disable Dashboard Access",
-                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(26, 32, 44),
-                Location = new Point(20, 20),
-                Size = new Size(360, 30)
+                Location = new Point(10, 10),
+                Size = new Size(470, 450),
+                Font = new Font("Segoe UI", 9F)
             };
 
-            Label lblInfo = new Label
+            TabPage tabDashboard = new TabPage("Dashboard Access");
+            tabDashboard.BackColor = Color.FromArgb(247, 250, 252);
+
+            Label lblDashboardTitle = new Label
             {
-                Text = "Settings are saved in database and persist across restarts",
-                Font = new Font("Segoe UI", 8F, FontStyle.Italic),
-                ForeColor = Color.FromArgb(113, 128, 150),
-                Location = new Point(20, 50),
-                Size = new Size(360, 20)
+                Text = "Enable/Disable Dashboard Access",
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(26, 32, 44),
+                Location = new Point(15, 15),
+                Size = new Size(430, 25)
             };
 
             CheckBox chkAdmin = new CheckBox
@@ -354,8 +459,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 Text = "Admin Dashboard",
                 Checked = enableAdmin,
                 Font = new Font("Segoe UI", 10F),
-                Location = new Point(30, 80),
-                Size = new Size(340, 30),
+                Location = new Point(20, 55),
+                Size = new Size(420, 30),
                 ForeColor = Color.FromArgb(26, 32, 44)
             };
 
@@ -364,8 +469,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 Text = "Receptionist Dashboard",
                 Checked = enableReceptionist,
                 Font = new Font("Segoe UI", 10F),
-                Location = new Point(30, 120),
-                Size = new Size(340, 30),
+                Location = new Point(20, 95),
+                Size = new Size(420, 30),
                 ForeColor = Color.FromArgb(26, 32, 44)
             };
 
@@ -374,8 +479,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 Text = "Doctor Dashboard",
                 Checked = enableDoctor,
                 Font = new Font("Segoe UI", 10F),
-                Location = new Point(30, 160),
-                Size = new Size(340, 30),
+                Location = new Point(20, 135),
+                Size = new Size(420, 30),
                 ForeColor = Color.FromArgb(26, 32, 44)
             };
 
@@ -384,36 +489,220 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 Text = "Pharmacist Dashboard",
                 Checked = enablePharmacist,
                 Font = new Font("Segoe UI", 10F),
-                Location = new Point(30, 200),
-                Size = new Size(340, 30),
+                Location = new Point(20, 175),
+                Size = new Size(420, 30),
                 ForeColor = Color.FromArgb(26, 32, 44)
             };
 
+            Label lblDashboardNote = new Label
+            {
+                Text = "Head Admin access is always enabled",
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic),
+                ForeColor = Color.FromArgb(113, 128, 150),
+                Location = new Point(20, 215),
+                Size = new Size(420, 20)
+            };
+
+            tabDashboard.Controls.AddRange(new Control[] {
+                lblDashboardTitle, chkAdmin, chkReceptionist, chkDoctor, chkPharmacist, lblDashboardNote
+            });
+
+            TabPage tabDefaultUsers = new TabPage("Default Users");
+            tabDefaultUsers.BackColor = Color.FromArgb(247, 250, 252);
+
+            Label lblDefaultUsersTitle = new Label
+            {
+                Text = "Auto-Create Default Users on Startup",
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(26, 32, 44),
+                Location = new Point(15, 15),
+                Size = new Size(430, 25)
+            };
+
+            Label lblDefaultUsersInfo = new Label
+            {
+                Text = "These users will be automatically created when the database is initialized",
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic),
+                ForeColor = Color.FromArgb(113, 128, 150),
+                Location = new Point(15, 45),
+                Size = new Size(430, 20)
+            };
+
+            Label lblHeadadminTitle = new Label
+            {
+                Text = "🔒 Head Admin (Always Created - System Required)",
+                Enabled = false,
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                Location = new Point(20, 80),
+                Size = new Size(420, 30),
+                ForeColor = Color.FromArgb(220, 53, 69)
+            };
+
+            Label lblHeadadminDetails = new Label
+            {
+                Text = "Email: Headadmin@hospital.com | Password: admin123",
+                Font = new Font("Segoe UI", 8F),
+                ForeColor = Color.FromArgb(113, 128, 150),
+                Location = new Point(40, 108),
+                Size = new Size(400, 15)
+            };
+
+            CheckBox chkCreateAdmin = new CheckBox
+            {
+                Text = "Create Default Admin",
+                Checked = createDefaultAdmin,
+                Font = new Font("Segoe UI", 10F),
+                Location = new Point(20, 135),
+                Size = new Size(420, 30),
+                ForeColor = Color.FromArgb(26, 32, 44)
+            };
+
+            Label lblAdminDetails = new Label
+            {
+                Text = "Email: Admin@hospital.com | Password: admin123",
+                Font = new Font("Segoe UI", 8F),
+                ForeColor = Color.FromArgb(113, 128, 150),
+                Location = new Point(40, 163),
+                Size = new Size(400, 15)
+            };
+
+            CheckBox chkCreateReceptionist = new CheckBox
+            {
+                Text = "Create Default Receptionist",
+                Checked = createDefaultReceptionist,
+                Font = new Font("Segoe UI", 10F),
+                Location = new Point(20, 190),
+                Size = new Size(420, 30),
+                ForeColor = Color.FromArgb(26, 32, 44)
+            };
+
+            Label lblReceptionistDetails = new Label
+            {
+                Text = "Email: Receptionist@hospital.com | Password: receptionist123",
+                Font = new Font("Segoe UI", 8F),
+                ForeColor = Color.FromArgb(113, 128, 150),
+                Location = new Point(40, 218),
+                Size = new Size(400, 15)
+            };
+
+            CheckBox chkCreatePharmacist = new CheckBox
+            {
+                Text = "Create Default Pharmacist",
+                Checked = createDefaultPharmacist,
+                Font = new Font("Segoe UI", 10F),
+                Location = new Point(20, 245),
+                Size = new Size(420, 30),
+                ForeColor = Color.FromArgb(26, 32, 44)
+            };
+
+            Label lblPharmacistDetails = new Label
+            {
+                Text = "Email: Pharmacist@hospital.com | Password: pharmacist123",
+                Font = new Font("Segoe UI", 8F),
+                ForeColor = Color.FromArgb(113, 128, 150),
+                Location = new Point(40, 273),
+                Size = new Size(400, 15)
+            };
+
+            CheckBox chkCreateDoctor = new CheckBox
+            {
+                Text = "Create Default Doctor",
+                Checked = createDefaultDoctor,
+                Font = new Font("Segoe UI", 10F),
+                Location = new Point(20, 300),
+                Size = new Size(420, 30),
+                ForeColor = Color.FromArgb(26, 32, 44)
+            };
+
+            Label lblDoctorDetails = new Label
+            {
+                Text = "Email: Doctor@hospital.com | Password: doctor123",
+                Font = new Font("Segoe UI", 8F),
+                ForeColor = Color.FromArgb(113, 128, 150),
+                Location = new Point(40, 328),
+                Size = new Size(400, 15)
+            };
+
+            CheckBox chkCreatePatient = new CheckBox
+            {
+                Text = "Create Default Patient",
+                Checked = createDefaultPatient,
+                Font = new Font("Segoe UI", 10F),
+                Location = new Point(20, 355),
+                Size = new Size(420, 30),
+                ForeColor = Color.FromArgb(26, 32, 44)
+            };
+
+            Label lblPatientDetails = new Label
+            {
+                Text = "Email: Patient@hospital.com | Sample test patient",
+                Font = new Font("Segoe UI", 8F),
+                ForeColor = Color.FromArgb(113, 128, 150),
+                Location = new Point(40, 383),
+                Size = new Size(400, 15)
+            };
+
+            Label lblDefaultUsersWarning = new Label
+            {
+                Text = "⚠️ Changes take effect after database re-initialization",
+                Font = new Font("Segoe UI", 8F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(220, 53, 69),
+                Location = new Point(20, 408),
+                Size = new Size(420, 20)
+            };
+
+            tabDefaultUsers.Controls.AddRange(new Control[] {
+                lblDefaultUsersTitle, lblDefaultUsersInfo,
+                lblHeadadminTitle, lblHeadadminDetails,
+                chkCreateAdmin, lblAdminDetails,
+                chkCreateReceptionist, lblReceptionistDetails,
+                chkCreatePharmacist, lblPharmacistDetails,
+                chkCreateDoctor, lblDoctorDetails,
+                chkCreatePatient, lblPatientDetails,
+                lblDefaultUsersWarning
+            });
+
+            tabControl.TabPages.Add(tabDashboard);
+            tabControl.TabPages.Add(tabDefaultUsers);
+
             Button btnSave = new Button
             {
-                Text = "Save Settings",
+                Text = "💾 Save All Settings",
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold),
                 BackColor = Color.FromArgb(66, 153, 225),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                Location = new Point(230, 250),
-                Size = new Size(140, 35),
+                Location = new Point(320, 475),
+                Size = new Size(160, 40),
                 Cursor = Cursors.Hand
             };
             btnSave.FlatAppearance.BorderSize = 0;
 
             Button btnReset = new Button
             {
-                Text = "Reset to Default",
+                Text = "↺ Reset to Default",
                 Font = new Font("Segoe UI", 9F),
                 BackColor = Color.FromArgb(203, 213, 224),
                 ForeColor = Color.FromArgb(26, 32, 44),
                 FlatStyle = FlatStyle.Flat,
-                Location = new Point(30, 250),
-                Size = new Size(120, 35),
+                Location = new Point(155, 475),
+                Size = new Size(150, 40),
                 Cursor = Cursors.Hand
             };
             btnReset.FlatAppearance.BorderSize = 0;
+
+            Button btnClose = new Button
+            {
+                Text = "✕ Close",
+                Font = new Font("Segoe UI", 9F),
+                BackColor = Color.FromArgb(108, 117, 125),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Location = new Point(10, 475),
+                Size = new Size(130, 40),
+                Cursor = Cursors.Hand
+            };
+            btnClose.FlatAppearance.BorderSize = 0;
 
             btnSave.Click += (s, e) =>
             {
@@ -422,16 +711,31 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 enableDoctor = chkDoctor.Checked;
                 enablePharmacist = chkPharmacist.Checked;
 
+                createDefaultHeadadmin = true;
+                createDefaultAdmin = chkCreateAdmin.Checked;
+                createDefaultReceptionist = chkCreateReceptionist.Checked;
+                createDefaultPharmacist = chkCreatePharmacist.Checked;
+                createDefaultDoctor = chkCreateDoctor.Checked;
+                createDefaultPatient = chkCreatePatient.Checked;
+
                 SaveDebugSettings();
 
-                MessageBox.Show("Debug settings saved successfully!\n\nHead admin access is always enabled.\nSettings are stored in database and will persist even after restart.",
-                    "Debug Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("✓ Debug settings saved successfully!\n\n" +
+                               "Settings saved to:\n" +
+                               "• Database (DebugSettings table)\n" +
+                               "• JSON file (Config/debug_settings.json)\n\n" +
+                               "Dashboard access changes take effect immediately.\n" +
+                               "Default user creation settings will apply on next database initialization.\n\n" +
+                               "Note: Head Admin is always created (system requirement).",
+                    "Debug Settings Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 debugForm.Close();
             };
 
             btnReset.Click += (s, e) =>
             {
-                var result = MessageBox.Show("Reset all settings to default values?",
+                var result = MessageBox.Show("Reset all settings to default values?\n\n" +
+                                            "Dashboard Access: All enabled except Pharmacist\n" +
+                                            "Default Users: Head Admin (always), Admin, and Receptionist",
                     "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
@@ -440,13 +744,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     chkReceptionist.Checked = true;
                     chkDoctor.Checked = true;
                     chkPharmacist.Checked = false;
+                    chkCreateAdmin.Checked = true;
+                    chkCreateReceptionist.Checked = true;
+                    chkCreatePharmacist.Checked = false;
+                    chkCreateDoctor.Checked = false;
+                    chkCreatePatient.Checked = false;
                 }
             };
 
-            debugForm.Controls.AddRange(new Control[] {
-                lblTitle, lblInfo, chkAdmin, chkReceptionist,
-                chkDoctor, chkPharmacist, btnSave, btnReset
-            });
+            btnClose.Click += (s, e) => debugForm.Close();
+
+            debugForm.Controls.AddRange(new Control[] { tabControl, btnSave, btnReset, btnClose });
 
             debugForm.ShowDialog(this);
         }

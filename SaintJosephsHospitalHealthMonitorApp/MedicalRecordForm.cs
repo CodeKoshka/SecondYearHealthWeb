@@ -33,6 +33,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             LoadPatientInfo();
             LoadPreviousRecordsCount();
             LoadIntakeData(qId);
+            SetupEventHandlers();
         }
 
         public MedicalRecordForm(int pId, int dId, string pName)
@@ -47,6 +48,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             lblDate.Text = $"Date: {DateTime.Now:MM/dd/yy}";
             LoadPatientInfo();
             LoadPreviousRecordsCount();
+            SetupEventHandlers();
         }
 
         public static MedicalRecordForm CreateViewMode(int rId, int userId, string userRole)
@@ -64,6 +66,100 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             ConfigureForViewMode();
             LoadExistingMedicalRecord();
+        }
+
+        private void SetupEventHandlers()
+        {
+            txtMedications.Enter += TxtMedications_Enter;
+            txtMedications.Leave += TxtMedications_Leave;
+
+            chkNoMedication.CheckedChanged += ChkNoMedication_CheckedChanged;
+
+            chkNoKnownAllergies.CheckedChanged += ChkNoKnownAllergies_CheckedChanged;
+            chkLatexAllergy.CheckedChanged += AllergyCheckBox_CheckedChanged;
+            chkIodineAllergy.CheckedChanged += AllergyCheckBox_CheckedChanged;
+            chkBromineAllergy.CheckedChanged += AllergyCheckBox_CheckedChanged;
+            txtOtherAllergies.TextChanged += TxtOtherAllergies_TextChanged;
+        }
+
+        private void TxtMedications_Enter(object sender, EventArgs e)
+        {
+            if (txtMedications.Text == "Enter medications, one per line:\nExample: Aspirin 81mg - Blood thinner\nLisinopril 10mg - Blood pressure")
+            {
+                txtMedications.Text = "";
+                txtMedications.ForeColor = Color.Black;
+            }
+        }
+
+        private void TxtMedications_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtMedications.Text))
+            {
+                txtMedications.Text = "Enter medications, one per line:\nExample: Aspirin 81mg - Blood thinner\nLisinopril 10mg - Blood pressure";
+                txtMedications.ForeColor = Color.Gray;
+            }
+        }
+
+        private void ChkNoMedication_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkNoMedication.Checked)
+            {
+                txtMedications.Enabled = false;
+                txtMedications.Text = "";
+                txtMedications.BackColor = Color.FromArgb(240, 240, 240);
+            }
+            else
+            {
+                txtMedications.Enabled = true;
+                txtMedications.BackColor = Color.White;
+                if (string.IsNullOrWhiteSpace(txtMedications.Text))
+                {
+                    txtMedications.Text = "Enter medications, one per line:\nExample: Aspirin 81mg - Blood thinner\nLisinopril 10mg - Blood pressure";
+                    txtMedications.ForeColor = Color.Gray;
+                }
+            }
+        }
+
+        private void ChkNoKnownAllergies_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkNoKnownAllergies.Checked)
+            {
+                chkLatexAllergy.Checked = false;
+                chkIodineAllergy.Checked = false;
+                chkBromineAllergy.Checked = false;
+
+                chkLatexAllergy.Enabled = false;
+                chkIodineAllergy.Enabled = false;
+                chkBromineAllergy.Enabled = false;
+                txtOtherAllergies.Enabled = false;
+                txtOtherAllergies.Text = "";
+                txtOtherAllergies.BackColor = Color.FromArgb(240, 240, 240);
+            }
+            else
+            {
+                chkLatexAllergy.Enabled = true;
+                chkIodineAllergy.Enabled = true;
+                chkBromineAllergy.Enabled = true;
+                txtOtherAllergies.Enabled = true;
+                txtOtherAllergies.BackColor = Color.White;
+            }
+        }
+
+        private void AllergyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if ((chkLatexAllergy.Checked || chkIodineAllergy.Checked || chkBromineAllergy.Checked) &&
+                chkNoKnownAllergies.Checked)
+            {
+                chkNoKnownAllergies.Checked = false;
+            }
+        }
+
+        private void TxtOtherAllergies_TextChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtOtherAllergies.Text) && chkNoKnownAllergies.Checked)
+            {
+                chkNoKnownAllergies.Checked = false;
+            }
         }
 
         private void OptimizeFormSize()
@@ -152,7 +248,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 txtSurgeryDetails.Height = 50;
 
             if (txtMedications != null)
+            {
                 txtMedications.Height = 80;
+                txtMedications.Text = "Enter medications, one per line:\nExample: Aspirin 81mg - Blood thinner\nLisinopril 10mg - Blood pressure";
+                txtMedications.ForeColor = Color.Gray;
+            }
 
             if (txtAdditionalComments != null)
                 txtAdditionalComments.Height = 75;
@@ -625,6 +725,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (medsText.Length > 0)
                 {
                     txtMedications.Text = medsText.ToString().Trim();
+                    txtMedications.ForeColor = Color.Black;
                 }
             }
         }
@@ -835,7 +936,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            if (!chkNoMedication.Checked && string.IsNullOrWhiteSpace(txtMedications.Text))
+            bool hasMedicationText = !string.IsNullOrWhiteSpace(txtMedications.Text) &&
+                                    txtMedications.Text != "Enter medications, one per line:\nExample: Aspirin 81mg - Blood thinner\nLisinopril 10mg - Blood pressure";
+
+            if (!chkNoMedication.Checked && !hasMedicationText)
             {
                 MessageBox.Show(
                     "Please either:\n" +
@@ -845,6 +949,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
                 txtMedications.Focus();
+                return;
+            }
+
+            bool hasAllergyCheckbox = chkLatexAllergy.Checked || chkIodineAllergy.Checked || chkBromineAllergy.Checked;
+            bool hasOtherAllergy = !string.IsNullOrWhiteSpace(txtOtherAllergies.Text);
+
+            if (!chkNoKnownAllergies.Checked && !hasAllergyCheckbox && !hasOtherAllergy)
+            {
+                MessageBox.Show(
+                    "Please either:\n" +
+                    "• Check 'No Known Allergies', OR\n" +
+                    "• Select specific allergies (Latex, Iodine, Bromine), OR\n" +
+                    "• Enter other allergies in the text field",
+                    "Allergy Information Required",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                chkNoKnownAllergies.Focus();
                 return;
             }
 
@@ -1035,14 +1156,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 record.AppendLine("  ☑ No Medication");
             }
-            else if (!string.IsNullOrWhiteSpace(txtMedications.Text))
+            else
             {
-                var medicationLines = txtMedications.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var line in medicationLines)
+                string medicationsText = txtMedications.Text;
+                if (medicationsText != "Enter medications, one per line:\nExample: Aspirin 81mg - Blood thinner\nLisinopril 10mg - Blood pressure" &&
+                    !string.IsNullOrWhiteSpace(medicationsText))
                 {
-                    if (!string.IsNullOrWhiteSpace(line))
+                    var medicationLines = medicationsText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var line in medicationLines)
                     {
-                        record.AppendLine($"  • {line.Trim()}");
+                        if (!string.IsNullOrWhiteSpace(line))
+                        {
+                            record.AppendLine($"  • {line.Trim()}");
+                        }
                     }
                 }
             }
@@ -1083,12 +1209,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             StringBuilder rx = new StringBuilder();
 
-            if (chkNoMedication.Checked || string.IsNullOrWhiteSpace(txtMedications.Text))
+            string medicationsText = txtMedications.Text;
+            bool isPlaceholder = medicationsText == "Enter medications, one per line:\nExample: Aspirin 81mg - Blood thinner\nLisinopril 10mg - Blood pressure";
+
+            if (chkNoMedication.Checked || string.IsNullOrWhiteSpace(medicationsText) || isPlaceholder)
             {
                 return "No medications prescribed.";
             }
 
-            var medicationLines = txtMedications.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var medicationLines = medicationsText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             int count = 1;
             foreach (var line in medicationLines)
             {

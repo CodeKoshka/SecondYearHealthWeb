@@ -469,6 +469,62 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
+
+
+        private static bool IsDefaultUserEnabled(MySqlConnection conn, string userType)
+        {
+            try
+            {
+                string query = "SELECT setting_value FROM DebugSettings WHERE setting_key = @key";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@key", $"CreateDefault{userType}");
+                    object result = cmd.ExecuteScalar();
+
+                    if (result != null)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Loading CreateDefault{userType} from DATABASE");
+                        return result.ToString() == "1";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Database read failed for {userType}: {ex.Message}");
+            }
+
+            try
+            {
+                if (DebugConfig.JsonConfigExists())
+                {
+                    System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Loading CreateDefault{userType} from JSON FILE");
+                    DebugConfig config = DebugConfig.LoadFromJson();
+
+                    switch (userType)
+                    {
+                        case "Headadmin":
+                            return config.CreateDefaultHeadadmin;
+                        case "Admin":
+                            return config.CreateDefaultAdmin;
+                        case "Receptionist":
+                            return config.CreateDefaultReceptionist;
+                        case "Pharmacist":
+                            return config.CreateDefaultPharmacist;
+                        case "Doctor":
+                            return config.CreateDefaultDoctor;
+                        case "Patient":
+                            return config.CreateDefaultPatient;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] JSON read failed for {userType}: {ex.Message}");
+            }
+            System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Using HARDCODED DEFAULT for CreateDefault{userType}");
+            return userType == "Headadmin" || userType == "Admin" || userType == "Receptionist";
+        }
+
         private static byte[] LoadDefaultProfileImage()
         {
             try
@@ -509,114 +565,241 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             byte[] defaultImage = LoadDefaultProfileImage();
 
-            string checkHeadadmin = "SELECT COUNT(*) FROM Users WHERE email = 'Headadmin@hospital.com'";
-            object adminResult = ExecuteScalarInternal(conn, checkHeadadmin);
-            long HeadadminExists = Convert.ToInt64(adminResult);
-
-            if (HeadadminExists == 0)
+            if (IsDefaultUserEnabled(conn, "Headadmin"))
             {
-                DateTime headAdminDob = new DateTime(1995, 1, 1);
-                int headAdminAge = DateTime.Today.Year - headAdminDob.Year;
-                if (headAdminDob.Date > DateTime.Today.AddYears(-headAdminAge))
-                    headAdminAge--;
+                string checkHeadadmin = "SELECT COUNT(*) FROM Users WHERE email = 'Headadmin@hospital.com'";
+                object adminResult = ExecuteScalarInternal(conn, checkHeadadmin);
+                long HeadadminExists = Convert.ToInt64(adminResult);
 
-                string insertHeadadmin = @"
-        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-        VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', @dob, @age, 'Other', NULL, @profileImage)";
-
-                using (MySqlCommand cmd = new MySqlCommand(insertHeadadmin, conn))
+                if (HeadadminExists == 0)
                 {
-                    cmd.Parameters.AddWithValue("@dob", headAdminDob);
-                    cmd.Parameters.AddWithValue("@age", headAdminAge);
+                    DateTime headAdminDob = new DateTime(1995, 1, 1);
+                    int headAdminAge = DateTime.Today.Year - headAdminDob.Year;
+                    if (headAdminDob.Date > DateTime.Today.AddYears(-headAdminAge))
+                        headAdminAge--;
 
-                    if (defaultImage != null)
-                        cmd.Parameters.AddWithValue("@profileImage", defaultImage);
-                    else
-                        cmd.Parameters.AddWithValue("@profileImage", DBNull.Value);
+                    string insertHeadadmin = @"
+            INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+            VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', @dob, @age, 'Other', NULL, @profileImage)";
 
-                    cmd.ExecuteNonQuery();
+                    using (MySqlCommand cmd = new MySqlCommand(insertHeadadmin, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@dob", headAdminDob);
+                        cmd.Parameters.AddWithValue("@age", headAdminAge);
+
+                        if (defaultImage != null)
+                            cmd.Parameters.AddWithValue("@profileImage", defaultImage);
+                        else
+                            cmd.Parameters.AddWithValue("@profileImage", DBNull.Value);
+
+                        cmd.ExecuteNonQuery();
+                    }
                 }
             }
 
-            string checkReceptionist = "SELECT COUNT(*) FROM Users WHERE email = 'Receptionist@hospital.com'";
-            object receptionistResult = ExecuteScalarInternal(conn, checkReceptionist);
-            long receptionistExists = Convert.ToInt64(receptionistResult);
-
-            if (receptionistExists == 0)
+            if (IsDefaultUserEnabled(conn, "Receptionist"))
             {
-                string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com'";
-                object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
-                long adminId = Convert.ToInt64(adminIdResult);
+                string checkReceptionist = "SELECT COUNT(*) FROM Users WHERE email = 'Receptionist@hospital.com'";
+                object receptionistResult = ExecuteScalarInternal(conn, checkReceptionist);
+                long receptionistExists = Convert.ToInt64(receptionistResult);
 
-                DateTime receptionistDob = new DateTime(1997, 5, 15);
-                int receptionistAge = DateTime.Today.Year - receptionistDob.Year;
-                if (receptionistDob.Date > DateTime.Today.AddYears(-receptionistAge))
-                    receptionistAge--;
-
-                string insertreceptionist = @"
-        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-        VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', @dob, @age, 'Female', @createdBy, @profileImage)";
-
-                using (MySqlCommand cmdReceptionist = new MySqlCommand(insertreceptionist, conn))
+                if (receptionistExists == 0)
                 {
-                    cmdReceptionist.Parameters.AddWithValue("@dob", receptionistDob);
-                    cmdReceptionist.Parameters.AddWithValue("@age", receptionistAge);
-                    cmdReceptionist.Parameters.AddWithValue("@createdBy", adminId);
+                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
+                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
 
-                    if (defaultImage != null)
-                        cmdReceptionist.Parameters.AddWithValue("@profileImage", defaultImage);
-                    else
-                        cmdReceptionist.Parameters.AddWithValue("@profileImage", DBNull.Value);
+                    if (adminIdResult != null && adminIdResult != DBNull.Value)
+                    {
+                        long adminId = Convert.ToInt64(adminIdResult);
 
-                    cmdReceptionist.ExecuteNonQuery();
+                        DateTime receptionistDob = new DateTime(1997, 5, 15);
+                        int receptionistAge = DateTime.Today.Year - receptionistDob.Year;
+                        if (receptionistDob.Date > DateTime.Today.AddYears(-receptionistAge))
+                            receptionistAge--;
+
+                        string insertreceptionist = @"
+                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', @dob, @age, 'Female', @createdBy, @profileImage)";
+
+                        using (MySqlCommand cmdReceptionist = new MySqlCommand(insertreceptionist, conn))
+                        {
+                            cmdReceptionist.Parameters.AddWithValue("@dob", receptionistDob);
+                            cmdReceptionist.Parameters.AddWithValue("@age", receptionistAge);
+                            cmdReceptionist.Parameters.AddWithValue("@createdBy", adminId);
+
+                            if (defaultImage != null)
+                                cmdReceptionist.Parameters.AddWithValue("@profileImage", defaultImage);
+                            else
+                                cmdReceptionist.Parameters.AddWithValue("@profileImage", DBNull.Value);
+
+                            cmdReceptionist.ExecuteNonQuery();
+                        }
+                    }
                 }
             }
 
-            string checkPharmacist = "SELECT COUNT(*) FROM Users WHERE email = 'Pharmacist@hospital.com'";
-            object pharmacistResult = ExecuteScalarInternal(conn, checkPharmacist);
-            long pharmacistExists = Convert.ToInt64(pharmacistResult);
-
-            if (pharmacistExists == 0)
+            if (IsDefaultUserEnabled(conn, "Pharmacist"))
             {
-                string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com'";
-                object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
-                long adminId = Convert.ToInt64(adminIdResult);
+                string checkPharmacist = "SELECT COUNT(*) FROM Users WHERE email = 'Pharmacist@hospital.com'";
+                object pharmacistResult = ExecuteScalarInternal(conn, checkPharmacist);
+                long pharmacistExists = Convert.ToInt64(pharmacistResult);
 
-                DateTime pharmacistDob = new DateTime(1995, 3, 20);
-                int pharmacistAge = DateTime.Today.Year - pharmacistDob.Year;
-                if (pharmacistDob.Date > DateTime.Today.AddYears(-pharmacistAge))
-                    pharmacistAge--;
-
-                string insertPharmacist = @"
-        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-        VALUES ('Pharmacist', 'Pharmacist', 'Pharmacist@hospital.com', 'pharmacist123', @dob, @age, 'Other', @createdBy, @profileImage)";
-
-                using (MySqlCommand cmdPharmacist = new MySqlCommand(insertPharmacist, conn))
+                if (pharmacistExists == 0)
                 {
-                    cmdPharmacist.Parameters.AddWithValue("@dob", pharmacistDob);
-                    cmdPharmacist.Parameters.AddWithValue("@age", pharmacistAge);
-                    cmdPharmacist.Parameters.AddWithValue("@createdBy", adminId);
+                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
+                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
 
-                    if (defaultImage != null)
-                        cmdPharmacist.Parameters.AddWithValue("@profileImage", defaultImage);
-                    else
-                        cmdPharmacist.Parameters.AddWithValue("@profileImage", DBNull.Value);
+                    if (adminIdResult != null && adminIdResult != DBNull.Value)
+                    {
+                        long adminId = Convert.ToInt64(adminIdResult);
 
-                    cmdPharmacist.ExecuteNonQuery();
+                        DateTime pharmacistDob = new DateTime(1995, 3, 20);
+                        int pharmacistAge = DateTime.Today.Year - pharmacistDob.Year;
+                        if (pharmacistDob.Date > DateTime.Today.AddYears(-pharmacistAge))
+                            pharmacistAge--;
+
+                        string insertPharmacist = @"
+                        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                        VALUES ('Pharmacist', 'Pharmacist', 'Pharmacist@hospital.com', 'pharmacist123', @dob, @age, 'Other', @createdBy, @profileImage)";
+
+                        using (MySqlCommand cmdPharmacist = new MySqlCommand(insertPharmacist, conn))
+                        {
+                            cmdPharmacist.Parameters.AddWithValue("@dob", pharmacistDob);
+                            cmdPharmacist.Parameters.AddWithValue("@age", pharmacistAge);
+                            cmdPharmacist.Parameters.AddWithValue("@createdBy", adminId);
+
+                            if (defaultImage != null)
+                                cmdPharmacist.Parameters.AddWithValue("@profileImage", defaultImage);
+                            else
+                                cmdPharmacist.Parameters.AddWithValue("@profileImage", DBNull.Value);
+
+                            cmdPharmacist.ExecuteNonQuery();
+                        }
+
+                        string getPharmacistId = "SELECT user_id FROM Users WHERE email = 'Pharmacist@hospital.com'";
+                        object pharmacistIdResult = ExecuteScalarInternal(conn, getPharmacistId);
+                        long pharmacistId = Convert.ToInt64(pharmacistIdResult);
+
+                        string insertPharmacistStaff = @"
+                        INSERT INTO Staff (user_id, position, department)
+                        VALUES (@userId, 'Pharmacist', 'Pharmacy')";
+
+                        using (MySqlCommand cmdPharmacistStaff = new MySqlCommand(insertPharmacistStaff, conn))
+                        {
+                            cmdPharmacistStaff.Parameters.AddWithValue("@userId", pharmacistId);
+                            cmdPharmacistStaff.ExecuteNonQuery();
+                        }
+                    }
                 }
+            }
 
-                string getPharmacistId = "SELECT user_id FROM Users WHERE email = 'Pharmacist@hospital.com'";
-                object pharmacistIdResult = ExecuteScalarInternal(conn, getPharmacistId);
-                long pharmacistId = Convert.ToInt64(pharmacistIdResult);
+            if (IsDefaultUserEnabled(conn, "Doctor"))
+            {
+                string checkDoctor = "SELECT COUNT(*) FROM Users WHERE email = 'Doctor@hospital.com'";
+                object doctorResult = ExecuteScalarInternal(conn, checkDoctor);
+                long doctorExists = Convert.ToInt64(doctorResult);
 
-                string insertPharmacistStaff = @"
-        INSERT INTO Staff (user_id, position, department)
-        VALUES (@userId, 'Pharmacist', 'Pharmacy')";
-
-                using (MySqlCommand cmdPharmacistStaff = new MySqlCommand(insertPharmacistStaff, conn))
+                if (doctorExists == 0)
                 {
-                    cmdPharmacistStaff.Parameters.AddWithValue("@userId", pharmacistId);
-                    cmdPharmacistStaff.ExecuteNonQuery();
+                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
+                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
+
+                    if (adminIdResult != null && adminIdResult != DBNull.Value)
+                    {
+                        long adminId = Convert.ToInt64(adminIdResult);
+
+                        DateTime doctorDob = new DateTime(1985, 8, 10);
+                        int doctorAge = DateTime.Today.Year - doctorDob.Year;
+                        if (doctorDob.Date > DateTime.Today.AddYears(-doctorAge))
+                            doctorAge--;
+
+                        string insertDoctor = @"
+                        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                        VALUES ('Dr. Sample Doctor', 'Doctor', 'Doctor@hospital.com', 'doctor123', @dob, @age, 'Male', @createdBy, @profileImage)";
+
+                        using (MySqlCommand cmdDoctor = new MySqlCommand(insertDoctor, conn))
+                        {
+                            cmdDoctor.Parameters.AddWithValue("@dob", doctorDob);
+                            cmdDoctor.Parameters.AddWithValue("@age", doctorAge);
+                            cmdDoctor.Parameters.AddWithValue("@createdBy", adminId);
+
+                            if (defaultImage != null)
+                                cmdDoctor.Parameters.AddWithValue("@profileImage", defaultImage);
+                            else
+                                cmdDoctor.Parameters.AddWithValue("@profileImage", DBNull.Value);
+
+                            cmdDoctor.ExecuteNonQuery();
+                        }
+
+                        string getDoctorId = "SELECT user_id FROM Users WHERE email = 'Doctor@hospital.com'";
+                        object doctorIdResult = ExecuteScalarInternal(conn, getDoctorId);
+                        long doctorId = Convert.ToInt64(doctorIdResult);
+
+                        string insertDoctorRecord = @"
+                        INSERT INTO Doctors (user_id, specialization, is_available)
+                        VALUES (@userId, 'Clinical Cardiologist', 1)";
+
+                        using (MySqlCommand cmdDoctorRecord = new MySqlCommand(insertDoctorRecord, conn))
+                        {
+                            cmdDoctorRecord.Parameters.AddWithValue("@userId", doctorId);
+                            cmdDoctorRecord.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+
+            if (IsDefaultUserEnabled(conn, "Patient"))
+            {
+                string checkPatient = "SELECT COUNT(*) FROM Users WHERE email = 'Patient@hospital.com'";
+                object patientResult = ExecuteScalarInternal(conn, checkPatient);
+                long patientExists = Convert.ToInt64(patientResult);
+
+                if (patientExists == 0)
+                {
+                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
+                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
+
+                    if (adminIdResult != null && adminIdResult != DBNull.Value)
+                    {
+                        long adminId = Convert.ToInt64(adminIdResult);
+
+                        DateTime patientDob = new DateTime(1990, 12, 25);
+                        int patientAge = DateTime.Today.Year - patientDob.Year;
+                        if (patientDob.Date > DateTime.Today.AddYears(-patientAge))
+                            patientAge--;
+
+                        string insertPatient = @"
+                        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                        VALUES ('Sample Patient', 'Patient', 'Patient@hospital.com', 'PATIENT_NO_LOGIN', @dob, @age, 'Female', @createdBy, @profileImage)";
+
+                        using (MySqlCommand cmdPatient = new MySqlCommand(insertPatient, conn))
+                        {
+                            cmdPatient.Parameters.AddWithValue("@dob", patientDob);
+                            cmdPatient.Parameters.AddWithValue("@age", patientAge);
+                            cmdPatient.Parameters.AddWithValue("@createdBy", adminId);
+
+                            if (defaultImage != null)
+                                cmdPatient.Parameters.AddWithValue("@profileImage", defaultImage);
+                            else
+                                cmdPatient.Parameters.AddWithValue("@profileImage", DBNull.Value);
+
+                            cmdPatient.ExecuteNonQuery();
+                        }
+
+                        string getPatientUserId = "SELECT user_id FROM Users WHERE email = 'Patient@hospital.com'";
+                        object patientUserIdResult = ExecuteScalarInternal(conn, getPatientUserId);
+                        long patientUserId = Convert.ToInt64(patientUserIdResult);
+
+                        string insertPatientRecord = @"
+                        INSERT INTO Patients (user_id, blood_type, medical_history)
+                        VALUES (@userId, 'O+', 'Sample patient for testing')";
+
+                        using (MySqlCommand cmdPatientRecord = new MySqlCommand(insertPatientRecord, conn))
+                        {
+                            cmdPatientRecord.Parameters.AddWithValue("@userId", patientUserId);
+                            cmdPatientRecord.ExecuteNonQuery();
+                        }
+                    }
                 }
             }
         }
@@ -630,12 +813,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (settingsCount == 0)
             {
                 string insertDefaults = @"
-            INSERT INTO DebugSettings (setting_key, setting_value) VALUES 
-            ('EnableHeadadmin', '1'),
-            ('EnableAdmin', '1'),
-            ('EnableReceptionist', '1'),
-            ('EnableDoctor', '1'),
-            ('EnablePharmacist', '0')";
+                INSERT INTO DebugSettings (setting_key, setting_value) VALUES 
+                ('EnableHeadadmin', '1'),
+                ('EnableAdmin', '1'),
+                ('EnableReceptionist', '1'),
+                ('EnableDoctor', '1'),
+                ('EnablePharmacist', '0'),
+                ('CreateDefaultHeadadmin', '1'),
+                ('CreateDefaultReceptionist', '1'),
+                ('CreateDefaultPharmacist', '0'),
+                ('CreateDefaultDoctor', '0'),
+                ('CreateDefaultPatient', '0')";
 
                 ExecuteNonQueryInternal(conn, insertDefaults);
             }
@@ -751,6 +939,4 @@ known issues / (tinatamad pang ayusin) by lead programmer ramilo
 final notes by lead programmer
 di po pwede gumamit ng sql express naging corrupted download ng sql saka localdb no choice 
 xampp po kaylangan naming gamitin instead saka mas madaling install
-
-
 */

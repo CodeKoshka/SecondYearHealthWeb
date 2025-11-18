@@ -19,6 +19,9 @@
     <Compile Update="DoctorDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="PaymentProcessingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,9 +74,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="ReceptionistDashboard.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

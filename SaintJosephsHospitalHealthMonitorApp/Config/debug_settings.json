@@ -1,0 +1,12 @@
+{
+  "EnableAdmin": true,
+  "EnableReceptionist": true,
+  "EnableDoctor": true,
+  "EnablePharmacist": false,
+  "CreateDefaultHeadadmin": true,
+  "CreateDefaultAdmin": true,
+  "CreateDefaultReceptionist": true,
+  "CreateDefaultPharmacist": false,
+  "CreateDefaultDoctor": false,
+  "CreateDefaultPatient": false
+}
