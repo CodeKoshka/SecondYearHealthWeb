@@ -44,7 +44,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 lblStatusValue.Text = currentStatus;
                 lblTotalAmountValue.Text = $"₱{totalAmount:N2}";
 
-                // Set status indicator color
                 switch (currentStatus.ToUpper())
                 {
                     case "PENDING":
@@ -61,10 +60,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         break;
                 }
 
-                // Load detailed bill breakdown
                 LoadBillBreakdown();
 
-                // Set initial payment amount
                 if (currentStatus.ToUpper() == "PARTIALLY PAID")
                 {
                     decimal amountPaid = GetAmountAlreadyPaid();
@@ -132,8 +129,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         panelBillNotes.Visible = false;
                     }
                 }
-
-                // Load service items
                 LoadServiceItems();
             }
             catch (Exception ex)
@@ -352,7 +347,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 string newStatus = isPartialPayment ? "Partially Paid" : "Paid";
                 decimal amountPaid = GetAmountAlreadyPaid() + paymentAmount;
 
-                // Update billing status
                 string updateBillingQuery = @"
                     UPDATE Billing 
                     SET status = @status,
@@ -364,7 +358,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     new MySqlParameter("@paymentMethod", paymentMethod),
                     new MySqlParameter("@billId", billId));
 
-                // Record payment transaction
                 string insertTransactionQuery = @"
                     INSERT INTO PaymentTransactions 
                     (bill_id, patient_id, amount_paid, payment_method, reference_number, 

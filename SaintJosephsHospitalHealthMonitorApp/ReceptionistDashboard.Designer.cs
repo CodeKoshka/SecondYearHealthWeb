@@ -83,12 +83,15 @@
             tabPatients = new TabPage();
             dgvPatients = new DataGridView();
             panelPatientButtons = new Panel();
+            btnEditPatient = new Button();
+            BtnViewProfile = new Button();
             btnViewPatient = new Button();
             BtnEditIntake = new Button();
             btnCheckMedicalHistory = new Button();
             tabBilling = new TabPage();
             dgvBilling = new DataGridView();
             panelBillingButtons = new Panel();
+            BtnCancelBill = new Button();
             btnViewBill = new Button();
             btnUpdateBill = new Button();
             btnProcessPayment = new Button();
@@ -103,8 +106,6 @@
             btnClearUniversalSearch = new Button();
             txtUniversalSearch = new TextBox();
             lblHospitalName = new Label();
-            BtnViewProfile = new Button();
-            btnEditPatient = new Button();
             panelSidebar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).BeginInit();
             panelMainContent.SuspendLayout();
@@ -459,6 +460,39 @@
             panelPatientButtons.Size = new Size(1156, 80);
             panelPatientButtons.TabIndex = 1;
             // 
+            // btnEditPatient
+            // 
+            btnEditPatient.BackColor = Color.FromArgb(255, 152, 0);
+            btnEditPatient.Cursor = Cursors.Hand;
+            btnEditPatient.FlatAppearance.BorderSize = 0;
+            btnEditPatient.FlatAppearance.MouseOverBackColor = Color.FromArgb(245, 124, 0);
+            btnEditPatient.FlatStyle = FlatStyle.Flat;
+            btnEditPatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnEditPatient.ForeColor = Color.White;
+            btnEditPatient.Location = new Point(199, 18);
+            btnEditPatient.Name = "btnEditPatient";
+            btnEditPatient.Size = new Size(170, 45);
+            btnEditPatient.TabIndex = 4;
+            btnEditPatient.Text = "✏ Edit Profile";
+            btnEditPatient.UseVisualStyleBackColor = false;
+            btnEditPatient.Click += BtnEditPatient_Click;
+            // 
+            // BtnViewProfile
+            // 
+            BtnViewProfile.BackColor = Color.FromArgb(52, 152, 219);
+            BtnViewProfile.Cursor = Cursors.Hand;
+            BtnViewProfile.FlatAppearance.BorderSize = 0;
+            BtnViewProfile.FlatAppearance.MouseOverBackColor = Color.FromArgb(41, 128, 185);
+            BtnViewProfile.FlatStyle = FlatStyle.Flat;
+            BtnViewProfile.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            BtnViewProfile.ForeColor = Color.White;
+            BtnViewProfile.Location = new Point(23, 18);
+            BtnViewProfile.Name = "BtnViewProfile";
+            BtnViewProfile.Size = new Size(170, 45);
+            BtnViewProfile.TabIndex = 3;
+            BtnViewProfile.Text = "👁 View Profile";
+            BtnViewProfile.UseVisualStyleBackColor = false;
+            // 
             // btnViewPatient
             // 
             btnViewPatient.BackColor = Color.FromArgb(52, 152, 219);
@@ -541,6 +575,7 @@
             // panelBillingButtons
             // 
             panelBillingButtons.BackColor = Color.White;
+            panelBillingButtons.Controls.Add(BtnCancelBill);
             panelBillingButtons.Controls.Add(btnViewBill);
             panelBillingButtons.Controls.Add(btnUpdateBill);
             panelBillingButtons.Controls.Add(btnProcessPayment);
@@ -554,6 +589,23 @@
             panelBillingButtons.Size = new Size(1156, 80);
             panelBillingButtons.TabIndex = 1;
             // 
+            // BtnCancelBill
+            // 
+            BtnCancelBill.BackColor = Color.FromArgb(220, 53, 69);
+            BtnCancelBill.Cursor = Cursors.Hand;
+            BtnCancelBill.FlatAppearance.BorderSize = 0;
+            BtnCancelBill.FlatAppearance.MouseOverBackColor = Color.FromArgb(200, 35, 51);
+            BtnCancelBill.FlatStyle = FlatStyle.Flat;
+            BtnCancelBill.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            BtnCancelBill.ForeColor = Color.White;
+            BtnCancelBill.Location = new Point(637, 18);
+            BtnCancelBill.Name = "BtnCancelBill";
+            BtnCancelBill.Size = new Size(130, 45);
+            BtnCancelBill.TabIndex = 6;
+            BtnCancelBill.Text = "🗑️ Cancel Bill";
+            BtnCancelBill.UseVisualStyleBackColor = false;
+            BtnCancelBill.Click += BtnCancelBill_Click;
+            // 
             // btnViewBill
             // 
             btnViewBill.BackColor = Color.FromArgb(149, 165, 166);
@@ -563,9 +615,9 @@
             btnViewBill.FlatStyle = FlatStyle.Flat;
             btnViewBill.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnViewBill.ForeColor = Color.White;
-            btnViewBill.Location = new Point(541, 18);
+            btnViewBill.Location = new Point(501, 18);
             btnViewBill.Name = "btnViewBill";
-            btnViewBill.Size = new Size(150, 45);
+            btnViewBill.Size = new Size(130, 45);
             btnViewBill.TabIndex = 0;
             btnViewBill.Text = "👁️ View Bill";
             btnViewBill.UseVisualStyleBackColor = false;
@@ -580,9 +632,9 @@
             btnUpdateBill.FlatStyle = FlatStyle.Flat;
             btnUpdateBill.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnUpdateBill.ForeColor = Color.White;
-            btnUpdateBill.Location = new Point(385, 18);
+            btnUpdateBill.Location = new Point(365, 18);
             btnUpdateBill.Name = "btnUpdateBill";
-            btnUpdateBill.Size = new Size(150, 45);
+            btnUpdateBill.Size = new Size(130, 45);
             btnUpdateBill.TabIndex = 1;
             btnUpdateBill.Text = "✏️ Update Bill";
             btnUpdateBill.UseVisualStyleBackColor = false;
@@ -597,9 +649,9 @@
             btnProcessPayment.FlatStyle = FlatStyle.Flat;
             btnProcessPayment.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnProcessPayment.ForeColor = Color.White;
-            btnProcessPayment.Location = new Point(700, 18);
+            btnProcessPayment.Location = new Point(773, 18);
             btnProcessPayment.Name = "btnProcessPayment";
-            btnProcessPayment.Size = new Size(170, 45);
+            btnProcessPayment.Size = new Size(160, 45);
             btnProcessPayment.TabIndex = 2;
             btnProcessPayment.Text = "💳 Process Payment";
             btnProcessPayment.UseVisualStyleBackColor = false;
@@ -614,9 +666,9 @@
             btnDischargePatient.FlatStyle = FlatStyle.Flat;
             btnDischargePatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnDischargePatient.ForeColor = Color.White;
-            btnDischargePatient.Location = new Point(876, 18);
+            btnDischargePatient.Location = new Point(939, 18);
             btnDischargePatient.Name = "btnDischargePatient";
-            btnDischargePatient.Size = new Size(170, 45);
+            btnDischargePatient.Size = new Size(200, 45);
             btnDischargePatient.TabIndex = 3;
             btnDischargePatient.Text = "🚪 Discharge Patient";
             btnDischargePatient.UseVisualStyleBackColor = false;
@@ -650,7 +702,7 @@
             btnCreateBill.ForeColor = Color.White;
             btnCreateBill.Location = new Point(229, 18);
             btnCreateBill.Name = "btnCreateBill";
-            btnCreateBill.Size = new Size(150, 45);
+            btnCreateBill.Size = new Size(130, 45);
             btnCreateBill.TabIndex = 5;
             btnCreateBill.Text = "➕ Create Bill";
             btnCreateBill.UseVisualStyleBackColor = false;
@@ -757,39 +809,6 @@
             lblHospitalName.Size = new Size(247, 32);
             lblHospitalName.TabIndex = 0;
             lblHospitalName.Text = "St. Joseph's Hospital";
-            // 
-            // BtnViewProfile
-            // 
-            BtnViewProfile.BackColor = Color.FromArgb(52, 152, 219);
-            BtnViewProfile.Cursor = Cursors.Hand;
-            BtnViewProfile.FlatAppearance.BorderSize = 0;
-            BtnViewProfile.FlatAppearance.MouseOverBackColor = Color.FromArgb(41, 128, 185);
-            BtnViewProfile.FlatStyle = FlatStyle.Flat;
-            BtnViewProfile.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            BtnViewProfile.ForeColor = Color.White;
-            BtnViewProfile.Location = new Point(23, 18);
-            BtnViewProfile.Name = "BtnViewProfile";
-            BtnViewProfile.Size = new Size(170, 45);
-            BtnViewProfile.TabIndex = 3;
-            BtnViewProfile.Text = "👁 View Profile";
-            BtnViewProfile.UseVisualStyleBackColor = false;
-            // 
-            // btnEditPatient
-            // 
-            btnEditPatient.BackColor = Color.FromArgb(255, 152, 0);
-            btnEditPatient.Cursor = Cursors.Hand;
-            btnEditPatient.FlatAppearance.BorderSize = 0;
-            btnEditPatient.FlatAppearance.MouseOverBackColor = Color.FromArgb(245, 124, 0);
-            btnEditPatient.FlatStyle = FlatStyle.Flat;
-            btnEditPatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnEditPatient.ForeColor = Color.White;
-            btnEditPatient.Location = new Point(199, 18);
-            btnEditPatient.Name = "btnEditPatient";
-            btnEditPatient.Size = new Size(170, 45);
-            btnEditPatient.TabIndex = 4;
-            btnEditPatient.Text = "✏ Edit Profile";
-            btnEditPatient.UseVisualStyleBackColor = false;
-            btnEditPatient.Click += BtnEditPatient_Click;
             // 
             // ReceptionistDashboard
             // 
@@ -1107,5 +1126,6 @@
         private Button btnRemoveAllFromQueue;
         private Button btnEditPatient;
         private Button BtnViewProfile;
+        private Button BtnCancelBill;
     }
 }

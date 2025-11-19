@@ -45,3 +45,4 @@ C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHos
 C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\obj\Debug\net8.0-windows\SaintJosephsHospitalHealthMonitorApp.PatientIntakeForm.resources
 C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\obj\Debug\net8.0-windows\SaintJosephsHospitalHealthMonitorApp.ServiceChecklistForm.resources
 C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\obj\Debug\net8.0-windows\SaintJosephsHospitalHealthMonitorApp.PaymentProcessingForm.resources
+C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\obj\Debug\net8.0-windows\SaintJosephsHospitalHealthMonitorApp.DebugForm.resources

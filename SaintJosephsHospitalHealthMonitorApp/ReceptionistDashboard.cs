@@ -1309,6 +1309,170 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
+        private void BtnCancelBill_Click(object sender, EventArgs e)
+        {
+            if (dgvBilling.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a bill to cancel.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var selectedRow = dgvBilling.SelectedRows[0];
+            object billIdObj = selectedRow.Cells["bill_id"].Value;
+            string status = selectedRow.Cells["Status"].Value?.ToString() ?? "";
+            string patientName = selectedRow.Cells["Patient Name"].Value?.ToString() ?? "Unknown";
+
+            if (billIdObj == DBNull.Value || billIdObj == null)
+            {
+                MessageBox.Show(
+                    "❌ NO BILL FOUND\n\n" +
+                    "This patient doesn't have a bill yet.\n" +
+                    "Please create a bill first using 'Create Bill' or 'Update Bill' button.",
+                    "No Bill Available",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            int billId = Convert.ToInt32(billIdObj);
+
+            if (status == "Cancelled")
+            {
+                MessageBox.Show(
+                    "ℹ️ ALREADY CANCELLED\n\n" +
+                    "This bill has already been cancelled.",
+                    "Bill Cancelled",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            if (status == "Paid")
+            {
+                MessageBox.Show(
+                    "❌ CANNOT CANCEL PAID BILL\n\n" +
+                    "This bill has already been fully paid.\n\n" +
+                    "Paid bills cannot be cancelled. If you need to issue a refund,\n" +
+                    "please contact the finance department or administrator.",
+                    "Payment Already Complete",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (status == "Partially Paid")
+            {
+                decimal totalAmount = Convert.ToDecimal(selectedRow.Cells["Total Amount"].Value);
+
+                try
+                {
+                    string checkPaymentsQuery = @"
+                    SELECT COALESCE(SUM(amount_paid), 0) as total_paid
+                    FROM PaymentTransactions
+                    WHERE bill_id = @billId";
+
+                    object result = DatabaseHelper.ExecuteScalar(checkPaymentsQuery,
+                        new MySqlParameter("@billId", billId));
+
+                    decimal amountPaid = Convert.ToDecimal(result);
+
+                    DialogResult confirmPartial = MessageBox.Show(
+                        $"⚠️ PARTIAL PAYMENT DETECTED\n\n" +
+                        $"Patient: {patientName}\n" +
+                        $"Total Bill: ₱{totalAmount:N2}\n" +
+                        $"Amount Paid: ₱{amountPaid:N2}\n" +
+                        $"Outstanding: ₱{(totalAmount - amountPaid):N2}\n\n" +
+                        "This bill has partial payments recorded.\n\n" +
+                        "Cancelling will:\n" +
+                        "• Mark the bill as 'Cancelled'\n" +
+                        "• Preserve payment transaction records\n" +
+                        "• May require refund processing\n\n" +
+                        "⚠️ Contact finance department about refund procedures.\n\n" +
+                        "Continue with cancellation?",
+                        "Partial Payment Warning",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button2);
+
+                    if (confirmPartial != DialogResult.Yes)
+                    {
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error checking payment status: {ex.Message}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            DialogResult confirm = MessageBox.Show(
+                $"🚫 CANCEL BILL CONFIRMATION\n\n" +
+                $"Patient: {patientName}\n" +
+                $"Bill ID: #{billId}\n" +
+                $"Current Status: {status}\n\n" +
+                "This will:\n" +
+                "✓ Mark the bill as 'Cancelled'\n" +
+                "✓ Preserve all bill records for audit purposes\n" +
+                "✓ Allow patient discharge without payment\n" +
+                "✗ Bill cannot be reactivated after cancellation\n\n" +
+                "⚠️ Note: Payment records (if any) will be preserved.\n\n" +
+                "Are you sure you want to cancel this bill?",
+                "Confirm Bill Cancellation",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2);
+
+            if (confirm != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                string cancelQuery = @"
+                UPDATE Billing 
+                SET status = 'Cancelled',
+                notes = CONCAT(IFNULL(notes, ''), 
+                CHAR(10), CHAR(10),
+                CANCELLED on ', NOW(), ' by user ID: ', @cancelledBy)
+                WHERE bill_id = @billId";
+
+                DatabaseHelper.ExecuteNonQuery(cancelQuery,
+                    new MySqlParameter("@billId", billId),
+                    new MySqlParameter("@cancelledBy", currentUser.UserId));
+
+                MessageBox.Show(
+                    "✅ BILL CANCELLED SUCCESSFULLY\n\n" +
+                    $"Patient: {patientName}\n" +
+                    $"Bill ID: #{billId}\n\n" +
+                    "Actions completed:\n" +
+                    "✓ Bill marked as 'Cancelled'\n" +
+                    "✓ All records preserved for audit\n" +
+                    "✓ Patient can now be discharged\n\n" +
+                    "Note: Any payment records have been preserved.\n" +
+                    "Contact finance for refund processing if needed.",
+                    "Bill Cancelled",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                LoadData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"❌ ERROR CANCELLING BILL\n\n" +
+                    $"Error: {ex.Message}\n\n" +
+                    "The bill was not cancelled.\n" +
+                    "Please try again or contact support.",
+                    "Cancellation Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+
         private void BtnCreateBill_Click(object sender, EventArgs e)
         {
             if (dgvBilling.SelectedRows.Count == 0)
@@ -1326,16 +1490,38 @@ namespace SaintJosephsHospitalHealthMonitorApp
             int patientId = (patientIdObj == DBNull.Value || patientIdObj == null) ? 0 : Convert.ToInt32(patientIdObj);
 
             string patientName = selectedRow.Cells["Patient Name"].Value?.ToString() ?? "Unknown";
+            string status = selectedRow.Cells["Status"].Value?.ToString() ?? "";
 
-            if (billId > 0)
+            if (billId > 0 && !status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
             {
                 MessageBox.Show(
                     $"A bill already exists for patient: {patientName}.\n\n" +
-                    "Use 'Update Bill' or 'View Bill' instead.",
+                    $"Current Status: {status}\n\n" +
+                    "Use 'Update Bill' to edit the existing bill instead.",
                     "Bill Already Exists",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
                 return;
+            }
+
+            if (billId > 0 && status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
+            {
+                DialogResult confirm = MessageBox.Show(
+                    $"🔄 CREATE NEW BILL TO REPLACE CANCELLED BILL\n\n" +
+                    $"Patient: {patientName}\n" +
+                    $"Old Bill ID: #{billId} (Cancelled)\n\n" +
+                    "This will:\n" +
+                    "✓ Keep the old cancelled bill for audit purposes\n" +
+                    "✓ Create a fresh new bill for this patient\n" +
+                    "✓ Link the new bill to the current visit\n\n" +
+                    "The cancelled bill will remain in the system as a record.\n\n" +
+                    "Continue with creating a new bill?",
+                    "Replace Cancelled Bill",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (confirm != DialogResult.Yes)
+                    return;
             }
 
             int userId = currentUser?.UserId ?? 1;
@@ -1343,7 +1529,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 var result = billingForm.ShowDialog();
                 if (result == DialogResult.OK)
+                {
                     LoadBillingData();
+
+                    if (billId > 0 && status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
+                    {
+                        MessageBox.Show(
+                            "✅ NEW BILL CREATED SUCCESSFULLY\n\n" +
+                            $"Patient: {patientName}\n\n" +
+                            "A new bill has been created to replace the cancelled one.\n" +
+                            "The old cancelled bill remains in the system for audit purposes.",
+                            "Bill Replaced",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                }
             }
         }
 
@@ -1362,6 +1562,32 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 object billIdObj = selectedRow.Cells["bill_id"].Value;
                 object patientIdObj = selectedRow.Cells["patient_id"].Value;
+                string status = selectedRow.Cells["Status"].Value?.ToString() ?? "";
+
+                if (status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
+                {
+                    string patientName = selectedRow.Cells["Patient Name"].Value?.ToString() ?? "Unknown";
+
+                    DialogResult result = MessageBox.Show(
+                        "❌ BILL IS CANCELLED\n\n" +
+                        $"Patient: {patientName}\n" +
+                        $"Bill ID: #{billIdObj}\n\n" +
+                        "This bill has been cancelled and cannot be edited.\n\n" +
+                        "Options:\n" +
+                        "• YES - Create a new bill to replace this one\n" +
+                        "• NO - Cancel this operation\n\n" +
+                        "Would you like to create a new bill?",
+                        "Cancelled Bill - Cannot Edit",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button1);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        BtnCreateBill_Click(sender, e);
+                    }
+                    return;
+                }
 
                 if (billIdObj == DBNull.Value || billIdObj == null)
                 {
@@ -1384,8 +1610,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 using (BillingForm billingForm = new BillingForm(userId, patientId, billId))
                 {
-                    var result = billingForm.ShowDialog();
-                    if (result == DialogResult.OK)
+                    var dialogResult = billingForm.ShowDialog();
+                    if (dialogResult == DialogResult.OK)
                     {
                         LoadBillingData();
                     }
@@ -1428,14 +1654,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 MessageBox.Show(
                     $"Cannot discharge patient '{patientName}' yet.\n\n" +
                     $"Bill status must be 'Paid' or 'Cancelled'.\n" +
-                    $"Current Status: {status}",
+                    $"Current Status: {status}\n\n" +
+                    "Please either:\n" +
+                    "• Process payment to mark bill as 'Paid', OR\n" +
+                    "• Cancel the bill if no payment is required",
                     "Discharge Not Allowed",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
                 return;
             }
 
+            string dischargeWarning = status == "Cancelled"
+                ? "⚠️ This patient has a CANCELLED bill.\n" +
+                  "Discharging will proceed without payment collection.\n\n"
+                : "";
+
             string confirmMessage = $"🏥 DISCHARGE PATIENT: {patientName}\n\n" +
+                dischargeWarning +
                 "This will:\n" +
                 "✓ Mark patient as 'Discharged'\n" +
                 "✓ Remove from current queue\n" +
@@ -1465,13 +1700,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             try
                             {
                                 string archiveVisitQuery = @"
-                            INSERT INTO CompletedVisits (queue_id, patient_id, queue_date, completed_time, archived_by, archived_date, notes)
-                            SELECT queue_id, patient_id, queue_date, completed_time, @archivedBy, NOW(), 
-                                   CONCAT('Discharged: ', NOW(), ' - Billing Status: ', @billStatus)
-                            FROM patientqueue
-                            WHERE patient_id = @patientId 
-                            AND status = 'Completed'
-                            AND queue_date = CURDATE()";
+                                INSERT INTO CompletedVisits (queue_id, patient_id, queue_date, completed_time, archived_by, archived_date, notes)
+                                SELECT queue_id, patient_id, queue_date, completed_time, @archivedBy, NOW(), 
+                                CONCAT('Discharged: ', NOW(), ' - Billing Status: ', @billStatus)
+                                FROM patientqueue
+                                WHERE patient_id = @patientId 
+                                AND status = 'Completed'
+                                AND queue_date = CURDATE()";
 
                                 using (var cmd = new MySqlCommand(archiveVisitQuery, conn, transaction))
                                 {
@@ -1482,13 +1717,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 }
 
                                 string dischargeQuery = @"
-                            UPDATE patientqueue
-                            SET status = 'Discharged', 
+                                UPDATE patientqueue
+                                SET status = 'Discharged', 
                                 discharged_time = NOW(),
                                 equipment_checklist = NULL
-                            WHERE patient_id = @patientId
-                            AND queue_date = CURDATE()
-                            AND status IN ('Completed', 'In Progress', 'Called')";
+                                WHERE patient_id = @patientId
+                                AND queue_date = CURDATE()
+                                AND status IN ('Completed', 'In Progress', 'Called')";
 
                                 using (var cmd = new MySqlCommand(dischargeQuery, conn, transaction))
                                 {
@@ -1557,8 +1792,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                                 transaction.Commit();
 
-                                MessageBox.Show(
-                                    $"✅ PATIENT DISCHARGED SUCCESSFULLY\n\n" +
+                                string successMessage = $"✅ PATIENT DISCHARGED SUCCESSFULLY\n\n" +
                                     $"Patient: {patientName}\n\n" +
                                     "Actions completed:\n" +
                                     "✓ Visit archived to CompletedVisits\n" +
@@ -1566,8 +1800,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                     "✓ Equipment checklist cleared\n" +
                                     "✓ Intake data cleared\n" +
                                     "✓ Removed from today's queue\n\n" +
-                                    "⚕️ Medical records preserved\n\n" +
-                                    "Patient can now be re-added to queue for future visits.",
+                                    "⚕️ Medical records preserved\n\n";
+
+                                if (status == "Cancelled")
+                                {
+                                    successMessage += "📋 Note: Patient discharged with cancelled bill status.";
+                                }
+
+                                successMessage += "\n\nPatient can now be re-added to queue for future visits.";
+
+                                MessageBox.Show(
+                                    successMessage,
                                     "Discharge Complete",
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Information);
@@ -1621,148 +1864,22 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnAddToQueue_Click(object sender, EventArgs e)
         {
-            using (var selectForm = new Form())
+            using (AddToQueueForm addQueueForm = new AddToQueueForm(currentUser.UserId))
             {
-                selectForm.Text = "Select Patient";
-                selectForm.Size = new Size(500, 400);
-                selectForm.StartPosition = FormStartPosition.CenterParent;
-
-                var lblInstruction = new Label
+                if (addQueueForm.ShowDialog() == DialogResult.OK)
                 {
-                    Text = "Select a patient to add to queue:",
-                    Location = new Point(20, 20),
-                    AutoSize = true,
-                    Font = new Font("Segoe UI", 10F, FontStyle.Bold)
-                };
-
-                var dgv = new DataGridView
-                {
-                    Location = new Point(20, 50),
-                    Size = new Size(440, 250),
-                    ReadOnly = true,
-                    SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                    MultiSelect = false,
-                    AllowUserToAddRows = false,
-                    AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-                };
-
-                string query = @"
-                SELECT 
-                p.patient_id, 
-                u.name, 
-                u.age, 
-                u.gender, 
-                COALESCE(p.blood_type, 'Unknown') AS blood_type,
-                CASE 
-                WHEN NOT EXISTS (
-                SELECT 1 FROM PatientQueue 
-                WHERE patient_id = p.patient_id 
-                AND queue_date = CURDATE()
-                ) THEN 'Available for Queue'
-                WHEN EXISTS (
-                SELECT 1 FROM PatientQueue 
-                WHERE patient_id = p.patient_id 
-                AND queue_date = CURDATE()
-                AND status = 'Discharged'
-                ) THEN 'Recently Discharged - Can Re-queue'
-                ELSE 'Already in Queue'
-                END AS queue_status,
-                CASE 
-                WHEN NOT EXISTS (SELECT 1 FROM CompletedVisits WHERE patient_id = p.patient_id) 
-                THEN 'First Visit'
-                ELSE CONCAT('Previous Visits: ', 
-                CAST((SELECT COUNT(*) FROM CompletedVisits WHERE patient_id = p.patient_id) AS CHAR))
-                END AS visit_info
-                FROM Patients p
-                INNER JOIN Users u ON p.user_id = u.user_id
-                WHERE u.is_active = 1
-                AND NOT EXISTS (
-                SELECT 1 FROM patientqueue 
-                WHERE patient_id = p.patient_id 
-                AND queue_date = CURDATE()
-                AND status NOT IN ('Discharged')
-                )
-                ORDER BY u.name";
-
-                DataTable dt = DatabaseHelper.ExecuteQuery(query);
-                dgv.DataSource = dt;
-
-                if (dgv.Columns["patient_id"] != null)
-                {
-                    dgv.Columns["patient_id"].Visible = false;
-                }
-
-                if (dgv.Columns["name"] != null)
-                    dgv.Columns["name"].HeaderText = "Patient Name";
-                if (dgv.Columns["age"] != null)
-                    dgv.Columns["age"].HeaderText = "Age";
-                if (dgv.Columns["gender"] != null)
-                    dgv.Columns["gender"].HeaderText = "Gender";
-                if (dgv.Columns["blood_type"] != null)
-                    dgv.Columns["blood_type"].HeaderText = "Blood Type";
-                if (dgv.Columns["visit_info"] != null)
-                    dgv.Columns["visit_info"].HeaderText = "Visit History";
-
-                var btnSelect = new Button
-                {
-                    Text = "Select & Continue to Intake",
-                    Location = new Point(150, 310),
-                    Size = new Size(200, 35),
-                    BackColor = Color.FromArgb(46, 204, 113),
-                    ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Segoe UI", 10F, FontStyle.Bold)
-                };
-                btnSelect.FlatAppearance.BorderSize = 0;
-
-                btnSelect.Click += (s, ev) =>
-                {
-                    if (dgv.SelectedRows.Count > 0)
-                    {
-                        int patientId = Convert.ToInt32(dgv.SelectedRows[0].Cells["patient_id"].Value);
-
-                        string checkQuery = @"
-                    SELECT COUNT(*) 
-                    FROM patientqueue 
-                    WHERE patient_id = @patientId 
-                    AND queue_date = CURDATE()";
-                        int count = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkQuery,
-                            new MySqlParameter("@patientId", patientId)));
-
-                        if (count > 0)
-                        {
-                            MessageBox.Show(
-                                "This patient is already in today's queue.\n\n" +
-                                "A patient can only be added to the queue once per day.",
-                                "Already in Queue",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-                            return;
-                        }
-
-                        selectForm.DialogResult = DialogResult.OK;
-                        selectForm.Tag = patientId;
-                        selectForm.Close();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Please select a patient.", "Selection Required",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                };
-
-                selectForm.Controls.AddRange(new Control[] { lblInstruction, dgv, btnSelect });
-
-                if (selectForm.ShowDialog() == DialogResult.OK && selectForm.Tag != null)
-                {
-                    int patientId = (int)selectForm.Tag;
-
-                    using (PatientIntakeForm intakeForm = new PatientIntakeForm(patientId, currentUser.UserId))
-                    {
-                        intakeForm.ShowDialog();
-                    }
-
                     LoadData();
+
+                    MessageBox.Show(
+                        "✅ PATIENT ADDED TO QUEUE\n\n" +
+                        "The patient has been successfully added to today's queue.\n\n" +
+                        "Next steps:\n" +
+                        "• Assign a doctor to the patient\n" +
+                        "• Call the patient when ready\n" +
+                        "• Doctor will complete the consultation",
+                        "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                 }
             }
         }

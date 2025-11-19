@@ -2,24 +2,18 @@
 {
     partial class AddToQueueForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.ComboBox cmbPatient;
-        private System.Windows.Forms.ComboBox cmbPriority;
-        private System.Windows.Forms.TextBox txtReason;
-        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.DataGridView dgvPatients;
+        private System.Windows.Forms.Button btnSelect;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblPatient;
-        private System.Windows.Forms.Label lblPriority;
-        private System.Windows.Forms.Label lblReason;
+        private System.Windows.Forms.Label lblInstruction;
+        private System.Windows.Forms.Label lblPatientCount;
+        private System.Windows.Forms.TextBox txtSearch;
+        private System.Windows.Forms.Label lblSearch;
+        private System.Windows.Forms.Panel panelHeader;
+        private System.Windows.Forms.Panel panelButtons;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -28,108 +22,133 @@
             }
             base.Dispose(disposing);
         }
+
         private void InitializeComponent()
         {
+            this.panelHeader = new System.Windows.Forms.Panel();
             this.lblTitle = new System.Windows.Forms.Label();
-            this.lblPatient = new System.Windows.Forms.Label();
-            this.cmbPatient = new System.Windows.Forms.ComboBox();
-            this.lblPriority = new System.Windows.Forms.Label();
-            this.cmbPriority = new System.Windows.Forms.ComboBox();
-            this.lblReason = new System.Windows.Forms.Label();
-            this.txtReason = new System.Windows.Forms.TextBox();
-            this.btnSave = new System.Windows.Forms.Button();
+            this.lblInstruction = new System.Windows.Forms.Label();
+            this.lblSearch = new System.Windows.Forms.Label();
+            this.txtSearch = new System.Windows.Forms.TextBox();
+            this.lblPatientCount = new System.Windows.Forms.Label();
+            this.dgvPatients = new System.Windows.Forms.DataGridView();
+            this.panelButtons = new System.Windows.Forms.Panel();
+            this.btnSelect = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.panelHeader.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPatients)).BeginInit();
+            this.panelButtons.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // panelHeader
+            // 
+            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(68)))), ((int)(((byte)(173)))));
+            this.panelHeader.Controls.Add(this.lblTitle);
+            this.panelHeader.Controls.Add(this.lblInstruction);
+            this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelHeader.Location = new System.Drawing.Point(0, 0);
+            this.panelHeader.Name = "panelHeader";
+            this.panelHeader.Size = new System.Drawing.Size(1000, 80);
+            this.panelHeader.TabIndex = 0;
             // 
             // lblTitle
             // 
             this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(68)))), ((int)(((byte)(173)))));
-            this.lblTitle.Location = new System.Drawing.Point(30, 20);
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.lblTitle.ForeColor = System.Drawing.Color.White;
+            this.lblTitle.Location = new System.Drawing.Point(20, 15);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(185, 25);
+            this.lblTitle.Size = new System.Drawing.Size(285, 30);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "Add Patient to Queue";
+            this.lblTitle.Text = "➕ Add Patient to Queue";
             // 
-            // lblPatient
+            // lblInstruction
             // 
-            this.lblPatient.AutoSize = true;
-            this.lblPatient.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblPatient.Location = new System.Drawing.Point(30, 70);
-            this.lblPatient.Name = "lblPatient";
-            this.lblPatient.Size = new System.Drawing.Size(99, 19);
-            this.lblPatient.TabIndex = 1;
-            this.lblPatient.Text = "Select Patient:";
+            this.lblInstruction.AutoSize = true;
+            this.lblInstruction.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblInstruction.ForeColor = System.Drawing.Color.White;
+            this.lblInstruction.Location = new System.Drawing.Point(20, 50);
+            this.lblInstruction.Name = "lblInstruction";
+            this.lblInstruction.Size = new System.Drawing.Size(531, 19);
+            this.lblInstruction.TabIndex = 1;
+            this.lblInstruction.Text = "Select a patient from the list below and click \'Select & Continue to Intake\'";
             // 
-            // cmbPatient
+            // lblSearch
             // 
-            this.cmbPatient.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPatient.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbPatient.FormattingEnabled = true;
-            this.cmbPatient.Location = new System.Drawing.Point(30, 95);
-            this.cmbPatient.Name = "cmbPatient";
-            this.cmbPatient.Size = new System.Drawing.Size(420, 25);
-            this.cmbPatient.TabIndex = 2;
+            this.lblSearch.AutoSize = true;
+            this.lblSearch.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblSearch.Location = new System.Drawing.Point(20, 100);
+            this.lblSearch.Name = "lblSearch";
+            this.lblSearch.Size = new System.Drawing.Size(111, 19);
+            this.lblSearch.TabIndex = 1;
+            this.lblSearch.Text = "🔍 Search Patient:";
             // 
-            // lblPriority
+            // txtSearch
             // 
-            this.lblPriority.AutoSize = true;
-            this.lblPriority.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblPriority.Location = new System.Drawing.Point(30, 140);
-            this.lblPriority.Name = "lblPriority";
-            this.lblPriority.Size = new System.Drawing.Size(60, 19);
-            this.lblPriority.TabIndex = 3;
-            this.lblPriority.Text = "Priority:";
+            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.txtSearch.Location = new System.Drawing.Point(20, 125);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.PlaceholderText = "Search by name, blood type, or gender...";
+            this.txtSearch.Size = new System.Drawing.Size(500, 27);
+            this.txtSearch.TabIndex = 2;
+            this.txtSearch.TextChanged += new System.EventHandler(this.TxtSearch_TextChanged);
             // 
-            // cmbPriority
+            // lblPatientCount
             // 
-            this.cmbPriority.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPriority.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbPriority.FormattingEnabled = true;
-            this.cmbPriority.Items.AddRange(new object[] {
-            "Normal",
-            "Urgent",
-            "Emergency"});
-            this.cmbPriority.Location = new System.Drawing.Point(30, 165);
-            this.cmbPriority.Name = "cmbPriority";
-            this.cmbPriority.Size = new System.Drawing.Size(200, 25);
-            this.cmbPriority.TabIndex = 4;
+            this.lblPatientCount.AutoSize = true;
+            this.lblPatientCount.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblPatientCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.lblPatientCount.Location = new System.Drawing.Point(530, 130);
+            this.lblPatientCount.Name = "lblPatientCount";
+            this.lblPatientCount.Size = new System.Drawing.Size(145, 19);
+            this.lblPatientCount.TabIndex = 3;
+            this.lblPatientCount.Text = "Available Patients: 0";
             // 
-            // lblReason
+            // dgvPatients
             // 
-            this.lblReason.AutoSize = true;
-            this.lblReason.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblReason.Location = new System.Drawing.Point(30, 210);
-            this.lblReason.Name = "lblReason";
-            this.lblReason.Size = new System.Drawing.Size(109, 19);
-            this.lblReason.TabIndex = 5;
-            this.lblReason.Text = "Reason for Visit:";
+            this.dgvPatients.AllowUserToAddRows = false;
+            this.dgvPatients.AllowUserToDeleteRows = false;
+            this.dgvPatients.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvPatients.BackgroundColor = System.Drawing.Color.White;
+            this.dgvPatients.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvPatients.ColumnHeadersHeight = 40;
+            this.dgvPatients.Location = new System.Drawing.Point(20, 165);
+            this.dgvPatients.MultiSelect = false;
+            this.dgvPatients.Name = "dgvPatients";
+            this.dgvPatients.ReadOnly = true;
+            this.dgvPatients.RowHeadersVisible = false;
+            this.dgvPatients.RowTemplate.Height = 35;
+            this.dgvPatients.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvPatients.Size = new System.Drawing.Size(960, 385);
+            this.dgvPatients.TabIndex = 4;
+            this.dgvPatients.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvPatients_CellDoubleClick);
             // 
-            // txtReason
+            // panelButtons
             // 
-            this.txtReason.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtReason.Location = new System.Drawing.Point(30, 235);
-            this.txtReason.Multiline = true;
-            this.txtReason.Name = "txtReason";
-            this.txtReason.Size = new System.Drawing.Size(420, 80);
-            this.txtReason.TabIndex = 6;
+            this.panelButtons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
+            this.panelButtons.Controls.Add(this.btnSelect);
+            this.panelButtons.Controls.Add(this.btnCancel);
+            this.panelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelButtons.Location = new System.Drawing.Point(0, 565);
+            this.panelButtons.Name = "panelButtons";
+            this.panelButtons.Size = new System.Drawing.Size(1000, 75);
+            this.panelButtons.TabIndex = 5;
             // 
-            // btnSave
+            // btnSelect
             // 
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.btnSave.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSave.FlatAppearance.BorderSize = 0;
-            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(30, 340);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(200, 40);
-            this.btnSave.TabIndex = 7;
-            this.btnSave.Text = "Add to Queue";
-            this.btnSave.UseVisualStyleBackColor = false;
-            this.btnSave.Click += new System.EventHandler(this.BtnSave_Click);
+            this.btnSelect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnSelect.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnSelect.FlatAppearance.BorderSize = 0;
+            this.btnSelect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSelect.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.btnSelect.ForeColor = System.Drawing.Color.White;
+            this.btnSelect.Location = new System.Drawing.Point(630, 15);
+            this.btnSelect.Name = "btnSelect";
+            this.btnSelect.Size = new System.Drawing.Size(250, 45);
+            this.btnSelect.TabIndex = 0;
+            this.btnSelect.Text = "✓ Select && Continue to Intake";
+            this.btnSelect.UseVisualStyleBackColor = false;
+            this.btnSelect.Click += new System.EventHandler(this.BtnSelect_Click);
             // 
             // btnCancel
             // 
@@ -137,44 +156,41 @@
             this.btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnCancel.FlatAppearance.BorderSize = 0;
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(250, 340);
+            this.btnCancel.Location = new System.Drawing.Point(890, 15);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(200, 40);
-            this.btnCancel.TabIndex = 8;
-            this.btnCancel.Text = "Cancel";
+            this.btnCancel.Size = new System.Drawing.Size(90, 45);
+            this.btnCancel.TabIndex = 1;
+            this.btnCancel.Text = "✕ Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // AddToQueueForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
-            this.ClientSize = new System.Drawing.Size(484, 411);
-            this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.txtReason);
-            this.Controls.Add(this.lblReason);
-            this.Controls.Add(this.cmbPriority);
-            this.Controls.Add(this.lblPriority);
-            this.Controls.Add(this.cmbPatient);
-            this.Controls.Add(this.lblPatient);
-            this.Controls.Add(this.lblTitle);
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(1000, 640);
+            this.Controls.Add(this.panelButtons);
+            this.Controls.Add(this.dgvPatients);
+            this.Controls.Add(this.lblPatientCount);
+            this.Controls.Add(this.txtSearch);
+            this.Controls.Add(this.lblSearch);
+            this.Controls.Add(this.panelHeader);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "AddToQueueForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Add to Queue";
+            this.Text = "Add Patient to Queue";
             this.Load += new System.EventHandler(this.AddToQueueForm_Load);
+            this.panelHeader.ResumeLayout(false);
+            this.panelHeader.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPatients)).EndInit();
+            this.panelButtons.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
-        }
-
-        private void AddToQueueForm_Load(object sender, EventArgs e)
-        {
-            cmbPriority.SelectedIndex = 0;
         }
     }
 }

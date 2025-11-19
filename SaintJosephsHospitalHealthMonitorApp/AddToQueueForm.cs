@@ -14,89 +14,227 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             registeredBy = userId;
             InitializeComponent();
-            LoadPatients();
-        }
-        
-        //this is to Load all active patients from the database into the combobox
-        //it also joins the Patients table with the Users table to get patient name and age
-        private void LoadPatients()
-        {
-            string query = @"SELECT p.patient_id, 
-            CONCAT(u.name, ' (Age: ', u.age, ')') AS patient_info
-            FROM Patients p
-            INNER JOIN Users u ON p.user_id = u.user_id
-            WHERE u.is_active = 1
-            ORDER BY u.name";
-
-            //this executse the query and store results in a DataTable
-            DataTable dt = DatabaseHelper.ExecuteQuery(query);
-            cmbPatient.DisplayMember = "patient_info";
-            cmbPatient.ValueMember = "patient_id";
-            cmbPatient.DataSource = dt;
         }
 
-        private void BtnSave_Click(object sender, EventArgs e)
+        private void AddToQueueForm_Load(object sender, EventArgs e)
         {
-            if (cmbPatient.SelectedValue == null)
-            {
-                MessageBox.Show("Please select a patient.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            LoadAvailablePatients();
+        }
 
+        private void LoadAvailablePatients()
+        {
             try
             {
-                int patientId = Convert.ToInt32(cmbPatient.SelectedValue);
+                string query = @"
+                SELECT 
+                p.patient_id, 
+                u.name, 
+                u.age, 
+                u.gender, 
+                COALESCE(p.blood_type, 'Unknown') AS blood_type,
+                CASE 
+                WHEN NOT EXISTS (
+                    SELECT 1 FROM PatientQueue 
+                    WHERE patient_id = p.patient_id 
+                    AND queue_date = CURDATE()
+                    AND status NOT IN ('Discharged', 'Completed')
+                ) THEN 'Available for Queue'
+                WHEN EXISTS (
+                    SELECT 1 FROM PatientQueue 
+                    WHERE patient_id = p.patient_id 
+                    AND queue_date = CURDATE()
+                    AND status = 'Discharged'
+                ) THEN 'Recently Discharged - Can Re-queue'
+                ELSE 'Already in Queue'
+                END AS queue_status,
+                CASE 
+                WHEN NOT EXISTS (SELECT 1 FROM CompletedVisits WHERE patient_id = p.patient_id) 
+                THEN 'First Visit'
+                ELSE CONCAT('Previous Visits: ', 
+                    CAST((SELECT COUNT(*) FROM CompletedVisits WHERE patient_id = p.patient_id) AS CHAR))
+                END AS visit_info
+                FROM Patients p
+                INNER JOIN Users u ON p.user_id = u.user_id
+                WHERE u.is_active = 1
+                AND NOT EXISTS (
+                    SELECT 1 FROM patientqueue 
+                    WHERE patient_id = p.patient_id 
+                    AND queue_date = CURDATE()
+                    AND status NOT IN ('Discharged', 'Completed')
+                )
+                ORDER BY u.name";
 
-                //this is to check if patient is already in queue today
-                string checkQuery = @"SELECT COUNT(*) FROM PatientQueue 
-                      WHERE patient_id = @patientId 
-                      AND queue_date = CURDATE()
-                      AND status IN ('Waiting', 'Called')";
+                DataTable dt = DatabaseHelper.ExecuteQuery(query);
+                dgvPatients.DataSource = dt;
 
-                int inQueue = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkQuery,
-                    new MySqlParameter("@patientId", patientId)));
-
-                if (inQueue > 0)
+                if (dgvPatients.Columns["patient_id"] != null)
                 {
-                    MessageBox.Show("This patient is already in today's queue.", "Duplicate Entry",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    dgvPatients.Columns["patient_id"].Visible = false;
                 }
 
-                
-                string queueNumQuery = @"SELECT IFNULL(MAX(queue_number), 0) + 1 
-                         FROM PatientQueue 
-                         WHERE queue_date = CURDATE()";
+                if (dgvPatients.Columns["name"] != null)
+                    dgvPatients.Columns["name"].HeaderText = "Patient Name";
+                if (dgvPatients.Columns["age"] != null)
+                    dgvPatients.Columns["age"].HeaderText = "Age";
+                if (dgvPatients.Columns["gender"] != null)
+                    dgvPatients.Columns["gender"].HeaderText = "Gender";
+                if (dgvPatients.Columns["blood_type"] != null)
+                    dgvPatients.Columns["blood_type"].HeaderText = "Blood Type";
+                if (dgvPatients.Columns["queue_status"] != null)
+                    dgvPatients.Columns["queue_status"].HeaderText = "Queue Status";
+                if (dgvPatients.Columns["visit_info"] != null)
+                    dgvPatients.Columns["visit_info"].HeaderText = "Visit History";
 
-                int queueNumber = Convert.ToInt32(DatabaseHelper.ExecuteScalar(queueNumQuery)); 
+                lblPatientCount.Text = $"Available Patients: {dt.Rows.Count}";
 
-                
-                string insertQuery = @"INSERT INTO PatientQueue 
-                       (patient_id, queue_number, priority, reason_for_visit, registered_by, queue_date)
-                       VALUES (@patientId, @queueNum, @priority, @reason, @registeredBy, CURDATE())";
-
-                DatabaseHelper.ExecuteNonQuery(insertQuery,
-                    new MySqlParameter("@patientId", patientId),
-                    new MySqlParameter("@queueNum", queueNumber),
-                    new MySqlParameter("@priority", cmbPriority.SelectedItem.ToString()),
-                    new MySqlParameter("@reason", txtReason.Text),
-                    new MySqlParameter("@registeredBy", registeredBy));
-
-                MessageBox.Show($"Patient added to queue with Queue Number: {queueNumber}", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close();
+                if (dgvPatients.Rows.Count > 0)
+                {
+                    dgvPatients.ClearSelection();
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: " + ex.Message, "Error",
+                MessageBox.Show($"Error loading patients: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnSelect_Click(object sender, EventArgs e)
+        {
+            if (dgvPatients.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a patient first.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int patientId = Convert.ToInt32(dgvPatients.SelectedRows[0].Cells["patient_id"].Value);
+
+            string checkQuery = @"
+                SELECT COUNT(*) 
+                FROM patientqueue 
+                WHERE patient_id = @patientId 
+                AND queue_date = CURDATE()
+                AND status NOT IN ('Discharged', 'Completed')";
+
+            int count = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkQuery,
+                new MySqlParameter("@patientId", patientId)));
+
+            if (count > 0)
+            {
+                MessageBox.Show(
+                    "This patient is already in today's queue.\n\n" +
+                    "A patient can only be added to the queue once per day.",
+                    "Already in Queue",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            using (PatientIntakeForm intakeForm = new PatientIntakeForm(patientId, registeredBy))
+            {
+                if (intakeForm.ShowDialog() == DialogResult.OK)
+                {
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+                else
+                {
+                    LoadAvailablePatients();
+                }
             }
         }
 
         private void BtnCancel_Click(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void TxtSearch_TextChanged(object sender, EventArgs e)
+        {
+            string searchText = txtSearch.Text.Trim().ToLower();
+
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                LoadAvailablePatients();
+                return;
+            }
+
+            try
+            {
+                string query = @"
+                SELECT 
+                p.patient_id, 
+                u.name, 
+                u.age, 
+                u.gender, 
+                COALESCE(p.blood_type, 'Unknown') AS blood_type,
+                CASE 
+                WHEN NOT EXISTS (
+                    SELECT 1 FROM PatientQueue 
+                    WHERE patient_id = p.patient_id 
+                    AND queue_date = CURDATE()
+                    AND status NOT IN ('Discharged', 'Completed')
+                ) THEN 'Available for Queue'
+                WHEN EXISTS (
+                    SELECT 1 FROM PatientQueue 
+                    WHERE patient_id = p.patient_id 
+                    AND queue_date = CURDATE()
+                    AND status = 'Discharged'
+                ) THEN 'Recently Discharged - Can Re-queue'
+                ELSE 'Already in Queue'
+                END AS queue_status,
+                CASE 
+                WHEN NOT EXISTS (SELECT 1 FROM CompletedVisits WHERE patient_id = p.patient_id) 
+                THEN 'First Visit'
+                ELSE CONCAT('Previous Visits: ', 
+                    CAST((SELECT COUNT(*) FROM CompletedVisits WHERE patient_id = p.patient_id) AS CHAR))
+                END AS visit_info
+                FROM Patients p
+                INNER JOIN Users u ON p.user_id = u.user_id
+                WHERE u.is_active = 1
+                AND NOT EXISTS (
+                    SELECT 1 FROM patientqueue 
+                    WHERE patient_id = p.patient_id 
+                    AND queue_date = CURDATE()
+                    AND status NOT IN ('Discharged', 'Completed')
+                )
+                AND (
+                    LOWER(u.name) LIKE @search 
+                    OR LOWER(p.blood_type) LIKE @search
+                    OR LOWER(u.gender) LIKE @search
+                )
+                ORDER BY u.name";
+
+                DataTable dt = DatabaseHelper.ExecuteQuery(query,
+                    new MySqlParameter("@search", $"%{searchText}%"));
+
+                dgvPatients.DataSource = dt;
+
+                if (dgvPatients.Columns["patient_id"] != null)
+                    dgvPatients.Columns["patient_id"].Visible = false;
+
+                lblPatientCount.Text = $"Found: {dt.Rows.Count} patient(s)";
+
+                if (dgvPatients.Rows.Count > 0)
+                {
+                    dgvPatients.ClearSelection();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error searching patients: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void DgvPatients_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                BtnSelect_Click(sender, e);
+            }
         }
     }
 }

@@ -100,8 +100,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
             cmbStatus.Items.Clear();
             cmbStatus.Items.Add("Pending");
             cmbStatus.Items.Add("Partially Paid");
+            cmbStatus.Items.Add("Paid");
             cmbStatus.Items.Add("Cancelled");
             cmbStatus.SelectedIndex = 0;
+            cmbStatus.Enabled = false;
         }
 
         public BillingForm(int? userId, int patientId, int billId)
@@ -113,6 +115,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
             preselectedPatientId = patientId;
             actualPatientId = patientId;
             isViewOnly = false;
+
+            if (IsBillCancelled(billId))
+            {
+                MessageBox.Show(
+                    "❌ CANNOT EDIT CANCELLED BILL\n\n" +
+                    $"Bill ID: #{billId}\n\n" +
+                    "This bill has been cancelled and cannot be edited.\n\n" +
+                    "Please use 'Create Bill' to create a new bill instead.",
+                    "Bill is Cancelled",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                this.Load += (s, e) => this.Close();
+                return;
+            }
 
             LoadServiceCategories();
             SetupServiceItems();
@@ -147,7 +164,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 (this.ClientSize.Width - btnCancel.Width) / 2,
                 btnCancel.Location.Y
             );
-
             btnPrintPreview.BackColor = Color.FromArgb(52, 152, 219);
         }
 
@@ -521,6 +537,27 @@ namespace SaintJosephsHospitalHealthMonitorApp
             return 0;
         }
 
+        private bool IsBillCancelled(int billId)
+        {
+            try
+            {
+                string query = "SELECT status FROM Billing WHERE bill_id = @billId";
+                object result = DatabaseHelper.ExecuteScalar(query,
+                    new MySqlParameter("@billId", billId));
+
+                if (result != null && result != DBNull.Value)
+                {
+                    string status = result.ToString();
+                    return status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase);
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private void CmbServiceCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
             cmbServiceItem.Items.Clear();
@@ -751,7 +788,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 decimal taxAmount = (subtotal - discountAmount) * (taxPercent / 100);
                 decimal total = subtotal - discountAmount + taxAmount;
                 string paymentMethod = "Pending Payment";
-                string status = string.IsNullOrWhiteSpace(cmbStatus.Text) ? "Pending" : cmbStatus.Text;
+
+                string status = cmbStatus.Text;
+                if (string.IsNullOrWhiteSpace(status))
+                {
+                    status = "Pending";
+                }
+
                 string notes = txtNotes.Text.Trim();
 
                 int createdBy = currentUserId ?? 1;
@@ -761,6 +804,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 if (editingBillId.HasValue)
                 {
+                    string preserveStatusQuery = @"
+                SELECT status FROM Billing WHERE bill_id = @billId";
+
+                    object currentStatusObj = DatabaseHelper.ExecuteScalar(preserveStatusQuery,
+                        new MySqlParameter("@billId", editingBillId.Value));
+
+                    string preservedStatus = currentStatusObj?.ToString() ?? "Pending";
+
                     string updateQuery = @"
                 UPDATE Billing 
                 SET subtotal = @subtotal, 
@@ -769,7 +820,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     tax_percent = @taxPercent, 
                     tax_amount = @taxAmount, 
                     amount = @amount, 
-                    status = @status, 
                     notes = @notes,
                     queue_id = @queueId
                 WHERE bill_id = @billId";
@@ -781,12 +831,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         new MySqlParameter("@taxPercent", taxPercent),
                         new MySqlParameter("@taxAmount", taxAmount),
                         new MySqlParameter("@amount", total),
-                        new MySqlParameter("@status", status),
                         new MySqlParameter("@notes", notes),
                         new MySqlParameter("@queueId", (object)queueId ?? DBNull.Value),
                         new MySqlParameter("@billId", editingBillId.Value));
 
                     SaveBillServices(editingBillId.Value);
+
+                    MessageBox.Show(
+                        "✅ Bill updated successfully!\n\n" +
+                        $"Status: {preservedStatus}\n" +
+                        $"Total Amount: ₱{total:N2}\n\n" +
+                        "💡 TIP: Use 'Process Payment' to update payment status.",
+                        "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                 }
                 else
                 {
@@ -823,13 +881,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
 
                     string insertQuery = @"
-                INSERT INTO Billing (patient_id, queue_id, subtotal, discount_percent, discount_amount, 
-                                     tax_percent, tax_amount, amount, payment_method, status, notes, 
-                                     created_by, bill_date)
-                VALUES (@patientId, @queueId, @subtotal, @discountPercent, @discountAmount, 
-                        @taxPercent, @taxAmount, @amount, @paymentMethod, @status, @notes, 
-                        @createdBy, NOW());
-                SELECT LAST_INSERT_ID();";
+                    INSERT INTO Billing (patient_id, queue_id, subtotal, discount_percent, discount_amount, 
+                    tax_percent, tax_amount, amount, payment_method, status, notes, 
+                    created_by, bill_date)
+                    VALUES (@patientId, @queueId, @subtotal, @discountPercent, @discountAmount, 
+                    @taxPercent, @taxAmount, @amount, @paymentMethod, @status, @notes, 
+                    @createdBy, NOW());
+                    SELECT LAST_INSERT_ID();";
 
                     object insertResult = DatabaseHelper.ExecuteScalar(insertQuery,
                         new MySqlParameter("@patientId", patientId),
@@ -841,23 +899,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         new MySqlParameter("@taxAmount", taxAmount),
                         new MySqlParameter("@amount", total),
                         new MySqlParameter("@paymentMethod", paymentMethod),
-                        new MySqlParameter("@status", status),
+                        new MySqlParameter("@status", "Pending"),
                         new MySqlParameter("@notes", notes),
                         new MySqlParameter("@createdBy", createdBy));
 
                     int newBillId = Convert.ToInt32(insertResult);
                     SaveBillServices(newBillId);
-                }
 
-                MessageBox.Show(
-                    "✅ Bill saved successfully!\n\n" +
-                    $"Status: {status}\n" +
-                    $"Total Amount: ₱{total:N2}\n\n" +
-                    "💡 TIP: Use 'Process Payment' button in the Receptionist Dashboard\n" +
-                    "to record payment and mark this bill as 'Paid'.",
-                    "Success",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                    MessageBox.Show(
+                        "✅ Bill created successfully!\n\n" +
+                        $"Status: Pending\n" +
+                        $"Total Amount: ₱{total:N2}\n\n" +
+                        "💡 TIP: Use 'Process Payment' button in the Receptionist Dashboard\n" +
+                        "to record payment and update bill status.",
+                        "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -952,9 +1010,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
 
                 string insertQuery = @"
-                    INSERT INTO Services (service_name, category_id, unit_price) 
-                    VALUES (@serviceName, @categoryId, @unitPrice);
-                    SELECT LAST_INSERT_ID();";
+                INSERT INTO Services (service_name, category_id, unit_price) 
+                VALUES (@serviceName, @categoryId, @unitPrice);
+                SELECT LAST_INSERT_ID();";
 
                 result = DatabaseHelper.ExecuteScalar(insertQuery,
                     new MySqlParameter("@serviceName", serviceName),
@@ -1019,7 +1077,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                     if (row["tax_percent"] != DBNull.Value)
                         numTax.Value = Convert.ToDecimal(row["tax_percent"]);
+
                     string currentStatus = row["status"]?.ToString() ?? "Pending";
+
                     if (row["payment_method"] != DBNull.Value && currentStatus == "Paid")
                     {
                         lblPaymentMethod.Visible = true;
@@ -1041,15 +1101,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         {
                             cmbStatus.Text = status;
                         }
-                        else if (status == "Paid")
+                        else
                         {
-                            if (!cmbStatus.Items.Contains("Paid"))
+                            if (!cmbStatus.Items.Contains(status))
                             {
-                                cmbStatus.Items.Add("Paid");
+                                cmbStatus.Items.Add(status);
                             }
-                            cmbStatus.Text = "Paid";
+                            cmbStatus.Text = status;
                         }
                     }
+
+                    cmbStatus.Enabled = false;
                 }
             }
             catch (Exception ex)
@@ -1058,6 +1120,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void BtnCancel_Click(object sender, EventArgs e)
         {
