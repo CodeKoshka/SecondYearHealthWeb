@@ -71,7 +71,7 @@
             this.lblInstruction.Name = "lblInstruction";
             this.lblInstruction.Size = new System.Drawing.Size(531, 19);
             this.lblInstruction.TabIndex = 1;
-            this.lblInstruction.Text = "Select a patient from the list below and click \'Select & Continue to Intake\'";
+            this.lblInstruction.Text = "Click on any patient row to select, then click 'Select & Continue to Intake'";
             // 
             // lblSearch
             // 
@@ -112,6 +112,7 @@
             this.dgvPatients.BackgroundColor = System.Drawing.Color.White;
             this.dgvPatients.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvPatients.ColumnHeadersHeight = 40;
+            this.dgvPatients.Cursor = System.Windows.Forms.Cursors.Hand;
             this.dgvPatients.Location = new System.Drawing.Point(20, 165);
             this.dgvPatients.MultiSelect = false;
             this.dgvPatients.Name = "dgvPatients";
@@ -121,6 +122,7 @@
             this.dgvPatients.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvPatients.Size = new System.Drawing.Size(960, 385);
             this.dgvPatients.TabIndex = 4;
+            this.dgvPatients.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvPatients_CellClick);
             this.dgvPatients.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvPatients_CellDoubleClick);
             // 
             // panelButtons

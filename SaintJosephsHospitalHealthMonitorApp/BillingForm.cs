@@ -763,10 +763,38 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
+            decimal currentSubtotal = CalculateSubtotal();
+            decimal removalAmount = 0;
+
+            foreach (ListViewItem item in lstServices.SelectedItems)
+            {
+                string amountText = item.SubItems[4].Text.Replace("₱", "").Replace(",", "").Trim();
+                if (decimal.TryParse(amountText, out decimal amount))
+                {
+                    removalAmount += amount;
+                }
+            }
+
+            if (currentSubtotal - removalAmount < 0)
+            {
+                MessageBox.Show(
+                    "❌ CANNOT REMOVE SERVICE\n\n" +
+                    $"Current Subtotal: ₱{currentSubtotal:N2}\n" +
+                    $"Removal Amount: ₱{removalAmount:N2}\n\n" +
+                    "Removing this service would result in a negative bill amount.\n" +
+                    "This operation is not allowed.",
+                    "Invalid Operation",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Remove selected services
             foreach (ListViewItem item in lstServices.SelectedItems)
             {
                 lstServices.Items.Remove(item);
             }
+
             UpdateTotals();
         }
 

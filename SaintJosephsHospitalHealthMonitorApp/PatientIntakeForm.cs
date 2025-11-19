@@ -221,26 +221,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private bool HasIntakeData()
-        {
-            try
-            {
-                string query = @"
-            SELECT COUNT(*) 
-            FROM PatientQueue 
-            WHERE patient_id = @patientId";
-
-                object result = DatabaseHelper.ExecuteScalar(query,
-                    new MySqlParameter("@patientId", patientId));
-
-                return Convert.ToInt32(result) > 0;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
         private void ParseIntakeNotes(string notes)
         {
             try
@@ -321,12 +301,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-                    SELECT u.name, u.age, u.gender, u.email,
-                    p.blood_type, p.allergies, p.medical_history,
-                    p.phone_number, p.emergency_contact
-                    FROM Patients p
-                    INNER JOIN Users u ON p.user_id = u.user_id
-                    WHERE p.patient_id = @patientId";
+                SELECT u.name, u.date_of_birth, u.age, u.gender, u.email,
+                p.blood_type, p.allergies, p.medical_history,
+                p.phone_number, p.emergency_contact
+                FROM Patients p
+                INNER JOIN Users u ON p.user_id = u.user_id
+                WHERE p.patient_id = @patientId";
 
                 DataTable dt = DatabaseHelper.ExecuteQuery(query,
                     new MySqlParameter("@patientId", patientId));
@@ -335,7 +315,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     DataRow row = dt.Rows[0];
                     lblPatientName.Text = $"Patient: {row["name"]}";
-                    lblAge.Text = $"Age: {row["age"]} | Gender: {row["gender"]}";
+                    if (row["date_of_birth"] != DBNull.Value)
+                    {
+                        DateTime dob = Convert.ToDateTime(row["date_of_birth"]);
+                        int age = row["age"] != DBNull.Value ? Convert.ToInt32(row["age"]) : CalculateAge(dob);
+                        lblAge.Text = $"DOB: {dob:MM/dd/yyyy} (Age: {age}) | Gender: {row["gender"]}";
+                    }
+                    else
+                    {
+                        lblAge.Text = $"Age: {row["age"]} | Gender: {row["gender"]}";
+                    }
 
                     string bloodType = row["blood_type"]?.ToString() ?? "";
                     lblBloodType.Text = string.IsNullOrEmpty(bloodType) ? "Blood Type: Not recorded" : $"Blood Type: {bloodType}";
@@ -435,6 +424,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
+        private int CalculateAge(DateTime birthDate)
+        {
+            DateTime today = DateTime.Today;
+            int age = today.Year - birthDate.Year;
+            if (birthDate.Date > today.AddYears(-age))
+                age--;
+            return age;
+        }
+
         private void CheckIfNewPatient()
         {
             try
@@ -525,8 +523,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 int prefixNum = int.Parse(prefix);
 
                 bool isValidPrefix = (prefixNum >= 813 && prefixNum <= 817) ||
-                                    (prefixNum >= 900 && prefixNum <= 907) ||
-                                    (prefixNum >= 908 && prefixNum <= 999);  
+                                     (prefixNum >= 900 && prefixNum <= 907) ||
+                                     (prefixNum >= 908 && prefixNum <= 999);  
                 if (!isValidPrefix)
                 {
                     MessageBox.Show("Invalid mobile number prefix. Please enter a valid Philippine mobile number (e.g., 0917, 0918, 0919, 0920, etc.).",

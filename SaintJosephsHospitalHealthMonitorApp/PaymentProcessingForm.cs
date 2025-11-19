@@ -340,18 +340,32 @@ namespace SaintJosephsHospitalHealthMonitorApp
         }
 
         private void ProcessPayment(decimal paymentAmount, string paymentMethod, string referenceNumber,
-            string paymentNotes, bool isPartialPayment)
+    string paymentNotes, bool isPartialPayment)
         {
             try
             {
-                string newStatus = isPartialPayment ? "Partially Paid" : "Paid";
-                decimal amountPaid = GetAmountAlreadyPaid() + paymentAmount;
+                decimal previouslyPaid = GetAmountAlreadyPaid();
+                decimal totalAmountPaid = previouslyPaid + paymentAmount;
+
+                string newStatus;
+                if (totalAmountPaid >= totalAmount)
+                {
+                    newStatus = "Paid";
+                }
+                else if (totalAmountPaid > 0)
+                {
+                    newStatus = "Partially Paid";
+                }
+                else
+                {
+                    newStatus = "Pending";
+                }
 
                 string updateBillingQuery = @"
-                    UPDATE Billing 
-                    SET status = @status,
-                        payment_method = @paymentMethod
-                    WHERE bill_id = @billId";
+            UPDATE Billing 
+            SET status = @status,
+                payment_method = @paymentMethod
+            WHERE bill_id = @billId";
 
                 DatabaseHelper.ExecuteNonQuery(updateBillingQuery,
                     new MySqlParameter("@status", newStatus),
@@ -359,12 +373,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     new MySqlParameter("@billId", billId));
 
                 string insertTransactionQuery = @"
-                    INSERT INTO PaymentTransactions 
-                    (bill_id, patient_id, amount_paid, payment_method, reference_number, 
-                     payment_notes, processed_by, payment_date)
-                    VALUES 
-                    (@billId, @patientId, @amountPaid, @paymentMethod, @referenceNumber,
-                     @paymentNotes, @processedBy, NOW())";
+            INSERT INTO PaymentTransactions 
+            (bill_id, patient_id, amount_paid, payment_method, reference_number, 
+             payment_notes, processed_by, payment_date)
+            VALUES 
+            (@billId, @patientId, @amountPaid, @paymentMethod, @referenceNumber,
+             @paymentNotes, @processedBy, NOW())";
 
                 DatabaseHelper.ExecuteNonQuery(insertTransactionQuery,
                     new MySqlParameter("@billId", billId),
@@ -389,15 +403,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 successMessage += $"\nBill Status: {newStatus}\n";
 
-                if (isPartialPayment)
+                if (newStatus == "Partially Paid")
                 {
-                    decimal remaining = totalAmount - amountPaid;
-                    successMessage += $"Total Paid: ₱{amountPaid:N2}\n" +
+                    decimal remaining = totalAmount - totalAmountPaid;
+                    successMessage += $"Total Paid: ₱{totalAmountPaid:N2}\n" +
                         $"Remaining Balance: ₱{remaining:N2}\n";
                 }
-                else
+                else if (newStatus == "Paid")
                 {
-                    successMessage += "\n✓ Bill fully paid - Patient ready for discharge";
+                    successMessage += $"Total Paid: ₱{totalAmountPaid:N2}\n" +
+                        "\n✓ Bill fully paid - Patient ready for discharge";
                 }
 
                 MessageBox.Show(successMessage, "Payment Complete",

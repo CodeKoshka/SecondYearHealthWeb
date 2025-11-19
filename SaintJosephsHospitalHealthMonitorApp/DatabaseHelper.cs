@@ -579,8 +579,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         headAdminAge--;
 
                     string insertHeadadmin = @"
-            INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-            VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', @dob, @age, 'Other', NULL, @profileImage)";
+                    INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                    VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', @dob, @age, 'Other', NULL, @profileImage)";
 
                     using (MySqlCommand cmd = new MySqlCommand(insertHeadadmin, conn))
                     {
@@ -618,8 +618,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             receptionistAge--;
 
                         string insertreceptionist = @"
-                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-                VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', @dob, @age, 'Female', @createdBy, @profileImage)";
+                        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                        VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', @dob, @age, 'Female', @createdBy, @profileImage)";
 
                         using (MySqlCommand cmdReceptionist = new MySqlCommand(insertreceptionist, conn))
                         {

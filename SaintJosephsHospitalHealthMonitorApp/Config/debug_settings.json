@@ -6,7 +6,7 @@
   "CreateDefaultHeadadmin": true,
   "CreateDefaultAdmin": true,
   "CreateDefaultReceptionist": true,
-  "CreateDefaultPharmacist": false,
+  "CreateDefaultPharmacist": true,
   "CreateDefaultDoctor": true,
   "CreateDefaultPatient": true
 }

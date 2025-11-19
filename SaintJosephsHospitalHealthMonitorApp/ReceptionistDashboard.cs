@@ -481,30 +481,31 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 ReorderQueueNumbers();
+
                 string queryQueue = @"
-            SELECT 
-            q.queue_id, 
-            q.queue_number, 
-            q.patient_id,
-            u.name AS Patient, 
-            IFNULL(d.name, 'Not Assigned') AS Doctor, 
-            q.priority, 
-            q.status,
-            q.registered_time
-            FROM patientqueue q
-            INNER JOIN Patients p ON q.patient_id = p.patient_id
-            INNER JOIN Users u ON p.user_id = u.user_id
-            LEFT JOIN Doctors doc ON q.doctor_id = doc.doctor_id
-            LEFT JOIN Users d ON doc.user_id = d.user_id
-            WHERE q.queue_date = CURDATE()
-            AND q.status != 'Completed'
-            ORDER BY 
-            CASE q.priority 
-            WHEN 'Emergency' THEN 1 
-            WHEN 'Urgent' THEN 2 
-            ELSE 3 
-            END, 
-            q.registered_time";
+                SELECT 
+                q.queue_id, 
+                q.queue_number, 
+                q.patient_id,
+                u.name AS Patient, 
+                IFNULL(d.name, 'Not Assigned') AS Doctor, 
+                q.priority, 
+                q.status,
+                q.registered_time
+                FROM patientqueue q
+                INNER JOIN Patients p ON q.patient_id = p.patient_id
+                INNER JOIN Users u ON p.user_id = u.user_id
+                LEFT JOIN Doctors doc ON q.doctor_id = doc.doctor_id
+                LEFT JOIN Users d ON doc.user_id = d.user_id
+                WHERE q.queue_date = CURDATE()
+                AND q.status != 'Completed'
+                ORDER BY 
+                CASE q.priority 
+                WHEN 'Emergency' THEN 1 
+                WHEN 'Urgent' THEN 2 
+                ELSE 3 
+                END, 
+                q.registered_time";
 
                 DataTable dtQueue = DatabaseHelper.ExecuteQuery(queryQueue);
                 dgvQueue.DataSource = dtQueue;
@@ -531,19 +532,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 IFNULL(p.phone_number, 'N/A') AS phone_number, 
                 u.email,
                 CASE 
-                WHEN NOT EXISTS (SELECT 1 FROM PatientQueue WHERE patient_id = p.patient_id) 
-                THEN 'Never Visited'
-                WHEN EXISTS (SELECT 1 FROM PatientQueue WHERE patient_id = p.patient_id AND queue_date = CURDATE())
-                THEN 'In Queue Today'
-                ELSE CONCAT('Last Visit: ', DATE_FORMAT(
-                (SELECT MAX(queue_date) FROM PatientQueue WHERE patient_id = p.patient_id), 
-                '%Y-%m-%d'))
+                WHEN q.status = 'Waiting' THEN 'Waiting in Queue'
+                WHEN q.status = 'Called' THEN 'Called - In Progress'
+                WHEN q.status = 'In Progress' THEN 'With Doctor'
+                WHEN q.status = 'Completed' THEN 'Visit Completed'
+                ELSE q.status
                 END AS status,
+                q.queue_number AS queue_number,
                 (SELECT COUNT(*) FROM PatientQueue WHERE patient_id = p.patient_id) as total_visits
                 FROM Patients p
                 INNER JOIN Users u ON p.user_id = u.user_id
+                INNER JOIN PatientQueue q ON p.patient_id = q.patient_id
                 WHERE u.is_active = 1
-                ORDER BY u.name";
+                AND q.queue_date = CURDATE()
+                AND q.status NOT IN ('Discharged')
+                ORDER BY q.queue_number";
 
                 DataTable dtPatients = DatabaseHelper.ExecuteQuery(queryPatients);
                 dgvPatients.DataSource = dtPatients;
@@ -553,16 +556,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     if (dgvPatients.Columns["patient_id"] != null)
                         dgvPatients.Columns["patient_id"].Visible = false;
 
+                    if (dgvPatients.Columns["queue_number"] != null)
+                    {
+                        dgvPatients.Columns["queue_number"].HeaderText = "Queue #";
+                        dgvPatients.Columns["queue_number"].Width = 80;
+                        dgvPatients.Columns["queue_number"].DisplayIndex = 0;
+                    }
+
                     if (dgvPatients.Columns["status"] != null)
                     {
-                        dgvPatients.Columns["status"].HeaderText = "Visit Status";
-                        dgvPatients.Columns["status"].Width = 200;
+                        dgvPatients.Columns["status"].HeaderText = "Current Status";
+                        dgvPatients.Columns["status"].Width = 180;
                     }
 
                     if (dgvPatients.Columns["total_visits"] != null)
                     {
                         dgvPatients.Columns["total_visits"].HeaderText = "Total Visits";
-                        dgvPatients.Columns["total_visits"].Width = 80;
+                        dgvPatients.Columns["total_visits"].Width = 90;
                     }
 
                     foreach (DataGridViewRow row in dgvPatients.Rows)
@@ -571,12 +581,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         {
                             string status = row.Cells["status"].Value.ToString();
 
-                            if (status.Contains("Never Visited"))
+                            if (status.Contains("Waiting"))
                             {
                                 row.DefaultCellStyle.BackColor = Color.FromArgb(255, 250, 230);
                                 row.DefaultCellStyle.ForeColor = Color.FromArgb(140, 100, 0);
                             }
-                            else if (status.Contains("In Queue Today"))
+                            else if (status.Contains("Called") || status.Contains("In Progress") || status.Contains("With Doctor"))
+                            {
+                                row.DefaultCellStyle.BackColor = Color.FromArgb(230, 245, 255);
+                                row.DefaultCellStyle.ForeColor = Color.FromArgb(0, 80, 140);
+                            }
+                            else if (status.Contains("Completed"))
                             {
                                 row.DefaultCellStyle.BackColor = Color.FromArgb(230, 255, 230);
                                 row.DefaultCellStyle.ForeColor = Color.FromArgb(0, 100, 0);
@@ -623,9 +638,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     int queueId = Convert.ToInt32(row["queue_id"]);
 
                     string updateQuery = @"
-                UPDATE patientqueue 
-                SET queue_number = @queueNumber 
-                WHERE queue_id = @queueId";
+                    UPDATE patientqueue 
+                    SET queue_number = @queueNumber 
+                    WHERE queue_id = @queueId";
 
                     DatabaseHelper.ExecuteNonQuery(updateQuery,
                         new MySqlParameter("@queueNumber", newQueueNumber),
@@ -645,7 +660,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string queryBilling = @"
-            SELECT 
+                SELECT 
                 b.bill_id,
                 q.patient_id,
                 q.queue_id,
@@ -653,29 +668,29 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 DATE_FORMAT(IFNULL(b.bill_date, q.completed_time), '%Y-%m-%d %H:%i') AS 'Bill Date',
                 IFNULL(b.amount, 0) AS 'Total Amount',
                 CASE 
-                    WHEN b.bill_id IS NULL THEN 'Awaiting Bill'
-                    ELSE b.status
+                WHEN b.bill_id IS NULL THEN 'Awaiting Bill'
+                ELSE b.status
                 END AS 'Status',
                 IFNULL(b.payment_method, 'N/A') AS 'Payment Method',
                 CASE 
-                    WHEN b.bill_id IS NULL THEN 'Create Bill Required'
-                    WHEN b.status = 'Paid' THEN 'Ready for Discharge'
-                    WHEN b.status = 'Cancelled' THEN 'Discharge Allowed'
-                    ELSE 'Processing'
+                WHEN b.bill_id IS NULL THEN 'Create Bill Required'
+                WHEN b.status = 'Paid' THEN 'Ready for Discharge'
+                WHEN b.status = 'Cancelled' THEN 'Discharge Allowed'
+                ELSE 'Processing'
                 END AS 'Discharge Status'
-            FROM patientqueue q
-            INNER JOIN Patients p ON q.patient_id = p.patient_id
-            INNER JOIN Users u ON p.user_id = u.user_id
-            LEFT JOIN Billing b ON b.queue_id = q.queue_id
-            WHERE q.queue_date = CURDATE()
-            AND q.status = 'Completed'
-            ORDER BY 
+                FROM patientqueue q
+                INNER JOIN Patients p ON q.patient_id = p.patient_id
+                INNER JOIN Users u ON p.user_id = u.user_id
+                LEFT JOIN Billing b ON b.queue_id = q.queue_id
+                WHERE q.queue_date = CURDATE()
+                AND q.status = 'Completed'
+                ORDER BY 
                 CASE 
-                    WHEN b.bill_id IS NULL THEN 1
-                    WHEN b.status = 'Pending' THEN 2
-                    WHEN b.status = 'Partially Paid' THEN 3
-                    WHEN b.status = 'Paid' THEN 4
-                    ELSE 5
+                WHEN b.bill_id IS NULL THEN 1
+                WHEN b.status = 'Pending' THEN 2
+                WHEN b.status = 'Partially Paid' THEN 3
+                WHEN b.status = 'Paid' THEN 4
+                ELSE 5
                 END,
                 q.completed_time DESC";
 
@@ -705,9 +720,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-            SELECT COUNT(*) 
-            FROM PatientQueue 
-            WHERE patient_id = @patientId";
+                SELECT COUNT(*) 
+                FROM PatientQueue 
+                WHERE patient_id = @patientId";
 
                 object result = DatabaseHelper.ExecuteScalar(query,
                     new MySqlParameter("@patientId", patientId));
@@ -808,15 +823,22 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (chkSearchQueue.Checked)
                 {
                     string queueQuery = @"
-                        SELECT q.queue_id, q.patient_id, u.name AS patient_name, 
-                        q.priority, q.status, 'Queue' as source
-                        FROM patientqueue q
-                        INNER JOIN Patients p ON q.patient_id = p.patient_id
-                        INNER JOIN Users u ON p.user_id = u.user_id
-                        WHERE q.queue_date = CURDATE()
-                        AND (u.name LIKE @search OR q.status LIKE @search)
-                        ORDER BY q.queue_number
-                        LIMIT 5";
+                    SELECT q.queue_id, q.patient_id, u.name AS patient_name, 
+                    q.priority, q.status, 'Queue' as source
+                    FROM patientqueue q
+                    INNER JOIN Patients p ON q.patient_id = p.patient_id
+                    INNER JOIN Users u ON p.user_id = u.user_id
+                    WHERE q.queue_date = CURDATE()
+                    AND q.status != 'Completed'
+                    AND (u.name LIKE @search OR q.priority LIKE @search OR q.status LIKE @search)
+                    ORDER BY 
+                    CASE q.priority 
+                    WHEN 'Emergency' THEN 1 
+                    WHEN 'Urgent' THEN 2 
+                    ELSE 3 
+                    END, 
+                    q.registered_time
+                    LIMIT 5";
 
                     DataTable queue = DatabaseHelper.ExecuteQuery(queueQuery,
                         new MySqlParameter("@search", $"%{searchText}%"));
@@ -837,14 +859,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (chkSearchPatients.Checked)
                 {
                     string patientQuery = @"
-                        SELECT p.patient_id, u.user_id, u.name, u.email, u.age, u.gender,
-                        p.blood_type, 'Patients' as source
-                        FROM Patients p
-                        INNER JOIN Users u ON p.user_id = u.user_id
-                        WHERE u.is_active = 1
-                        AND (u.name LIKE @search OR u.email LIKE @search OR p.blood_type LIKE @search)
-                        ORDER BY u.name
-                        LIMIT 5";
+                    SELECT p.patient_id, u.user_id, u.name, u.email, u.age, u.gender,
+                    p.blood_type, 'Patients' as source
+                    FROM Patients p
+                    INNER JOIN Users u ON p.user_id = u.user_id
+                    INNER JOIN PatientQueue q ON p.patient_id = q.patient_id
+                    WHERE u.is_active = 1
+                    AND q.queue_date = CURDATE()
+                    AND q.status NOT IN ('Discharged')
+                    AND (u.name LIKE @search OR u.email LIKE @search OR p.blood_type LIKE @search)
+                    GROUP BY p.patient_id
+                    ORDER BY u.name
+                    LIMIT 5";
 
                     DataTable patients = DatabaseHelper.ExecuteQuery(patientQuery,
                         new MySqlParameter("@search", $"%{searchText}%"));
@@ -865,25 +891,57 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (chkSearchBilling.Checked)
                 {
                     string billingQuery = @"
-                        SELECT b.bill_id, b.patient_id, u.name AS patient_name,
-                        b.amount, b.status, 'Billing' as source
-                        FROM Billing b
-                        INNER JOIN Patients p ON b.patient_id = p.patient_id
-                        INNER JOIN Users u ON p.user_id = u.user_id
-                        WHERE DATE(b.bill_date) = CURDATE()
-                        AND (u.name LIKE @search OR b.status LIKE @search)
-                        ORDER BY b.bill_date DESC
-                        LIMIT 5";
+                    SELECT 
+                    b.bill_id, 
+                    q.patient_id, 
+                    u.name AS patient_name,
+                    IFNULL(b.amount, 0) AS amount, 
+                    CASE 
+                    WHEN b.bill_id IS NULL THEN 'Awaiting Bill'
+                    ELSE b.status
+                    END AS status,
+                    'Billing' as source
+                    FROM patientqueue q
+                    INNER JOIN Patients p ON q.patient_id = p.patient_id
+                    INNER JOIN Users u ON p.user_id = u.user_id
+                    LEFT JOIN Billing b ON b.queue_id = q.queue_id
+                    WHERE q.queue_date = CURDATE()
+                    AND q.status = 'Completed'
+                    AND (u.name LIKE @search OR 
+                         (b.status IS NOT NULL AND b.status LIKE @search) OR
+                         (b.bill_id IS NULL AND 'Awaiting Bill' LIKE @search))
+                    ORDER BY 
+                    CASE 
+                    WHEN b.bill_id IS NULL THEN 1
+                    WHEN b.status = 'Pending' THEN 2
+                    WHEN b.status = 'Partially Paid' THEN 3
+                    WHEN b.status = 'Paid' THEN 4
+                    ELSE 5
+                    END,
+                    q.completed_time DESC
+                    LIMIT 5";
 
                     DataTable billing = DatabaseHelper.ExecuteQuery(billingQuery,
                         new MySqlParameter("@search", $"%{searchText}%"));
 
                     foreach (DataRow row in billing.Rows)
                     {
+                        string displayText;
+                        if (row["status"].ToString() == "Awaiting Bill")
+                        {
+                            displayText = $"{row["patient_name"]} - Awaiting Bill";
+                        }
+                        else
+                        {
+                            displayText = $"{row["patient_name"]} - ₱{Convert.ToDecimal(row["amount"]):N2} - {row["status"]}";
+                        }
+
+                        int billId = row["bill_id"] == DBNull.Value ? 0 : Convert.ToInt32(row["bill_id"]);
+
                         searchSuggestionsListBox.Items.Add(new UniversalSearchItem
                         {
-                            Id = Convert.ToInt32(row["bill_id"]),
-                            DisplayText = $"{row["patient_name"]} - ₱{Convert.ToDecimal(row["amount"]):N2} - {row["status"]}",
+                            Id = billId > 0 ? billId : Convert.ToInt32(row["patient_id"]),
+                            DisplayText = displayText,
                             Source = "Billing",
                             Data = row
                         });
@@ -892,7 +950,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
 
                 lblSearchStatus.Text = totalResults > 0
-                    ? $"Found {totalResults} result{(totalResults != 1 ? "s" : "")}"
+                    ? $"Found {totalResults} result{(totalResults != 1 ? "s" : "")} in visible data"
                     : "No results found";
                 lblSearchStatus.ForeColor = totalResults > 0
                     ? Color.FromArgb(72, 187, 120)
@@ -1700,13 +1758,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             try
                             {
                                 string archiveVisitQuery = @"
-                                INSERT INTO CompletedVisits (queue_id, patient_id, queue_date, completed_time, archived_by, archived_date, notes)
-                                SELECT queue_id, patient_id, queue_date, completed_time, @archivedBy, NOW(), 
-                                CONCAT('Discharged: ', NOW(), ' - Billing Status: ', @billStatus)
-                                FROM patientqueue
-                                WHERE patient_id = @patientId 
-                                AND status = 'Completed'
-                                AND queue_date = CURDATE()";
+                        INSERT INTO CompletedVisits (queue_id, patient_id, queue_date, completed_time, archived_by, archived_date, notes)
+                        SELECT queue_id, patient_id, queue_date, completed_time, @archivedBy, NOW(), 
+                        CONCAT('Discharged: ', NOW(), ' - Billing Status: ', @billStatus)
+                        FROM patientqueue
+                        WHERE patient_id = @patientId 
+                        AND status = 'Completed'
+                        AND queue_date = CURDATE()";
 
                                 using (var cmd = new MySqlCommand(archiveVisitQuery, conn, transaction))
                                 {
@@ -1717,13 +1775,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 }
 
                                 string dischargeQuery = @"
-                                UPDATE patientqueue
-                                SET status = 'Discharged', 
-                                discharged_time = NOW(),
-                                equipment_checklist = NULL
-                                WHERE patient_id = @patientId
-                                AND queue_date = CURDATE()
-                                AND status IN ('Completed', 'In Progress', 'Called')";
+                        UPDATE patientqueue
+                        SET status = 'Discharged', 
+                        discharged_time = NOW(),
+                        equipment_checklist = NULL
+                        WHERE patient_id = @patientId
+                        AND queue_date = CURDATE()
+                        AND status IN ('Completed', 'In Progress', 'Called')";
 
                                 using (var cmd = new MySqlCommand(dischargeQuery, conn, transaction))
                                 {
@@ -1736,18 +1794,27 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                     int billId = Convert.ToInt32(billIdObj);
 
                                     string archiveBillingQuery = @"
-                                UPDATE CompletedVisits 
-                                SET notes = CONCAT(notes, '\nBilling: Bill ID ', @billId, ' - Status: ', @status, ' - Archived on discharge')
-                                WHERE patient_id = @patientId 
-                                AND queue_date = CURDATE()
-                                ORDER BY archived_date DESC
-                                LIMIT 1";
+                            UPDATE CompletedVisits 
+                            SET notes = CONCAT(notes, '\nBilling: Bill ID ', @billId, ' - Status: ', @status, ' - Archived on discharge')
+                            WHERE patient_id = @patientId 
+                            AND queue_date = CURDATE()
+                            ORDER BY archived_date DESC
+                            LIMIT 1";
 
                                     using (var cmd = new MySqlCommand(archiveBillingQuery, conn, transaction))
                                     {
                                         cmd.Parameters.AddWithValue("@billId", billId);
                                         cmd.Parameters.AddWithValue("@status", status);
                                         cmd.Parameters.AddWithValue("@patientId", patientId);
+                                        cmd.ExecuteNonQuery();
+                                    }
+
+                                    string deletePaymentTransactionsQuery = @"
+                            DELETE FROM PaymentTransactions WHERE bill_id = @billId";
+
+                                    using (var cmd = new MySqlCommand(deletePaymentTransactionsQuery, conn, transaction))
+                                    {
+                                        cmd.Parameters.AddWithValue("@billId", billId);
                                         cmd.ExecuteNonQuery();
                                     }
 
@@ -1767,10 +1834,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 }
 
                                 string clearIntakeQuery = @"
-                            UPDATE patientqueue
-                            SET reason_for_visit = NULL
-                            WHERE patient_id = @patientId
-                            AND queue_date = CURDATE()";
+                        UPDATE patientqueue
+                        SET reason_for_visit = NULL
+                        WHERE patient_id = @patientId
+                        AND queue_date = CURDATE()";
 
                                 using (var cmd = new MySqlCommand(clearIntakeQuery, conn, transaction))
                                 {
@@ -1779,10 +1846,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 }
 
                                 string deleteQueueQuery = @"
-                            DELETE FROM patientqueue
-                            WHERE patient_id = @patientId
-                            AND queue_date = CURDATE()
-                            AND status = 'Discharged'";
+                        DELETE FROM patientqueue
+                        WHERE patient_id = @patientId
+                        AND queue_date = CURDATE()
+                        AND status = 'Discharged'";
 
                                 using (var cmd = new MySqlCommand(deleteQueueQuery, conn, transaction))
                                 {
@@ -2076,11 +2143,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             string checkQueueQuery = @"
-        SELECT COUNT(*) 
-        FROM PatientQueue 
-        WHERE patient_id = @patientId 
-        AND queue_date = CURDATE()
-        AND status != 'Discharged'";
+            SELECT COUNT(*) 
+            FROM PatientQueue 
+            WHERE patient_id = @patientId 
+            AND queue_date = CURDATE()
+            AND status != 'Discharged'";
 
             int queueCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkQueueQuery,
                 new MySqlParameter("@patientId", patientId)));

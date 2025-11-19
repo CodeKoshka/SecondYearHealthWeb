@@ -138,7 +138,7 @@
             lblAge.ForeColor = Color.FromArgb(160, 174, 192);
             lblAge.Location = new Point(20, 85);
             lblAge.Name = "lblAge";
-            lblAge.Size = new Size(127, 19);
+            lblAge.Size = new Size(280, 20);
             lblAge.TabIndex = 2;
             lblAge.Text = "Age: -- | Gender: --";
             // 

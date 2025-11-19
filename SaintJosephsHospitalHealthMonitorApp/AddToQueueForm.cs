@@ -87,6 +87,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 lblPatientCount.Text = $"Available Patients: {dt.Rows.Count}";
 
+                dgvPatients.Cursor = Cursors.Hand;
+
                 if (dgvPatients.Rows.Count > 0)
                 {
                     dgvPatients.ClearSelection();
@@ -96,6 +98,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 MessageBox.Show($"Error loading patients: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void DgvPatients_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                dgvPatients.ClearSelection();
+                dgvPatients.Rows[e.RowIndex].Selected = true;
             }
         }
 

@@ -379,24 +379,25 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-                    SELECT 
-                        m.diagnosis,
-                        m.prescription,
-                        m.record_date,
-                        u1.name AS patient_name,
-                        u1.age,
-                        u1.gender,
-                        u1.email,
-                        p.blood_type,
-                        p.phone_number,
-                        p.emergency_contact,
-                        u2.name AS doctor_name
-                    FROM MedicalRecords m
-                    INNER JOIN Patients p ON m.patient_id = p.patient_id
-                    INNER JOIN Users u1 ON p.user_id = u1.user_id
-                    INNER JOIN Doctors d ON m.doctor_id = d.doctor_id
-                    INNER JOIN Users u2 ON d.user_id = u2.user_id
-                    WHERE m.record_id = @recordId";
+                SELECT 
+                m.diagnosis,
+                m.prescription,
+                m.record_date,
+                u1.name AS patient_name,
+                u1.date_of_birth,
+                u1.age,
+                u1.gender,
+                u1.email,
+                p.blood_type,
+                p.phone_number,
+                p.emergency_contact,
+                u2.name AS doctor_name
+                FROM MedicalRecords m
+                INNER JOIN Patients p ON m.patient_id = p.patient_id
+                INNER JOIN Users u1 ON p.user_id = u1.user_id
+                INNER JOIN Doctors d ON m.doctor_id = d.doctor_id
+                INNER JOIN Users u2 ON d.user_id = u2.user_id
+                WHERE m.record_id = @recordId";
 
                 DataTable dt = DatabaseHelper.ExecuteQuery(query,
                     new MySqlParameter("@recordId", recordId));
@@ -435,15 +436,32 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 };
                 panelHeader.Controls.Add(lblPatientInfo);
 
-                Label lblAge = new Label
+                Label lblAge;
+                if (row["date_of_birth"] != DBNull.Value)
                 {
-                    Text = $"Age: {age}",
-                    Font = new Font("Segoe UI", 9F),
-                    ForeColor = Color.FromArgb(200, 220, 240),
-                    Location = new Point(20, 80),
-                    Size = new Size(180, 20),
-                    BackColor = Color.Transparent
-                };
+                    DateTime dob = Convert.ToDateTime(row["date_of_birth"]);
+                    lblAge = new Label
+                    {
+                        Text = $"DOB: {dob:MM/dd/yyyy} (Age: {age})",
+                        Font = new Font("Segoe UI", 9F),
+                        ForeColor = Color.FromArgb(200, 220, 240),
+                        Location = new Point(20, 80),
+                        Size = new Size(250, 20),
+                        BackColor = Color.Transparent
+                    };
+                }
+                else
+                {
+                    lblAge = new Label
+                    {
+                        Text = $"Age: {age}",
+                        Font = new Font("Segoe UI", 9F),
+                        ForeColor = Color.FromArgb(200, 220, 240),
+                        Location = new Point(20, 80),
+                        Size = new Size(180, 20),
+                        BackColor = Color.Transparent
+                    };
+                }
                 panelHeader.Controls.Add(lblAge);
 
                 Label lblGender = new Label
