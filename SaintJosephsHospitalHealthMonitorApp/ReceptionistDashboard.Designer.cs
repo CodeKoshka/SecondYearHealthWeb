@@ -492,6 +492,7 @@
             BtnViewProfile.TabIndex = 3;
             BtnViewProfile.Text = "👁 View Profile";
             BtnViewProfile.UseVisualStyleBackColor = false;
+            BtnViewProfile.Click += BtnViewProfile_Click;
             // 
             // btnViewPatient
             // 

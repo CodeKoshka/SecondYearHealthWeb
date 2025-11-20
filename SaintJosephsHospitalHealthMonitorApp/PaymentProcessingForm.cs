@@ -300,10 +300,39 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     return;
                 }
 
+                decimal previouslyPaid = GetAmountAlreadyPaid();
+                decimal remainingBalance = totalAmount - previouslyPaid;
+
+                if (paymentAmount > remainingBalance)
+                {
+                    MessageBox.Show(
+                        "⚠️ PAYMENT EXCEEDS REMAINING BALANCE\n\n" +
+                        $"Total Bill Amount: ₱{totalAmount:N2}\n" +
+                        $"Already Paid: ₱{previouslyPaid:N2}\n" +
+                        $"Remaining Balance: ₱{remainingBalance:N2}\n\n" +
+                        $"Payment Entered: ₱{paymentAmount:N2}\n" +
+                        $"Excess Amount: ₱{(paymentAmount - remainingBalance):N2}\n\n" +
+                        "Payment amount cannot exceed the remaining balance.\n\n" +
+                        "Please enter a valid payment amount.",
+                        "Payment Exceeds Balance",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    numPaymentAmount.Focus();
+                    numPaymentAmount.Value = remainingBalance;
+                    return;
+                }
+
                 if (paymentAmount > totalAmount)
                 {
-                    MessageBox.Show("Payment amount cannot exceed the total bill amount.", "Invalid Amount",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(
+                        "⚠️ PAYMENT EXCEEDS TOTAL BILL\n\n" +
+                        $"Total Bill Amount: ₱{totalAmount:N2}\n" +
+                        $"Payment Entered: ₱{paymentAmount:N2}\n\n" +
+                        "Payment amount cannot exceed the total bill amount.\n\n" +
+                        "Please enter a valid payment amount.",
+                        "Invalid Amount",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
                     numPaymentAmount.Focus();
                     return;
                 }
@@ -311,7 +340,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 string paymentMethod = cmbPaymentMethod.SelectedItem.ToString();
                 string referenceNumber = txtReferenceNumber.Text.Trim();
                 string paymentNotes = txtPaymentNotes.Text.Trim();
-                bool isPartialPayment = chkPartialPayment.Checked || paymentAmount < totalAmount;
+                bool isPartialPayment = paymentAmount < remainingBalance;
 
                 string confirmMessage = "💳 CONFIRM PAYMENT PROCESSING\n\n" +
                     $"Patient: {patientName}\n" +
@@ -324,11 +353,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     confirmMessage += $"Reference #: {referenceNumber}\n";
                 }
 
+                if (previouslyPaid > 0)
+                {
+                    confirmMessage += $"\nPreviously Paid: ₱{previouslyPaid:N2}\n";
+                }
+
                 if (isPartialPayment)
                 {
-                    decimal remaining = totalAmount - paymentAmount;
+                    decimal newRemaining = remainingBalance - paymentAmount;
                     confirmMessage += $"\n⚠️ PARTIAL PAYMENT\n" +
-                        $"Remaining Balance: ₱{remaining:N2}\n";
+                        $"Remaining Balance: ₱{remainingBalance:N2}\n" +
+                        $"After Payment: ₱{newRemaining:N2}\n";
                 }
                 else
                 {

@@ -1622,6 +1622,26 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 object patientIdObj = selectedRow.Cells["patient_id"].Value;
                 string status = selectedRow.Cells["Status"].Value?.ToString() ?? "";
 
+                if (status.Equals("Paid", StringComparison.OrdinalIgnoreCase))
+                {
+                    string patientName = selectedRow.Cells["Patient Name"].Value?.ToString() ?? "Unknown";
+
+                    MessageBox.Show(
+                        "✅ BILL FULLY PAID - CANNOT EDIT\n\n" +
+                        $"Patient: {patientName}\n" +
+                        $"Bill ID: #{billIdObj}\n\n" +
+                        "This bill has been fully paid and cannot be edited.\n\n" +
+                        "Editing paid bills would compromise payment records and audit trails.\n\n" +
+                        "If you need to make changes:\n" +
+                        "• Contact your administrator\n" +
+                        "• Use 'View Bill' to see the details\n" +
+                        "• Create a new bill if necessary",
+                        "Cannot Edit Paid Bill",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
                 if (status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
                 {
                     string patientName = selectedRow.Cells["Patient Name"].Value?.ToString() ?? "Unknown";
@@ -1682,7 +1702,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void BtnDischargePatient_Click(object sender, EventArgs e)
         {
             if (dgvBilling.SelectedRows.Count == 0)

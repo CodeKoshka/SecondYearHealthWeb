@@ -155,15 +155,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
             cmbStatus.Enabled = false;
             txtNotes.ReadOnly = true;
             lstServices.Enabled = true;
+
             lblPaymentMethod.Visible = true;
             cmbPaymentMethod.Visible = true;
 
+            lblStatus.Visible = true;
+            cmbStatus.Visible = true;
+
             btnSave.Visible = false;
             btnCancel.Text = "Close";
+
             btnCancel.Location = new Point(
                 (this.ClientSize.Width - btnCancel.Width) / 2,
                 btnCancel.Location.Y
             );
+
             btnPrintPreview.BackColor = Color.FromArgb(52, 152, 219);
         }
 
@@ -789,7 +795,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            // Remove selected services
             foreach (ListViewItem item in lstServices.SelectedItems)
             {
                 lstServices.Items.Remove(item);

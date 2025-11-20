@@ -358,7 +358,6 @@
             grpPaymentInfo.TabIndex = 5;
             grpPaymentInfo.TabStop = false;
             grpPaymentInfo.Text = "Payment Information";
-
             // 
             // txtNotes
             // 
@@ -385,16 +384,16 @@
             cmbStatus.Font = new Font("Segoe UI", 9F);
             cmbStatus.FormattingEnabled = true;
             cmbStatus.Items.AddRange(new object[] { "Pending", "Partially Paid", "Cancelled" });
-            cmbStatus.Location = new Point(20, 50);
+            cmbStatus.Location = new Point(270, 50);
             cmbStatus.Name = "cmbStatus";
-            cmbStatus.Size = new Size(220, 23);
+            cmbStatus.Size = new Size(230, 23);
             cmbStatus.TabIndex = 3;
             // 
             // lblStatus
             // 
             lblStatus.AutoSize = true;
             lblStatus.Font = new Font("Segoe UI", 9F);
-            lblStatus.Location = new Point(20, 30);
+            lblStatus.Location = new Point(270, 30);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(42, 15);
             lblStatus.TabIndex = 2;
@@ -408,7 +407,7 @@
             cmbPaymentMethod.Items.AddRange(new object[] { "Cash", "Credit Card", "Debit Card", "Check", "Bank Transfer", "Insurance", "Mixed Payment" });
             cmbPaymentMethod.Location = new Point(20, 50);
             cmbPaymentMethod.Name = "cmbPaymentMethod";
-            cmbPaymentMethod.Size = new Size(240, 23);
+            cmbPaymentMethod.Size = new Size(230, 23);
             cmbPaymentMethod.TabIndex = 1;
             // 
             // lblPaymentMethod
