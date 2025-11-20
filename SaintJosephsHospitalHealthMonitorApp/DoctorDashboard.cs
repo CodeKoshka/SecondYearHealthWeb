@@ -330,19 +330,26 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 q.priority,
                 q.status,
                 q.registered_time,
-                q.called_time
+                q.called_time,
+                q.completed_time
                 FROM patientqueue q
                 INNER JOIN Patients p ON q.patient_id = p.patient_id
                 INNER JOIN Users u ON p.user_id = u.user_id
                 WHERE q.doctor_id = @doctorId
                 AND q.queue_date = CURDATE()
                 AND q.status IN ('Called', 'In Progress')
+                AND q.discharged_time IS NULL
                 ORDER BY 
                 CASE q.priority 
-                WHEN 'Emergency' THEN 1 
-                WHEN 'Urgent' THEN 2 
-                ELSE 3 
+                    WHEN 'Emergency' THEN 1 
+                    WHEN 'Urgent' THEN 2 
+                    ELSE 3 
                 END, 
+                CASE 
+                    WHEN q.status = 'In Progress' THEN 1
+                    WHEN q.status = 'Called' THEN 2
+                    ELSE 3
+                END,
                 q.called_time";
 
                 DataTable dtQueue = DatabaseHelper.ExecuteQuery(queryQueue,
@@ -498,7 +505,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     "✓ Medical record completed\n" +
                     "✓ Equipment report completed\n\n" +
                     "Mark this visit as completed?\n\n" +
-                    "The patient will be moved to 'Completed' status and can proceed to billing.",
+                    "The patient will be moved to 'Completed' status and can proceed to billing.\n" +
+                    "You will become available to take another patient.",
                     "Confirm Completion",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
@@ -507,13 +515,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     return;
 
                 string updateQuery = @"
-                UPDATE patientqueue 
-                SET status = 'Completed', 
+            UPDATE patientqueue 
+            SET status = 'Completed', 
                 completed_time = NOW()
-                WHERE queue_id = @queueId";
+            WHERE queue_id = @queueId";
 
                 DatabaseHelper.ExecuteNonQuery(updateQuery,
                     new MySqlParameter("@queueId", queueId));
+
+                string makeDoctorAvailableQuery = @"
+            UPDATE Doctors 
+            SET is_available = 1 
+            WHERE doctor_id = @doctorId";
+
+                DatabaseHelper.ExecuteNonQuery(makeDoctorAvailableQuery,
+                    new MySqlParameter("@doctorId", doctorId));
 
                 MessageBox.Show(
                     $"✅ VISIT COMPLETED SUCCESSFULLY\n\n" +
@@ -522,7 +538,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     "Completed Documentation:\n" +
                     "• Medical Record (Cardiac Assessment)\n" +
                     "• Equipment & Services Report\n\n" +
-                    "The patient can now proceed to the receptionist for billing.",
+                    "✓ You are now available to take another patient\n" +
+                    "✓ Patient can proceed to receptionist for billing",
                     "Success",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);

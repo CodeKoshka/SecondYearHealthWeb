@@ -32,75 +32,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void LoadDebugSettings()
         {
-            bool loadedFromDatabase = false;
-
-            try
+            if (DebugConfig.JsonConfigExists())
             {
-                string query = "SELECT setting_key, setting_value FROM DebugSettings";
-                DataTable dt = DatabaseHelper.ExecuteQuery(query);
-
-                if (dt.Rows.Count > 0)
-                {
-                    System.Diagnostics.Debug.WriteLine("[DebugForm] Loading settings from DATABASE");
-
-                    foreach (DataRow row in dt.Rows)
-                    {
-                        string key = row["setting_key"].ToString();
-                        bool value = row["setting_value"].ToString() == "1";
-
-                        switch (key)
-                        {
-                            case "EnableAdmin":
-                                enableAdmin = value;
-                                break;
-                            case "EnableReceptionist":
-                                enableReceptionist = value;
-                                break;
-                            case "EnableDoctor":
-                                enableDoctor = value;
-                                break;
-                            case "EnablePharmacist":
-                                enablePharmacist = value;
-                                break;
-                            case "CreateDefaultHeadadmin":
-                                createDefaultHeadadmin = value;
-                                break;
-                            case "CreateDefaultAdmin":
-                                createDefaultAdmin = value;
-                                break;
-                            case "CreateDefaultReceptionist":
-                                createDefaultReceptionist = value;
-                                break;
-                            case "CreateDefaultPharmacist":
-                                createDefaultPharmacist = value;
-                                break;
-                            case "CreateDefaultDoctor":
-                                createDefaultDoctor = value;
-                                break;
-                            case "CreateDefaultPatient":
-                                createDefaultPatient = value;
-                                break;
-                        }
-                    }
-                    loadedFromDatabase = true;
-                }
+                System.Diagnostics.Debug.WriteLine("[DebugForm] Loading settings from JSON FILE");
+                LoadFromJsonConfig();
             }
-            catch (Exception ex)
+            else
             {
-                System.Diagnostics.Debug.WriteLine($"[DebugForm] Failed to load from database: {ex.Message}");
-            }
-
-            if (!loadedFromDatabase)
-            {
-                if (DebugConfig.JsonConfigExists())
-                {
-                    System.Diagnostics.Debug.WriteLine("[DebugForm] Loading settings from JSON FILE");
-                    LoadFromJsonConfig();
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine("[DebugForm] Using HARDCODED DEFAULTS");
-                }
+                System.Diagnostics.Debug.WriteLine("[DebugForm] JSON not found - Using HARDCODED DEFAULTS");
             }
 
             UpdateUIFromSettings();
@@ -126,6 +65,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[DebugForm] Failed to load JSON config: {ex.Message}");
+                MessageBox.Show($"Failed to load settings from JSON. Using defaults.\n\nError: {ex.Message}",
+                    "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -144,44 +85,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void SaveDebugSettings()
         {
-            try
-            {
-                string deleteQuery = "DELETE FROM DebugSettings";
-                DatabaseHelper.ExecuteNonQuery(deleteQuery);
-
-                string insertQuery = @"INSERT INTO DebugSettings (setting_key, setting_value) VALUES 
-                ('EnableAdmin', @admin),
-                ('EnableReceptionist', @receptionist),
-                ('EnableDoctor', @doctor),
-                ('EnablePharmacist', @pharmacist),
-                ('CreateDefaultHeadadmin', @createHeadadmin),
-                ('CreateDefaultAdmin', @createAdmin),
-                ('CreateDefaultReceptionist', @createReceptionist),
-                ('CreateDefaultPharmacist', @createPharmacist),
-                ('CreateDefaultDoctor', @createDoctor),
-                ('CreateDefaultPatient', @createPatient)";
-
-                DatabaseHelper.ExecuteNonQuery(insertQuery,
-                    new MySqlParameter("@admin", enableAdmin ? "1" : "0"),
-                    new MySqlParameter("@receptionist", enableReceptionist ? "1" : "0"),
-                    new MySqlParameter("@doctor", enableDoctor ? "1" : "0"),
-                    new MySqlParameter("@pharmacist", enablePharmacist ? "1" : "0"),
-                    new MySqlParameter("@createHeadadmin", createDefaultHeadadmin ? "1" : "0"),
-                    new MySqlParameter("@createAdmin", createDefaultAdmin ? "1" : "0"),
-                    new MySqlParameter("@createReceptionist", createDefaultReceptionist ? "1" : "0"),
-                    new MySqlParameter("@createPharmacist", createDefaultPharmacist ? "1" : "0"),
-                    new MySqlParameter("@createDoctor", createDefaultDoctor ? "1" : "0"),
-                    new MySqlParameter("@createPatient", createDefaultPatient ? "1" : "0")
-                );
-
-                System.Diagnostics.Debug.WriteLine("[DebugForm] Settings saved to DATABASE");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to save to database: {ex.Message}\n\nSettings will be saved to JSON only.",
-                    "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-
             try
             {
                 DebugConfig config = new DebugConfig
@@ -203,8 +106,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to save JSON backup: {ex.Message}", "Warning",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Failed to save settings to JSON file.\n\nError: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw;
             }
         }
 
@@ -225,9 +129,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             SaveDebugSettings();
 
             MessageBox.Show("✓ Debug settings saved successfully!\n\n" +
-                           "Settings saved to:\n" +
-                           "• Database (DebugSettings table)\n" +
-                           "• JSON file (Config/debug_settings.json)\n\n" +
+                           $"Settings saved to:\n• JSON file ({DebugConfig.GetConfigFilePath()})\n\n" +
                            "Dashboard access changes take effect immediately.\n" +
                            "Default user creation settings will apply on next database initialization.\n\n" +
                            "Note: Head Admin is always created (system requirement).",

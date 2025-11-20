@@ -739,9 +739,9 @@
             lblQueueCount.ForeColor = Color.White;
             lblQueueCount.Location = new Point(989, 29);
             lblQueueCount.Name = "lblQueueCount";
-            lblQueueCount.Size = new Size(166, 19);
+            lblQueueCount.Size = new Size(121, 19);
             lblQueueCount.TabIndex = 6;
-            lblQueueCount.Text = "Total in Queue Today: 0";
+            lblQueueCount.Text = "Total in Queue: 0";
             // 
             // panelUniversalSearch
             // 

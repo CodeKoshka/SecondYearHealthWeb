@@ -62,14 +62,25 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 LoadBillBreakdown();
 
-                if (currentStatus.ToUpper() == "PARTIALLY PAID")
+                decimal amountPaid = GetAmountAlreadyPaid();
+                decimal remaining = totalAmount - amountPaid;
+
+                if (currentStatus.ToUpper() == "PARTIALLY PAID" || amountPaid > 0)
                 {
-                    decimal amountPaid = GetAmountAlreadyPaid();
-                    decimal remaining = totalAmount - amountPaid;
                     numPaymentAmount.Value = remaining;
                     numPaymentAmount.Maximum = remaining;
                     lblRemainingValue.Text = $"₱{remaining:N2}";
                     panelPartialPayment.Visible = true;
+
+                    chkPartialPayment.Checked = true;
+                    chkPartialPayment.Text = $"Remaining from ₱{totalAmount:N2} (Already paid: ₱{amountPaid:N2})";
+                }
+                else if (currentStatus.ToUpper() == "PENDING")
+                {
+                    numPaymentAmount.Value = totalAmount;
+                    numPaymentAmount.Maximum = totalAmount;
+                    panelPartialPayment.Visible = false;
+                    chkPartialPayment.Checked = false;
                 }
                 else
                 {
@@ -258,12 +269,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private void NumPaymentAmount_ValueChanged(object sender, EventArgs e)
         {
             decimal paymentAmount = numPaymentAmount.Value;
-            decimal remaining = totalAmount - paymentAmount;
+            decimal previouslyPaid = GetAmountAlreadyPaid();
+            decimal totalPaidAfterThis = previouslyPaid + paymentAmount;
+            decimal remaining = totalAmount - totalPaidAfterThis;
 
             lblRemainingValue.Text = $"₱{remaining:N2}";
             lblRemainingValue.ForeColor = remaining > 0
-                ? Color.FromArgb(243, 156, 18)
-                : Color.FromArgb(46, 204, 113);
+                ? Color.FromArgb(243, 156, 18)  
+                : Color.FromArgb(46, 204, 113); 
         }
 
         private void BtnProcessPayment_Click(object sender, EventArgs e)
@@ -351,6 +364,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (totalAmountPaid >= totalAmount)
                 {
                     newStatus = "Paid";
+
+                    if (totalAmountPaid > totalAmount)
+                    {
+                        paymentAmount = totalAmount - previouslyPaid;
+                        totalAmountPaid = totalAmount;
+                    }
                 }
                 else if (totalAmountPaid > 0)
                 {
@@ -427,7 +446,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     "Payment Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void BtnPrintReceipt_Click(object sender, EventArgs e)
         {
             string receipt = GeneratePaymentReceipt();

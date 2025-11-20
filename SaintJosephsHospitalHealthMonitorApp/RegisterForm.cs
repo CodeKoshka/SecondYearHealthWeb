@@ -425,25 +425,32 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (isEditMode)
             {
-                cmbRole.Items.AddRange(new string[] {
+                if (creatorRole == "Receptionist")
+                {
+                    cmbRole.Items.Add("Patient");
+                }
+                else
+                {
+                    cmbRole.Items.AddRange(new string[] {
                 "Admin",
                 "Receptionist",
                 "Doctor",
                 "Pharmacist",
                 "Patient"
             });
+                }
             }
             else if (creatorRole == "Registration")
             {
                 cmbRole.Items.AddRange(new string[] { "Admin", "Receptionist", "Doctor" });
             }
-            else if (creatorRole == "Headadmin")
+            else if (creatorRole == "Headadmin" || creatorRole == "Admin")
             {
                 cmbRole.Items.AddRange(new string[] { "Admin", "Receptionist", "Doctor", "Pharmacist", "Patient" });
             }
             else if (creatorRole == "Receptionist")
             {
-                cmbRole.Items.AddRange(new string[] { "Patient" });
+                cmbRole.Items.Add("Patient");
             }
             else
             {
@@ -519,6 +526,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             chkChangePassword.Visible = true;
             chkShowPassword.Visible = false;
+
+            if (creatorRole == "Receptionist")
+            {
+                cmbRole.Enabled = false;
+
+                Label lblReceptionistNote = new Label();
+                lblReceptionistNote.Text = "ℹ️ Note: Receptionists can only edit patient information, not roles";
+                lblReceptionistNote.Font = new Font("Segoe UI", 8F, FontStyle.Italic);
+                lblReceptionistNote.ForeColor = Color.FromArgb(108, 117, 125);
+                lblReceptionistNote.AutoSize = true;
+                lblReceptionistNote.Location = new Point(403, 475);
+                lblReceptionistNote.Name = "lblReceptionistNote";
+                this.Controls.Add(lblReceptionistNote);
+                lblReceptionistNote.BringToFront();
+            }
         }
 
         private void ConfigureForCreateMode()
@@ -531,12 +553,59 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (creatorRole == "Receptionist")
             {
+
                 lblEmail.Text = "Email Address (Optional)";
                 lblPassword.Visible = false;
                 txtPassword.Visible = false;
                 lblConfirmPassword.Visible = false;
                 txtConfirmPassword.Visible = false;
                 chkShowPassword.Visible = false;
+
+                cmbRole.Enabled = false;
+                cmbRole.SelectedItem = "Patient";
+
+                Label lblReceptionistInfo = new Label();
+                lblReceptionistInfo.Text = "ℹ️ Receptionists can only create Patient records";
+                lblReceptionistInfo.Font = new Font("Segoe UI", 8F, FontStyle.Italic);
+                lblReceptionistInfo.ForeColor = Color.FromArgb(0, 102, 204);
+                lblReceptionistInfo.AutoSize = true;
+                lblReceptionistInfo.Location = new Point(403, 475);
+                lblReceptionistInfo.Name = "lblReceptionistInfo";
+                this.Controls.Add(lblReceptionistInfo);
+                lblReceptionistInfo.BringToFront();
+            }
+            else if (creatorRole == "Headadmin" || creatorRole == "Admin")
+            {
+                lblEmail.Text = "Email Address *";
+                lblPassword.Visible = true;
+                txtPassword.Visible = true;
+                lblConfirmPassword.Visible = true;
+                txtConfirmPassword.Visible = true;
+                chkShowPassword.Visible = true;
+                cmbRole.Enabled = true;
+
+                cmbRole.SelectedIndexChanged += (s, e) => {
+                    if (cmbRole.SelectedItem?.ToString() == "Patient")
+                    {
+                        lblEmail.Text = "Email Address (Optional)";
+                        lblPassword.Visible = false;
+                        txtPassword.Visible = false;
+                        lblConfirmPassword.Visible = false;
+                        txtConfirmPassword.Visible = false;
+                        chkShowPassword.Visible = false;
+                        txtPassword.Clear();
+                        txtConfirmPassword.Clear();
+                    }
+                    else
+                    {
+                        lblEmail.Text = "Email Address *";
+                        lblPassword.Visible = true;
+                        txtPassword.Visible = true;
+                        lblConfirmPassword.Visible = true;
+                        txtConfirmPassword.Visible = true;
+                        chkShowPassword.Visible = true;
+                    }
+                };
             }
             else
             {
@@ -546,6 +615,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 lblConfirmPassword.Visible = true;
                 txtConfirmPassword.Visible = true;
                 chkShowPassword.Visible = true;
+                cmbRole.Enabled = true;
             }
         }
 
@@ -793,6 +863,87 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             string currentRole = cmbRole.SelectedItem.ToString();
 
+            if (creatorRole == "Receptionist")
+            {
+                if (originalRole != "Patient")
+                {
+                    MessageBox.Show(
+                        "❌ ACCESS DENIED\n\n" +
+                        "Receptionists can only edit Patient records.\n\n" +
+                        "You do not have permission to edit this user type.",
+                        "Insufficient Permissions",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (currentRole != "Patient")
+                {
+                    MessageBox.Show(
+                        "❌ ACCESS DENIED\n\n" +
+                        "Receptionists cannot change user roles.\n\n" +
+                        "A patient must remain a patient.",
+                        "Role Change Not Allowed",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            if (originalRole == "Patient" && currentRole != "Patient" && creatorRole != "Headadmin" && creatorRole != "Admin")
+            {
+                MessageBox.Show(
+                    "❌ ROLE CHANGE RESTRICTED\n\n" +
+                    "Only Administrators can change a patient to another role.\n\n" +
+                    "Patients must remain patients unless changed by an Admin.",
+                    "Insufficient Permissions",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (originalRole == "Headadmin" && chkChangePassword.Checked)
+            {
+                string checkCurrentUserQuery = "SELECT email FROM Users WHERE user_id = @userId";
+                DataTable currentUserDt = DatabaseHelper.ExecuteQuery(checkCurrentUserQuery,
+                    new MySqlParameter("@userId", userId));
+
+                if (currentUserDt.Rows.Count > 0)
+                {
+                    string headadminEmail = currentUserDt.Rows[0]["email"].ToString();
+
+                    if (creatorRole != "Headadmin")
+                    {
+                        MessageBox.Show(
+                            "⚠️ SECURITY PROTECTION\n\n" +
+                            "Only the Head Administrator can change their own password.\n\n" +
+                            "This is a security measure to protect the highest level account.",
+                            "Access Denied",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                        chkChangePassword.Checked = false;
+                        return;
+                    }
+
+                    if (headadminEmail == "Headadmin@hospital.com")
+                    {
+                        DialogResult confirm = MessageBox.Show(
+                            "🔐 CONFIRM HEAD ADMINISTRATOR PASSWORD CHANGE\n\n" +
+                            "You are about to change the Head Administrator password.\n\n" +
+                            "This is a critical security change. Are you sure?",
+                            "Confirm Password Change",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning,
+                            MessageBoxDefaultButton.Button2);
+
+                        if (confirm != DialogResult.Yes)
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+
             if (dtpDateOfBirth.Value > DateTime.Today)
             {
                 MessageBox.Show("Date of birth cannot be in the future.", "Validation Error",
@@ -900,14 +1051,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
 
                         string updateUser = @"UPDATE Users 
-                                    SET name = @name, 
-                                        email = @email, 
-                                        date_of_birth = @dateOfBirth,
-                                        age = @age, 
-                                        gender = @gender, 
-                                        role = @role,
-                                        profile_image = @profileImage
-                                    WHERE user_id = @userId";
+                            SET name = @name, 
+                                email = @email, 
+                                date_of_birth = @dateOfBirth,
+                                age = @age, 
+                                gender = @gender, 
+                                role = @role,
+                                profile_image = @profileImage
+                            WHERE user_id = @userId";
 
                         using (MySqlCommand cmdUpdate = new MySqlCommand(updateUser, conn, transaction))
                         {

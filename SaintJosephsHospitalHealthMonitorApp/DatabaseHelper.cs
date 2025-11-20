@@ -307,14 +307,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (archived_by) REFERENCES Users(user_id) ON DELETE SET NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-                    string createDebugSettingsTable = @"
-                    CREATE TABLE IF NOT EXISTS DebugSettings (
-                    setting_id INT PRIMARY KEY AUTO_INCREMENT,
-                    setting_key VARCHAR(50) NOT NULL UNIQUE,
-                    setting_value VARCHAR(10) NOT NULL,
-                    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-
                     string createServiceCategoriesTable = @"
                     CREATE TABLE IF NOT EXISTS ServiceCategories (
                     category_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -381,15 +373,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     ExecuteNonQueryInternal(conn, createStockAdjustmentTable);
                     ExecuteNonQueryInternal(conn, createCompletedVisitsTable);
                     ExecuteNonQueryInternal(conn, createPaymentTransactionsTable);
-                    ExecuteNonQueryInternal(conn, createDebugSettingsTable);
 
                     ExecuteNonQueryInternal(conn, createServiceCategoriesTable);
                     ExecuteNonQueryInternal(conn, createServicesTable);
                     ExecuteNonQueryInternal(conn, createBillServicesTable);
 
                     InsertDefaultUsers(conn);
-                    InsertDefaultDebugSettings(conn);
-
 
                     try
                     {
@@ -469,30 +458,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-
-
-        private static bool IsDefaultUserEnabled(MySqlConnection conn, string userType)
+        private static bool IsDefaultUserEnabled(string userType)
         {
-            try
-            {
-                string query = "SELECT setting_value FROM DebugSettings WHERE setting_key = @key";
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@key", $"CreateDefault{userType}");
-                    object result = cmd.ExecuteScalar();
-
-                    if (result != null)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Loading CreateDefault{userType} from DATABASE");
-                        return result.ToString() == "1";
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Database read failed for {userType}: {ex.Message}");
-            }
-
             try
             {
                 if (DebugConfig.JsonConfigExists())
@@ -521,9 +488,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] JSON read failed for {userType}: {ex.Message}");
             }
+
             System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Using HARDCODED DEFAULT for CreateDefault{userType}");
             return userType == "Headadmin" || userType == "Admin" || userType == "Receptionist";
         }
+
 
         private static byte[] LoadDefaultProfileImage()
         {
@@ -565,7 +534,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             byte[] defaultImage = LoadDefaultProfileImage();
 
-            if (IsDefaultUserEnabled(conn, "Headadmin"))
+            if (IsDefaultUserEnabled("Headadmin"))
             {
                 string checkHeadadmin = "SELECT COUNT(*) FROM Users WHERE email = 'Headadmin@hospital.com'";
                 object adminResult = ExecuteScalarInternal(conn, checkHeadadmin);
@@ -579,8 +548,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         headAdminAge--;
 
                     string insertHeadadmin = @"
-                    INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-                    VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', @dob, @age, 'Other', NULL, @profileImage)";
+            INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+            VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', @dob, @age, 'Other', NULL, @profileImage)";
 
                     using (MySqlCommand cmd = new MySqlCommand(insertHeadadmin, conn))
                     {
@@ -597,7 +566,48 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (IsDefaultUserEnabled(conn, "Receptionist"))
+            if (IsDefaultUserEnabled("Admin"))
+            {
+                string checkAdmin = "SELECT COUNT(*) FROM Users WHERE email = 'Admin@hospital.com'";
+                object adminResult = ExecuteScalarInternal(conn, checkAdmin);
+                long adminExists = Convert.ToInt64(adminResult);
+
+                if (adminExists == 0)
+                {
+                    string getHeadadminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
+                    object headadminIdResult = ExecuteScalarInternal(conn, getHeadadminId);
+
+                    if (headadminIdResult != null && headadminIdResult != DBNull.Value)
+                    {
+                        long headadminId = Convert.ToInt64(headadminIdResult);
+
+                        DateTime adminDob = new DateTime(1992, 3, 10);
+                        int adminAge = DateTime.Today.Year - adminDob.Year;
+                        if (adminDob.Date > DateTime.Today.AddYears(-adminAge))
+                            adminAge--;
+
+                        string insertAdmin = @"
+                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                VALUES ('Admin', 'Admin', 'Admin@hospital.com', 'admin123', @dob, @age, 'Other', @createdBy, @profileImage)";
+
+                        using (MySqlCommand cmdAdmin = new MySqlCommand(insertAdmin, conn))
+                        {
+                            cmdAdmin.Parameters.AddWithValue("@dob", adminDob);
+                            cmdAdmin.Parameters.AddWithValue("@age", adminAge);
+                            cmdAdmin.Parameters.AddWithValue("@createdBy", headadminId);
+
+                            if (defaultImage != null)
+                                cmdAdmin.Parameters.AddWithValue("@profileImage", defaultImage);
+                            else
+                                cmdAdmin.Parameters.AddWithValue("@profileImage", DBNull.Value);
+
+                            cmdAdmin.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+
+            if (IsDefaultUserEnabled("Receptionist"))
             {
                 string checkReceptionist = "SELECT COUNT(*) FROM Users WHERE email = 'Receptionist@hospital.com'";
                 object receptionistResult = ExecuteScalarInternal(conn, checkReceptionist);
@@ -605,8 +615,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 if (receptionistExists == 0)
                 {
-                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
-                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
+                    string getHeadadminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
+                    object adminIdResult = ExecuteScalarInternal(conn, getHeadadminId);
 
                     if (adminIdResult != null && adminIdResult != DBNull.Value)
                     {
@@ -618,8 +628,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             receptionistAge--;
 
                         string insertreceptionist = @"
-                        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-                        VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', @dob, @age, 'Female', @createdBy, @profileImage)";
+                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', @dob, @age, 'Female', @createdBy, @profileImage)";
 
                         using (MySqlCommand cmdReceptionist = new MySqlCommand(insertreceptionist, conn))
                         {
@@ -638,7 +648,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (IsDefaultUserEnabled(conn, "Pharmacist"))
+            if (IsDefaultUserEnabled("Pharmacist"))
             {
                 string checkPharmacist = "SELECT COUNT(*) FROM Users WHERE email = 'Pharmacist@hospital.com'";
                 object pharmacistResult = ExecuteScalarInternal(conn, checkPharmacist);
@@ -646,8 +656,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 if (pharmacistExists == 0)
                 {
-                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
-                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
+                    string getHeadadminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
+                    object adminIdResult = ExecuteScalarInternal(conn, getHeadadminId);
 
                     if (adminIdResult != null && adminIdResult != DBNull.Value)
                     {
@@ -659,8 +669,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             pharmacistAge--;
 
                         string insertPharmacist = @"
-                        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-                        VALUES ('Pharmacist', 'Pharmacist', 'Pharmacist@hospital.com', 'pharmacist123', @dob, @age, 'Other', @createdBy, @profileImage)";
+                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                VALUES ('Pharmacist', 'Pharmacist', 'Pharmacist@hospital.com', 'pharmacist123', @dob, @age, 'Other', @createdBy, @profileImage)";
 
                         using (MySqlCommand cmdPharmacist = new MySqlCommand(insertPharmacist, conn))
                         {
@@ -681,8 +691,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         long pharmacistId = Convert.ToInt64(pharmacistIdResult);
 
                         string insertPharmacistStaff = @"
-                        INSERT INTO Staff (user_id, position, department)
-                        VALUES (@userId, 'Pharmacist', 'Pharmacy')";
+                INSERT INTO Staff (user_id, position, department)
+                VALUES (@userId, 'Pharmacist', 'Pharmacy')";
 
                         using (MySqlCommand cmdPharmacistStaff = new MySqlCommand(insertPharmacistStaff, conn))
                         {
@@ -693,7 +703,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (IsDefaultUserEnabled(conn, "Doctor"))
+            if (IsDefaultUserEnabled("Doctor"))
             {
                 string checkDoctor = "SELECT COUNT(*) FROM Users WHERE email = 'Doctor@hospital.com'";
                 object doctorResult = ExecuteScalarInternal(conn, checkDoctor);
@@ -701,8 +711,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 if (doctorExists == 0)
                 {
-                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
-                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
+                    string getHeadadminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
+                    object adminIdResult = ExecuteScalarInternal(conn, getHeadadminId);
 
                     if (adminIdResult != null && adminIdResult != DBNull.Value)
                     {
@@ -714,8 +724,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             doctorAge--;
 
                         string insertDoctor = @"
-                        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-                        VALUES ('Dr. Sample Doctor', 'Doctor', 'Doctor@hospital.com', 'doctor123', @dob, @age, 'Male', @createdBy, @profileImage)";
+                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                VALUES ('Dr. Sample Doctor', 'Doctor', 'Doctor@hospital.com', 'doctor123', @dob, @age, 'Male', @createdBy, @profileImage)";
 
                         using (MySqlCommand cmdDoctor = new MySqlCommand(insertDoctor, conn))
                         {
@@ -736,8 +746,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         long doctorId = Convert.ToInt64(doctorIdResult);
 
                         string insertDoctorRecord = @"
-                        INSERT INTO Doctors (user_id, specialization, is_available)
-                        VALUES (@userId, 'Clinical Cardiologist', 1)";
+                INSERT INTO Doctors (user_id, specialization, is_available)
+                VALUES (@userId, 'Clinical Cardiologist', 1)";
 
                         using (MySqlCommand cmdDoctorRecord = new MySqlCommand(insertDoctorRecord, conn))
                         {
@@ -748,7 +758,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (IsDefaultUserEnabled(conn, "Patient"))
+            if (IsDefaultUserEnabled("Patient"))
             {
                 string checkPatient = "SELECT COUNT(*) FROM Users WHERE email = 'Patient@hospital.com'";
                 object patientResult = ExecuteScalarInternal(conn, checkPatient);
@@ -756,8 +766,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 if (patientExists == 0)
                 {
-                    string getAdminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
-                    object adminIdResult = ExecuteScalarInternal(conn, getAdminId);
+                    string getHeadadminId = "SELECT user_id FROM Users WHERE email = 'Headadmin@hospital.com' LIMIT 1";
+                    object adminIdResult = ExecuteScalarInternal(conn, getHeadadminId);
 
                     if (adminIdResult != null && adminIdResult != DBNull.Value)
                     {
@@ -769,8 +779,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             patientAge--;
 
                         string insertPatient = @"
-                        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-                        VALUES ('Sample Patient', 'Patient', 'Patient@hospital.com', 'PATIENT_NO_LOGIN', @dob, @age, 'Female', @createdBy, @profileImage)";
+                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                VALUES ('Sample Patient', 'Patient', 'Patient@hospital.com', 'PATIENT_NO_LOGIN', @dob, @age, 'Female', @createdBy, @profileImage)";
 
                         using (MySqlCommand cmdPatient = new MySqlCommand(insertPatient, conn))
                         {
@@ -791,8 +801,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         long patientUserId = Convert.ToInt64(patientUserIdResult);
 
                         string insertPatientRecord = @"
-                        INSERT INTO Patients (user_id, blood_type, medical_history)
-                        VALUES (@userId, 'O+', 'Sample patient for testing')";
+                INSERT INTO Patients (user_id, blood_type, medical_history)
+                VALUES (@userId, 'O+', 'Sample patient for testing')";
 
                         using (MySqlCommand cmdPatientRecord = new MySqlCommand(insertPatientRecord, conn))
                         {
@@ -801,31 +811,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
                     }
                 }
-            }
-        }
-
-        private static void InsertDefaultDebugSettings(MySqlConnection conn)
-        {
-            string checkSettings = "SELECT COUNT(*) FROM DebugSettings";
-            object result = ExecuteScalarInternal(conn, checkSettings);
-            long settingsCount = Convert.ToInt64(result);
-
-            if (settingsCount == 0)
-            {
-                string insertDefaults = @"
-                INSERT INTO DebugSettings (setting_key, setting_value) VALUES 
-                ('EnableHeadadmin', '1'),
-                ('EnableAdmin', '1'),
-                ('EnableReceptionist', '1'),
-                ('EnableDoctor', '1'),
-                ('EnablePharmacist', '0'),
-                ('CreateDefaultHeadadmin', '1'),
-                ('CreateDefaultReceptionist', '1'),
-                ('CreateDefaultPharmacist', '0'),
-                ('CreateDefaultDoctor', '0'),
-                ('CreateDefaultPatient', '0')";
-
-                ExecuteNonQueryInternal(conn, insertDefaults);
             }
         }
 

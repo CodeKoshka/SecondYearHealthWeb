@@ -515,7 +515,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
 
                 int queueCount = dtQueue.Rows.Count;
-                lblQueueCount.Text = $"Total in Queue Today: {queueCount}";
+                lblQueueCount.Text = $"Total in Queue: {queueCount}";
 
                 lblQueueCount.Location = new Point(
                     panelHeader.Width - lblQueueCount.Width - 20,
@@ -1979,6 +1979,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             string status = dgvQueue.SelectedRows[0].Cells["status"].Value.ToString();
             string doctorName = dgvQueue.SelectedRows[0].Cells["Doctor"].Value.ToString();
+            int queueId = Convert.ToInt32(dgvQueue.SelectedRows[0].Cells["queue_id"].Value);
 
             if (doctorName == "Not Assigned")
             {
@@ -2001,22 +2002,81 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             try
             {
-                int queueId = Convert.ToInt32(dgvQueue.SelectedRows[0].Cells["queue_id"].Value);
+                string getDoctorQuery = "SELECT doctor_id FROM PatientQueue WHERE queue_id = @queueId";
+                object doctorIdObj = DatabaseHelper.ExecuteScalar(getDoctorQuery,
+                    new MySqlParameter("@queueId", queueId));
+
+                if (doctorIdObj == null || doctorIdObj == DBNull.Value)
+                {
+                    MessageBox.Show(
+                        "❌ NO DOCTOR ASSIGNED\n\n" +
+                        "Please assign a doctor to this patient first.",
+                        "Doctor Required",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int assignedDoctorId = Convert.ToInt32(doctorIdObj);
+
+                string checkActivePatients = @"
+            SELECT COUNT(*) 
+            FROM patientqueue 
+            WHERE doctor_id = @doctorId 
+            AND queue_date = CURDATE()
+            AND status IN ('Called', 'In Progress')";
+
+                int activePatientCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkActivePatients,
+                    new MySqlParameter("@doctorId", assignedDoctorId)));
+
+                if (activePatientCount > 0)
+                {
+                    MessageBox.Show(
+                        "❌ DOCTOR IS BUSY\n\n" +
+                        $"Doctor: {doctorName}\n\n" +
+                        "This doctor is currently busy with another patient.\n\n" +
+                        "Please wait for them to complete their current consultation\n" +
+                        "or assign a different doctor to this patient.",
+                        "Doctor Unavailable",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
                 string patientName = dgvQueue.SelectedRows[0].Cells["Patient"].Value.ToString();
                 int queueNumber = Convert.ToInt32(dgvQueue.SelectedRows[0].Cells["queue_number"].Value);
 
-                string query = @"UPDATE PatientQueue 
-                               SET status = 'Called', called_time = NOW()
-                               WHERE queue_id = @queueId";
-                DatabaseHelper.ExecuteNonQuery(query, new MySqlParameter("@queueId", queueId));
+                string updateQueueQuery = @"
+            UPDATE PatientQueue 
+            SET status = 'Called', called_time = NOW()
+            WHERE queue_id = @queueId";
 
-                MessageBox.Show($"Now calling: Queue #{queueNumber} - {patientName}", "Patient Called",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DatabaseHelper.ExecuteNonQuery(updateQueueQuery,
+                    new MySqlParameter("@queueId", queueId));
+
+                string updateDoctorQuery = @"
+            UPDATE Doctors 
+            SET is_available = 0 
+            WHERE doctor_id = @doctorId";
+
+                DatabaseHelper.ExecuteNonQuery(updateDoctorQuery,
+                    new MySqlParameter("@doctorId", assignedDoctorId));
+
+                MessageBox.Show(
+                    $"✅ PATIENT CALLED\n\n" +
+                    $"Queue #{queueNumber} - {patientName}\n\n" +
+                    $"Assigned to: {doctorName}\n\n" +
+                    "The doctor's status is now 'Busy'.\n" +
+                    "They will be available again after completing this consultation.",
+                    "Patient Called",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
                 LoadData();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: " + ex.Message, "Error",
+                MessageBox.Show($"Error calling patient: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -2244,6 +2304,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 "• Gender\n" +
                 "• Email (optional)\n" +
                 "• Profile Photo\n\n" +
+                "⚠️ Note: Patient role cannot be changed.\n\n" +
                 "Continue?",
                 "Edit Patient",
                 MessageBoxButtons.YesNo,
@@ -2502,7 +2563,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
                 else
                 {
-                    ShowDetailedMedicalHistory(patientId, patientName, recordCount, visitCount);
+                    using (ShowDetailedMedicalHistoryForm historyForm = new ShowDetailedMedicalHistoryForm(
+                        patientId,
+                        patientName,
+                        recordCount,
+                        visitCount,
+                        currentUser.UserId,
+                        currentUser.Role))
+                    {
+                        historyForm.ShowDialog();
+                    }
                 }
             }
             catch (Exception ex)
@@ -2510,210 +2580,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 MessageBox.Show($"Error checking medical history: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void ShowDetailedMedicalHistory(int patientId, string patientName, int recordCount, int visitCount)
-        {
-            Form historyForm = new Form
-            {
-                Text = $"Medical History - {patientName}",
-                Size = new Size(1200, 750),
-                StartPosition = FormStartPosition.CenterParent,
-                FormBorderStyle = FormBorderStyle.FixedDialog,
-                MaximizeBox = false,
-                BackColor = Color.FromArgb(240, 245, 250)
-            };
-
-            Panel headerPanel = new Panel
-            {
-                BackColor = Color.FromArgb(156, 39, 176),
-                Dock = DockStyle.Top,
-                Height = 100
-            };
-
-            Label lblTitle = new Label
-            {
-                Text = $"📋 Complete Medical History - {patientName}",
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                ForeColor = Color.White,
-                Location = new Point(20, 15),
-                AutoSize = true
-            };
-
-            Label lblStats = new Label
-            {
-                Text = $"Medical Records: {recordCount} | Total Visits: {visitCount}",
-                Font = new Font("Segoe UI", 11),
-                ForeColor = Color.White,
-                Location = new Point(20, 50),
-                AutoSize = true
-            };
-
-            Label lblInstruction = new Label
-            {
-                Text = "Double-click any record to view full medical documentation",
-                Font = new Font("Segoe UI", 9, FontStyle.Italic),
-                ForeColor = Color.FromArgb(220, 220, 220),
-                Location = new Point(20, 75),
-                AutoSize = true
-            };
-
-            headerPanel.Controls.AddRange(new Control[] { lblTitle, lblStats, lblInstruction });
-
-            DataGridView dgvHistory = new DataGridView
-            {
-                Location = new Point(20, 120),
-                Size = new Size(1150, 520),
-                BackgroundColor = Color.White,
-                BorderStyle = BorderStyle.None,
-                AllowUserToAddRows = false,
-                AllowUserToDeleteRows = false,
-                ReadOnly = true,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                MultiSelect = false,
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
-                RowTemplate = { Height = 40 }
-            };
-
-            string query = @"
-                SELECT 
-                mr.record_id,
-                DATE_FORMAT(mr.record_date, '%Y-%m-%d %H:%i') AS 'Date & Time',
-                mr.visit_type AS 'Visit Type',
-                u.name AS 'Attending Doctor',
-                CASE 
-                    WHEN LENGTH(mr.diagnosis) > 100 
-                    THEN CONCAT(SUBSTRING(mr.diagnosis, 1, 100), '...')
-                    ELSE mr.diagnosis
-                END AS 'Clinical Summary',
-                CASE 
-                    WHEN mr.prescription IS NOT NULL AND mr.prescription != '' 
-                    THEN 'Yes' 
-                    ELSE 'No' 
-                END AS 'Rx',
-                CASE 
-                    WHEN mr.lab_tests IS NOT NULL AND mr.lab_tests != '' 
-                    THEN 'Yes' 
-                    ELSE 'No' 
-                END AS 'Labs'
-                FROM MedicalRecords mr
-                INNER JOIN Doctors d ON mr.doctor_id = d.doctor_id
-                INNER JOIN Users u ON d.user_id = u.user_id
-                WHERE mr.patient_id = @patientId
-                ORDER BY mr.record_date DESC";
-
-            DataTable dt = DatabaseHelper.ExecuteQuery(query, new MySqlParameter("@patientId", patientId));
-            dgvHistory.DataSource = dt;
-
-            dgvHistory.DataBindingComplete += (s, ev) =>
-            {
-                if (dgvHistory.Columns["record_id"] != null)
-                {
-                    dgvHistory.Columns["record_id"].Visible = false;
-                }
-                if (dgvHistory.Columns["Date & Time"] != null)
-                {
-                    dgvHistory.Columns["Date & Time"].Width = 150;
-                }
-                if (dgvHistory.Columns["Visit Type"] != null)
-                {
-                    dgvHistory.Columns["Visit Type"].Width = 120;
-                }
-                if (dgvHistory.Columns["Attending Doctor"] != null)
-                {
-                    dgvHistory.Columns["Attending Doctor"].Width = 150;
-                }
-                if (dgvHistory.Columns["Rx"] != null)
-                {
-                    dgvHistory.Columns["Rx"].Width = 50;
-                }
-                if (dgvHistory.Columns["Labs"] != null)
-                {
-                    dgvHistory.Columns["Labs"].Width = 50;
-                }
-            };
-
-            dgvHistory.CellDoubleClick += (s, ev) =>
-            {
-                if (ev.RowIndex >= 0)
-                {
-                    int recordId = Convert.ToInt32(dgvHistory.Rows[ev.RowIndex].Cells["record_id"].Value);
-                    ShowEnhancedMedicalRecord(recordId);
-                }
-            };
-
-            Button btnViewDetails = new Button
-            {
-                Text = "👁️ View Full Record",
-                Size = new Size(180, 45),
-                Location = new Point(20, 660),
-                BackColor = Color.FromArgb(52, 152, 219),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btnViewDetails.FlatAppearance.BorderSize = 0;
-            btnViewDetails.Click += (s, ev) =>
-            {
-                if (dgvHistory.SelectedRows.Count > 0)
-                {
-                    int recordId = Convert.ToInt32(dgvHistory.SelectedRows[0].Cells["record_id"].Value);
-                    ShowEnhancedMedicalRecord(recordId);
-                }
-                else
-                {
-                    MessageBox.Show("Please select a record to view.", "Selection Required",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            };
-
-            Button btnPrint = new Button
-            {
-                Text = "🖨️ Print History",
-                Size = new Size(150, 45),
-                Location = new Point(210, 660),
-                BackColor = Color.FromArgb(149, 165, 166),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btnPrint.FlatAppearance.BorderSize = 0;
-            btnPrint.Click += (s, ev) =>
-            {
-                MessageBox.Show("Print functionality will be implemented in future update.",
-                    "Coming Soon", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            };
-
-            Button btnClose = new Button
-            {
-                Text = "✓ Close",
-                Size = new Size(150, 45),
-                Location = new Point(1020, 660),
-                BackColor = Color.FromArgb(52, 152, 219),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btnClose.FlatAppearance.BorderSize = 0;
-            btnClose.Click += (s, ev) => historyForm.Close();
-
-            historyForm.Controls.AddRange(new Control[] {
-                headerPanel, dgvHistory, btnViewDetails, btnPrint, btnClose
-            });
-            historyForm.ShowDialog();
-        }
-
-        private void ShowEnhancedMedicalRecord(int recordId)
-        {
-            MedicalRecordForm viewer = MedicalRecordForm.CreateViewMode(
-                recordId,
-                currentUser.UserId,
-                currentUser.Role
-            );
-            viewer.ShowDialog();
         }
 
         public class UniversalSearchItem
