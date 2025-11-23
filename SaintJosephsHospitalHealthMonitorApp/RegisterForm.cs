@@ -1154,9 +1154,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            if (creatorRole != "Headadmin" && role == "Patient")
+            if (creatorRole != "Headadmin" && creatorRole != "Admin" && creatorRole != "Receptionist" && role == "Patient")
             {
-                MessageBox.Show("Only Head Admin can create Patient records directly.", "Access Denied",
+                MessageBox.Show("Only Head Admin, Admin, or Receptionist can create Patient records.", "Access Denied",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }

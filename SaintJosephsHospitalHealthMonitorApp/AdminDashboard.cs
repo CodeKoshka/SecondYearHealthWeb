@@ -1522,7 +1522,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
             BillingForm billForm = new BillingForm(currentUser.UserId, selectedPatientId);
             billForm.FormClosed += (s, args) => LoadData();
             billForm.ShowDialog();
-        }    
+        }
+
+        private void btnGenerateIncomeReport_Click(object sender, EventArgs e)
+        {
+            IncomeReportForm reportForm = new IncomeReportForm();
+            reportForm.ShowDialog();
+        }
 
         private void BtnLogout_Click(object sender, EventArgs e)
         {

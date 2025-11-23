@@ -58,6 +58,7 @@
             tabBilling = new TabPage();
             dgvBilling = new DataGridView();
             panelBillingButtons = new Panel();
+            btnGenerateIncomeReport = new Button();
             btnViewBillDetails = new Button();
             billBtnShadow = new Panel();
             panelHeader = new Panel();
@@ -481,6 +482,7 @@
             // panelBillingButtons
             // 
             panelBillingButtons.BackColor = Color.White;
+            panelBillingButtons.Controls.Add(btnGenerateIncomeReport);
             panelBillingButtons.Controls.Add(btnViewBillDetails);
             panelBillingButtons.Controls.Add(billBtnShadow);
             panelBillingButtons.Dock = DockStyle.Top;
@@ -489,6 +491,23 @@
             panelBillingButtons.Padding = new Padding(20, 15, 20, 15);
             panelBillingButtons.Size = new Size(1165, 80);
             panelBillingButtons.TabIndex = 1;
+            // 
+            // btnGenerateIncomeReport
+            // 
+            btnGenerateIncomeReport.BackColor = Color.FromArgb(66, 153, 225);
+            btnGenerateIncomeReport.Cursor = Cursors.Hand;
+            btnGenerateIncomeReport.FlatAppearance.BorderSize = 0;
+            btnGenerateIncomeReport.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
+            btnGenerateIncomeReport.FlatStyle = FlatStyle.Flat;
+            btnGenerateIncomeReport.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnGenerateIncomeReport.ForeColor = Color.White;
+            btnGenerateIncomeReport.Location = new Point(216, 15);
+            btnGenerateIncomeReport.Name = "btnGenerateIncomeReport";
+            btnGenerateIncomeReport.Size = new Size(190, 45);
+            btnGenerateIncomeReport.TabIndex = 4;
+            btnGenerateIncomeReport.Text = "📄 View Income";
+            btnGenerateIncomeReport.UseVisualStyleBackColor = false;
+            btnGenerateIncomeReport.Click += btnGenerateIncomeReport_Click;
             // 
             // btnViewBillDetails
             // 
@@ -798,5 +817,6 @@
 
             return dgv;
         }
+        private Button btnGenerateIncomeReport;
     }
 }
