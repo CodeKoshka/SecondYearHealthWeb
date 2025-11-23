@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|c:\\users\\josep\\source\\repos\\saintjosephshospitalhealthmonitorapp\\saintjosephshospitalhealthmonitorapp\\admindashboard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|solutionrelative:saintjosephshospitalhealthmonitorapp\\admindashboard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\saintjosephshospitalhealthmonitorapp\\admindashboard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|solutionrelative:saintjosephshospitalhealthmonitorapp\\admindashboard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|c:\\users\\josep\\source\\repos\\saintjosephshospitalhealthmonitorapp\\saintjosephshospitalhealthmonitorapp\\admindashboard.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|solutionrelative:saintjosephshospitalhealthmonitorapp\\admindashboard.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|c:\\users\\josep\\source\\repos\\saintjosephshospitalhealthmonitorapp\\saintjosephshospitalhealthmonitorapp\\debugconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|solutionrelative:saintjosephshospitalhealthmonitorapp\\debugconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -15,7 +27,7 @@
       "RelativeMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|solutionrelative:saintjosephshospitalhealthmonitorapp\\debugform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|c:\\users\\josep\\source\\repos\\saintjosephshospitalhealthmonitorapp\\saintjosephshospitalhealthmonitorapp\\debugform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\saintjosephshospitalhealthmonitorapp\\debugform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|solutionrelative:saintjosephshospitalhealthmonitorapp\\debugform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -25,10 +37,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|c:\\users\\josep\\source\\repos\\saintjosephshospitalhealthmonitorapp\\saintjosephshospitalhealthmonitorapp\\registerform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|solutionrelative:saintjosephshospitalhealthmonitorapp\\registerform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\saintjosephshospitalhealthmonitorapp\\admindashboard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|solutionrelative:saintjosephshospitalhealthmonitorapp\\admindashboard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|c:\\users\\josep\\source\\repos\\saintjosephshospitalhealthmonitorapp\\saintjosephshospitalhealthmonitorapp\\incomereportform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -41,14 +49,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|c:\\users\\josep\\source\\repos\\saintjosephshospitalhealthmonitorapp\\saintjosephshospitalhealthmonitorapp\\incomereportform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|solutionrelative:saintjosephshospitalhealthmonitorapp\\incomereportform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|c:\\users\\josep\\source\\repos\\saintjosephshospitalhealthmonitorapp\\saintjosephshospitalhealthmonitorapp\\admindashboard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|solutionrelative:saintjosephshospitalhealthmonitorapp\\admindashboard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|c:\\users\\josep\\source\\repos\\saintjosephshospitalhealthmonitorapp\\saintjosephshospitalhealthmonitorapp\\admindashboard.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|solutionrelative:saintjosephshospitalhealthmonitorapp\\admindashboard.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7362BA2F-973B-473D-A931-60BBC38F0BD2}|SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp.csproj|c:\\users\\josep\\source\\repos\\saintjosephshospitalhealthmonitorapp\\saintjosephshospitalhealthmonitorapp\\paymentprocessingform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -138,11 +138,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 47,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 10,
           "Children": [
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "LoginForm.cs",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\LoginForm.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\LoginForm.cs",
@@ -150,12 +154,11 @@
               "RelativeToolTip": "SaintJosephsHospitalHealthMonitorApp\\LoginForm.cs",
               "ViewState": "AgIAAMoAAAAAAAAAAAAgwMcAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-23T08:14:49.302Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-23T08:14:49.302Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "DebugForm.Designer.cs",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\DebugForm.Designer.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\DebugForm.Designer.cs",
@@ -163,41 +166,34 @@
               "RelativeToolTip": "SaintJosephsHospitalHealthMonitorApp\\DebugForm.Designer.cs",
               "ViewState": "AgIAABQAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-23T08:06:14.653Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-23T08:06:14.653Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "DebugForm.cs [Design]",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\DebugForm.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\DebugForm.cs",
               "ToolTip": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\DebugForm.cs [Design]",
               "RelativeToolTip": "SaintJosephsHospitalHealthMonitorApp\\DebugForm.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-23T08:06:15.225Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-11-23T08:06:15.225Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "DebugConfig.cs",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\DebugConfig.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\DebugConfig.cs",
               "ToolTip": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\DebugConfig.cs",
               "RelativeToolTip": "SaintJosephsHospitalHealthMonitorApp\\DebugConfig.cs",
-              "ViewState": "AgIAAHoAAAAAAAAAAAAqwI8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAHoAAAAAAAAAAAAqwJcAAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-23T08:03:25.981Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+              "WhenOpened": "2025-11-23T08:03:25.981Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "RegisterForm.Designer.cs",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\RegisterForm.Designer.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\RegisterForm.Designer.cs",
@@ -209,7 +205,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "IncomeReportForm.Designer.cs",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\IncomeReportForm.Designer.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\IncomeReportForm.Designer.cs",
@@ -221,7 +217,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 11,
               "Title": "IncomeReportForm.cs",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\IncomeReportForm.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\IncomeReportForm.cs",
@@ -234,7 +230,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 10,
               "Title": "IncomeReportForm.cs [Design]",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\IncomeReportForm.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\IncomeReportForm.cs",
@@ -245,25 +241,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 2,
               "Title": "AdminDashboard.Designer.cs",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.Designer.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.Designer.cs",
               "ToolTip": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.Designer.cs",
               "RelativeToolTip": "SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.Designer.cs",
-              "ViewState": "AgIAABYAAAAAAAAAAAAQwBYAAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAANcAAAAAAAAAAAAgwDUDAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-20T21:11:20.515Z"
+              "WhenOpened": "2025-11-20T21:11:20.515Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 0,
               "Title": "AdminDashboard.cs",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.cs",
               "ToolTip": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.cs",
               "RelativeToolTip": "SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.cs",
-              "ViewState": "AgIAANgFAAAAAAAAAAAtwPYFAABOAAAAAAAAAA==",
+              "ViewState": "AgIAAGECAAAAAAAAAAAvwC8CAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-20T20:51:13.558Z",
               "EditorCaption": ""
@@ -330,18 +327,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 1,
               "Title": "AdminDashboard.cs [Design]",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.cs",
               "ToolTip": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.cs [Design]",
               "RelativeToolTip": "SaintJosephsHospitalHealthMonitorApp\\AdminDashboard.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-20T07:30:00.712Z"
+              "WhenOpened": "2025-11-20T07:30:00.712Z",
+              "EditorCaption": " [Design]"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "RegisterForm.cs",
               "DocumentMoniker": "C:\\Users\\josep\\source\\repos\\SaintJosephsHospitalHealthMonitorApp\\SaintJosephsHospitalHealthMonitorApp\\RegisterForm.cs",
               "RelativeDocumentMoniker": "SaintJosephsHospitalHealthMonitorApp\\RegisterForm.cs",
@@ -349,8 +347,7 @@
               "RelativeToolTip": "SaintJosephsHospitalHealthMonitorApp\\RegisterForm.cs",
               "ViewState": "AgIAADcEAAAAAAAAAAAowE8EAABIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-20T07:15:46.657Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-20T07:15:46.657Z"
             },
             {
               "$type": "Document",
@@ -362,8 +359,7 @@
               "RelativeToolTip": "SaintJosephsHospitalHealthMonitorApp\\DebugForm.cs",
               "ViewState": "AgIAABIAAAAAAAAAAAAUwB4AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-20T07:03:57.573Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-20T07:03:57.573Z"
             },
             {
               "$type": "Document",

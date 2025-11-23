@@ -26,60 +26,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             currentUser = user;
             InitializeComponent();
-            EnsureDataGridViewsExist();
             ApplyStyle();
             UpdateUserDisplay();
             ConfigureAllDataGridViews();
             InitializeUniversalSearch();
             LoadData();
             LoadUserProfile();
-        }
-
-        private void EnsureDataGridViewsExist()
-        {
-            if (dgvUsers == null)
-            {
-                dgvUsers = CreateStyledDataGridView();
-                dgvUsers.Name = "dgvUsers";
-                tabAllUsers.Controls.Add(dgvUsers);
-            }
-
-            if (dgvAdmins == null)
-            {
-                dgvAdmins = CreateStyledDataGridView();
-                dgvAdmins.Name = "dgvAdmins";
-                tabAdmins.Controls.Add(dgvAdmins);
-            }
-
-            if (dgvDoctors == null)
-            {
-                dgvDoctors = CreateStyledDataGridView();
-                dgvDoctors.Name = "dgvDoctors";
-                tabDoctors.Controls.Add(dgvDoctors);
-            }
-
-            if (dgvStaff == null)
-            {
-                dgvStaff = CreateStyledDataGridView();
-                dgvStaff.Name = "dgvStaff";
-                tabStaff.Controls.Add(dgvStaff);
-            }
-
-            if (dgvPatients == null)
-            {
-                dgvPatients = CreateStyledDataGridView();
-                dgvPatients.Name = "dgvPatients";
-                tabMedicalRecords.Controls.Add(dgvPatients);
-                dgvPatients.BringToFront();
-            }
-
-            if (dgvBilling == null)
-            {
-                dgvBilling = CreateStyledDataGridView();
-                dgvBilling.Name = "dgvBilling";
-                tabBilling.Controls.Add(dgvBilling);
-                dgvBilling.BringToFront();
-            }
         }
 
         private void ApplyStyle()
@@ -223,10 +175,82 @@ namespace SaintJosephsHospitalHealthMonitorApp
             dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgv.MultiSelect = false;
             dgv.RowHeadersVisible = false;
+            dgv.EnableHeadersVisualStyles = false;
+            dgv.AllowUserToResizeRows = false;
+            dgv.AllowUserToOrderColumns = false;
+
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(66, 153, 225);
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(66, 153, 225);
+            dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 8, 12, 8);
+            dgv.ColumnHeadersHeight = 50;
+            dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+
+            dgv.DefaultCellStyle.BackColor = Color.White;
+            dgv.DefaultCellStyle.ForeColor = Color.FromArgb(26, 32, 44);
+            dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
+            dgv.DefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44);
+            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
+            dgv.DefaultCellStyle.Padding = new Padding(12, 5, 12, 5);
+            dgv.RowTemplate.Height = 45;
+
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 251);
+            dgv.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
+            dgv.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44);
+
+            dgv.GridColor = Color.FromArgb(226, 232, 240);
+            dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgv.BackgroundColor = Color.White;
+            dgv.BorderStyle = BorderStyle.None;
 
             typeof(DataGridView).InvokeMember("DoubleBuffered",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
                 null, dgv, new object[] { true });
+
+            dgv.DataBindingComplete += (s, e) =>
+            {
+                foreach (DataGridViewColumn column in dgv.Columns)
+                {
+                    column.SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
+            };
+
+            dgv.RowPostPaint -= DgvUniversal_RowPostPaint;
+            dgv.RowPostPaint += DgvUniversal_RowPostPaint;
+        }
+
+        private void DgvUniversal_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            try
+            {
+                DataGridView dgv = sender as DataGridView;
+                if (dgv == null || e.RowIndex < 0 || e.RowIndex >= dgv.Rows.Count)
+                    return;
+
+                DataGridViewRow row = dgv.Rows[e.RowIndex];
+
+                if (row.Selected)
+                {
+                    Color slabColor = Color.FromArgb(66, 153, 225);
+                    using (SolidBrush slabBrush = new SolidBrush(slabColor))
+                    {
+                        Rectangle slabRect = new Rectangle(
+                            e.RowBounds.Left,
+                            e.RowBounds.Top,
+                            10,
+                            e.RowBounds.Height
+                        );
+                        e.Graphics.FillRectangle(slabBrush, slabRect);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Universal RowPostPaint error: {ex.Message}");
+            }
         }
 
         private void InitializeUniversalSearch()
@@ -262,8 +286,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             chkSearchBilling.CheckedChanged += (s, e) => RefreshSearchResults();
 
             panelSearchCategories.Controls.AddRange(new Control[] {
-                chkSearchUsers, chkSearchPatients, chkSearchBilling
-            });
+        chkSearchUsers, chkSearchPatients, chkSearchBilling
+    });
 
             lblSearchStatus = new Label();
             lblSearchStatus.Font = new Font("Segoe UI", 9F, FontStyle.Italic);
@@ -576,7 +600,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             WHERE u.is_active = 1
             GROUP BY p.patient_id, u.name, u.age, u.gender, p.blood_type, p.phone_number
             ORDER BY u.name";
-                dgvBilling.DataSource = DatabaseHelper.ExecuteQuery(queryPatients);
+
+                DataTable patientsData = DatabaseHelper.ExecuteQuery(queryPatients);
+                dgvPatients.DataSource = patientsData;
+
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {patientsData.Rows.Count} patients into Medical Records tab");
 
                 LoadBillingData();
             }
@@ -584,6 +612,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 MessageBox.Show("Error loading data: " + ex.Message, "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] LoadData error: {ex.Message}");
             }
         }
 
@@ -613,6 +642,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 DataTable billingData = DatabaseHelper.ExecuteQuery(queryBilling);
                 dgvBilling.DataSource = billingData;
+
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {billingData.Rows.Count} billing records into Billing tab");
 
                 if (dgvBilling.Columns["Subtotal"] != null)
                     dgvBilling.Columns["Subtotal"].DefaultCellStyle.Format = "₱#,##0.00";
@@ -649,12 +680,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
                     }
                 }
+
                 CalculateMonthlyIncome();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading billing data: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] LoadBillingData error: {ex.Message}");
             }
         }
 
@@ -868,10 +901,24 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             try
             {
-                string query = "SELECT user_id, name, role, email, created_date FROM Users WHERE is_active = 1 AND role != 'Patient' ORDER BY created_date DESC";
+                string query = @"
+            SELECT 
+                user_id, 
+                name, 
+                role, 
+                email, 
+                created_date 
+            FROM Users 
+            WHERE is_active = 1 
+            AND role != 'Patient' 
+            ORDER BY created_date DESC";
+
                 DataTable allUsers = DatabaseHelper.ExecuteQuery(query);
 
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {allUsers.Rows.Count} users (excluding patients)");
+
                 dgvUsers.DataSource = allUsers;
+
                 this.Text = $"St. Joseph's Hospital - Admin Dashboard ({allUsers.Rows.Count} users)";
 
                 LoadRoleSpecificGrids(allUsers);
@@ -880,6 +927,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 MessageBox.Show($"Error loading users: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] LoadUsersData error: {ex.Message}");
             }
         }
 
@@ -894,22 +942,32 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 foreach (DataRow row in allUsers.Rows)
                 {
                     string role = row["role"].ToString();
+
                     if (role == "Admin" || role == "Headadmin")
+                    {
                         admins.ImportRow(row);
+                    }
                     else if (role == "Doctor")
+                    {
                         doctors.ImportRow(row);
+                    }
                     else if (role == "Receptionist" || role == "Pharmacist")
+                    {
                         staff.ImportRow(row);
+                    }
                 }
 
                 dgvAdmins.DataSource = admins;
                 dgvDoctors.DataSource = doctors;
                 dgvStaff.DataSource = staff;
+
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Split users - Admins: {admins.Rows.Count}, Doctors: {doctors.Rows.Count}, Staff: {staff.Rows.Count}");
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading role-specific grids: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] LoadRoleSpecificGrids error: {ex.Message}");
             }
         }
 

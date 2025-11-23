@@ -41,9 +41,13 @@
             tabUsersMain = new TabPage();
             tabUsers = new TabControl();
             tabAllUsers = new TabPage();
+            dgvUsers = new DataGridView();
             tabAdmins = new TabPage();
+            dgvAdmins = new DataGridView();
             tabDoctors = new TabPage();
+            dgvDoctors = new DataGridView();
             tabStaff = new TabPage();
+            dgvStaff = new DataGridView();
             panelUserButtons = new Panel();
             btnRefreshUsers = new Button();
             btnDeleteUser = new Button();
@@ -69,16 +73,20 @@
             label1 = new Label();
             lblHospitalName = new Label();
             panelHeaderRight = new Panel();
-            dgvUsers = new DataGridView();
-            dgvAdmins = new DataGridView();
-            dgvDoctors = new DataGridView();
-            dgvStaff = new DataGridView();
             panelSidebar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).BeginInit();
             panelMainContent.SuspendLayout();
             tabControl.SuspendLayout();
             tabUsersMain.SuspendLayout();
             tabUsers.SuspendLayout();
+            tabAllUsers.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvUsers).BeginInit();
+            tabAdmins.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvAdmins).BeginInit();
+            tabDoctors.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvDoctors).BeginInit();
+            tabStaff.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvStaff).BeginInit();
             panelUserButtons.SuspendLayout();
             tabMedicalRecords.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvPatients).BeginInit();
@@ -88,10 +96,6 @@
             panelBillingButtons.SuspendLayout();
             panelHeader.SuspendLayout();
             panelUniversalSearch.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvUsers).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dgvAdmins).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dgvDoctors).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dgvStaff).BeginInit();
             SuspendLayout();
             // 
             // panelSidebar
@@ -270,6 +274,7 @@
             // tabAllUsers
             // 
             tabAllUsers.BackColor = Color.White;
+            tabAllUsers.Controls.Add(dgvUsers);
             tabAllUsers.Location = new Point(4, 26);
             tabAllUsers.Name = "tabAllUsers";
             tabAllUsers.Padding = new Padding(15);
@@ -277,9 +282,28 @@
             tabAllUsers.TabIndex = 0;
             tabAllUsers.Text = "📋 All Users";
             // 
+            // dgvUsers
+            // 
+            dgvUsers.AllowUserToAddRows = false;
+            dgvUsers.AllowUserToDeleteRows = false;
+            dgvUsers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvUsers.BackgroundColor = Color.White;
+            dgvUsers.BorderStyle = BorderStyle.None;
+            dgvUsers.ColumnHeadersHeight = 50;
+            dgvUsers.Dock = DockStyle.Fill;
+            dgvUsers.Location = new Point(15, 15);
+            dgvUsers.Name = "dgvUsers";
+            dgvUsers.ReadOnly = true;
+            dgvUsers.RowHeadersVisible = false;
+            dgvUsers.RowTemplate.Height = 45;
+            dgvUsers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvUsers.Size = new Size(1127, 566);
+            dgvUsers.TabIndex = 0;
+            // 
             // tabAdmins
             // 
             tabAdmins.BackColor = Color.White;
+            tabAdmins.Controls.Add(dgvAdmins);
             tabAdmins.Location = new Point(4, 26);
             tabAdmins.Name = "tabAdmins";
             tabAdmins.Padding = new Padding(15);
@@ -287,9 +311,28 @@
             tabAdmins.TabIndex = 1;
             tabAdmins.Text = "👔 Admins";
             // 
+            // dgvAdmins
+            // 
+            dgvAdmins.AllowUserToAddRows = false;
+            dgvAdmins.AllowUserToDeleteRows = false;
+            dgvAdmins.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvAdmins.BackgroundColor = Color.White;
+            dgvAdmins.BorderStyle = BorderStyle.None;
+            dgvAdmins.ColumnHeadersHeight = 50;
+            dgvAdmins.Dock = DockStyle.Fill;
+            dgvAdmins.Location = new Point(15, 15);
+            dgvAdmins.Name = "dgvAdmins";
+            dgvAdmins.ReadOnly = true;
+            dgvAdmins.RowHeadersVisible = false;
+            dgvAdmins.RowTemplate.Height = 45;
+            dgvAdmins.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvAdmins.Size = new Size(1127, 566);
+            dgvAdmins.TabIndex = 0;
+            // 
             // tabDoctors
             // 
             tabDoctors.BackColor = Color.White;
+            tabDoctors.Controls.Add(dgvDoctors);
             tabDoctors.Location = new Point(4, 26);
             tabDoctors.Name = "tabDoctors";
             tabDoctors.Padding = new Padding(15);
@@ -297,15 +340,52 @@
             tabDoctors.TabIndex = 2;
             tabDoctors.Text = "\U0001fa7a Doctors";
             // 
+            // dgvDoctors
+            // 
+            dgvDoctors.AllowUserToAddRows = false;
+            dgvDoctors.AllowUserToDeleteRows = false;
+            dgvDoctors.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvDoctors.BackgroundColor = Color.White;
+            dgvDoctors.BorderStyle = BorderStyle.None;
+            dgvDoctors.ColumnHeadersHeight = 50;
+            dgvDoctors.Dock = DockStyle.Fill;
+            dgvDoctors.Location = new Point(15, 15);
+            dgvDoctors.Name = "dgvDoctors";
+            dgvDoctors.ReadOnly = true;
+            dgvDoctors.RowHeadersVisible = false;
+            dgvDoctors.RowTemplate.Height = 45;
+            dgvDoctors.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvDoctors.Size = new Size(1127, 566);
+            dgvDoctors.TabIndex = 0;
+            // 
             // tabStaff
             // 
             tabStaff.BackColor = Color.White;
+            tabStaff.Controls.Add(dgvStaff);
             tabStaff.Location = new Point(4, 26);
             tabStaff.Name = "tabStaff";
             tabStaff.Padding = new Padding(15);
             tabStaff.Size = new Size(1157, 596);
             tabStaff.TabIndex = 4;
             tabStaff.Text = "👨‍💼 Staff";
+            // 
+            // dgvStaff
+            // 
+            dgvStaff.AllowUserToAddRows = false;
+            dgvStaff.AllowUserToDeleteRows = false;
+            dgvStaff.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvStaff.BackgroundColor = Color.White;
+            dgvStaff.BorderStyle = BorderStyle.None;
+            dgvStaff.ColumnHeadersHeight = 50;
+            dgvStaff.Dock = DockStyle.Fill;
+            dgvStaff.Location = new Point(15, 15);
+            dgvStaff.Name = "dgvStaff";
+            dgvStaff.ReadOnly = true;
+            dgvStaff.RowHeadersVisible = false;
+            dgvStaff.RowTemplate.Height = 45;
+            dgvStaff.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvStaff.Size = new Size(1127, 566);
+            dgvStaff.TabIndex = 0;
             // 
             // panelUserButtons
             // 
@@ -412,11 +492,19 @@
             // 
             // dgvPatients
             // 
+            dgvPatients.AllowUserToAddRows = false;
+            dgvPatients.AllowUserToDeleteRows = false;
+            dgvPatients.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvPatients.BackgroundColor = Color.White;
-            dgvPatients.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvPatients.BorderStyle = BorderStyle.None;
+            dgvPatients.ColumnHeadersHeight = 50;
             dgvPatients.Dock = DockStyle.Fill;
             dgvPatients.Location = new Point(20, 100);
             dgvPatients.Name = "dgvPatients";
+            dgvPatients.ReadOnly = true;
+            dgvPatients.RowHeadersVisible = false;
+            dgvPatients.RowTemplate.Height = 45;
+            dgvPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvPatients.Size = new Size(1165, 626);
             dgvPatients.TabIndex = 1;
             // 
@@ -471,11 +559,19 @@
             // 
             // dgvBilling
             // 
+            dgvBilling.AllowUserToAddRows = false;
+            dgvBilling.AllowUserToDeleteRows = false;
+            dgvBilling.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvBilling.BackgroundColor = Color.White;
-            dgvBilling.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvBilling.BorderStyle = BorderStyle.None;
+            dgvBilling.ColumnHeadersHeight = 50;
             dgvBilling.Dock = DockStyle.Fill;
             dgvBilling.Location = new Point(20, 100);
             dgvBilling.Name = "dgvBilling";
+            dgvBilling.ReadOnly = true;
+            dgvBilling.RowHeadersVisible = false;
+            dgvBilling.RowTemplate.Height = 45;
+            dgvBilling.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvBilling.Size = new Size(1165, 626);
             dgvBilling.TabIndex = 1;
             // 
@@ -635,42 +731,6 @@
             panelHeaderRight.TabIndex = 1;
             panelHeaderRight.Visible = false;
             // 
-            // dgvUsers
-            // 
-            dgvUsers.BackgroundColor = Color.White;
-            dgvUsers.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvUsers.Location = new Point(0, 0);
-            dgvUsers.Name = "dgvUsers";
-            dgvUsers.Size = new Size(240, 150);
-            dgvUsers.TabIndex = 0;
-            // 
-            // dgvAdmins
-            // 
-            dgvAdmins.BackgroundColor = Color.White;
-            dgvAdmins.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvAdmins.Location = new Point(0, 0);
-            dgvAdmins.Name = "dgvAdmins";
-            dgvAdmins.Size = new Size(240, 150);
-            dgvAdmins.TabIndex = 0;
-            // 
-            // dgvDoctors
-            // 
-            dgvDoctors.BackgroundColor = Color.White;
-            dgvDoctors.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvDoctors.Location = new Point(0, 0);
-            dgvDoctors.Name = "dgvDoctors";
-            dgvDoctors.Size = new Size(240, 150);
-            dgvDoctors.TabIndex = 0;
-            // 
-            // dgvStaff
-            // 
-            dgvStaff.BackgroundColor = Color.White;
-            dgvStaff.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvStaff.Location = new Point(0, 0);
-            dgvStaff.Name = "dgvStaff";
-            dgvStaff.Size = new Size(240, 150);
-            dgvStaff.TabIndex = 0;
-            // 
             // AdminDashboard
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -689,6 +749,14 @@
             tabControl.ResumeLayout(false);
             tabUsersMain.ResumeLayout(false);
             tabUsers.ResumeLayout(false);
+            tabAllUsers.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvUsers).EndInit();
+            tabAdmins.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvAdmins).EndInit();
+            tabDoctors.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvDoctors).EndInit();
+            tabStaff.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvStaff).EndInit();
             panelUserButtons.ResumeLayout(false);
             tabMedicalRecords.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvPatients).EndInit();
@@ -700,12 +768,7 @@
             panelHeader.PerformLayout();
             panelUniversalSearch.ResumeLayout(false);
             panelUniversalSearch.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvUsers).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dgvAdmins).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dgvDoctors).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dgvStaff).EndInit();
             ResumeLayout(false);
-
         }
 
         #endregion
@@ -754,69 +817,6 @@
         private System.Windows.Forms.Label lblUniversalSearchIcon;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panelHeaderRight;
-
-        /// <summary>
-        /// Creates and configures a styled DataGridView control.
-        /// </summary>
-        /// <returns>A fully configured DataGridView with custom styling</returns>
-        private System.Windows.Forms.DataGridView CreateStyledDataGridView()
-        {
-            System.Drawing.Color headerBg = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(153)))), ((int)(((byte)(225)))));
-            System.Drawing.Color cellBg = System.Drawing.Color.White;
-            System.Drawing.Color cellText = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            System.Drawing.Color selectedBg = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(219)))), ((int)(((byte)(254)))));
-            System.Drawing.Color selectedText = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            System.Drawing.Color gridColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(232)))), ((int)(((byte)(240)))));
-
-            System.Windows.Forms.DataGridViewCellStyle headerStyle = new System.Windows.Forms.DataGridViewCellStyle();
-            headerStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            headerStyle.BackColor = headerBg;
-            headerStyle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            headerStyle.ForeColor = System.Drawing.Color.White;
-            headerStyle.SelectionBackColor = headerBg;
-            headerStyle.SelectionForeColor = System.Drawing.Color.White;
-            headerStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            headerStyle.Padding = new System.Windows.Forms.Padding(12, 8, 12, 8);
-
-            System.Windows.Forms.DataGridViewCellStyle cellStyle = new System.Windows.Forms.DataGridViewCellStyle();
-            cellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            cellStyle.BackColor = cellBg;
-            cellStyle.Font = new System.Drawing.Font("Segoe UI", 10F);
-            cellStyle.ForeColor = cellText;
-            cellStyle.SelectionBackColor = selectedBg;
-            cellStyle.SelectionForeColor = selectedText;
-            cellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            cellStyle.Padding = new System.Windows.Forms.Padding(12, 5, 12, 5);
-
-            System.Windows.Forms.DataGridView dgv = new System.Windows.Forms.DataGridView();
-            dgv.AllowUserToAddRows = false;
-            dgv.AllowUserToDeleteRows = false;
-            dgv.AllowUserToResizeRows = false;
-            dgv.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            dgv.BackgroundColor = cellBg;
-            dgv.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dgv.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
-            dgv.ColumnHeadersDefaultCellStyle = headerStyle;
-            dgv.ColumnHeadersHeight = 50;
-            dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dgv.DefaultCellStyle = cellStyle;
-            dgv.Dock = System.Windows.Forms.DockStyle.Fill;
-            dgv.EnableHeadersVisualStyles = false;
-            dgv.GridColor = gridColor;
-            dgv.MultiSelect = false;
-            dgv.ReadOnly = true;
-            dgv.RowHeadersVisible = false;
-            dgv.RowTemplate.Height = 45;
-            dgv.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-
-            typeof(System.Windows.Forms.DataGridView).InvokeMember("DoubleBuffered",
-                System.Reflection.BindingFlags.NonPublic |
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.SetProperty,
-                null, dgv, new object[] { true });
-
-            return dgv;
-        }
         private Button btnGenerateIncomeReport;
     }
 }
