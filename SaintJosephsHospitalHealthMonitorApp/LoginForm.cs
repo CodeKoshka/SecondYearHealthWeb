@@ -198,61 +198,51 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private bool IsRoleEnabled(string role)
         {
-            try
+            if (role == "Headadmin")
             {
-                string query = "SELECT setting_value FROM DebugSettings WHERE setting_key = @key";
-                string settingKey = "";
-
-                switch (role)
-                {
-                    case "Headadmin":
-                        return true;
-                    case "Admin":
-                        settingKey = "EnableAdmin";
-                        break;
-                    case "Receptionist":
-                        settingKey = "EnableReceptionist";
-                        break;
-                    case "Doctor":
-                        settingKey = "EnableDoctor";
-                        break;
-                    case "Pharmacist":
-                        settingKey = "EnablePharmacist";
-                        break;
-                    default:
-                        return false;
-                }
-
-                object result = DatabaseHelper.ExecuteScalar(query,
-                    new MySqlParameter("@key", settingKey));
-
-                if (result != null)
-                {
-                    return result.ToString() == "1";
-                }
+                return true;
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[LoginForm] Failed to check role enabled: {ex.Message}");
-            }
-
             if (DebugConfig.JsonConfigExists())
             {
-                DebugConfig config = DebugConfig.LoadFromJson();
-                switch (role)
+                try
                 {
-                    case "Admin":
-                        return config.EnableAdmin;
-                    case "Receptionist":
-                        return config.EnableReceptionist;
-                    case "Doctor":
-                        return config.EnableDoctor;
-                    case "Pharmacist":
-                        return config.EnablePharmacist;
+                    DebugConfig config = DebugConfig.LoadFromJson();
+                    System.Diagnostics.Debug.WriteLine($"[LoginForm] Checking role '{role}' from JSON config");
+
+                    switch (role)
+                    {
+                        case "Admin":
+                            return config.EnableAdmin;
+                        case "Receptionist":
+                            return config.EnableReceptionist;
+                        case "Doctor":
+                            return config.EnableDoctor;
+                        case "Pharmacist":
+                            return config.EnablePharmacist;
+                        default:
+                            return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[LoginForm] Failed to load JSON config: {ex.Message}");
                 }
             }
+            System.Diagnostics.Debug.WriteLine($"[LoginForm] Using hardcoded defaults for role '{role}'");
 
-            return role == "Admin" || role == "Receptionist" || role == "Doctor";
+            switch (role)
+            {
+                case "Admin":
+                    return true;
+                case "Receptionist":
+                    return true;
+                case "Doctor":
+                    return true;
+                case "Pharmacist":
+                    return false;
+                default:
+                    return false;
+            }
         }
 
         private void AnimateSuccessfulLogin(User user)
