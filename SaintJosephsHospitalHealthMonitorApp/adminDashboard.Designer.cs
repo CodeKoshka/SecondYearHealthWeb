@@ -49,7 +49,6 @@
             tabStaff = new TabPage();
             dgvStaff = new DataGridView();
             panelUserButtons = new Panel();
-            btnRefreshUsers = new Button();
             btnDeleteUser = new Button();
             btnEditUser = new Button();
             btnAddUser = new Button();
@@ -73,6 +72,8 @@
             label1 = new Label();
             lblHospitalName = new Label();
             panelHeaderRight = new Panel();
+            button1 = new Button();
+            button2 = new Button();
             panelSidebar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).BeginInit();
             panelMainContent.SuspendLayout();
@@ -390,7 +391,6 @@
             // panelUserButtons
             // 
             panelUserButtons.BackColor = Color.White;
-            panelUserButtons.Controls.Add(btnRefreshUsers);
             panelUserButtons.Controls.Add(btnDeleteUser);
             panelUserButtons.Controls.Add(btnEditUser);
             panelUserButtons.Controls.Add(btnAddUser);
@@ -401,23 +401,6 @@
             panelUserButtons.Padding = new Padding(20, 15, 20, 15);
             panelUserButtons.Size = new Size(1165, 80);
             panelUserButtons.TabIndex = 2;
-            // 
-            // btnRefreshUsers
-            // 
-            btnRefreshUsers.BackColor = Color.FromArgb(113, 128, 150);
-            btnRefreshUsers.Cursor = Cursors.Hand;
-            btnRefreshUsers.FlatAppearance.BorderSize = 0;
-            btnRefreshUsers.FlatAppearance.MouseOverBackColor = Color.FromArgb(90, 103, 122);
-            btnRefreshUsers.FlatStyle = FlatStyle.Flat;
-            btnRefreshUsers.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnRefreshUsers.ForeColor = Color.White;
-            btnRefreshUsers.Location = new Point(560, 15);
-            btnRefreshUsers.Name = "btnRefreshUsers";
-            btnRefreshUsers.Size = new Size(150, 45);
-            btnRefreshUsers.TabIndex = 0;
-            btnRefreshUsers.Text = "🔄 Refresh";
-            btnRefreshUsers.UseVisualStyleBackColor = false;
-            btnRefreshUsers.Click += BtnRefresh_Click;
             // 
             // btnDeleteUser
             // 
@@ -511,6 +494,8 @@
             // panelMedicalButtons
             // 
             panelMedicalButtons.BackColor = Color.White;
+            panelMedicalButtons.Controls.Add(button1);
+            panelMedicalButtons.Controls.Add(button2);
             panelMedicalButtons.Controls.Add(btnViewPatientRecord);
             panelMedicalButtons.Controls.Add(medicalBtnShadow);
             panelMedicalButtons.Dock = DockStyle.Top;
@@ -601,7 +586,7 @@
             btnGenerateIncomeReport.Name = "btnGenerateIncomeReport";
             btnGenerateIncomeReport.Size = new Size(190, 45);
             btnGenerateIncomeReport.TabIndex = 4;
-            btnGenerateIncomeReport.Text = "📄 View Income";
+            btnGenerateIncomeReport.Text = "📄 Print Income";
             btnGenerateIncomeReport.UseVisualStyleBackColor = false;
             btnGenerateIncomeReport.Click += btnGenerateIncomeReport_Click;
             // 
@@ -731,6 +716,38 @@
             panelHeaderRight.TabIndex = 1;
             panelHeaderRight.Visible = false;
             // 
+            // button1
+            // 
+            button1.BackColor = Color.FromArgb(66, 153, 225);
+            button1.Cursor = Cursors.Hand;
+            button1.FlatAppearance.BorderSize = 0;
+            button1.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            button1.ForeColor = Color.White;
+            button1.Location = new Point(396, 15);
+            button1.Name = "button1";
+            button1.Size = new Size(170, 45);
+            button1.TabIndex = 5;
+            button1.Text = "✏️ Edit Patient";
+            button1.UseVisualStyleBackColor = false;
+            // 
+            // button2
+            // 
+            button2.BackColor = Color.FromArgb(72, 187, 120);
+            button2.Cursor = Cursors.Hand;
+            button2.FlatAppearance.BorderSize = 0;
+            button2.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 161, 105);
+            button2.FlatStyle = FlatStyle.Flat;
+            button2.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            button2.ForeColor = Color.White;
+            button2.Location = new Point(216, 15);
+            button2.Name = "button2";
+            button2.Size = new Size(170, 45);
+            button2.TabIndex = 6;
+            button2.Text = "➕ Add Patient";
+            button2.UseVisualStyleBackColor = false;
+            // 
             // AdminDashboard
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -799,7 +816,6 @@
         private System.Windows.Forms.Button btnAddUser;
         private System.Windows.Forms.Button btnEditUser;
         private System.Windows.Forms.Button btnDeleteUser;
-        private System.Windows.Forms.Button btnRefreshUsers;
         private System.Windows.Forms.TabPage tabMedicalRecords;
         private System.Windows.Forms.DataGridView dgvPatients;
         private System.Windows.Forms.Panel panelMedicalButtons;
@@ -818,5 +834,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panelHeaderRight;
         private Button btnGenerateIncomeReport;
+        private Button button1;
+        private Button button2;
     }
 }

@@ -85,5 +85,8 @@
     <Compile Update="ReceptionistDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="TestingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

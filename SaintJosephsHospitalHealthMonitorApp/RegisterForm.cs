@@ -285,9 +285,28 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             return;
                         }
 
-                        if (originalImage.Width == 300 && originalImage.Height == 300)
+                        bool isExact300 = (originalImage.Width == 300 && originalImage.Height == 300);
+                        bool isSmallerThan300 = (originalImage.Width <= 300 && originalImage.Height <= 300);
+                        bool isSquare = (originalImage.Width == originalImage.Height);
+
+                        if (isExact300 || (isSmallerThan300 && isSquare))
                         {
-                            pictureBoxProfile.Image = new Bitmap(originalImage);
+                            Image finalImage;
+                            if (originalImage.Width == 300 && originalImage.Height == 300)
+                            {
+                                finalImage = new Bitmap(originalImage);
+                            }
+                            else
+                            {
+                                finalImage = new Bitmap(300, 300);
+                                using (Graphics g = Graphics.FromImage(finalImage))
+                                {
+                                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                                    g.DrawImage(originalImage, 0, 0, 300, 300);
+                                }
+                            }
+
+                            pictureBoxProfile.Image = finalImage;
 
                             using (MemoryStream ms = new MemoryStream())
                             {
@@ -296,13 +315,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 encoderParams.Param[0] = new System.Drawing.Imaging.EncoderParameter(
                                     System.Drawing.Imaging.Encoder.Quality, 85L);
 
-                                originalImage.Save(ms, jpegCodec, encoderParams);
+                                finalImage.Save(ms, jpegCodec, encoderParams);
                                 profileImageData = ms.ToArray();
                             }
 
                             btnRemovePhoto.Visible = true;
                             isDefaultImageLoaded = false;
                             TriggerinputCheck(pictureBoxProfile);
+                            originalImage.Dispose();
                         }
                         else
                         {
@@ -328,9 +348,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                     TriggerinputCheck(pictureBoxProfile);
                                 }
                             }
-                        }
 
-                        originalImage.Dispose();
+                            originalImage.Dispose();
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -423,38 +443,97 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             cmbRole.Items.Clear();
 
+            DebugConfig config = DebugConfig.LoadFromJson();
+
             if (isEditMode)
             {
                 if (creatorRole == "Receptionist")
                 {
-                    cmbRole.Items.Add("Patient");
+                    if (config.AllowCreatePatient)
+                    {
+                        cmbRole.Items.Add("Patient");
+                    }
                 }
                 else
                 {
-                    cmbRole.Items.AddRange(new string[] {
-                "Admin",
-                "Receptionist",
-                "Doctor",
-                "Pharmacist",
-                "Patient"
-            });
+                    if (config.AllowCreateAdmin || creatorRole == "Headadmin")
+                        cmbRole.Items.Add("Admin");
+
+                    if (config.AllowCreateReceptionist)
+                        cmbRole.Items.Add("Receptionist");
+
+                    if (config.AllowCreateDoctor)
+                        cmbRole.Items.Add("Doctor");
+
+                    if (config.AllowCreatePharmacist)
+                        cmbRole.Items.Add("Pharmacist");
+
+                    if (config.AllowCreatePatient)
+                        cmbRole.Items.Add("Patient");
                 }
             }
             else if (creatorRole == "Registration")
             {
-                cmbRole.Items.AddRange(new string[] { "Admin", "Receptionist", "Doctor" });
+                if (config.AllowCreateAdmin)
+                    cmbRole.Items.Add("Admin");
+
+                if (config.AllowCreateReceptionist)
+                    cmbRole.Items.Add("Receptionist");
+
+                if (config.AllowCreateDoctor)
+                    cmbRole.Items.Add("Doctor");
             }
             else if (creatorRole == "Headadmin" || creatorRole == "Admin")
             {
-                cmbRole.Items.AddRange(new string[] { "Admin", "Receptionist", "Doctor", "Pharmacist", "Patient" });
+                if (config.AllowCreateAdmin)
+                    cmbRole.Items.Add("Admin");
+
+                if (config.AllowCreateReceptionist)
+                    cmbRole.Items.Add("Receptionist");
+
+                if (config.AllowCreateDoctor)
+                    cmbRole.Items.Add("Doctor");
+
+                if (config.AllowCreatePharmacist)
+                    cmbRole.Items.Add("Pharmacist");
+
+                if (config.AllowCreatePatient)
+                    cmbRole.Items.Add("Patient");
             }
             else if (creatorRole == "Receptionist")
             {
-                cmbRole.Items.Add("Patient");
+                if (config.AllowCreatePatient)
+                {
+                    cmbRole.Items.Add("Patient");
+                }
             }
             else
             {
-                cmbRole.Items.AddRange(new string[] { "Admin", "Receptionist", "Doctor", "Pharmacist" });
+                if (config.AllowCreateAdmin)
+                    cmbRole.Items.Add("Admin");
+
+                if (config.AllowCreateReceptionist)
+                    cmbRole.Items.Add("Receptionist");
+
+                if (config.AllowCreateDoctor)
+                    cmbRole.Items.Add("Doctor");
+
+                if (config.AllowCreatePharmacist)
+                    cmbRole.Items.Add("Pharmacist");
+            }
+
+            if (cmbRole.Items.Count == 0)
+            {
+                MessageBox.Show(
+                    "⚠️ NO ROLES AVAILABLE\n\n" +
+                    "No user roles are currently enabled for creation.\n\n" +
+                    "Please contact the Head Administrator to enable role creation permissions in the Debug Settings.",
+                    "Role Creation Disabled",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                this.Close();
+                return;
             }
 
             if (cmbRole.Items.Count > 0 && !isEditMode && !isViewMode)
@@ -527,20 +606,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
             chkChangePassword.Visible = true;
             chkShowPassword.Visible = false;
 
-            if (creatorRole == "Receptionist")
-            {
-                cmbRole.Enabled = false;
+            cmbRole.Enabled = false;
 
-                Label lblReceptionistNote = new Label();
-                lblReceptionistNote.Text = "ℹ️ Note: Receptionists can only edit patient information, not roles";
-                lblReceptionistNote.Font = new Font("Segoe UI", 8F, FontStyle.Italic);
-                lblReceptionistNote.ForeColor = Color.FromArgb(108, 117, 125);
-                lblReceptionistNote.AutoSize = true;
-                lblReceptionistNote.Location = new Point(403, 475);
-                lblReceptionistNote.Name = "lblReceptionistNote";
-                this.Controls.Add(lblReceptionistNote);
-                lblReceptionistNote.BringToFront();
-            }
+            Label lblRoleInfo = new Label();
+            lblRoleInfo.Text = "ℹ️ Role cannot be changed after account creation for data integrity";
+            lblRoleInfo.Font = new Font("Segoe UI", 8F, FontStyle.Italic);
+            lblRoleInfo.ForeColor = Color.FromArgb(108, 117, 125);
+            lblRoleInfo.AutoSize = true;
+            lblRoleInfo.Location = new Point(403, 475);
+            lblRoleInfo.Name = "lblRoleInfo";
+            this.Controls.Add(lblRoleInfo);
+            lblRoleInfo.BringToFront();
         }
 
         private void ConfigureForCreateMode()
@@ -829,6 +905,36 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             return selected;
+        }
+
+        private bool ValidateRoleCreationPermission(string role)
+        {
+            DebugConfig config = DebugConfig.LoadFromJson();
+
+            bool isAllowed = role switch
+            {
+                "Admin" => config.AllowCreateAdmin || creatorRole == "Headadmin",
+                "Receptionist" => config.AllowCreateReceptionist,
+                "Doctor" => config.AllowCreateDoctor,
+                "Pharmacist" => config.AllowCreatePharmacist,
+                "Patient" => config.AllowCreatePatient,
+                _ => false
+            };
+
+            if (!isAllowed)
+            {
+                MessageBox.Show(
+                    $"❌ ROLE CREATION DISABLED\n\n" +
+                    $"Creation of '{role}' accounts is currently disabled.\n\n" +
+                    $"This role has been disabled in the Debug Settings.\n" +
+                    $"Please contact the Head Administrator if you need to create this role.",
+                    "Permission Denied",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
         }
 
         private void BtnSubmit_Click(object sender, EventArgs e)
@@ -1139,6 +1245,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             string role = cmbRole.SelectedItem.ToString();
 
+            if (!ValidateRoleCreationPermission(role))
+            {
+                return;
+            }
+
             if (dtpDateOfBirth.Value > DateTime.Today)
             {
                 MessageBox.Show("Date of birth cannot be in the future.", "Validation Error",
@@ -1399,6 +1510,44 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
                 }
             }
+        }
+
+        private void ShowRolePermissionsInfo()
+        {
+            DebugConfig config = DebugConfig.LoadFromJson();
+
+            string message = "📋 CURRENT ROLE CREATION PERMISSIONS\n\n";
+            message += "Roles you can create:\n\n";
+
+            if (config.AllowCreateAdmin || creatorRole == "Headadmin")
+                message += "✓ Admin\n";
+            else
+                message += "✗ Admin (Disabled)\n";
+
+            if (config.AllowCreateReceptionist)
+                message += "✓ Receptionist\n";
+            else
+                message += "✗ Receptionist (Disabled)\n";
+
+            if (config.AllowCreateDoctor)
+                message += "✓ Doctor\n";
+            else
+                message += "✗ Doctor (Disabled)\n";
+
+            if (config.AllowCreatePharmacist)
+                message += "✓ Pharmacist\n";
+            else
+                message += "✗ Pharmacist (Disabled)\n";
+
+            if (config.AllowCreatePatient)
+                message += "✓ Patient\n";
+            else
+                message += "✗ Patient (Disabled)\n";
+
+            message += "\n💡 Contact Head Administrator to change permissions";
+
+            MessageBox.Show(message, "Role Permissions",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void UpdateRoleSpecificTable(MySqlConnection conn, MySqlTransaction transaction, string role)

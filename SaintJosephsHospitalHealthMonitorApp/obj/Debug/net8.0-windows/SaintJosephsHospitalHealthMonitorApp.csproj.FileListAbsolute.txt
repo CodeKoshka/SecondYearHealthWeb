@@ -49,3 +49,4 @@ C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHos
 C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\obj\Debug\net8.0-windows\SaintJosephsHospitalHealthMonitorApp.InputDialog.resources
 C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\obj\Debug\net8.0-windows\SaintJosephsHospitalHealthMonitorApp.ShowDetailedMedicalHistoryForm.resources
 C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\obj\Debug\net8.0-windows\SaintJosephsHospitalHealthMonitorApp.IncomeReportForm.resources
+C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\obj\Debug\net8.0-windows\SaintJosephsHospitalHealthMonitorApp.TestingForm.resources

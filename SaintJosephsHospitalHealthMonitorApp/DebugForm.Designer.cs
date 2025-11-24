@@ -2,35 +2,15 @@
 {
     partial class DebugForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.TabControl tabControl;
-        private System.Windows.Forms.TabPage tabDashboard;
-        private System.Windows.Forms.TabPage tabDefaultUsers;
-        private System.Windows.Forms.Label lblDashboardTitle;
-        private System.Windows.Forms.CheckBox chkAdmin;
-        private System.Windows.Forms.CheckBox chkReceptionist;
-        private System.Windows.Forms.CheckBox chkDoctor;
-        private System.Windows.Forms.CheckBox chkPharmacist;
-        private System.Windows.Forms.Label lblDashboardNote;
-        private System.Windows.Forms.Label lblDefaultUsersTitle;
-        private System.Windows.Forms.Label lblDefaultUsersInfo;
-        private System.Windows.Forms.Label lblHeadadminTitle;
-        private System.Windows.Forms.Label lblHeadadminDetails;
-        private System.Windows.Forms.CheckBox chkCreateAdmin;
-        private System.Windows.Forms.Label lblAdminDetails;
-        private System.Windows.Forms.CheckBox chkCreateReceptionist;
-        private System.Windows.Forms.Label lblReceptionistDetails;
-        private System.Windows.Forms.CheckBox chkCreatePharmacist;
-        private System.Windows.Forms.Label lblPharmacistDetails;
-        private System.Windows.Forms.CheckBox chkCreateDoctor;
-        private System.Windows.Forms.Label lblDoctorDetails;
-        private System.Windows.Forms.CheckBox chkCreatePatient;
-        private System.Windows.Forms.Label lblPatientDetails;
-        private System.Windows.Forms.Label lblDefaultUsersWarning;
-        private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Button btnReset;
-        private System.Windows.Forms.Button btnClose;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -40,381 +20,611 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
-            this.tabControl = new System.Windows.Forms.TabControl();
-            this.tabDashboard = new System.Windows.Forms.TabPage();
-            this.lblDashboardNote = new System.Windows.Forms.Label();
-            this.chkPharmacist = new System.Windows.Forms.CheckBox();
-            this.chkDoctor = new System.Windows.Forms.CheckBox();
-            this.chkReceptionist = new System.Windows.Forms.CheckBox();
-            this.chkAdmin = new System.Windows.Forms.CheckBox();
-            this.lblDashboardTitle = new System.Windows.Forms.Label();
-            this.tabDefaultUsers = new System.Windows.Forms.TabPage();
-            this.lblDefaultUsersWarning = new System.Windows.Forms.Label();
-            this.lblPatientDetails = new System.Windows.Forms.Label();
-            this.chkCreatePatient = new System.Windows.Forms.CheckBox();
-            this.lblDoctorDetails = new System.Windows.Forms.Label();
-            this.chkCreateDoctor = new System.Windows.Forms.CheckBox();
-            this.lblPharmacistDetails = new System.Windows.Forms.Label();
-            this.chkCreatePharmacist = new System.Windows.Forms.CheckBox();
-            this.lblReceptionistDetails = new System.Windows.Forms.Label();
-            this.chkCreateReceptionist = new System.Windows.Forms.CheckBox();
-            this.lblAdminDetails = new System.Windows.Forms.Label();
-            this.chkCreateAdmin = new System.Windows.Forms.CheckBox();
-            this.lblHeadadminDetails = new System.Windows.Forms.Label();
-            this.lblHeadadminTitle = new System.Windows.Forms.Label();
-            this.lblDefaultUsersInfo = new System.Windows.Forms.Label();
-            this.lblDefaultUsersTitle = new System.Windows.Forms.Label();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnReset = new System.Windows.Forms.Button();
-            this.btnClose = new System.Windows.Forms.Button();
-            this.tabControl.SuspendLayout();
-            this.tabDashboard.SuspendLayout();
-            this.tabDefaultUsers.SuspendLayout();
-            this.SuspendLayout();
+            tabControl = new TabControl();
+            tabDashboard = new TabPage();
+            lblDashboardNote = new Label();
+            chkPharmacist = new CheckBox();
+            chkDoctor = new CheckBox();
+            chkReceptionist = new CheckBox();
+            chkAdmin = new CheckBox();
+            lblDashboardTitle = new Label();
+            tabRoleCreation = new TabPage();
+            lblRoleCreationNote = new Label();
+            lblAllowPatientDetails = new Label();
+            chkAllowPatient = new CheckBox();
+            lblAllowPharmacistDetails = new Label();
+            chkAllowPharmacist = new CheckBox();
+            lblAllowDoctorDetails = new Label();
+            chkAllowDoctor = new CheckBox();
+            lblAllowReceptionistDetails = new Label();
+            chkAllowReceptionist = new CheckBox();
+            lblAllowAdminDetails = new Label();
+            chkAllowAdmin = new CheckBox();
+            lblRoleCreationInfo = new Label();
+            lblRoleCreationTitle = new Label();
+            tabDefaultUsers = new TabPage();
+            lblDefaultUsersWarning = new Label();
+            lblPatientDetails = new Label();
+            chkCreatePatient = new CheckBox();
+            lblDoctorDetails = new Label();
+            chkCreateDoctor = new CheckBox();
+            lblPharmacistDetails = new Label();
+            chkCreatePharmacist = new CheckBox();
+            lblReceptionistDetails = new Label();
+            chkCreateReceptionist = new CheckBox();
+            lblAdminDetails = new Label();
+            chkCreateAdmin = new CheckBox();
+            lblHeadadminDetails = new Label();
+            lblHeadadminTitle = new Label();
+            lblDefaultUsersInfo = new Label();
+            lblDefaultUsersTitle = new Label();
+            btnSave = new Button();
+            btnReset = new Button();
+            btnClose = new Button();
+            tabControl.SuspendLayout();
+            tabDashboard.SuspendLayout();
+            tabRoleCreation.SuspendLayout();
+            tabDefaultUsers.SuspendLayout();
+            SuspendLayout();
             // 
             // tabControl
             // 
-            this.tabControl.Controls.Add(this.tabDashboard);
-            this.tabControl.Controls.Add(this.tabDefaultUsers);
-            this.tabControl.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.tabControl.Location = new System.Drawing.Point(10, 10);
-            this.tabControl.Name = "tabControl";
-            this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(470, 450);
-            this.tabControl.TabIndex = 0;
+            tabControl.Controls.Add(tabDashboard);
+            tabControl.Controls.Add(tabRoleCreation);
+            tabControl.Controls.Add(tabDefaultUsers);
+            tabControl.Font = new Font("Segoe UI", 9F);
+            tabControl.Location = new Point(10, 10);
+            tabControl.Name = "tabControl";
+            tabControl.SelectedIndex = 0;
+            tabControl.Size = new Size(470, 450);
+            tabControl.TabIndex = 0;
             // 
             // tabDashboard
             // 
-            this.tabDashboard.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            this.tabDashboard.Controls.Add(this.lblDashboardNote);
-            this.tabDashboard.Controls.Add(this.chkPharmacist);
-            this.tabDashboard.Controls.Add(this.chkDoctor);
-            this.tabDashboard.Controls.Add(this.chkReceptionist);
-            this.tabDashboard.Controls.Add(this.chkAdmin);
-            this.tabDashboard.Controls.Add(this.lblDashboardTitle);
-            this.tabDashboard.Location = new System.Drawing.Point(4, 24);
-            this.tabDashboard.Name = "tabDashboard";
-            this.tabDashboard.Padding = new System.Windows.Forms.Padding(3);
-            this.tabDashboard.Size = new System.Drawing.Size(462, 422);
-            this.tabDashboard.TabIndex = 0;
-            this.tabDashboard.Text = "Dashboard Access";
+            tabDashboard.BackColor = Color.FromArgb(247, 250, 252);
+            tabDashboard.Controls.Add(lblDashboardNote);
+            tabDashboard.Controls.Add(chkPharmacist);
+            tabDashboard.Controls.Add(chkDoctor);
+            tabDashboard.Controls.Add(chkReceptionist);
+            tabDashboard.Controls.Add(chkAdmin);
+            tabDashboard.Controls.Add(lblDashboardTitle);
+            tabDashboard.Location = new Point(4, 24);
+            tabDashboard.Name = "tabDashboard";
+            tabDashboard.Padding = new Padding(3);
+            tabDashboard.Size = new Size(462, 422);
+            tabDashboard.TabIndex = 0;
+            tabDashboard.Text = "Dashboard Access";
             // 
             // lblDashboardNote
             // 
-            this.lblDashboardNote.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Italic);
-            this.lblDashboardNote.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(113)))), ((int)(((byte)(128)))), ((int)(((byte)(150)))));
-            this.lblDashboardNote.Location = new System.Drawing.Point(20, 215);
-            this.lblDashboardNote.Name = "lblDashboardNote";
-            this.lblDashboardNote.Size = new System.Drawing.Size(420, 20);
-            this.lblDashboardNote.TabIndex = 5;
-            this.lblDashboardNote.Text = "Head Admin access is always enabled";
+            lblDashboardNote.Font = new Font("Segoe UI", 8F, FontStyle.Italic);
+            lblDashboardNote.ForeColor = Color.FromArgb(113, 128, 150);
+            lblDashboardNote.Location = new Point(20, 215);
+            lblDashboardNote.Name = "lblDashboardNote";
+            lblDashboardNote.Size = new Size(420, 40);
+            lblDashboardNote.TabIndex = 5;
+            lblDashboardNote.Text = "Head Admin access is always enabled\r\nDisabling dashboard access will also disable role creation";
             // 
             // chkPharmacist
             // 
-            this.chkPharmacist.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.chkPharmacist.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.chkPharmacist.Location = new System.Drawing.Point(20, 175);
-            this.chkPharmacist.Name = "chkPharmacist";
-            this.chkPharmacist.Size = new System.Drawing.Size(420, 30);
-            this.chkPharmacist.TabIndex = 4;
-            this.chkPharmacist.Text = "Pharmacist Dashboard";
-            this.chkPharmacist.UseVisualStyleBackColor = true;
+            chkPharmacist.Font = new Font("Segoe UI", 10F);
+            chkPharmacist.ForeColor = Color.FromArgb(26, 32, 44);
+            chkPharmacist.Location = new Point(20, 175);
+            chkPharmacist.Name = "chkPharmacist";
+            chkPharmacist.Size = new Size(420, 30);
+            chkPharmacist.TabIndex = 4;
+            chkPharmacist.Text = "Pharmacist Dashboard";
+            chkPharmacist.UseVisualStyleBackColor = true;
+            chkPharmacist.CheckedChanged += ChkDashboardRole_CheckedChanged;
             // 
             // chkDoctor
             // 
-            this.chkDoctor.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.chkDoctor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.chkDoctor.Location = new System.Drawing.Point(20, 135);
-            this.chkDoctor.Name = "chkDoctor";
-            this.chkDoctor.Size = new System.Drawing.Size(420, 30);
-            this.chkDoctor.TabIndex = 3;
-            this.chkDoctor.Text = "Doctor Dashboard";
-            this.chkDoctor.UseVisualStyleBackColor = true;
+            chkDoctor.Font = new Font("Segoe UI", 10F);
+            chkDoctor.ForeColor = Color.FromArgb(26, 32, 44);
+            chkDoctor.Location = new Point(20, 135);
+            chkDoctor.Name = "chkDoctor";
+            chkDoctor.Size = new Size(420, 30);
+            chkDoctor.TabIndex = 3;
+            chkDoctor.Text = "Doctor Dashboard";
+            chkDoctor.UseVisualStyleBackColor = true;
+            chkDoctor.CheckedChanged += ChkDashboardRole_CheckedChanged;
             // 
             // chkReceptionist
             // 
-            this.chkReceptionist.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.chkReceptionist.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.chkReceptionist.Location = new System.Drawing.Point(20, 95);
-            this.chkReceptionist.Name = "chkReceptionist";
-            this.chkReceptionist.Size = new System.Drawing.Size(420, 30);
-            this.chkReceptionist.TabIndex = 2;
-            this.chkReceptionist.Text = "Receptionist Dashboard";
-            this.chkReceptionist.UseVisualStyleBackColor = true;
+            chkReceptionist.Font = new Font("Segoe UI", 10F);
+            chkReceptionist.ForeColor = Color.FromArgb(26, 32, 44);
+            chkReceptionist.Location = new Point(20, 95);
+            chkReceptionist.Name = "chkReceptionist";
+            chkReceptionist.Size = new Size(420, 30);
+            chkReceptionist.TabIndex = 2;
+            chkReceptionist.Text = "Receptionist Dashboard";
+            chkReceptionist.UseVisualStyleBackColor = true;
+            chkReceptionist.CheckedChanged += ChkDashboardRole_CheckedChanged;
             // 
             // chkAdmin
             // 
-            this.chkAdmin.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.chkAdmin.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.chkAdmin.Location = new System.Drawing.Point(20, 55);
-            this.chkAdmin.Name = "chkAdmin";
-            this.chkAdmin.Size = new System.Drawing.Size(420, 30);
-            this.chkAdmin.TabIndex = 1;
-            this.chkAdmin.Text = "Admin Dashboard";
-            this.chkAdmin.UseVisualStyleBackColor = true;
+            chkAdmin.Font = new Font("Segoe UI", 10F);
+            chkAdmin.ForeColor = Color.FromArgb(26, 32, 44);
+            chkAdmin.Location = new Point(20, 55);
+            chkAdmin.Name = "chkAdmin";
+            chkAdmin.Size = new Size(420, 30);
+            chkAdmin.TabIndex = 1;
+            chkAdmin.Text = "Admin Dashboard";
+            chkAdmin.UseVisualStyleBackColor = true;
+            chkAdmin.CheckedChanged += ChkDashboardRole_CheckedChanged;
             // 
             // lblDashboardTitle
             // 
-            this.lblDashboardTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.lblDashboardTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.lblDashboardTitle.Location = new System.Drawing.Point(15, 15);
-            this.lblDashboardTitle.Name = "lblDashboardTitle";
-            this.lblDashboardTitle.Size = new System.Drawing.Size(430, 25);
-            this.lblDashboardTitle.TabIndex = 0;
-            this.lblDashboardTitle.Text = "Enable/Disable Dashboard Access";
+            lblDashboardTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblDashboardTitle.ForeColor = Color.FromArgb(26, 32, 44);
+            lblDashboardTitle.Location = new Point(15, 15);
+            lblDashboardTitle.Name = "lblDashboardTitle";
+            lblDashboardTitle.Size = new Size(430, 25);
+            lblDashboardTitle.TabIndex = 0;
+            lblDashboardTitle.Text = "Enable/Disable Dashboard Access";
+            // 
+            // tabRoleCreation
+            // 
+            tabRoleCreation.AutoScroll = true;
+            tabRoleCreation.BackColor = Color.FromArgb(247, 250, 252);
+            tabRoleCreation.Controls.Add(lblRoleCreationNote);
+            tabRoleCreation.Controls.Add(lblAllowPatientDetails);
+            tabRoleCreation.Controls.Add(chkAllowPatient);
+            tabRoleCreation.Controls.Add(lblAllowPharmacistDetails);
+            tabRoleCreation.Controls.Add(chkAllowPharmacist);
+            tabRoleCreation.Controls.Add(lblAllowDoctorDetails);
+            tabRoleCreation.Controls.Add(chkAllowDoctor);
+            tabRoleCreation.Controls.Add(lblAllowReceptionistDetails);
+            tabRoleCreation.Controls.Add(chkAllowReceptionist);
+            tabRoleCreation.Controls.Add(lblAllowAdminDetails);
+            tabRoleCreation.Controls.Add(chkAllowAdmin);
+            tabRoleCreation.Controls.Add(lblRoleCreationInfo);
+            tabRoleCreation.Controls.Add(lblRoleCreationTitle);
+            tabRoleCreation.Location = new Point(4, 24);
+            tabRoleCreation.Name = "tabRoleCreation";
+            tabRoleCreation.Padding = new Padding(3);
+            tabRoleCreation.Size = new Size(462, 422);
+            tabRoleCreation.TabIndex = 2;
+            tabRoleCreation.Text = "Role Creation";
+            // 
+            // lblRoleCreationNote
+            // 
+            lblRoleCreationNote.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
+            lblRoleCreationNote.ForeColor = Color.FromArgb(220, 53, 69);
+            lblRoleCreationNote.Location = new Point(15, 315);
+            lblRoleCreationNote.Name = "lblRoleCreationNote";
+            lblRoleCreationNote.Size = new Size(420, 40);
+            lblRoleCreationNote.TabIndex = 12;
+            lblRoleCreationNote.Text = "⚠️ Head Admin can always be created by system\r\n⚠️ Disabled roles cannot be created by any user";
+            // 
+            // lblAllowPatientDetails
+            // 
+            lblAllowPatientDetails.Font = new Font("Segoe UI", 8F);
+            lblAllowPatientDetails.ForeColor = Color.FromArgb(113, 128, 150);
+            lblAllowPatientDetails.Location = new Point(40, 289);
+            lblAllowPatientDetails.Name = "lblAllowPatientDetails";
+            lblAllowPatientDetails.Size = new Size(400, 15);
+            lblAllowPatientDetails.TabIndex = 11;
+            lblAllowPatientDetails.Text = "Allow users to register/create patient records";
+            // 
+            // chkAllowPatient
+            // 
+            chkAllowPatient.Font = new Font("Segoe UI", 10F);
+            chkAllowPatient.ForeColor = Color.FromArgb(26, 32, 44);
+            chkAllowPatient.Location = new Point(20, 259);
+            chkAllowPatient.Name = "chkAllowPatient";
+            chkAllowPatient.Size = new Size(420, 30);
+            chkAllowPatient.TabIndex = 10;
+            chkAllowPatient.Text = "Allow Patient Creation";
+            chkAllowPatient.UseVisualStyleBackColor = true;
+            // 
+            // lblAllowPharmacistDetails
+            // 
+            lblAllowPharmacistDetails.Font = new Font("Segoe UI", 8F);
+            lblAllowPharmacistDetails.ForeColor = Color.FromArgb(113, 128, 150);
+            lblAllowPharmacistDetails.Location = new Point(40, 193);
+            lblAllowPharmacistDetails.Name = "lblAllowPharmacistDetails";
+            lblAllowPharmacistDetails.Size = new Size(400, 15);
+            lblAllowPharmacistDetails.TabIndex = 9;
+            lblAllowPharmacistDetails.Text = "Allow creation of pharmacist accounts";
+            // 
+            // chkAllowPharmacist
+            // 
+            chkAllowPharmacist.Font = new Font("Segoe UI", 10F);
+            chkAllowPharmacist.ForeColor = Color.FromArgb(26, 32, 44);
+            chkAllowPharmacist.Location = new Point(20, 163);
+            chkAllowPharmacist.Name = "chkAllowPharmacist";
+            chkAllowPharmacist.Size = new Size(420, 30);
+            chkAllowPharmacist.TabIndex = 8;
+            chkAllowPharmacist.Text = "Allow Pharmacist Creation";
+            chkAllowPharmacist.UseVisualStyleBackColor = true;
+            // 
+            // lblAllowDoctorDetails
+            // 
+            lblAllowDoctorDetails.Font = new Font("Segoe UI", 8F);
+            lblAllowDoctorDetails.ForeColor = Color.FromArgb(113, 128, 150);
+            lblAllowDoctorDetails.Location = new Point(40, 241);
+            lblAllowDoctorDetails.Name = "lblAllowDoctorDetails";
+            lblAllowDoctorDetails.Size = new Size(400, 15);
+            lblAllowDoctorDetails.TabIndex = 7;
+            lblAllowDoctorDetails.Text = "Allow creation of doctor accounts";
+            // 
+            // chkAllowDoctor
+            // 
+            chkAllowDoctor.Font = new Font("Segoe UI", 10F);
+            chkAllowDoctor.ForeColor = Color.FromArgb(26, 32, 44);
+            chkAllowDoctor.Location = new Point(20, 211);
+            chkAllowDoctor.Name = "chkAllowDoctor";
+            chkAllowDoctor.Size = new Size(420, 30);
+            chkAllowDoctor.TabIndex = 6;
+            chkAllowDoctor.Text = "Allow Doctor Creation";
+            chkAllowDoctor.UseVisualStyleBackColor = true;
+            // 
+            // lblAllowReceptionistDetails
+            // 
+            lblAllowReceptionistDetails.Font = new Font("Segoe UI", 8F);
+            lblAllowReceptionistDetails.ForeColor = Color.FromArgb(113, 128, 150);
+            lblAllowReceptionistDetails.Location = new Point(40, 145);
+            lblAllowReceptionistDetails.Name = "lblAllowReceptionistDetails";
+            lblAllowReceptionistDetails.Size = new Size(400, 15);
+            lblAllowReceptionistDetails.TabIndex = 5;
+            lblAllowReceptionistDetails.Text = "Allow creation of receptionist accounts";
+            // 
+            // chkAllowReceptionist
+            // 
+            chkAllowReceptionist.Font = new Font("Segoe UI", 10F);
+            chkAllowReceptionist.ForeColor = Color.FromArgb(26, 32, 44);
+            chkAllowReceptionist.Location = new Point(20, 115);
+            chkAllowReceptionist.Name = "chkAllowReceptionist";
+            chkAllowReceptionist.Size = new Size(420, 30);
+            chkAllowReceptionist.TabIndex = 4;
+            chkAllowReceptionist.Text = "Allow Receptionist Creation";
+            chkAllowReceptionist.UseVisualStyleBackColor = true;
+            // 
+            // lblAllowAdminDetails
+            // 
+            lblAllowAdminDetails.Font = new Font("Segoe UI", 8F);
+            lblAllowAdminDetails.ForeColor = Color.FromArgb(113, 128, 150);
+            lblAllowAdminDetails.Location = new Point(40, 97);
+            lblAllowAdminDetails.Name = "lblAllowAdminDetails";
+            lblAllowAdminDetails.Size = new Size(400, 15);
+            lblAllowAdminDetails.TabIndex = 3;
+            lblAllowAdminDetails.Text = "Allow creation of admin accounts";
+            // 
+            // chkAllowAdmin
+            // 
+            chkAllowAdmin.Font = new Font("Segoe UI", 10F);
+            chkAllowAdmin.ForeColor = Color.FromArgb(26, 32, 44);
+            chkAllowAdmin.Location = new Point(20, 67);
+            chkAllowAdmin.Name = "chkAllowAdmin";
+            chkAllowAdmin.Size = new Size(420, 30);
+            chkAllowAdmin.TabIndex = 2;
+            chkAllowAdmin.Text = "Allow Admin Creation";
+            chkAllowAdmin.UseVisualStyleBackColor = true;
+            // 
+            // lblRoleCreationInfo
+            // 
+            lblRoleCreationInfo.Font = new Font("Segoe UI", 8F, FontStyle.Italic);
+            lblRoleCreationInfo.ForeColor = Color.FromArgb(113, 128, 150);
+            lblRoleCreationInfo.Location = new Point(15, 45);
+            lblRoleCreationInfo.Name = "lblRoleCreationInfo";
+            lblRoleCreationInfo.Size = new Size(430, 20);
+            lblRoleCreationInfo.TabIndex = 1;
+            lblRoleCreationInfo.Text = "Control which user roles can be created through the user management system";
+            // 
+            // lblRoleCreationTitle
+            // 
+            lblRoleCreationTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblRoleCreationTitle.ForeColor = Color.FromArgb(26, 32, 44);
+            lblRoleCreationTitle.Location = new Point(15, 15);
+            lblRoleCreationTitle.Name = "lblRoleCreationTitle";
+            lblRoleCreationTitle.Size = new Size(430, 25);
+            lblRoleCreationTitle.TabIndex = 0;
+            lblRoleCreationTitle.Text = "Role Creation Permissions";
             // 
             // tabDefaultUsers
             // 
-            this.tabDefaultUsers.AutoScroll = true;
-            this.tabDefaultUsers.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            this.tabDefaultUsers.Controls.Add(this.lblDefaultUsersWarning);
-            this.tabDefaultUsers.Controls.Add(this.lblPatientDetails);
-            this.tabDefaultUsers.Controls.Add(this.chkCreatePatient);
-            this.tabDefaultUsers.Controls.Add(this.lblDoctorDetails);
-            this.tabDefaultUsers.Controls.Add(this.chkCreateDoctor);
-            this.tabDefaultUsers.Controls.Add(this.lblPharmacistDetails);
-            this.tabDefaultUsers.Controls.Add(this.chkCreatePharmacist);
-            this.tabDefaultUsers.Controls.Add(this.lblReceptionistDetails);
-            this.tabDefaultUsers.Controls.Add(this.chkCreateReceptionist);
-            this.tabDefaultUsers.Controls.Add(this.lblAdminDetails);
-            this.tabDefaultUsers.Controls.Add(this.chkCreateAdmin);
-            this.tabDefaultUsers.Controls.Add(this.lblHeadadminDetails);
-            this.tabDefaultUsers.Controls.Add(this.lblHeadadminTitle);
-            this.tabDefaultUsers.Controls.Add(this.lblDefaultUsersInfo);
-            this.tabDefaultUsers.Controls.Add(this.lblDefaultUsersTitle);
-            this.tabDefaultUsers.Location = new System.Drawing.Point(4, 24);
-            this.tabDefaultUsers.Name = "tabDefaultUsers";
-            this.tabDefaultUsers.Padding = new System.Windows.Forms.Padding(3);
-            this.tabDefaultUsers.Size = new System.Drawing.Size(462, 422);
-            this.tabDefaultUsers.TabIndex = 1;
-            this.tabDefaultUsers.Text = "Default Users";
+            tabDefaultUsers.AutoScroll = true;
+            tabDefaultUsers.BackColor = Color.FromArgb(247, 250, 252);
+            tabDefaultUsers.Controls.Add(lblDefaultUsersWarning);
+            tabDefaultUsers.Controls.Add(lblPatientDetails);
+            tabDefaultUsers.Controls.Add(chkCreatePatient);
+            tabDefaultUsers.Controls.Add(lblDoctorDetails);
+            tabDefaultUsers.Controls.Add(chkCreateDoctor);
+            tabDefaultUsers.Controls.Add(lblPharmacistDetails);
+            tabDefaultUsers.Controls.Add(chkCreatePharmacist);
+            tabDefaultUsers.Controls.Add(lblReceptionistDetails);
+            tabDefaultUsers.Controls.Add(chkCreateReceptionist);
+            tabDefaultUsers.Controls.Add(lblAdminDetails);
+            tabDefaultUsers.Controls.Add(chkCreateAdmin);
+            tabDefaultUsers.Controls.Add(lblHeadadminDetails);
+            tabDefaultUsers.Controls.Add(lblHeadadminTitle);
+            tabDefaultUsers.Controls.Add(lblDefaultUsersInfo);
+            tabDefaultUsers.Controls.Add(lblDefaultUsersTitle);
+            tabDefaultUsers.Location = new Point(4, 24);
+            tabDefaultUsers.Name = "tabDefaultUsers";
+            tabDefaultUsers.Padding = new Padding(3);
+            tabDefaultUsers.Size = new Size(462, 422);
+            tabDefaultUsers.TabIndex = 1;
+            tabDefaultUsers.Text = "Default Users";
             // 
             // lblDefaultUsersWarning
             // 
-            this.lblDefaultUsersWarning.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
-            this.lblDefaultUsersWarning.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.lblDefaultUsersWarning.Location = new System.Drawing.Point(20, 408);
-            this.lblDefaultUsersWarning.Name = "lblDefaultUsersWarning";
-            this.lblDefaultUsersWarning.Size = new System.Drawing.Size(420, 20);
-            this.lblDefaultUsersWarning.TabIndex = 14;
-            this.lblDefaultUsersWarning.Text = "⚠️ Changes take effect after database re-initialization";
+            lblDefaultUsersWarning.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
+            lblDefaultUsersWarning.ForeColor = Color.FromArgb(220, 53, 69);
+            lblDefaultUsersWarning.Location = new Point(15, 385);
+            lblDefaultUsersWarning.Name = "lblDefaultUsersWarning";
+            lblDefaultUsersWarning.Size = new Size(420, 20);
+            lblDefaultUsersWarning.TabIndex = 14;
+            lblDefaultUsersWarning.Text = "⚠️ Changes take effect after database re-initialization";
             // 
             // lblPatientDetails
             // 
-            this.lblPatientDetails.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this.lblPatientDetails.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(113)))), ((int)(((byte)(128)))), ((int)(((byte)(150)))));
-            this.lblPatientDetails.Location = new System.Drawing.Point(40, 383);
-            this.lblPatientDetails.Name = "lblPatientDetails";
-            this.lblPatientDetails.Size = new System.Drawing.Size(400, 15);
-            this.lblPatientDetails.TabIndex = 13;
-            this.lblPatientDetails.Text = "Email: Patient@hospital.com | Sample test patient";
+            lblPatientDetails.Font = new Font("Segoe UI", 8F);
+            lblPatientDetails.ForeColor = Color.FromArgb(113, 128, 150);
+            lblPatientDetails.Location = new Point(35, 370);
+            lblPatientDetails.Name = "lblPatientDetails";
+            lblPatientDetails.Size = new Size(400, 15);
+            lblPatientDetails.TabIndex = 13;
+            lblPatientDetails.Text = "Email: Patient@hospital.com | Sample test patient";
             // 
             // chkCreatePatient
             // 
-            this.chkCreatePatient.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.chkCreatePatient.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.chkCreatePatient.Location = new System.Drawing.Point(20, 355);
-            this.chkCreatePatient.Name = "chkCreatePatient";
-            this.chkCreatePatient.Size = new System.Drawing.Size(420, 30);
-            this.chkCreatePatient.TabIndex = 12;
-            this.chkCreatePatient.Text = "Create Default Patient";
-            this.chkCreatePatient.UseVisualStyleBackColor = true;
+            chkCreatePatient.Font = new Font("Segoe UI", 10F);
+            chkCreatePatient.ForeColor = Color.FromArgb(26, 32, 44);
+            chkCreatePatient.Location = new Point(15, 342);
+            chkCreatePatient.Name = "chkCreatePatient";
+            chkCreatePatient.Size = new Size(420, 30);
+            chkCreatePatient.TabIndex = 12;
+            chkCreatePatient.Text = "Create Default Patient";
+            chkCreatePatient.UseVisualStyleBackColor = true;
             // 
             // lblDoctorDetails
             // 
-            this.lblDoctorDetails.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this.lblDoctorDetails.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(113)))), ((int)(((byte)(128)))), ((int)(((byte)(150)))));
-            this.lblDoctorDetails.Location = new System.Drawing.Point(40, 328);
-            this.lblDoctorDetails.Name = "lblDoctorDetails";
-            this.lblDoctorDetails.Size = new System.Drawing.Size(400, 15);
-            this.lblDoctorDetails.TabIndex = 11;
-            this.lblDoctorDetails.Text = "Email: Doctor@hospital.com | Password: doctor123";
+            lblDoctorDetails.Font = new Font("Segoe UI", 8F);
+            lblDoctorDetails.ForeColor = Color.FromArgb(113, 128, 150);
+            lblDoctorDetails.Location = new Point(35, 315);
+            lblDoctorDetails.Name = "lblDoctorDetails";
+            lblDoctorDetails.Size = new Size(400, 15);
+            lblDoctorDetails.TabIndex = 11;
+            lblDoctorDetails.Text = "Email: Doctor@hospital.com | Password: doctor123";
             // 
             // chkCreateDoctor
             // 
-            this.chkCreateDoctor.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.chkCreateDoctor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.chkCreateDoctor.Location = new System.Drawing.Point(20, 300);
-            this.chkCreateDoctor.Name = "chkCreateDoctor";
-            this.chkCreateDoctor.Size = new System.Drawing.Size(420, 30);
-            this.chkCreateDoctor.TabIndex = 10;
-            this.chkCreateDoctor.Text = "Create Default Doctor";
-            this.chkCreateDoctor.UseVisualStyleBackColor = true;
+            chkCreateDoctor.Font = new Font("Segoe UI", 10F);
+            chkCreateDoctor.ForeColor = Color.FromArgb(26, 32, 44);
+            chkCreateDoctor.Location = new Point(15, 287);
+            chkCreateDoctor.Name = "chkCreateDoctor";
+            chkCreateDoctor.Size = new Size(420, 30);
+            chkCreateDoctor.TabIndex = 10;
+            chkCreateDoctor.Text = "Create Default Doctor";
+            chkCreateDoctor.UseVisualStyleBackColor = true;
             // 
             // lblPharmacistDetails
             // 
-            this.lblPharmacistDetails.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this.lblPharmacistDetails.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(113)))), ((int)(((byte)(128)))), ((int)(((byte)(150)))));
-            this.lblPharmacistDetails.Location = new System.Drawing.Point(40, 273);
-            this.lblPharmacistDetails.Name = "lblPharmacistDetails";
-            this.lblPharmacistDetails.Size = new System.Drawing.Size(400, 15);
-            this.lblPharmacistDetails.TabIndex = 9;
-            this.lblPharmacistDetails.Text = "Email: Pharmacist@hospital.com | Password: pharmacist123";
+            lblPharmacistDetails.Font = new Font("Segoe UI", 8F);
+            lblPharmacistDetails.ForeColor = Color.FromArgb(113, 128, 150);
+            lblPharmacistDetails.Location = new Point(35, 260);
+            lblPharmacistDetails.Name = "lblPharmacistDetails";
+            lblPharmacistDetails.Size = new Size(400, 15);
+            lblPharmacistDetails.TabIndex = 9;
+            lblPharmacistDetails.Text = "Email: Pharmacist@hospital.com | Password: pharmacist123";
             // 
             // chkCreatePharmacist
             // 
-            this.chkCreatePharmacist.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.chkCreatePharmacist.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.chkCreatePharmacist.Location = new System.Drawing.Point(20, 245);
-            this.chkCreatePharmacist.Name = "chkCreatePharmacist";
-            this.chkCreatePharmacist.Size = new System.Drawing.Size(420, 30);
-            this.chkCreatePharmacist.TabIndex = 8;
-            this.chkCreatePharmacist.Text = "Create Default Pharmacist";
-            this.chkCreatePharmacist.UseVisualStyleBackColor = true;
+            chkCreatePharmacist.Font = new Font("Segoe UI", 10F);
+            chkCreatePharmacist.ForeColor = Color.FromArgb(26, 32, 44);
+            chkCreatePharmacist.Location = new Point(15, 232);
+            chkCreatePharmacist.Name = "chkCreatePharmacist";
+            chkCreatePharmacist.Size = new Size(420, 30);
+            chkCreatePharmacist.TabIndex = 8;
+            chkCreatePharmacist.Text = "Create Default Pharmacist";
+            chkCreatePharmacist.UseVisualStyleBackColor = true;
             // 
             // lblReceptionistDetails
             // 
-            this.lblReceptionistDetails.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this.lblReceptionistDetails.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(113)))), ((int)(((byte)(128)))), ((int)(((byte)(150)))));
-            this.lblReceptionistDetails.Location = new System.Drawing.Point(40, 218);
-            this.lblReceptionistDetails.Name = "lblReceptionistDetails";
-            this.lblReceptionistDetails.Size = new System.Drawing.Size(400, 15);
-            this.lblReceptionistDetails.TabIndex = 7;
-            this.lblReceptionistDetails.Text = "Email: Receptionist@hospital.com | Password: receptionist123";
+            lblReceptionistDetails.Font = new Font("Segoe UI", 8F);
+            lblReceptionistDetails.ForeColor = Color.FromArgb(113, 128, 150);
+            lblReceptionistDetails.Location = new Point(35, 205);
+            lblReceptionistDetails.Name = "lblReceptionistDetails";
+            lblReceptionistDetails.Size = new Size(400, 15);
+            lblReceptionistDetails.TabIndex = 7;
+            lblReceptionistDetails.Text = "Email: Receptionist@hospital.com | Password: receptionist123";
             // 
             // chkCreateReceptionist
             // 
-            this.chkCreateReceptionist.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.chkCreateReceptionist.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.chkCreateReceptionist.Location = new System.Drawing.Point(20, 190);
-            this.chkCreateReceptionist.Name = "chkCreateReceptionist";
-            this.chkCreateReceptionist.Size = new System.Drawing.Size(420, 30);
-            this.chkCreateReceptionist.TabIndex = 6;
-            this.chkCreateReceptionist.Text = "Create Default Receptionist";
-            this.chkCreateReceptionist.UseVisualStyleBackColor = true;
+            chkCreateReceptionist.Font = new Font("Segoe UI", 10F);
+            chkCreateReceptionist.ForeColor = Color.FromArgb(26, 32, 44);
+            chkCreateReceptionist.Location = new Point(15, 177);
+            chkCreateReceptionist.Name = "chkCreateReceptionist";
+            chkCreateReceptionist.Size = new Size(420, 30);
+            chkCreateReceptionist.TabIndex = 6;
+            chkCreateReceptionist.Text = "Create Default Receptionist";
+            chkCreateReceptionist.UseVisualStyleBackColor = true;
             // 
             // lblAdminDetails
             // 
-            this.lblAdminDetails.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this.lblAdminDetails.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(113)))), ((int)(((byte)(128)))), ((int)(((byte)(150)))));
-            this.lblAdminDetails.Location = new System.Drawing.Point(40, 163);
-            this.lblAdminDetails.Name = "lblAdminDetails";
-            this.lblAdminDetails.Size = new System.Drawing.Size(400, 15);
-            this.lblAdminDetails.TabIndex = 5;
-            this.lblAdminDetails.Text = "Email: Admin@hospital.com | Password: admin123";
+            lblAdminDetails.Font = new Font("Segoe UI", 8F);
+            lblAdminDetails.ForeColor = Color.FromArgb(113, 128, 150);
+            lblAdminDetails.Location = new Point(35, 150);
+            lblAdminDetails.Name = "lblAdminDetails";
+            lblAdminDetails.Size = new Size(400, 15);
+            lblAdminDetails.TabIndex = 5;
+            lblAdminDetails.Text = "Email: Admin@hospital.com | Password: admin123";
             // 
             // chkCreateAdmin
             // 
-            this.chkCreateAdmin.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.chkCreateAdmin.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.chkCreateAdmin.Location = new System.Drawing.Point(20, 135);
-            this.chkCreateAdmin.Name = "chkCreateAdmin";
-            this.chkCreateAdmin.Size = new System.Drawing.Size(420, 30);
-            this.chkCreateAdmin.TabIndex = 4;
-            this.chkCreateAdmin.Text = "Create Default Admin";
-            this.chkCreateAdmin.UseVisualStyleBackColor = true;
+            chkCreateAdmin.Font = new Font("Segoe UI", 10F);
+            chkCreateAdmin.ForeColor = Color.FromArgb(26, 32, 44);
+            chkCreateAdmin.Location = new Point(15, 122);
+            chkCreateAdmin.Name = "chkCreateAdmin";
+            chkCreateAdmin.Size = new Size(420, 30);
+            chkCreateAdmin.TabIndex = 4;
+            chkCreateAdmin.Text = "Create Default Admin";
+            chkCreateAdmin.UseVisualStyleBackColor = true;
             // 
             // lblHeadadminDetails
             // 
-            this.lblHeadadminDetails.Font = new System.Drawing.Font("Segoe UI", 8F);
-            this.lblHeadadminDetails.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(113)))), ((int)(((byte)(128)))), ((int)(((byte)(150)))));
-            this.lblHeadadminDetails.Location = new System.Drawing.Point(40, 108);
-            this.lblHeadadminDetails.Name = "lblHeadadminDetails";
-            this.lblHeadadminDetails.Size = new System.Drawing.Size(400, 15);
-            this.lblHeadadminDetails.TabIndex = 3;
-            this.lblHeadadminDetails.Text = "Email: Headadmin@hospital.com | Password: admin123";
+            lblHeadadminDetails.Font = new Font("Segoe UI", 8F);
+            lblHeadadminDetails.ForeColor = Color.FromArgb(113, 128, 150);
+            lblHeadadminDetails.Location = new Point(35, 95);
+            lblHeadadminDetails.Name = "lblHeadadminDetails";
+            lblHeadadminDetails.Size = new Size(400, 15);
+            lblHeadadminDetails.TabIndex = 3;
+            lblHeadadminDetails.Text = "Email: Headadmin@hospital.com | Password: admin123";
             // 
             // lblHeadadminTitle
             // 
-            this.lblHeadadminTitle.Enabled = false;
-            this.lblHeadadminTitle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblHeadadminTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.lblHeadadminTitle.Location = new System.Drawing.Point(20, 80);
-            this.lblHeadadminTitle.Name = "lblHeadadminTitle";
-            this.lblHeadadminTitle.Size = new System.Drawing.Size(420, 30);
-            this.lblHeadadminTitle.TabIndex = 2;
-            this.lblHeadadminTitle.Text = "🔒 Head Admin (Always Created - System Required)";
+            lblHeadadminTitle.Enabled = false;
+            lblHeadadminTitle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblHeadadminTitle.ForeColor = Color.FromArgb(220, 53, 69);
+            lblHeadadminTitle.Location = new Point(15, 67);
+            lblHeadadminTitle.Name = "lblHeadadminTitle";
+            lblHeadadminTitle.Size = new Size(420, 30);
+            lblHeadadminTitle.TabIndex = 2;
+            lblHeadadminTitle.Text = "🔒 Head Admin (Always Created - System Required)";
             // 
             // lblDefaultUsersInfo
             // 
-            this.lblDefaultUsersInfo.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Italic);
-            this.lblDefaultUsersInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(113)))), ((int)(((byte)(128)))), ((int)(((byte)(150)))));
-            this.lblDefaultUsersInfo.Location = new System.Drawing.Point(15, 45);
-            this.lblDefaultUsersInfo.Name = "lblDefaultUsersInfo";
-            this.lblDefaultUsersInfo.Size = new System.Drawing.Size(430, 20);
-            this.lblDefaultUsersInfo.TabIndex = 1;
-            this.lblDefaultUsersInfo.Text = "These users will be automatically created when the database is initialized";
+            lblDefaultUsersInfo.Font = new Font("Segoe UI", 8F, FontStyle.Italic);
+            lblDefaultUsersInfo.ForeColor = Color.FromArgb(113, 128, 150);
+            lblDefaultUsersInfo.Location = new Point(15, 45);
+            lblDefaultUsersInfo.Name = "lblDefaultUsersInfo";
+            lblDefaultUsersInfo.Size = new Size(430, 20);
+            lblDefaultUsersInfo.TabIndex = 1;
+            lblDefaultUsersInfo.Text = "These users will be automatically created when the database is initialized";
             // 
             // lblDefaultUsersTitle
             // 
-            this.lblDefaultUsersTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.lblDefaultUsersTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.lblDefaultUsersTitle.Location = new System.Drawing.Point(15, 15);
-            this.lblDefaultUsersTitle.Name = "lblDefaultUsersTitle";
-            this.lblDefaultUsersTitle.Size = new System.Drawing.Size(430, 25);
-            this.lblDefaultUsersTitle.TabIndex = 0;
-            this.lblDefaultUsersTitle.Text = "Auto-Create Default Users on Startup";
+            lblDefaultUsersTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblDefaultUsersTitle.ForeColor = Color.FromArgb(26, 32, 44);
+            lblDefaultUsersTitle.Location = new Point(15, 15);
+            lblDefaultUsersTitle.Name = "lblDefaultUsersTitle";
+            lblDefaultUsersTitle.Size = new Size(430, 25);
+            lblDefaultUsersTitle.TabIndex = 0;
+            lblDefaultUsersTitle.Text = "Auto-Create Default Users on Startup";
             // 
             // btnSave
             // 
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(153)))), ((int)(((byte)(225)))));
-            this.btnSave.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSave.FlatAppearance.BorderSize = 0;
-            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(320, 475);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(160, 40);
-            this.btnSave.TabIndex = 1;
-            this.btnSave.Text = "💾 Save All Settings";
-            this.btnSave.UseVisualStyleBackColor = false;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            btnSave.BackColor = Color.FromArgb(66, 153, 225);
+            btnSave.Cursor = Cursors.Hand;
+            btnSave.FlatAppearance.BorderSize = 0;
+            btnSave.FlatStyle = FlatStyle.Flat;
+            btnSave.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnSave.ForeColor = Color.White;
+            btnSave.Location = new Point(320, 475);
+            btnSave.Name = "btnSave";
+            btnSave.Size = new Size(160, 40);
+            btnSave.TabIndex = 1;
+            btnSave.Text = "💾 Save All Settings";
+            btnSave.UseVisualStyleBackColor = false;
+            btnSave.Click += btnSave_Click;
             // 
             // btnReset
             // 
-            this.btnReset.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(224)))));
-            this.btnReset.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnReset.FlatAppearance.BorderSize = 0;
-            this.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnReset.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnReset.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(32)))), ((int)(((byte)(44)))));
-            this.btnReset.Location = new System.Drawing.Point(155, 475);
-            this.btnReset.Name = "btnReset";
-            this.btnReset.Size = new System.Drawing.Size(150, 40);
-            this.btnReset.TabIndex = 2;
-            this.btnReset.Text = "↺ Reset to Default";
-            this.btnReset.UseVisualStyleBackColor = false;
-            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
+            btnReset.BackColor = Color.FromArgb(203, 213, 224);
+            btnReset.Cursor = Cursors.Hand;
+            btnReset.FlatAppearance.BorderSize = 0;
+            btnReset.FlatStyle = FlatStyle.Flat;
+            btnReset.Font = new Font("Segoe UI", 9F);
+            btnReset.ForeColor = Color.FromArgb(26, 32, 44);
+            btnReset.Location = new Point(155, 475);
+            btnReset.Name = "btnReset";
+            btnReset.Size = new Size(150, 40);
+            btnReset.TabIndex = 2;
+            btnReset.Text = "↺ Reset to Default";
+            btnReset.UseVisualStyleBackColor = false;
+            btnReset.Click += btnReset_Click;
             // 
             // btnClose
             // 
-            this.btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnClose.FlatAppearance.BorderSize = 0;
-            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(10, 475);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(130, 40);
-            this.btnClose.TabIndex = 3;
-            this.btnClose.Text = "✕ Close";
-            this.btnClose.UseVisualStyleBackColor = false;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            btnClose.BackColor = Color.FromArgb(108, 117, 125);
+            btnClose.Cursor = Cursors.Hand;
+            btnClose.FlatAppearance.BorderSize = 0;
+            btnClose.FlatStyle = FlatStyle.Flat;
+            btnClose.Font = new Font("Segoe UI", 9F);
+            btnClose.ForeColor = Color.White;
+            btnClose.Location = new Point(10, 475);
+            btnClose.Name = "btnClose";
+            btnClose.Size = new Size(130, 40);
+            btnClose.TabIndex = 3;
+            btnClose.Text = "✕ Close";
+            btnClose.UseVisualStyleBackColor = false;
+            btnClose.Click += btnClose_Click;
             // 
             // DebugForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            this.ClientSize = new System.Drawing.Size(500, 550);
-            this.Controls.Add(this.btnClose);
-            this.Controls.Add(this.btnReset);
-            this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.tabControl);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "DebugForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Debug Dashboard Settings";
-            this.tabControl.ResumeLayout(false);
-            this.tabDashboard.ResumeLayout(false);
-            this.tabDefaultUsers.ResumeLayout(false);
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(247, 250, 252);
+            ClientSize = new Size(500, 550);
+            Controls.Add(btnClose);
+            Controls.Add(btnReset);
+            Controls.Add(btnSave);
+            Controls.Add(tabControl);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "DebugForm";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Debug Dashboard Settings";
+            tabControl.ResumeLayout(false);
+            tabDashboard.ResumeLayout(false);
+            tabRoleCreation.ResumeLayout(false);
+            tabDefaultUsers.ResumeLayout(false);
+            ResumeLayout(false);
         }
+
+        #endregion
+
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage tabDashboard;
+        private System.Windows.Forms.Label lblDashboardNote;
+        private System.Windows.Forms.CheckBox chkPharmacist;
+        private System.Windows.Forms.CheckBox chkDoctor;
+        private System.Windows.Forms.CheckBox chkReceptionist;
+        private System.Windows.Forms.CheckBox chkAdmin;
+        private System.Windows.Forms.Label lblDashboardTitle;
+        private System.Windows.Forms.TabPage tabDefaultUsers;
+        private System.Windows.Forms.Label lblDefaultUsersWarning;
+        private System.Windows.Forms.Label lblPatientDetails;
+        private System.Windows.Forms.CheckBox chkCreatePatient;
+        private System.Windows.Forms.Label lblDoctorDetails;
+        private System.Windows.Forms.CheckBox chkCreateDoctor;
+        private System.Windows.Forms.Label lblPharmacistDetails;
+        private System.Windows.Forms.CheckBox chkCreatePharmacist;
+        private System.Windows.Forms.Label lblReceptionistDetails;
+        private System.Windows.Forms.CheckBox chkCreateReceptionist;
+        private System.Windows.Forms.Label lblAdminDetails;
+        private System.Windows.Forms.CheckBox chkCreateAdmin;
+        private System.Windows.Forms.Label lblHeadadminDetails;
+        private System.Windows.Forms.Label lblHeadadminTitle;
+        private System.Windows.Forms.Label lblDefaultUsersInfo;
+        private System.Windows.Forms.Label lblDefaultUsersTitle;
+        private System.Windows.Forms.TabPage tabRoleCreation;
+        private System.Windows.Forms.Label lblRoleCreationNote;
+        private System.Windows.Forms.Label lblAllowPatientDetails;
+        private System.Windows.Forms.CheckBox chkAllowPatient;
+        private System.Windows.Forms.CheckBox chkAllowPharmacist;
+        private System.Windows.Forms.Label lblAllowDoctorDetails;
+        private System.Windows.Forms.CheckBox chkAllowDoctor;
+        private System.Windows.Forms.Label lblAllowReceptionistDetails;
+        private System.Windows.Forms.CheckBox chkAllowReceptionist;
+        private System.Windows.Forms.Label lblAllowAdminDetails;
+        private System.Windows.Forms.CheckBox chkAllowAdmin;
+        private System.Windows.Forms.Label lblRoleCreationInfo;
+        private System.Windows.Forms.Label lblRoleCreationTitle;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnReset;
+        private System.Windows.Forms.Button btnClose;
+        private Label lblAllowPharmacistDetails;
     }
 }
