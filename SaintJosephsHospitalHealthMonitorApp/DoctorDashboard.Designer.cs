@@ -58,15 +58,18 @@
             tabAppointments = new TabPage();
             dgvAppointments = new DataGridView();
             panelAppointmentButtons = new Panel();
+            btnEditServiceChecklist = new Button();
             btnServiceChecklist = new Button();
             btnCompleteAppt = new Button();
             btnViewPatient = new Button();
             tabPatients = new TabPage();
             dgvPatients = new DataGridView();
             panelPatientButtons = new Panel();
+            btnEditMedicalRecord = new Button();
             btnAddRecord = new Button();
             btnViewHistory = new Button();
             panelHeader = new Panel();
+            btnDoctorStatus = new Button();
             label1 = new Label();
             panelUniversalSearch = new Panel();
             lblUniversalSearchIcon = new Label();
@@ -223,7 +226,7 @@
             tabAppointments.Location = new Point(4, 34);
             tabAppointments.Name = "tabAppointments";
             tabAppointments.Padding = new Padding(20);
-            tabAppointments.Size = new Size(1196, 647);
+            tabAppointments.Size = new Size(1196, 643);
             tabAppointments.TabIndex = 0;
             // 
             // dgvAppointments
@@ -240,12 +243,13 @@
             dgvAppointments.RowHeadersVisible = false;
             dgvAppointments.RowTemplate.Height = 45;
             dgvAppointments.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvAppointments.Size = new Size(1156, 527);
+            dgvAppointments.Size = new Size(1156, 523);
             dgvAppointments.TabIndex = 0;
             // 
             // panelAppointmentButtons
             // 
             panelAppointmentButtons.BackColor = Color.White;
+            panelAppointmentButtons.Controls.Add(btnEditServiceChecklist);
             panelAppointmentButtons.Controls.Add(btnServiceChecklist);
             panelAppointmentButtons.Controls.Add(btnCompleteAppt);
             panelAppointmentButtons.Controls.Add(btnViewPatient);
@@ -256,6 +260,23 @@
             panelAppointmentButtons.Size = new Size(1156, 80);
             panelAppointmentButtons.TabIndex = 1;
             // 
+            // btnEditServiceChecklist
+            // 
+            btnEditServiceChecklist.BackColor = Color.FromArgb(155, 89, 182);
+            btnEditServiceChecklist.Cursor = Cursors.Hand;
+            btnEditServiceChecklist.FlatAppearance.BorderSize = 0;
+            btnEditServiceChecklist.FlatAppearance.MouseOverBackColor = Color.FromArgb(142, 68, 173);
+            btnEditServiceChecklist.FlatStyle = FlatStyle.Flat;
+            btnEditServiceChecklist.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnEditServiceChecklist.ForeColor = Color.White;
+            btnEditServiceChecklist.Location = new Point(592, 18);
+            btnEditServiceChecklist.Name = "btnEditServiceChecklist";
+            btnEditServiceChecklist.Size = new Size(200, 45);
+            btnEditServiceChecklist.TabIndex = 4;
+            btnEditServiceChecklist.Text = "📋 Edit Checklist";
+            btnEditServiceChecklist.UseVisualStyleBackColor = false;
+            btnEditServiceChecklist.Click += btnEditServiceChecklist_Click;
+            // 
             // btnServiceChecklist
             // 
             btnServiceChecklist.BackColor = Color.FromArgb(155, 89, 182);
@@ -265,7 +286,7 @@
             btnServiceChecklist.FlatStyle = FlatStyle.Flat;
             btnServiceChecklist.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnServiceChecklist.ForeColor = Color.White;
-            btnServiceChecklist.Location = new Point(400, 15);
+            btnServiceChecklist.Location = new Point(386, 18);
             btnServiceChecklist.Name = "btnServiceChecklist";
             btnServiceChecklist.Size = new Size(200, 45);
             btnServiceChecklist.TabIndex = 3;
@@ -282,7 +303,7 @@
             btnCompleteAppt.FlatStyle = FlatStyle.Flat;
             btnCompleteAppt.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnCompleteAppt.ForeColor = Color.White;
-            btnCompleteAppt.Location = new Point(200, 15);
+            btnCompleteAppt.Location = new Point(14, 18);
             btnCompleteAppt.Name = "btnCompleteAppt";
             btnCompleteAppt.Size = new Size(190, 45);
             btnCompleteAppt.TabIndex = 1;
@@ -299,7 +320,7 @@
             btnViewPatient.FlatStyle = FlatStyle.Flat;
             btnViewPatient.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnViewPatient.ForeColor = Color.White;
-            btnViewPatient.Location = new Point(20, 15);
+            btnViewPatient.Location = new Point(210, 18);
             btnViewPatient.Name = "btnViewPatient";
             btnViewPatient.Size = new Size(170, 45);
             btnViewPatient.TabIndex = 2;
@@ -315,7 +336,7 @@
             tabPatients.Location = new Point(4, 34);
             tabPatients.Name = "tabPatients";
             tabPatients.Padding = new Padding(20);
-            tabPatients.Size = new Size(1196, 647);
+            tabPatients.Size = new Size(1196, 643);
             tabPatients.TabIndex = 1;
             // 
             // dgvPatients
@@ -332,12 +353,13 @@
             dgvPatients.RowHeadersVisible = false;
             dgvPatients.RowTemplate.Height = 45;
             dgvPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvPatients.Size = new Size(1156, 527);
+            dgvPatients.Size = new Size(1156, 523);
             dgvPatients.TabIndex = 0;
             // 
             // panelPatientButtons
             // 
             panelPatientButtons.BackColor = Color.White;
+            panelPatientButtons.Controls.Add(btnEditMedicalRecord);
             panelPatientButtons.Controls.Add(btnAddRecord);
             panelPatientButtons.Controls.Add(btnViewHistory);
             panelPatientButtons.Dock = DockStyle.Top;
@@ -346,6 +368,23 @@
             panelPatientButtons.Padding = new Padding(20, 15, 20, 15);
             panelPatientButtons.Size = new Size(1156, 80);
             panelPatientButtons.TabIndex = 1;
+            // 
+            // btnEditMedicalRecord
+            // 
+            btnEditMedicalRecord.BackColor = Color.FromArgb(72, 187, 120);
+            btnEditMedicalRecord.Cursor = Cursors.Hand;
+            btnEditMedicalRecord.FlatAppearance.BorderSize = 0;
+            btnEditMedicalRecord.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 161, 105);
+            btnEditMedicalRecord.FlatStyle = FlatStyle.Flat;
+            btnEditMedicalRecord.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnEditMedicalRecord.ForeColor = Color.White;
+            btnEditMedicalRecord.Location = new Point(416, 15);
+            btnEditMedicalRecord.Name = "btnEditMedicalRecord";
+            btnEditMedicalRecord.Size = new Size(190, 45);
+            btnEditMedicalRecord.TabIndex = 3;
+            btnEditMedicalRecord.Text = "➕ Edit Medical Record";
+            btnEditMedicalRecord.UseVisualStyleBackColor = false;
+            btnEditMedicalRecord.Click += btnEditMedicalRecord_Click;
             // 
             // btnAddRecord
             // 
@@ -384,6 +423,7 @@
             // panelHeader
             // 
             panelHeader.BackColor = Color.FromArgb(26, 188, 156);
+            panelHeader.Controls.Add(btnDoctorStatus);
             panelHeader.Controls.Add(label1);
             panelHeader.Controls.Add(panelUniversalSearch);
             panelHeader.Controls.Add(lblHospitalName);
@@ -392,6 +432,23 @@
             panelHeader.Name = "panelHeader";
             panelHeader.Size = new Size(1204, 80);
             panelHeader.TabIndex = 1;
+            // 
+            // btnDoctorStatus
+            // 
+            btnDoctorStatus.BackColor = Color.Transparent;
+            btnDoctorStatus.Cursor = Cursors.Hand;
+            btnDoctorStatus.FlatAppearance.BorderColor = Color.FromArgb(220, 53, 69);
+            btnDoctorStatus.FlatAppearance.BorderSize = 3;
+            btnDoctorStatus.FlatStyle = FlatStyle.Flat;
+            btnDoctorStatus.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnDoctorStatus.ForeColor = Color.White;
+            btnDoctorStatus.Location = new Point(15, 400);
+            btnDoctorStatus.Name = "btnDoctorStatus";
+            btnDoctorStatus.Size = new Size(250, 50);
+            btnDoctorStatus.TabIndex = 0;
+            btnDoctorStatus.Text = "🔴 Off Duty";
+            btnDoctorStatus.UseVisualStyleBackColor = false;
+            btnDoctorStatus.Click += BtnDoctorStatus_Click;
             // 
             // label1
             // 
@@ -468,7 +525,7 @@
             lblHospitalName.ForeColor = Color.White;
             lblHospitalName.Location = new Point(15, 10);
             lblHospitalName.Name = "lblHospitalName";
-            lblHospitalName.Size = new Size(223, 30);
+            lblHospitalName.Size = new Size(225, 30);
             lblHospitalName.TabIndex = 0;
             lblHospitalName.Text = "St. Joseph's Hospital";
             // 
@@ -773,5 +830,8 @@
         }
 
         private Label label1;
+        private Button btnDoctorStatus;
+        private Button btnEditServiceChecklist;
+        private Button btnEditMedicalRecord;
     }
 }

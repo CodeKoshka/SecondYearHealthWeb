@@ -926,7 +926,6 @@
             MaximizeBox = false;
             Name = "MedicalRecordForm";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "St. Joseph's Cardiac Hospital - Medical Record";
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();
             panelCauseProblem.ResumeLayout(false);

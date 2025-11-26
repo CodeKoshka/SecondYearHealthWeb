@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Data;
 using System.Drawing;
-using System.Drawing.Printing;
 using System.Windows.Forms;
 using MySqlConnector;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System.IO;
 
 namespace SaintJosephsHospitalHealthMonitorApp
 {
@@ -72,7 +74,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 IncomeReportPDF reportGenerator = new IncomeReportPDF();
-                reportGenerator.GenerateIncomeReport(dtpStartDate.Value.Date, dtpEndDate.Value.Date);
+                bool previewResult = reportGenerator.ShowPreview(dtpStartDate.Value.Date, dtpEndDate.Value.Date);
+
+                if (previewResult)
+                {
+                    reportGenerator.GenerateIncomeReport(dtpStartDate.Value.Date, dtpEndDate.Value.Date);
+                }
             }
             catch (Exception ex)
             {
@@ -95,23 +102,40 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private decimal totalIncome;
         private decimal totalDiscount;
         private decimal totalTax;
-        private int currentPage = 1;
-        private int currentRow = 0;
-        private Font headerFont = new Font("Arial", 16, FontStyle.Bold);
-        private Font subHeaderFont = new Font("Arial", 10, FontStyle.Bold);
-        private Font normalFont = new Font("Arial", 9);
-        private Font totalFont = new Font("Arial", 12, FontStyle.Bold);
+        private decimal grossIncome;
 
-        public void GenerateIncomeReport(DateTime fromDate, DateTime toDate)
+        public bool ShowPreview(DateTime fromDate, DateTime toDate)
         {
             startDate = fromDate;
             endDate = toDate;
 
+            LoadReportData();
+
+            if (reportData.Rows.Count == 0)
+            {
+                MessageBox.Show(
+                    $"No paid bills found between {fromDate:MMMM dd, yyyy} and {toDate:MMMM dd, yyyy}.",
+                    "No Data",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return false;
+            }
+
+            using (IncomeReportPreviewForm previewForm = new IncomeReportPreviewForm(
+                reportData, startDate, endDate, totalIncome, totalDiscount, totalTax, grossIncome))
+            {
+                return previewForm.ShowDialog() == DialogResult.OK;
+            }
+        }
+
+        private void LoadReportData()
+        {
             string query = @"
                 SELECT 
                     b.bill_id AS 'Bill ID',
                     u.name AS 'Patient Name',
                     DATE_FORMAT(b.bill_date, '%Y-%m-%d') AS 'Bill Date',
+                    b.subtotal AS 'Subtotal',
                     b.discount_amount AS 'Discount',
                     b.tax_amount AS 'Tax',
                     b.amount AS 'Total'
@@ -123,158 +147,170 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 ORDER BY b.bill_date ASC";
 
             reportData = DatabaseHelper.ExecuteQuery(query,
-                new MySqlParameter("@startDate", fromDate.Date),
-                new MySqlParameter("@endDate", toDate.Date));
-
-            if (reportData.Rows.Count == 0)
-            {
-                MessageBox.Show(
-                    $"No paid bills found between {fromDate:MMMM dd, yyyy} and {toDate:MMMM dd, yyyy}.",
-                    "No Data",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-                return;
-            }
+                new MySqlParameter("@startDate", startDate.Date),
+                new MySqlParameter("@endDate", endDate.Date));
 
             totalIncome = 0;
             totalDiscount = 0;
             totalTax = 0;
+            grossIncome = 0;
 
             foreach (DataRow row in reportData.Rows)
             {
-                totalIncome += Convert.ToDecimal(row["Total"]);
+                grossIncome += Convert.ToDecimal(row["Subtotal"]);
                 totalDiscount += Convert.ToDecimal(row["Discount"]);
                 totalTax += Convert.ToDecimal(row["Tax"]);
-            }
-
-            PrintDocument printDoc = new PrintDocument();
-            printDoc.PrintPage += PrintPage;
-
-            PrintDialog printDialog = new PrintDialog();
-            printDialog.Document = printDoc;
-
-            if (printDialog.ShowDialog() == DialogResult.OK)
-            {
-                currentPage = 1;
-                currentRow = 0;
-                printDoc.Print();
+                totalIncome += Convert.ToDecimal(row["Total"]);
             }
         }
 
-        private void PrintPage(object sender, PrintPageEventArgs e)
+        public void GenerateIncomeReport(DateTime fromDate, DateTime toDate)
         {
-            Graphics g = e.Graphics;
-            float yPos = 50;
-            float leftMargin = 50;
-            float rightMargin = e.PageBounds.Width - 50;
-
-            string title = "ST. JOSEPH'S HOSPITAL";
-            SizeF titleSize = g.MeasureString(title, headerFont);
-            g.DrawString(title, headerFont, Brushes.Black,
-                (e.PageBounds.Width - titleSize.Width) / 2, yPos);
-            yPos += titleSize.Height + 5;
-
-            string subtitle = "Income Report";
-            SizeF subtitleSize = g.MeasureString(subtitle, subHeaderFont);
-            g.DrawString(subtitle, subHeaderFont, Brushes.Black,
-                (e.PageBounds.Width - subtitleSize.Width) / 2, yPos);
-            yPos += subtitleSize.Height + 20;
-
-            string dateRange = $"Period: {startDate:MMMM dd, yyyy} - {endDate:MMMM dd, yyyy}";
-            g.DrawString(dateRange, normalFont, Brushes.Black, leftMargin, yPos);
-            yPos += 20;
-
-            string reportDate = $"Generated: {DateTime.Now:MMMM dd, yyyy hh:mm tt}";
-            g.DrawString(reportDate, normalFont, Brushes.Black, leftMargin, yPos);
-            yPos += 30;
-
-            float col1 = leftMargin;          
-            float col2 = col1 + 60;           
-            float col3 = col2 + 200;          
-            float col4 = col3 + 100;          
-            float col5 = col4 + 90;           
-            float col6 = col5 + 90;           
-
-            g.FillRectangle(new SolidBrush(Color.FromArgb(66, 153, 225)),
-                leftMargin, yPos, rightMargin - leftMargin, 25);
-
-            g.DrawString("Bill ID", subHeaderFont, Brushes.White, col1 + 5, yPos + 5);
-            g.DrawString("Patient Name", subHeaderFont, Brushes.White, col2 + 5, yPos + 5);
-            g.DrawString("Date", subHeaderFont, Brushes.White, col3 + 5, yPos + 5);
-            g.DrawString("Discount", subHeaderFont, Brushes.White, col4 + 5, yPos + 5);
-            g.DrawString("Tax", subHeaderFont, Brushes.White, col5 + 5, yPos + 5);
-            g.DrawString("Total", subHeaderFont, Brushes.White, col6 + 5, yPos + 5);
-            yPos += 30;
-
-            int rowsPerPage = 25;
-            int rowsPrinted = 0;
-
-            while (currentRow < reportData.Rows.Count && rowsPrinted < rowsPerPage)
+            try
             {
-                DataRow row = reportData.Rows[currentRow];
+                startDate = fromDate;
+                endDate = toDate;
 
-                if (rowsPrinted % 2 == 0)
+                if (reportData == null || reportData.Rows.Count == 0)
                 {
-                    g.FillRectangle(new SolidBrush(Color.FromArgb(247, 250, 252)),
-                        leftMargin, yPos, rightMargin - leftMargin, 20);
+                    LoadReportData();
                 }
 
-                g.DrawString(row["Bill ID"].ToString(), normalFont, Brushes.Black, col1 + 5, yPos);
+                SaveFileDialog saveDialog = new SaveFileDialog
+                {
+                    Filter = "PDF Files (*.pdf)|*.pdf",
+                    FileName = $"IncomeReport_{startDate:yyyyMMdd}_to_{endDate:yyyyMMdd}.pdf",
+                    Title = "Save Income Report"
+                };
 
-                string patientName = row["Patient Name"].ToString();
-                if (patientName.Length > 25)
-                    patientName = patientName.Substring(0, 22) + "...";
-                g.DrawString(patientName, normalFont, Brushes.Black, col2 + 5, yPos);
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    GeneratePDF(saveDialog.FileName);
 
-                g.DrawString(row["Bill Date"].ToString(), normalFont, Brushes.Black, col3 + 5, yPos);
-                g.DrawString($"₱{Convert.ToDecimal(row["Discount"]):N2}", normalFont, Brushes.Black, col4 + 5, yPos);
-                g.DrawString($"₱{Convert.ToDecimal(row["Tax"]):N2}", normalFont, Brushes.Black, col5 + 5, yPos);
-                g.DrawString($"₱{Convert.ToDecimal(row["Total"]):N2}", normalFont, Brushes.Black, col6 + 5, yPos);
+                    DialogResult openResult = MessageBox.Show(
+                        $"PDF saved successfully!\n\n{saveDialog.FileName}\n\nWould you like to open it now?",
+                        "Success",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Information);
 
-                yPos += 22;
-                currentRow++;
-                rowsPrinted++;
+                    if (openResult == DialogResult.Yes)
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                        {
+                            FileName = saveDialog.FileName,
+                            UseShellExecute = true
+                        });
+                    }
+                }
             }
-
-            if (currentRow >= reportData.Rows.Count)
+            catch (Exception ex)
             {
-                yPos += 20;
-
-                g.DrawLine(new Pen(Color.Black, 2), leftMargin, yPos, rightMargin, yPos);
-                yPos += 10;
-
-                float summaryHeight = 100;
-                g.FillRectangle(new SolidBrush(Color.FromArgb(247, 250, 252)),
-                    leftMargin, yPos, rightMargin - leftMargin, summaryHeight);
-
-                g.DrawString($"Total Records: {reportData.Rows.Count}", totalFont, Brushes.Black,
-                    leftMargin + 10, yPos + 10);
-
-                g.DrawString($"Total Discounts: ₱{totalDiscount:N2}", normalFont,
-                    Brushes.DarkRed, leftMargin + 10, yPos + 40);
-
-                g.DrawString($"Total Tax: ₱{totalTax:N2}", normalFont,
-                    Brushes.DarkGreen, leftMargin + 10, yPos + 60);
-
-                g.DrawString("TOTAL INCOME:", totalFont, Brushes.Black, rightMargin - 300, yPos + 65);
-                g.DrawString($"₱{totalIncome:N2}", totalFont,
-                    new SolidBrush(Color.FromArgb(46, 204, 113)), rightMargin - 150, yPos + 65);
+                MessageBox.Show($"Error generating PDF: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
 
-            string pageInfo = $"Page {currentPage}";
-            SizeF pageInfoSize = g.MeasureString(pageInfo, normalFont);
-            g.DrawString(pageInfo, normalFont, Brushes.Gray,
-                (e.PageBounds.Width - pageInfoSize.Width) / 2, e.PageBounds.Height - 50);
+        private void GeneratePDF(string filePath)
+        {
+            Document document = new Document(PageSize.A4, 50, 50, 50, 50);
+            PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(filePath, FileMode.Create));
 
-            if (currentRow < reportData.Rows.Count)
+            iTextSharp.text.Font titleFont = FontFactory.GetFont("Arial", 18, iTextSharp.text.Font.BOLD);
+            iTextSharp.text.Font headerFont = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD);
+            iTextSharp.text.Font normalFont = FontFactory.GetFont("Arial", 10);
+            iTextSharp.text.Font smallFont = FontFactory.GetFont("Arial", 9);
+
+            document.Open();
+
+            Paragraph hospitalName = new Paragraph("ST. JOSEPH'S HOSPITAL", titleFont);
+            hospitalName.Alignment = Element.ALIGN_CENTER;
+            document.Add(hospitalName);
+
+            Paragraph reportTitle = new Paragraph("INCOME REPORT", headerFont);
+            reportTitle.Alignment = Element.ALIGN_CENTER;
+            reportTitle.SpacingAfter = 10;
+            document.Add(reportTitle);
+
+            Paragraph dateRange = new Paragraph($"Period: {startDate:MMMM dd, yyyy} - {endDate:MMMM dd, yyyy}", normalFont);
+            dateRange.Alignment = Element.ALIGN_CENTER;
+            dateRange.SpacingAfter = 5;
+            document.Add(dateRange);
+
+            Paragraph generatedDate = new Paragraph($"Generated: {DateTime.Now:MMMM dd, yyyy hh:mm tt}", smallFont);
+            generatedDate.Alignment = Element.ALIGN_CENTER;
+            generatedDate.SpacingAfter = 20;
+            document.Add(generatedDate);
+
+            PdfPTable summaryTable = new PdfPTable(2);
+            summaryTable.WidthPercentage = 100;
+            summaryTable.SpacingAfter = 20;
+
+            PdfPCell summaryHeader = new PdfPCell(new Phrase("FINANCIAL SUMMARY", headerFont));
+            summaryHeader.Colspan = 2;
+            summaryHeader.BackgroundColor = new BaseColor(240, 240, 240);
+            summaryHeader.HorizontalAlignment = Element.ALIGN_CENTER;
+            summaryHeader.Padding = 10;
+            summaryTable.AddCell(summaryHeader);
+
+            summaryTable.AddCell(new PdfPCell(new Phrase($"Total Transactions:", normalFont)) { Border = 0, Padding = 5 });
+            summaryTable.AddCell(new PdfPCell(new Phrase($"{reportData.Rows.Count}", normalFont)) { Border = 0, Padding = 5, HorizontalAlignment = Element.ALIGN_RIGHT });
+
+            summaryTable.AddCell(new PdfPCell(new Phrase($"Gross Income:", normalFont)) { Border = 0, Padding = 5 });
+            summaryTable.AddCell(new PdfPCell(new Phrase($"₱{grossIncome:N2}", normalFont)) { Border = 0, Padding = 5, HorizontalAlignment = Element.ALIGN_RIGHT });
+
+            summaryTable.AddCell(new PdfPCell(new Phrase($"Total Discounts:", normalFont)) { Border = 0, Padding = 5 });
+            summaryTable.AddCell(new PdfPCell(new Phrase($"-₱{totalDiscount:N2}", normalFont)) { Border = 0, Padding = 5, HorizontalAlignment = Element.ALIGN_RIGHT });
+
+            summaryTable.AddCell(new PdfPCell(new Phrase($"Total Tax Collected:", normalFont)) { Border = 0, Padding = 5 });
+            summaryTable.AddCell(new PdfPCell(new Phrase($"₱{totalTax:N2}", normalFont)) { Border = 0, Padding = 5, HorizontalAlignment = Element.ALIGN_RIGHT });
+
+            PdfPCell netIncomeLabel = new PdfPCell(new Phrase($"NET INCOME:", headerFont));
+            netIncomeLabel.Border = 0;
+            netIncomeLabel.Padding = 10;
+            netIncomeLabel.BackgroundColor = new BaseColor(240, 240, 240);
+            summaryTable.AddCell(netIncomeLabel);
+
+            PdfPCell netIncomeValue = new PdfPCell(new Phrase($"₱{totalIncome:N2}", headerFont));
+            netIncomeValue.Border = 0;
+            netIncomeValue.Padding = 10;
+            netIncomeValue.HorizontalAlignment = Element.ALIGN_RIGHT;
+            netIncomeValue.BackgroundColor = new BaseColor(240, 240, 240);
+            summaryTable.AddCell(netIncomeValue);
+
+            document.Add(summaryTable);
+
+            PdfPTable transactionsTable = new PdfPTable(6);
+            transactionsTable.WidthPercentage = 100;
+            transactionsTable.SetWidths(new float[] { 1f, 3f, 2f, 1.5f, 1.5f, 1.5f });
+
+            string[] headers = { "Bill ID", "Patient Name", "Bill Date", "Discount", "Tax", "Total" };
+            foreach (string header in headers)
             {
-                currentPage++;
-                e.HasMorePages = true;
+                PdfPCell cell = new PdfPCell(new Phrase(header, smallFont));
+                cell.BackgroundColor = new BaseColor(52, 73, 94);
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                cell.Padding = 8;
+                transactionsTable.AddCell(cell);
             }
-            else
+
+            foreach (DataRow row in reportData.Rows)
             {
-                e.HasMorePages = false;
+                transactionsTable.AddCell(new Phrase(row["Bill ID"].ToString(), smallFont));
+                transactionsTable.AddCell(new Phrase(row["Patient Name"].ToString(), smallFont));
+                transactionsTable.AddCell(new Phrase(row["Bill Date"].ToString(), smallFont));
+                transactionsTable.AddCell(new Phrase($"₱{Convert.ToDecimal(row["Discount"]):N2}", smallFont));
+                transactionsTable.AddCell(new Phrase($"₱{Convert.ToDecimal(row["Tax"]):N2}", smallFont));
+                transactionsTable.AddCell(new Phrase($"₱{Convert.ToDecimal(row["Total"]):N2}", smallFont));
             }
+
+            document.Add(transactionsTable);
+
+            Paragraph footer = new Paragraph("\n\nSt. Joseph's Hospital | Healthcare Excellence", smallFont);
+            footer.Alignment = Element.ALIGN_CENTER;
+            document.Add(footer);
+
+            document.Close();
+            writer.Close();
         }
     }
 }

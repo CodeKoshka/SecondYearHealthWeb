@@ -19,6 +19,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private bool isViewMode;
         private int currentUserId;
         private string currentUserRole;
+        private bool isEditMode;
+        private int editRecordId;
 
         public MedicalRecordForm(int pId, int dId, string pName, int qId)
         {
@@ -27,6 +29,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             patientName = pName;
             queueId = qId;
             isViewMode = false;
+            isEditMode = false;
             InitializeComponent();
             OptimizeFormSize();
             lblDate.Text = $"Date: {DateTime.Now:MM/dd/yy}";
@@ -56,6 +59,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             return new MedicalRecordForm(rId, userId, userRole, true);
         }
 
+        public static MedicalRecordForm CreateEditMode(int recordId, int patientId, int doctorId, string patientName, int queueId)
+        {
+            return new MedicalRecordForm(recordId, patientId, doctorId, patientName, queueId, true);
+        }
+
         private MedicalRecordForm(int rId, int userId, string userRole, bool viewMode)
         {
             recordId = rId;
@@ -66,6 +74,74 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             ConfigureForViewMode();
             LoadExistingMedicalRecord();
+        }
+
+        private MedicalRecordForm(int recId, int pId, int dId, string pName, int qId, bool editMode)
+        {
+            editRecordId = recId;
+            patientId = pId;
+            doctorId = dId;
+            patientName = pName;
+            queueId = qId;
+            isEditMode = true;
+            isViewMode = false;
+
+            InitializeComponent();
+            OptimizeFormSize();
+
+            this.Text = "Edit Medical Record - St. Joseph's Cardiac Hospital";
+            lblTitle.Text = "✏️ EDIT CARDIAC ASSESSMENT - MEDICAL REPORT";
+            lblDate.Text = $"Date: {DateTime.Now:MM/dd/yy}";
+
+            LoadPatientInfo();
+            LoadExistingRecordForEdit(recId);
+            SetupEventHandlers();
+        }
+
+        private void LoadExistingRecordForEdit(int recordId)
+        {
+            try
+            {
+                string query = @"
+            SELECT 
+            m.diagnosis,
+            m.prescription,
+            m.record_date
+            FROM MedicalRecords m
+            WHERE m.record_id = @recordId";
+
+                DataTable dt = DatabaseHelper.ExecuteQuery(query,
+                    new MySqlParameter("@recordId", recordId));
+
+                if (dt.Rows.Count == 0)
+                {
+                    MessageBox.Show("Medical record not found.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Close();
+                    return;
+                }
+
+                DataRow row = dt.Rows[0];
+                string fullRecord = row["diagnosis"].ToString();
+
+                ParseAndLoadSavedData(fullRecord);
+
+                Label lblEditWarning = new Label
+                {
+                    Text = "⚠️ EDITING CURRENT SESSION RECORD - Changes will update this medical record",
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(243, 156, 18),
+                    Location = new Point(650, 60),
+                    AutoSize = true
+                };
+                this.Controls.Add(lblEditWarning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading record for editing: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+            }
         }
 
         private void SetupEventHandlers()
@@ -469,7 +545,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     Text = $"| Gender: {gender}",
                     Font = new Font("Segoe UI", 9F),
                     ForeColor = Color.FromArgb(200, 220, 240),
-                    Location = new Point(210, 80),
+                    Location = new Point(280, 80),
                     AutoSize = true,
                     BackColor = Color.Transparent
                 };
@@ -865,7 +941,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     intakeInformation = dt.Rows[0]["reason_for_visit"]?.ToString() ?? "";
 
                     string reasonText = intakeInformation;
-                    if (reasonText.Contains("CHIEF COMPLAINT"))
+                    if (reasonText.Contains("CHIEF COMPLAINT") || reasonText.Contains("REASON FOR VISIT"))
                     {
                         var lines = reasonText.Split('\n');
                         bool capture = false;
@@ -873,18 +949,37 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                         foreach (var line in lines)
                         {
-                            if (line.Contains("CHIEF COMPLAINT") || line.Contains("REASON FOR VISIT"))
+                            string trimmedLine = line.Trim();
+
+                            if (trimmedLine.Contains("CHIEF COMPLAINT") || trimmedLine.Contains("REASON FOR VISIT"))
                             {
                                 capture = true;
                                 continue;
                             }
-                            if (capture && (line.Contains("SYMPTOMS") || line.Contains("MEDICATIONS") || line.Contains("Priority")))
+
+                            if (trimmedLine.StartsWith("CURRENT SYMPTOMS") ||
+                                trimmedLine.StartsWith("KNOWN ALLERGIES") ||
+                                trimmedLine.StartsWith("⚠️ KNOWN ALLERGIES") ||
+                                trimmedLine.StartsWith("CURRENT MEDICATIONS") ||
+                                trimmedLine.Contains("Priority Level:") ||
+                                trimmedLine.StartsWith("===") ||
+                                trimmedLine.StartsWith("Date:") ||
+                                trimmedLine.StartsWith("Status:"))
+                            {
                                 break;
-                            if (capture && !string.IsNullOrWhiteSpace(line))
-                                complaint.AppendLine(line.Trim());
+                            }
+
+                            if (capture && !string.IsNullOrWhiteSpace(trimmedLine))
+                            {
+                                complaint.AppendLine(trimmedLine);
+                            }
                         }
 
-                        txtProblemStarted.Text = complaint.ToString().Trim();
+                        string complaintText = complaint.ToString().Trim();
+                        if (!string.IsNullOrWhiteSpace(complaintText))
+                        {
+                            txtProblemStarted.Text = complaintText;
+                        }
                     }
                 }
             }
@@ -955,7 +1050,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             bool hasMedicationText = !string.IsNullOrWhiteSpace(txtMedications.Text) &&
-                                    txtMedications.Text != "Enter medications, one per line:\nExample: Aspirin 81mg - Blood thinner\nLisinopril 10mg - Blood pressure";
+                                    !txtMedications.Text.Contains("Enter medications, one per line:") &&
+                                    !txtMedications.Text.Contains("Example:");
 
             if (!chkNoMedication.Checked && !hasMedicationText)
             {
@@ -989,50 +1085,75 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             try
             {
-                if (queueId.HasValue && queueId.Value > 0)
+                string completeMedicalRecord = BuildCompleteMedicalRecord();
+
+                if (isEditMode)
                 {
-                    string checkDuplicate = @"
+                    string updateQuery = @"
+                UPDATE MedicalRecords 
+                SET diagnosis = @diagnosis, 
+                    prescription = @prescription,
+                    visit_type = @visitType,
+                    record_date = NOW()
+                WHERE record_id = @recordId";
+
+                    DatabaseHelper.ExecuteNonQuery(updateQuery,
+                        new MySqlParameter("@recordId", editRecordId),
+                        new MySqlParameter("@diagnosis", completeMedicalRecord),
+                        new MySqlParameter("@prescription", BuildPrescriptionList()),
+                        new MySqlParameter("@visitType", DetermineVisitType()));
+
+                    MessageBox.Show(
+                        "✓ Medical record updated successfully!\n\n" +
+                        "The record has been updated with your changes.",
+                        "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                else
+                {
+                    if (queueId.HasValue && queueId.Value > 0)
+                    {
+                        string checkDuplicate = @"
                     SELECT COUNT(*) 
                     FROM MedicalRecords 
                     WHERE patient_id = @patientId 
                     AND doctor_id = @doctorId 
                     AND queue_id = @queueId";
 
-                    int existingCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkDuplicate,
-                        new MySqlParameter("@patientId", patientId),
-                        new MySqlParameter("@doctorId", doctorId),
-                        new MySqlParameter("@queueId", queueId.Value)));
+                        int existingCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkDuplicate,
+                            new MySqlParameter("@patientId", patientId),
+                            new MySqlParameter("@doctorId", doctorId),
+                            new MySqlParameter("@queueId", queueId.Value)));
 
-                    if (existingCount > 0)
-                    {
-                        MessageBox.Show(
-                            "⚠ A medical record already exists for this visit.\n" +
-                            "Cannot save duplicate records.",
-                            "Duplicate Record",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                        return;
+                        if (existingCount > 0)
+                        {
+                            MessageBox.Show(
+                                "⚠ A medical record already exists for this visit.\n" +
+                                "Cannot save duplicate records.",
+                                "Duplicate Record",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+                            return;
+                        }
                     }
-                }
 
-                string completeMedicalRecord = BuildCompleteMedicalRecord();
-
-                string query = @"INSERT INTO MedicalRecords 
+                    string query = @"INSERT INTO MedicalRecords 
                 (patient_id, doctor_id, diagnosis, prescription, lab_tests, visit_type, queue_id)
                 VALUES (@patientId, @doctorId, @diagnosis, @prescription, @labTests, @visitType, @queueId)";
 
-                DatabaseHelper.ExecuteNonQuery(query,
-                    new MySqlParameter("@patientId", patientId),
-                    new MySqlParameter("@doctorId", doctorId),
-                    new MySqlParameter("@diagnosis", completeMedicalRecord),
-                    new MySqlParameter("@prescription", BuildPrescriptionList()),
-                    new MySqlParameter("@labTests", ""),
-                    new MySqlParameter("@visitType", DetermineVisitType()),
-                    new MySqlParameter("@queueId", queueId.HasValue ? (object)queueId.Value : DBNull.Value));
+                    DatabaseHelper.ExecuteNonQuery(query,
+                        new MySqlParameter("@patientId", patientId),
+                        new MySqlParameter("@doctorId", doctorId),
+                        new MySqlParameter("@diagnosis", completeMedicalRecord),
+                        new MySqlParameter("@prescription", BuildPrescriptionList()),
+                        new MySqlParameter("@labTests", ""),
+                        new MySqlParameter("@visitType", DetermineVisitType()),
+                        new MySqlParameter("@queueId", queueId.HasValue ? (object)queueId.Value : DBNull.Value));
 
-                if (queueId.HasValue && queueId.Value > 0)
-                {
-                    string updateReasonQuery = @"
+                    if (queueId.HasValue && queueId.Value > 0)
+                    {
+                        string updateReasonQuery = @"
                     UPDATE patientqueue
                     SET reason_for_visit = 
                     CASE
@@ -1042,20 +1163,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     WHERE queue_id = @queueId
                     AND status NOT IN ('Completed', 'Discharged')";
 
-                    DatabaseHelper.ExecuteNonQuery(updateReasonQuery,
-                        new MySqlParameter("@queueId", queueId.Value),
-                        new MySqlParameter("@note", "Medical record created - visit ongoing"));
-                }
+                        DatabaseHelper.ExecuteNonQuery(updateReasonQuery,
+                            new MySqlParameter("@queueId", queueId.Value),
+                            new MySqlParameter("@note", "Medical record created - visit ongoing"));
+                    }
 
-                MessageBox.Show(
-                    "✓ Complete medical record saved successfully!\n\n" +
-                    "The record includes:\n" +
-                    "• Patient intake information (from receptionist)\n" +
-                    "• Complete cardiac assessment (from doctor)\n\n" +
-                    "This comprehensive record is now permanently saved.",
-                    "Success",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                    MessageBox.Show(
+                        "✓ Complete medical record saved successfully!\n\n" +
+                        "The record includes:\n" +
+                        "• Patient intake information (from receptionist)\n" +
+                        "• Complete cardiac assessment (from doctor)\n\n" +
+                        "This comprehensive record is now permanently saved.",
+                        "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -1177,17 +1299,36 @@ namespace SaintJosephsHospitalHealthMonitorApp
             else
             {
                 string medicationsText = txtMedications.Text;
-                if (medicationsText != "Enter medications, one per line:\nExample: Aspirin 81mg - Blood thinner\nLisinopril 10mg - Blood pressure" &&
-                    !string.IsNullOrWhiteSpace(medicationsText))
+
+                bool isPlaceholder = string.IsNullOrWhiteSpace(medicationsText) ||
+                                    medicationsText.Contains("Enter medications, one per line:") ||
+                                    medicationsText.Contains("Example: Aspirin 81mg");
+
+                if (!isPlaceholder)
                 {
                     var medicationLines = medicationsText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                    bool hasValidMedication = false;
+
                     foreach (var line in medicationLines)
                     {
-                        if (!string.IsNullOrWhiteSpace(line))
+                        string trimmedLine = line.Trim();
+                        if (!string.IsNullOrWhiteSpace(trimmedLine) &&
+                            !trimmedLine.Contains("Enter medications") &&
+                            !trimmedLine.Contains("Example:"))
                         {
-                            record.AppendLine($"  • {line.Trim()}");
+                            record.AppendLine($"  • {trimmedLine}");
+                            hasValidMedication = true;
                         }
                     }
+
+                    if (!hasValidMedication)
+                    {
+                        record.AppendLine("  ☑ No Medication");
+                    }
+                }
+                else
+                {
+                    record.AppendLine("  ☑ No Medication");
                 }
             }
             record.AppendLine();
@@ -1228,9 +1369,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             StringBuilder rx = new StringBuilder();
 
             string medicationsText = txtMedications.Text;
-            bool isPlaceholder = medicationsText == "Enter medications, one per line:\nExample: Aspirin 81mg - Blood thinner\nLisinopril 10mg - Blood pressure";
 
-            if (chkNoMedication.Checked || string.IsNullOrWhiteSpace(medicationsText) || isPlaceholder)
+            bool isPlaceholder = string.IsNullOrWhiteSpace(medicationsText) ||
+                                medicationsText.Contains("Enter medications, one per line:") ||
+                                medicationsText.Contains("Example: Aspirin 81mg");
+
+            if (chkNoMedication.Checked || isPlaceholder)
             {
                 return "No medications prescribed.";
             }
@@ -1239,12 +1383,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
             int count = 1;
             foreach (var line in medicationLines)
             {
-                if (!string.IsNullOrWhiteSpace(line))
+                string trimmedLine = line.Trim();
+
+                if (!string.IsNullOrWhiteSpace(trimmedLine) &&
+                    !trimmedLine.Contains("Enter medications") &&
+                    !trimmedLine.Contains("Example:"))
                 {
-                    rx.AppendLine($"{count}. {line.Trim()}");
+                    rx.AppendLine($"{count}. {trimmedLine}");
                     rx.AppendLine();
                     count++;
                 }
+            }
+
+            if (count == 1)
+            {
+                return "No medications prescribed.";
             }
 
             return rx.ToString();

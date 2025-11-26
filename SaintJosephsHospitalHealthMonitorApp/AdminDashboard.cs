@@ -29,6 +29,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             ApplyStyle();
             UpdateUserDisplay();
             ConfigureAllDataGridViews();
+            ConfigureBillingGrids(); 
             InitializeUniversalSearch();
             LoadData();
             LoadUserProfile();
@@ -36,15 +37,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void ApplyStyle()
         {
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
-                         ControlStyles.AllPaintingInWmPaint |
-                         ControlStyles.UserPaint, true);
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer |ControlStyles.AllPaintingInWmPaint |ControlStyles.UserPaint, true);
             this.UpdateStyles();
+            this.WindowState = FormWindowState.Maximized;
+            this.MinimumSize = new Size(1200, 700);
+
             Color sidebarBg = Color.FromArgb(26, 32, 44);
             Color sidebarHover = Color.FromArgb(45, 55, 72);
             Color accentColor = Color.FromArgb(66, 153, 225);
 
             panelSidebar.BackColor = sidebarBg;
+            panelSidebar.Dock = DockStyle.Left;
+            panelSidebar.Width = 280;
 
             panelHeader.BackColor = Color.FromArgb(0, 102, 204);
             panelHeader.Height = 70;
@@ -61,6 +65,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
             lblHospitalName.ForeColor = Color.FromArgb(224, 224, 224);
             lblHospitalName.Location = new Point(28, 8);
             lblHospitalName.AutoSize = true;
+
+            pictureBoxProfile.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxProfile.Location = new Point(65, 44);
+            pictureBoxProfile.Size = new Size(150, 150);
 
             lblWelcome.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblWelcome.ForeColor = Color.White;
@@ -93,11 +101,42 @@ namespace SaintJosephsHospitalHealthMonitorApp
             btnLogout.ForeColor = Color.White;
             btnLogout.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnLogout.FlatAppearance.MouseOverBackColor = Color.FromArgb(160, 174, 192);
+            btnLogout.Size = new Size(250, 50);
+            btnLogout.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnLogout.Location = new Point(15, panelSidebar.Height - btnLogout.Height - 20);
+
+            panelUniversalSearch.Anchor = AnchorStyles.None;
+
+            this.Resize += (s, e) =>
+            {
+                CenterSearchBar();
+                RepositionBillingComponents();
+            };
+
+            tabControl.SelectedIndexChanged += (s, e) =>
+            {
+                if (tabControl.SelectedIndex == 2)
+                {
+                    RepositionBillingComponents();
+                }
+            };
+
+            CenterSearchBar();
 
             panelHeaderRight.Visible = false;
 
             SwitchToTab(0);
         }
+
+        private void CenterSearchBar()
+        {
+            if (panelHeader != null && panelUniversalSearch != null)
+            {
+                int centerX = (panelHeader.Width - panelUniversalSearch.Width) / 2;
+                panelUniversalSearch.Location = new Point(centerX, 15);
+            }
+        }
+
 
         private void UpdateMenuButton(Button btn, int yPos, string icon, string text)
         {
@@ -163,11 +202,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (dgvDoctors != null) ConfigureDataGridView(dgvDoctors);
             if (dgvPatients != null) ConfigureDataGridView(dgvPatients);
             if (dgvStaff != null) ConfigureDataGridView(dgvStaff);
-            if (dgvBilling != null) ConfigureDataGridView(dgvBilling);
         }
 
         private void ConfigureDataGridView(DataGridView dgv)
         {
+            if (dgv == null) return;
+
             dgv.AutoGenerateColumns = true;
             dgv.AllowUserToAddRows = false;
             dgv.AllowUserToDeleteRows = false;
@@ -178,24 +218,54 @@ namespace SaintJosephsHospitalHealthMonitorApp
             dgv.EnableHeadersVisualStyles = false;
             dgv.AllowUserToResizeRows = false;
             dgv.AllowUserToOrderColumns = false;
+            dgv.AllowUserToResizeColumns = false;
+            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgv.Dock = DockStyle.Fill;
 
-            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(66, 153, 225);
-            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(66, 153, 225);
-            dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
-            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 8, 12, 8);
-            dgv.ColumnHeadersHeight = 50;
-            dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            bool isBillingGrid = (dgv == dgvBilling || dgv == dgvDischargedBills);
 
-            dgv.DefaultCellStyle.BackColor = Color.White;
-            dgv.DefaultCellStyle.ForeColor = Color.FromArgb(26, 32, 44);
-            dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
-            dgv.DefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44);
-            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
-            dgv.DefaultCellStyle.Padding = new Padding(12, 5, 12, 5);
-            dgv.RowTemplate.Height = 45;
+            if (isBillingGrid)
+            {
+                dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(66, 153, 225);
+                dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+                dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(66, 153, 225);
+                dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+                dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(8, 6, 8, 6);
+                dgv.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
+                dgv.ColumnHeadersHeight = 40;
+                dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+
+                dgv.DefaultCellStyle.BackColor = Color.White;
+                dgv.DefaultCellStyle.ForeColor = Color.FromArgb(26, 32, 44);
+                dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
+                dgv.DefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44);
+                dgv.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
+                dgv.DefaultCellStyle.Padding = new Padding(8, 3, 8, 3);
+                dgv.RowTemplate.Height = 35;
+            }
+            else
+            {
+                dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(66, 153, 225);
+                dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+                dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(66, 153, 225);
+                dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+                dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 8, 12, 8);
+                dgv.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
+                dgv.ColumnHeadersHeight = 50;
+                dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+
+                dgv.DefaultCellStyle.BackColor = Color.White;
+                dgv.DefaultCellStyle.ForeColor = Color.FromArgb(26, 32, 44);
+                dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
+                dgv.DefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44);
+                dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
+                dgv.DefaultCellStyle.Padding = new Padding(12, 5, 12, 5);
+                dgv.RowTemplate.Height = 45;
+            }
 
             dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 251);
             dgv.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(187, 222, 251);
@@ -210,16 +280,179 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
                 null, dgv, new object[] { true });
 
-            dgv.DataBindingComplete += (s, e) =>
-            {
-                foreach (DataGridViewColumn column in dgv.Columns)
-                {
-                    column.SortMode = DataGridViewColumnSortMode.NotSortable;
-                }
-            };
+            dgv.DataBindingComplete -= Dgv_DataBindingComplete;
+            dgv.DataBindingComplete += Dgv_DataBindingComplete;
 
             dgv.RowPostPaint -= DgvUniversal_RowPostPaint;
             dgv.RowPostPaint += DgvUniversal_RowPostPaint;
+        }
+
+        private void ConfigureBillingGrids()
+        {
+            ConfigureDataGridView(dgvBilling);
+            dgvBilling.Dock = DockStyle.None;
+            dgvBilling.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ConfigureDataGridView(dgvDischargedBills);
+            dgvDischargedBills.Dock = DockStyle.None;
+            dgvDischargedBills.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            System.Diagnostics.Debug.WriteLine("[AdminDashboard] Billing grids configured with full styling");
+        }
+
+        private void Dgv_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            try
+            {
+                DataGridView dgv = sender as DataGridView;
+                if (dgv == null) return;
+
+                if (dgv.Columns.Count == 0 && dgv.DataSource != null)
+                {
+                    if (dgv.BindingContext == null)
+                    {
+                        dgv.BindingContext = new BindingContext();
+                    }
+
+                    dgv.Refresh();
+                    Application.DoEvents();
+                }
+
+                if (dgv.Columns == null || dgv.Columns.Count == 0)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ConfigureDataGridView] No columns generated for {dgv.Name}");
+                    return;
+                }
+
+                foreach (DataGridViewColumn column in dgv.Columns)
+                {
+                    if (column == null) continue;
+
+                    column.SortMode = DataGridViewColumnSortMode.NotSortable;
+                    column.Resizable = DataGridViewTriState.False;
+
+                    string friendlyName = GetFriendlyColumnName(column.Name);
+                    column.HeaderText = friendlyName;
+
+                    string columnNameLower = (column.Name ?? "").ToLower();
+
+                    try
+                    {
+                        if (columnNameLower.Contains("id"))
+                        {
+                            column.MinimumWidth = 80;
+                        }
+                        else if (columnNameLower.Contains("name"))
+                        {
+                            column.MinimumWidth = 150;
+                        }
+                        else if (columnNameLower.Contains("date") || columnNameLower.Contains("time"))
+                        {
+                            column.MinimumWidth = 140;
+                        }
+                        else if (columnNameLower.Contains("amount") || columnNameLower.Contains("total") ||
+                                 columnNameLower.Contains("price") || columnNameLower.Contains("cost"))
+                        {
+                            column.MinimumWidth = 120;
+                        }
+                        else if (columnNameLower.Contains("email"))
+                        {
+                            column.MinimumWidth = 180;
+                        }
+                        else if (columnNameLower.Contains("phone") || columnNameLower.Contains("contact"))
+                        {
+                            column.MinimumWidth = 130;
+                        }
+                        else
+                        {
+                            column.MinimumWidth = 100;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[ConfigureDataGridView] Error setting MinimumWidth for column '{column.Name}': {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ConfigureDataGridView] DataBindingComplete error: {ex.Message}");
+            }
+        }
+
+        private string GetFriendlyColumnName(string columnName)
+        {
+            var columnMappings = new System.Collections.Generic.Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+        {"user_id", "User ID"},
+        {"name", "Name"},
+        {"role", "Role"},
+        {"email", "Email Address"},
+        {"created_date", "Date Created"},
+        {"age", "Age"},
+        {"gender", "Gender"},
+        {"is_active", "Status"},
+
+        {"patient_id", "Patient ID"},
+        {"Patient Name", "Patient Name"},
+        {"blood_type", "Blood Type"},
+        {"Blood Type", "Blood Type"},
+        {"phone_number", "Phone Number"},
+        {"Contact", "Contact Number"},
+        {"emergency_contact", "Emergency Contact"},
+        {"allergies", "Allergies"},
+        {"medical_history", "Medical History"},
+        {"Medical Records", "Medical Records"},
+        {"Appointments", "Appointments"},
+
+        {"bill_id", "Bill ID"},
+        {"Bill ID", "Bill ID"},
+        {"amount", "Amount"},
+        {"Total Amount", "Total Amount"},
+        {"subtotal", "Subtotal"},
+        {"Subtotal", "Subtotal"},
+        {"discount_percent", "Discount %"},
+        {"discount_amount", "Discount Amount"},
+        {"Discount", "Discount"},
+        {"Discount Amount", "Discount Amount"},
+        {"tax_percent", "Tax %"},
+        {"tax_amount", "Tax Amount"},
+        {"Tax", "Tax"},
+        {"Tax Amount", "Tax Amount"},
+        {"payment_method", "Payment Method"},
+        {"Payment Method", "Payment Method"},
+        {"status", "Status"},
+        {"Status", "Status"},
+        {"bill_date", "Bill Date"},
+        {"Bill Date", "Bill Date"},
+        {"discharged_time", "Discharged Date"},
+        {"Discharged Date", "Discharged Date"},
+        {"created_by", "Created By"},
+        {"Created By", "Created By"},
+
+        {"queue_id", "Queue ID"},
+        {"queue_number", "Queue #"},
+        {"priority", "Priority"},
+        {"reason_for_visit", "Reason for Visit"},
+        {"queue_date", "Queue Date"},
+        {"registered_time", "Registered Time"},
+
+        {"doctor_id", "Doctor ID"},
+        {"specialization", "Specialization"},
+        {"license_number", "License Number"},
+
+        {"record_id", "Record ID"},
+        {"diagnosis", "Diagnosis"},
+        {"prescription", "Prescription"},
+        {"lab_tests", "Lab Tests"},
+        {"visit_type", "Visit Type"},
+        {"record_date", "Record Date"}
+    };
+
+            if (columnMappings.ContainsKey(columnName))
+                return columnMappings[columnName];
+
+            return System.Globalization.CultureInfo.CurrentCulture.TextInfo
+                .ToTitleCase(columnName.Replace("_", " ").ToLower());
         }
 
         private void DgvUniversal_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
@@ -285,9 +518,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             chkSearchBilling.AutoSize = true;
             chkSearchBilling.CheckedChanged += (s, e) => RefreshSearchResults();
 
-            panelSearchCategories.Controls.AddRange(new Control[] {
-        chkSearchUsers, chkSearchPatients, chkSearchBilling
-    });
+            panelSearchCategories.Controls.AddRange(new Control[] {chkSearchUsers, chkSearchPatients, chkSearchBilling});
 
             lblSearchStatus = new Label();
             lblSearchStatus.Font = new Font("Segoe UI", 9F, FontStyle.Italic);
@@ -576,7 +807,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
             pictureBoxProfile.Image = placeholder;
         }
-
         private void LoadData()
         {
             try
@@ -585,12 +815,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 string queryPatients = @"
             SELECT 
-                p.patient_id,
+                p.patient_id AS 'Patient ID',
                 u.name AS 'Patient Name',
                 u.age AS 'Age',
                 u.gender AS 'Gender',
                 p.blood_type AS 'Blood Type',
-                p.phone_number AS 'Contact',
+                p.phone_number AS 'Contact Number',
                 COUNT(DISTINCT mr.record_id) AS 'Medical Records',
                 COUNT(DISTINCT a.appointment_id) AS 'Appointments'
             FROM Patients p
@@ -602,6 +832,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             ORDER BY u.name";
 
                 DataTable patientsData = DatabaseHelper.ExecuteQuery(queryPatients);
+
+                if (dgvPatients.BindingContext == null)
+                {
+                    dgvPatients.BindingContext = this.BindingContext ?? new BindingContext();
+                }
+
                 dgvPatients.DataSource = patientsData;
 
                 System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {patientsData.Rows.Count} patients into Medical Records tab");
@@ -620,75 +856,328 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             try
             {
-                string queryBilling = @"
+                System.Diagnostics.Debug.WriteLine("[AdminDashboard] LoadBillingData started");
+
+                string queryActiveBilling = @"
             SELECT 
                 b.bill_id AS 'Bill ID',
                 u.name AS 'Patient Name',
                 DATE_FORMAT(b.bill_date, '%Y-%m-%d %H:%i') AS 'Bill Date',
-                b.subtotal AS 'Subtotal',
+                CONCAT('₱', FORMAT(b.subtotal, 2)) AS 'Subtotal',
                 CONCAT(b.discount_percent, '%') AS 'Discount',
-                b.discount_amount AS 'Discount Amount',
+                CONCAT('₱', FORMAT(b.discount_amount, 2)) AS 'Discount Amount',
                 CONCAT(b.tax_percent, '%') AS 'Tax',
-                b.tax_amount AS 'Tax Amount',
-                b.amount AS 'Total Amount',
+                CONCAT('₱', FORMAT(b.tax_amount, 2)) AS 'Tax Amount',
+                CONCAT('₱', FORMAT(b.amount, 2)) AS 'Total Amount',
                 b.payment_method AS 'Payment Method',
                 b.status AS 'Status',
-                CONCAT(creator.name, ' (', creator.role, ')') AS 'Created By'
+                creator.name AS 'Created By'
             FROM Billing b
             INNER JOIN Patients p ON b.patient_id = p.patient_id
             INNER JOIN Users u ON p.user_id = u.user_id
             LEFT JOIN Users creator ON b.created_by = creator.user_id
+            WHERE NOT EXISTS (
+                SELECT 1 FROM patientqueue pq 
+                WHERE pq.patient_id = p.patient_id 
+                AND pq.queue_date = DATE(b.bill_date)
+                AND pq.status = 'Discharged'
+            )
             ORDER BY b.bill_date DESC";
 
-                DataTable billingData = DatabaseHelper.ExecuteQuery(queryBilling);
-                dgvBilling.DataSource = billingData;
+                DataTable activeBillingData = DatabaseHelper.ExecuteQuery(queryActiveBilling);
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {activeBillingData.Rows.Count} active bills");
 
-                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {billingData.Rows.Count} billing records into Billing tab");
+                string queryDischargedBilling = @"
+            SELECT 
+                b.bill_id AS 'Bill ID',
+                u.name AS 'Patient Name',
+                DATE_FORMAT(b.bill_date, '%Y-%m-%d %H:%i') AS 'Bill Date',
+                DATE_FORMAT(pq.discharged_time, '%Y-%m-%d %H:%i') AS 'Discharged Date',
+                CONCAT('₱', FORMAT(b.amount, 2)) AS 'Total Amount',
+                b.payment_method AS 'Payment Method',
+                b.status AS 'Status',
+                creator.name AS 'Created By'
+            FROM Billing b
+            INNER JOIN Patients p ON b.patient_id = p.patient_id
+            INNER JOIN Users u ON p.user_id = u.user_id
+            INNER JOIN patientqueue pq ON pq.patient_id = p.patient_id 
+                AND pq.queue_date = DATE(b.bill_date)
+                AND pq.status = 'Discharged'
+            LEFT JOIN Users creator ON b.created_by = creator.user_id
+            ORDER BY pq.discharged_time DESC";
 
-                if (dgvBilling.Columns["Subtotal"] != null)
-                    dgvBilling.Columns["Subtotal"].DefaultCellStyle.Format = "₱#,##0.00";
-                if (dgvBilling.Columns["Discount Amount"] != null)
-                    dgvBilling.Columns["Discount Amount"].DefaultCellStyle.Format = "₱#,##0.00";
-                if (dgvBilling.Columns["Tax Amount"] != null)
-                    dgvBilling.Columns["Tax Amount"].DefaultCellStyle.Format = "₱#,##0.00";
-                if (dgvBilling.Columns["Total Amount"] != null)
-                    dgvBilling.Columns["Total Amount"].DefaultCellStyle.Format = "₱#,##0.00";
+                DataTable dischargedBillingData = DatabaseHelper.ExecuteQuery(queryDischargedBilling);
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {dischargedBillingData.Rows.Count} discharged bills");
 
-                foreach (DataGridViewRow row in dgvBilling.Rows)
+                dgvBilling.DataSource = null;
+                dgvBilling.Columns.Clear();
+                dgvBilling.AutoGenerateColumns = true;
+                dgvBilling.DataSource = activeBillingData;
+                dgvBilling.Refresh();
+
+                dgvDischargedBills.DataSource = null;
+                dgvDischargedBills.Columns.Clear();
+                dgvDischargedBills.AutoGenerateColumns = true;
+                dgvDischargedBills.DataSource = dischargedBillingData;
+                dgvDischargedBills.Refresh();
+
+                foreach (DataGridView dgv in new[] { dgvBilling, dgvDischargedBills })
                 {
-                    if (row.Cells["Status"].Value != null)
+                    if (dgv.Columns.Contains("Status"))
                     {
-                        string status = row.Cells["Status"].Value.ToString();
+                        foreach (DataGridViewRow row in dgv.Rows)
+                        {
+                            if (row.Cells["Status"].Value != null)
+                            {
+                                string status = row.Cells["Status"].Value.ToString();
+                                switch (status.ToUpper())
+                                {
+                                    case "PAID":
+                                        row.Cells["Status"].Style.BackColor = Color.FromArgb(46, 204, 113);
+                                        row.Cells["Status"].Style.ForeColor = Color.White;
+                                        row.Cells["Status"].Style.Font = new Font(dgv.Font, FontStyle.Bold);
+                                        break;
+                                    case "PENDING":
+                                        row.Cells["Status"].Style.BackColor = Color.FromArgb(241, 196, 15);
+                                        row.Cells["Status"].Style.ForeColor = Color.White;
+                                        row.Cells["Status"].Style.Font = new Font(dgv.Font, FontStyle.Bold);
+                                        break;
+                                    case "PARTIALLY PAID":
+                                        row.Cells["Status"].Style.BackColor = Color.FromArgb(52, 152, 219);
+                                        row.Cells["Status"].Style.ForeColor = Color.White;
+                                        row.Cells["Status"].Style.Font = new Font(dgv.Font, FontStyle.Bold);
+                                        break;
+                                    case "CANCELLED":
+                                        row.Cells["Status"].Style.BackColor = Color.FromArgb(231, 76, 60);
+                                        row.Cells["Status"].Style.ForeColor = Color.White;
+                                        row.Cells["Status"].Style.Font = new Font(dgv.Font, FontStyle.Bold);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+                UpdateBillingStatistics(activeBillingData, dischargedBillingData);
+                RepositionBillingComponents();
+
+                System.Diagnostics.Debug.WriteLine("[AdminDashboard] LoadBillingData completed successfully");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading billing data: {ex.Message}\n\nStack Trace: {ex.StackTrace}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] LoadBillingData error: {ex.Message}\n{ex.StackTrace}");
+            }
+        }
+
+        private void UpdateBillingStatistics(DataTable activeData, DataTable dischargedData)
+        {
+            try
+            {
+                int pendingCount = 0;
+                int partiallyPaidCount = 0;
+                int paidCount = 0;
+                int cancelledCount = 0;
+                decimal paidAmount = 0;
+
+                foreach (DataRow row in activeData.Rows)
+                {
+                    string status = row["Status"].ToString();
+                    decimal amount = 0;
+
+                    string amountStr = row["Total Amount"].ToString();
+                    amountStr = amountStr.Replace("₱", "").Replace(",", "").Trim();
+                    if (decimal.TryParse(amountStr, out amount))
+                    {
                         switch (status)
                         {
-                            case "Paid":
-                                row.Cells["Status"].Style.BackColor = Color.FromArgb(46, 204, 113);
-                                row.Cells["Status"].Style.ForeColor = Color.White;
-                                break;
                             case "Pending":
-                                row.Cells["Status"].Style.BackColor = Color.FromArgb(241, 196, 15);
-                                row.Cells["Status"].Style.ForeColor = Color.White;
+                                pendingCount++;
                                 break;
                             case "Partially Paid":
-                                row.Cells["Status"].Style.BackColor = Color.FromArgb(52, 152, 219);
-                                row.Cells["Status"].Style.ForeColor = Color.White;
+                                partiallyPaidCount++;
+                                break;
+                            case "Paid":
+                                paidCount++;
+                                paidAmount += amount;
                                 break;
                             case "Cancelled":
-                                row.Cells["Status"].Style.BackColor = Color.FromArgb(231, 76, 60);
-                                row.Cells["Status"].Style.ForeColor = Color.White;
+                                cancelledCount++;
                                 break;
                         }
                     }
                 }
 
-                CalculateMonthlyIncome();
+                int totalDischargedCount = dischargedData.Rows.Count;
+                int totalActiveCount = activeData.Rows.Count;
+
+                panelBillingStats.Controls.Clear();
+
+                Label lblStatsTitle = new Label
+                {
+                    Text = $"📊 Billing Statistics Overview",
+                    Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(52, 73, 94),
+                    AutoSize = true,
+                    Location = new Point(20, 12),
+                    TextAlign = ContentAlignment.MiddleLeft
+                };
+
+                panelBillingStats.Controls.Add(lblStatsTitle);
+
+                int cardWidth = 210;
+                int cardSpacing = 20;
+                int totalCardsWidth = (cardWidth * 5) + (cardSpacing * 4);
+                int startX = (panelBillingStats.Width - totalCardsWidth) / 2;
+
+                Panel cardPaid = CreateStatCard($"💰 Paid Bills", paidCount,
+                    $"₱{paidAmount:N2}", Color.FromArgb(46, 204, 113), startX, 40);
+
+                Panel cardPending = CreateStatCard($"⏳ Pending Bills", pendingCount,
+                    "Awaiting Payment", Color.FromArgb(241, 196, 15), startX + (cardWidth + cardSpacing), 40);
+
+                Panel cardPartial = CreateStatCard($"📊 Partially Paid", partiallyPaidCount,
+                    "In Progress", Color.FromArgb(52, 152, 219), startX + (cardWidth + cardSpacing) * 2, 40);
+
+                Panel cardDischarged = CreateStatCard($"✅ Discharged & Completed", totalDischargedCount,
+                    "Archived", Color.FromArgb(155, 89, 182), startX + (cardWidth + cardSpacing) * 3, 40);
+
+                Panel cardCancelled = CreateStatCard($"🚫 Cancelled", cancelledCount,
+                    "No Payment", Color.FromArgb(231, 76, 60), startX + (cardWidth + cardSpacing) * 4, 40);
+
+                panelBillingStats.Controls.AddRange(new Control[] {
+            cardPaid, cardPending, cardPartial, cardDischarged, cardCancelled});
+
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Stats - Paid: {paidCount} (₱{paidAmount:N2}), Pending: {pendingCount}, Discharged: {totalDischargedCount}");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading billing data: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] LoadBillingData error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error updating billing statistics: {ex.Message}");
             }
+        }
+
+        private void RepositionBillingComponents()
+        {
+            if (panelBillingStats == null || !panelBillingStats.IsHandleCreated)
+                return;
+
+            int contentWidth = tabBilling.ClientSize.Width - 40;
+            int startX = 20;
+
+            panelBillingStats.Location = new Point(startX, 100);
+            panelBillingStats.Size = new Size(contentWidth, 80);
+
+            foreach (Control ctrl in panelBillingStats.Controls)
+            {
+                if (ctrl is Label && ctrl.Text.Contains("Billing Statistics Overview"))
+                {
+                    bool isMaximized = this.WindowState == FormWindowState.Maximized;
+                    if (isMaximized)
+                    {
+                        ctrl.Location = new Point((panelBillingStats.Width - ctrl.Width) / 2, 12);
+                    }
+                    else
+                    {
+                        ctrl.Location = new Point(20, 12);
+                    }
+                    break;
+                }
+            }
+
+            if (panelBillingStats.Controls.Count > 1)
+            {
+                int cardWidth = 210;
+                int cardSpacing = 20;
+                int totalCardsWidth = (cardWidth * 5) + (cardSpacing * 4);
+                int centeredStartX = (panelBillingStats.Width - totalCardsWidth) / 2;
+
+                int cardIndex = 0;
+                foreach (Control ctrl in panelBillingStats.Controls)
+                {
+                    if (ctrl is Panel && ctrl.Size.Width == cardWidth)
+                    {
+                        ctrl.Location = new Point(centeredStartX + (cardWidth + cardSpacing) * cardIndex, 40);
+                        cardIndex++;
+                    }
+                }
+            }
+
+            panelBillingStats.BringToFront();
+
+            lblActiveBillsTitle.Location = new Point(startX, 190);
+            lblActiveBillsTitle.BringToFront();
+
+            int activeBillsHeight = 200;
+            dgvBilling.Location = new Point(startX, 215);
+            dgvBilling.Size = new Size(contentWidth, activeBillsHeight);
+            dgvBilling.BringToFront();
+
+            int dischargedSectionTop = dgvBilling.Location.Y + dgvBilling.Height + 15;
+
+            lblDischargedBillsTitle.Location = new Point(startX, dischargedSectionTop);
+            lblDischargedBillsTitle.BringToFront();
+
+            int dischargedGridTop = dischargedSectionTop + 25;
+            int availableHeight = tabBilling.ClientSize.Height - dischargedGridTop - 40;
+            dgvDischargedBills.Location = new Point(startX, dischargedGridTop);
+            dgvDischargedBills.Size = new Size(contentWidth, Math.Max(200, availableHeight));
+            dgvDischargedBills.BringToFront();
+
+            panelBillingButtons.BringToFront();
+        }
+
+        private Panel CreateStatCard(string title, int count, string subtitle, Color accentColor, int x, int y)
+        {
+            Panel card = new Panel
+            {
+                BackColor = Color.FromArgb(247, 250, 252),
+                Location = new Point(x, y),
+                Size = new Size(210, 35),
+                BorderStyle = BorderStyle.None
+            };
+
+            Panel accent = new Panel
+            {
+                BackColor = accentColor,
+                Location = new Point(0, 0),
+                Size = new Size(4, 35),
+                Dock = DockStyle.Left
+            };
+
+            Label lblTitle = new Label
+            {
+                Text = title,
+                Font = new Font("Segoe UI", 7.5F, FontStyle.Regular),
+                ForeColor = Color.FromArgb(113, 128, 150),
+                Location = new Point(10, 3),
+                AutoSize = true
+            };
+
+            Label lblCount = new Label
+            {
+                Text = count.ToString(),
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                ForeColor = accentColor,
+                Location = new Point(10, 15),
+                AutoSize = true
+            };
+
+            Label lblSubtitle = new Label
+            {
+                Text = subtitle,
+                Font = new Font("Segoe UI", 7F, FontStyle.Regular),
+                ForeColor = Color.FromArgb(160, 174, 192),
+                Location = new Point(count >= 100 ? 50 : 40, 18),
+                AutoSize = true,
+                MaximumSize = new Size(150, 20)
+            };
+
+            card.Controls.Add(accent);
+            card.Controls.Add(lblTitle);
+            card.Controls.Add(lblCount);
+            card.Controls.Add(lblSubtitle);
+
+            return card;
         }
 
         private void CalculateMonthlyIncome()
@@ -831,70 +1320,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             int billId = Convert.ToInt32(billIdCell.Value);
-            ShowBillDetailsDialog(billId);
-        }
 
-        private void ShowBillDetailsDialog(int billId)
-        {
-            try
-            {
-                string query = @"
-            SELECT 
-                b.bill_id,
-                u.name AS patient_name,
-                b.bill_date,
-                b.subtotal,
-                b.discount_percent,
-                b.discount_amount,
-                b.tax_percent,
-                b.tax_amount,
-                b.amount,
-                b.payment_method,
-                b.status,
-                b.notes,
-                creator.name AS created_by_name
-            FROM Billing b
-            INNER JOIN Patients p ON b.patient_id = p.patient_id
-            INNER JOIN Users u ON p.user_id = u.user_id
-            LEFT JOIN Users creator ON b.created_by = creator.user_id
-            WHERE b.bill_id = @billId";
-
-                DataTable dt = DatabaseHelper.ExecuteQuery(query, new MySqlParameter("@billId", billId));
-
-                if (dt.Rows.Count > 0)
-                {
-                    DataRow row = dt.Rows[0];
-
-                    string details = "═══════════════════════════════════════\n";
-                    details += $"BILL DETAILS - #{billId}\n";
-                    details += "═══════════════════════════════════════\n\n";
-                    details += $"Patient: {row["patient_name"]}\n";
-                    details += $"Date: {Convert.ToDateTime(row["bill_date"]):yyyy-MM-dd HH:mm}\n";
-                    details += $"Status: {row["status"]}\n\n";
-                    details += "───────────────────────────────────────\n";
-                    details += $"Subtotal: ₱{Convert.ToDecimal(row["subtotal"]):N2}\n";
-                    details += $"Discount ({row["discount_percent"]}%): -₱{Convert.ToDecimal(row["discount_amount"]):N2}\n";
-                    details += $"Tax ({row["tax_percent"]}%): ₱{Convert.ToDecimal(row["tax_amount"]):N2}\n";
-                    details += "───────────────────────────────────────\n";
-                    details += $"TOTAL: ₱{Convert.ToDecimal(row["amount"]):N2}\n";
-                    details += "═══════════════════════════════════════\n\n";
-
-                    if (row["payment_method"] != DBNull.Value)
-                        details += $"Payment Method: {row["payment_method"]}\n";
-
-                    details += $"Created By: {row["created_by_name"]}\n";
-
-                    if (row["notes"] != DBNull.Value && !string.IsNullOrWhiteSpace(row["notes"].ToString()))
-                        details += $"\nNotes: {row["notes"]}\n";
-
-                    MessageBox.Show(details, "Bill Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading bill details: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            BillDetailsViewForm detailsForm = new BillDetailsViewForm(billId);
+            detailsForm.ShowDialog();
         }
 
         private void LoadUsersData()
@@ -903,11 +1331,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 string query = @"
             SELECT 
-                user_id, 
-                name, 
-                role, 
-                email, 
-                created_date 
+                unique_id AS 'User ID', 
+                name AS 'Name', 
+                role AS 'Role', 
+                email AS 'Email Address', 
+                DATE_FORMAT(created_date, '%Y-%m-%d %H:%i') AS 'Date Created'
             FROM Users 
             WHERE is_active = 1 
             AND role != 'Patient' 
@@ -941,7 +1369,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 foreach (DataRow row in allUsers.Rows)
                 {
-                    string role = row["role"].ToString();
+                    string role = row["Role"].ToString();
 
                     if (role == "Admin" || role == "Headadmin")
                     {
@@ -1329,10 +1757,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 targetGrid = dgvStaff;
             }
 
+            string getUniqueIdQuery = "SELECT unique_id FROM Users WHERE user_id = @userId";
+            object uniqueIdResult = DatabaseHelper.ExecuteScalar(getUniqueIdQuery,
+                new MySqlParameter("@userId", userId));
+
+            if (uniqueIdResult == null || uniqueIdResult == DBNull.Value)
+                return;
+
+            string uniqueId = uniqueIdResult.ToString();
+
             foreach (DataGridViewRow row in targetGrid.Rows)
             {
-                if (row.Cells["user_id"].Value != null &&
-                    Convert.ToInt32(row.Cells["user_id"].Value) == userId)
+                if (row.Cells["User ID"].Value != null &&
+                    row.Cells["User ID"].Value.ToString() == uniqueId)
                 {
                     row.Selected = true;
                     targetGrid.FirstDisplayedScrollingRowIndex = row.Index;
@@ -1346,8 +1783,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             foreach (DataGridViewRow row in dgvPatients.Rows)
             {
-                if (row.Cells["patient_id"].Value != null &&
-                    Convert.ToInt32(row.Cells["patient_id"].Value) == patientId)
+                if (row.Cells["Patient ID"].Value != null &&
+                    Convert.ToInt32(row.Cells["Patient ID"].Value) == patientId)
                 {
                     row.Selected = true;
                     dgvPatients.FirstDisplayedScrollingRowIndex = row.Index;
@@ -1361,8 +1798,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             foreach (DataGridViewRow row in dgvBilling.Rows)
             {
-                if (row.Cells["bill_id"].Value != null &&
-                    Convert.ToInt32(row.Cells["bill_id"].Value) == billId)
+                if (row.Cells["Bill ID"].Value != null &&
+                    Convert.ToInt32(row.Cells["Bill ID"].Value) == billId)
                 {
                     row.Selected = true;
                     dgvBilling.FirstDisplayedScrollingRowIndex = row.Index;
@@ -1417,7 +1854,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            var userIdCell = activeGrid.SelectedRows[0].Cells["user_id"];
+            var userIdCell = activeGrid.SelectedRows[0].Cells["User ID"];
             if (userIdCell?.Value == null || userIdCell.Value == DBNull.Value)
             {
                 MessageBox.Show("Invalid user data selected.", "Error",
@@ -1425,7 +1862,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            int userId = Convert.ToInt32(userIdCell.Value);
+            string uniqueId = userIdCell.Value.ToString();
+            string getUserIdQuery = "SELECT user_id FROM Users WHERE unique_id = @uniqueId";
+            object result = DatabaseHelper.ExecuteScalar(getUserIdQuery,
+                new MySqlParameter("@uniqueId", uniqueId));
+
+            if (result == null || result == DBNull.Value)
+            {
+                MessageBox.Show("Cannot find user record.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int userId = Convert.ToInt32(result);
             RegisterForm editForm = new RegisterForm(userId);
             editForm.FormClosed += (s, args) =>
             {
@@ -1448,9 +1897,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            var userIdCell = activeGrid.SelectedRows[0].Cells["user_id"];
-            var nameCell = activeGrid.SelectedRows[0].Cells["name"];
-            var emailCell = activeGrid.SelectedRows[0].Cells["email"];
+            var userIdCell = activeGrid.SelectedRows[0].Cells["User ID"];
+            var nameCell = activeGrid.SelectedRows[0].Cells["Name"];
+            var emailCell = activeGrid.SelectedRows[0].Cells["Email Address"];
 
             if (userIdCell?.Value == null || userIdCell.Value == DBNull.Value)
             {
@@ -1459,18 +1908,33 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            int userId = Convert.ToInt32(userIdCell.Value);
+            string uniqueId = userIdCell.Value.ToString();
             string userName = nameCell?.Value?.ToString() ?? "Unknown";
             string userEmail = emailCell?.Value?.ToString() ?? "";
 
             if (userEmail == "Headadmin@hospital.com" ||
-                userEmail == "receptionist@hospital.com" ||
-                userEmail == "pharmacist@hospital.com")
+                userEmail == "Admin@hospital.com" ||
+                userEmail == "Receptionist@hospital.com" ||
+                userEmail == "Pharmacist@hospital.com" ||
+                userEmail == "Doctor@hospital.com")
             {
                 MessageBox.Show("Cannot delete default system accounts.", "Access Denied",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
+            string getUserIdQuery = "SELECT user_id FROM Users WHERE unique_id = @uniqueId";
+            object result = DatabaseHelper.ExecuteScalar(getUserIdQuery,
+                new MySqlParameter("@uniqueId", uniqueId));
+
+            if (result == null || result == DBNull.Value)
+            {
+                MessageBox.Show("Cannot find user record.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int userId = Convert.ToInt32(result);
 
             if (userId == currentUser.UserId)
             {
@@ -1532,7 +1996,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            var patientIdCell = dgvPatients.SelectedRows[0].Cells["patient_id"];
+            var patientIdCell = dgvPatients.SelectedRows[0].Cells["Patient ID"];
             if (patientIdCell?.Value == null || patientIdCell.Value == DBNull.Value)
             {
                 MessageBox.Show("Invalid patient data selected.", "Error",
@@ -1543,15 +2007,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
             int patientId = Convert.ToInt32(patientIdCell.Value);
 
             string query = @"
-                SELECT u.name, 
-                       COUNT(DISTINCT mr.record_id) as record_count,
-                       COUNT(DISTINCT pq.queue_id) as visit_count
-                FROM Patients p
-                INNER JOIN Users u ON p.user_id = u.user_id
-                LEFT JOIN medicalrecords mr ON p.patient_id = mr.patient_id
-                LEFT JOIN patientqueue pq ON p.patient_id = pq.patient_id
-                WHERE p.patient_id = @patientId
-                GROUP BY u.name";
+            SELECT u.name, 
+                   COUNT(DISTINCT mr.record_id) as record_count,
+                   COUNT(DISTINCT pq.queue_id) as visit_count
+            FROM Patients p
+            INNER JOIN Users u ON p.user_id = u.user_id
+            LEFT JOIN medicalrecords mr ON p.patient_id = mr.patient_id
+            LEFT JOIN patientqueue pq ON p.patient_id = pq.patient_id
+            WHERE p.patient_id = @patientId
+            GROUP BY u.name";
 
             DataTable dt = DatabaseHelper.ExecuteQuery(query,
                 new MySqlParameter("@patientId", patientId));
@@ -1571,6 +2035,198 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     currentUser.Role
                 );
                 historyForm.ShowDialog();
+            }
+        }
+
+        private void btnAddPatient_Click(object sender, EventArgs e)
+        {
+            RegisterForm patientForm = RegisterForm.CreatePatientMode(currentUser.UserId, currentUser.Role);
+            patientForm.FormClosed += (s, args) => LoadData();
+            patientForm.ShowDialog();
+        }
+
+        private void btnEditPatient_Click(object sender, EventArgs e)
+        {
+            if (dgvPatients.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a patient to edit.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var patientIdCell = dgvPatients.SelectedRows[0].Cells["Patient ID"];
+            if (patientIdCell?.Value == null || patientIdCell.Value == DBNull.Value)
+            {
+                MessageBox.Show("Invalid patient data selected.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int patientId = Convert.ToInt32(patientIdCell.Value);
+            string getUserIdQuery = "SELECT user_id FROM Patients WHERE patient_id = @patientId";
+            object userIdResult = DatabaseHelper.ExecuteScalar(getUserIdQuery,
+                new MySqlParameter("@patientId", patientId));
+
+            if (userIdResult == null || userIdResult == DBNull.Value)
+            {
+                MessageBox.Show("Cannot find user record for this patient.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int userId = Convert.ToInt32(userIdResult);
+
+            RegisterForm editForm = new RegisterForm(userId);
+            editForm.FormClosed += (s, args) => LoadData();
+            editForm.ShowDialog();
+        }
+
+        private void btnDeletePatient_Click(object sender, EventArgs e)
+        {
+            if (dgvPatients.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a patient to delete.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var patientIdCell = dgvPatients.SelectedRows[0].Cells["Patient ID"];
+            var nameCell = dgvPatients.SelectedRows[0].Cells["Patient Name"];
+
+            if (patientIdCell?.Value == null || patientIdCell.Value == DBNull.Value)
+            {
+                MessageBox.Show("Invalid patient data selected.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int patientId = Convert.ToInt32(patientIdCell.Value);
+            string patientName = nameCell?.Value?.ToString() ?? "Unknown";
+
+            DialogResult deleteChoice = MessageBox.Show(
+                $"How do you want to remove {patientName}?\n\n" +
+                "YES = Permanently Delete (cannot be undone)\n" +
+                "NO = Deactivate (can be reactivated later)\n" +
+                "CANCEL = Cancel operation",
+                "Delete or Deactivate Patient?",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Question);
+
+            if (deleteChoice == DialogResult.Cancel)
+                return;
+
+            try
+            {
+                if (deleteChoice == DialogResult.Yes)
+                {
+                    string getUserIdQuery = "SELECT user_id FROM Patients WHERE patient_id = @patientId";
+                    object userIdResult = DatabaseHelper.ExecuteScalar(getUserIdQuery,
+                        new MySqlParameter("@patientId", patientId));
+
+                    if (userIdResult != null && userIdResult != DBNull.Value)
+                    {
+                        int userId = Convert.ToInt32(userIdResult);
+
+                        string deleteQuery = "DELETE FROM Users WHERE user_id = @userId";
+                        DatabaseHelper.ExecuteNonQuery(deleteQuery, new MySqlParameter("@userId", userId));
+
+                        MessageBox.Show("Patient permanently deleted.", "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else
+                {
+                    string getUserIdQuery = "SELECT user_id FROM Patients WHERE patient_id = @patientId";
+                    object userIdResult = DatabaseHelper.ExecuteScalar(getUserIdQuery,
+                        new MySqlParameter("@patientId", patientId));
+
+                    if (userIdResult != null && userIdResult != DBNull.Value)
+                    {
+                        int userId = Convert.ToInt32(userIdResult);
+
+                        string deactivateQuery = "UPDATE Users SET is_active = 0 WHERE user_id = @userId";
+                        DatabaseHelper.ExecuteNonQuery(deactivateQuery, new MySqlParameter("@userId", userId));
+
+                        MessageBox.Show("Patient deactivated successfully.", "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+
+                LoadData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnViewUserProfile_Click(object sender, EventArgs e)
+        {
+            DataGridView activeGrid = GetActiveUserGrid();
+            if (activeGrid.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a user to view their profile.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var userIdCell = activeGrid.SelectedRows[0].Cells["User ID"];
+            if (userIdCell?.Value == null || userIdCell.Value == DBNull.Value)
+            {
+                MessageBox.Show("Invalid user data selected.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string uniqueId = userIdCell.Value.ToString();
+            string getUserIdQuery = "SELECT user_id FROM Users WHERE unique_id = @uniqueId";
+            object result = DatabaseHelper.ExecuteScalar(getUserIdQuery,
+                new MySqlParameter("@uniqueId", uniqueId));
+
+            if (result == null || result == DBNull.Value)
+            {
+                MessageBox.Show("Cannot find user record.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int userId = Convert.ToInt32(result);
+
+            using (RegisterForm viewForm = RegisterForm.CreateViewMode(userId))
+            {
+                viewForm.ShowDialog();
+            }
+        }
+
+        private void BtnViewPatientProfile_Click(object sender, EventArgs e)
+        {
+            if (dgvPatients.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a patient to view their profile.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int patientId = Convert.ToInt32(dgvPatients.SelectedRows[0].Cells["Patient ID"].Value);
+            string patientName = dgvPatients.SelectedRows[0].Cells["Patient Name"].Value.ToString();
+
+            string getUserIdQuery = "SELECT user_id FROM Patients WHERE patient_id = @patientId";
+            object userIdResult = DatabaseHelper.ExecuteScalar(getUserIdQuery,
+                new MySqlParameter("@patientId", patientId));
+
+            if (userIdResult == null || userIdResult == DBNull.Value)
+            {
+                MessageBox.Show("Cannot find user record for this patient.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int userId = Convert.ToInt32(userIdResult);
+
+            using (RegisterForm viewForm = RegisterForm.CreateViewMode(userId))
+            {
+                viewForm.ShowDialog();
             }
         }
 

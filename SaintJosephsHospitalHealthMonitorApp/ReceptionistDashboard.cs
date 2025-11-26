@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using static iTextSharp.text.TabStop;
 
 namespace SaintJosephsHospitalHealthMonitorApp
 {
@@ -83,9 +84,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             lblQueueCount.AutoSize = true;
             lblQueueCount.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblQueueCount.Location = new Point(
-                panelHeader.Width - lblQueueCount.Width - 20,
-                29
-            );
+            panelHeader.Width - lblQueueCount.Width - 20,29);
             btnLogout.BackColor = Color.FromArgb(74, 85, 104);
             btnLogout.FlatAppearance.BorderSize = 0;
             btnLogout.ForeColor = Color.White;
@@ -1982,9 +1981,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
             int queueId = Convert.ToInt32(dgvQueue.SelectedRows[0].Cells["queue_id"].Value);
             string patientName = dgvQueue.SelectedRows[0].Cells["Patient"].Value.ToString();
 
-            AssignDoctorForm assignForm = new AssignDoctorForm(queueId, patientName);
-            assignForm.FormClosed += (s, args) => LoadData();
-            assignForm.ShowDialog();
+            using (AssignDoctorForm assignForm = new AssignDoctorForm(queueId, patientName))
+            {
+                if (assignForm.ShowDialog() == DialogResult.OK)
+                {
+                    LoadData();
+                }
+            }
         }
 
         private void BtnCallNext_Click(object sender, EventArgs e)
@@ -2527,24 +2530,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnAddPatient_Click(object sender, EventArgs e)
         {
-            RegisterForm createPatientForm = new RegisterForm(currentUser.UserId, currentUser.Role);
-
-            if (createPatientForm.ShowDialog() == DialogResult.OK)
-            {
-                MessageBox.Show(
-                    "✓ Patient record created successfully!\n\n" +
-                    "The patient is now registered in the system.\n\n" +
-                    "To add them to today's queue:\n" +
-                    "1. Go to 'Patient Queue' tab\n" +
-                    "2. Click 'Add to Queue'\n" +
-                    "3. Select the patient\n" +
-                    "4. Complete the intake form",
-                    "Patient Created",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-
-                LoadData();
-            }
+            RegisterForm patientForm = RegisterForm.CreatePatientMode(currentUser.UserId, currentUser.Role);
+            patientForm.FormClosed += (s, args) => LoadData();
+            patientForm.ShowDialog();
         }
 
         private void BtnCheckMedicalHistory_Click(object sender, EventArgs e)

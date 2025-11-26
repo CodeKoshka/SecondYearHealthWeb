@@ -49,6 +49,7 @@
             tabStaff = new TabPage();
             dgvStaff = new DataGridView();
             panelUserButtons = new Panel();
+            btnViewUserProfile = new Button();
             btnDeleteUser = new Button();
             btnEditUser = new Button();
             btnAddUser = new Button();
@@ -56,10 +57,18 @@
             tabMedicalRecords = new TabPage();
             dgvPatients = new DataGridView();
             panelMedicalButtons = new Panel();
+            btnDeletePatient = new Button();
+            BtnViewPatientProfile = new Button();
+            btnEditPatient = new Button();
+            btnAddPatient = new Button();
             btnViewPatientRecord = new Button();
             medicalBtnShadow = new Panel();
             tabBilling = new TabPage();
+            dgvDischargedBills = new DataGridView();
+            lblDischargedBillsTitle = new Label();
             dgvBilling = new DataGridView();
+            lblActiveBillsTitle = new Label();
+            panelBillingStats = new Panel();
             panelBillingButtons = new Panel();
             btnGenerateIncomeReport = new Button();
             btnViewBillDetails = new Button();
@@ -72,8 +81,6 @@
             label1 = new Label();
             lblHospitalName = new Label();
             panelHeaderRight = new Panel();
-            button1 = new Button();
-            button2 = new Button();
             panelSidebar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).BeginInit();
             panelMainContent.SuspendLayout();
@@ -93,6 +100,7 @@
             ((System.ComponentModel.ISupportInitialize)dgvPatients).BeginInit();
             panelMedicalButtons.SuspendLayout();
             tabBilling.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvDischargedBills).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvBilling).BeginInit();
             panelBillingButtons.SuspendLayout();
             panelHeader.SuspendLayout();
@@ -208,14 +216,15 @@
             // 
             btnLogout.BackColor = Color.FromArgb(74, 85, 104);
             btnLogout.Cursor = Cursors.Hand;
+            btnLogout.Dock = DockStyle.Bottom;
             btnLogout.FlatAppearance.BorderSize = 0;
             btnLogout.FlatAppearance.MouseOverBackColor = Color.FromArgb(160, 174, 192);
             btnLogout.FlatStyle = FlatStyle.Flat;
             btnLogout.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnLogout.ForeColor = Color.White;
-            btnLogout.Location = new Point(15, 774);
+            btnLogout.Location = new Point(0, 804);
             btnLogout.Name = "btnLogout";
-            btnLogout.Size = new Size(250, 50);
+            btnLogout.Size = new Size(280, 50);
             btnLogout.TabIndex = 7;
             btnLogout.Text = "🚪 LOGOUT";
             btnLogout.UseVisualStyleBackColor = false;
@@ -391,6 +400,7 @@
             // panelUserButtons
             // 
             panelUserButtons.BackColor = Color.White;
+            panelUserButtons.Controls.Add(btnViewUserProfile);
             panelUserButtons.Controls.Add(btnDeleteUser);
             panelUserButtons.Controls.Add(btnEditUser);
             panelUserButtons.Controls.Add(btnAddUser);
@@ -402,6 +412,23 @@
             panelUserButtons.Size = new Size(1165, 80);
             panelUserButtons.TabIndex = 2;
             // 
+            // btnViewUserProfile
+            // 
+            btnViewUserProfile.BackColor = Color.FromArgb(52, 152, 219);
+            btnViewUserProfile.Cursor = Cursors.Hand;
+            btnViewUserProfile.FlatAppearance.BorderSize = 0;
+            btnViewUserProfile.FlatAppearance.MouseOverBackColor = Color.FromArgb(41, 128, 185);
+            btnViewUserProfile.FlatStyle = FlatStyle.Flat;
+            btnViewUserProfile.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnViewUserProfile.ForeColor = Color.White;
+            btnViewUserProfile.Location = new Point(15, 13);
+            btnViewUserProfile.Name = "btnViewUserProfile";
+            btnViewUserProfile.Size = new Size(170, 45);
+            btnViewUserProfile.TabIndex = 6;
+            btnViewUserProfile.Text = "👁 View Profile";
+            btnViewUserProfile.UseVisualStyleBackColor = false;
+            btnViewUserProfile.Click += btnViewUserProfile_Click;
+            // 
             // btnDeleteUser
             // 
             btnDeleteUser.BackColor = Color.FromArgb(229, 62, 62);
@@ -411,7 +438,7 @@
             btnDeleteUser.FlatStyle = FlatStyle.Flat;
             btnDeleteUser.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnDeleteUser.ForeColor = Color.White;
-            btnDeleteUser.Location = new Point(380, 15);
+            btnDeleteUser.Location = new Point(551, 13);
             btnDeleteUser.Name = "btnDeleteUser";
             btnDeleteUser.Size = new Size(170, 45);
             btnDeleteUser.TabIndex = 1;
@@ -428,7 +455,7 @@
             btnEditUser.FlatStyle = FlatStyle.Flat;
             btnEditUser.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnEditUser.ForeColor = Color.White;
-            btnEditUser.Location = new Point(200, 15);
+            btnEditUser.Location = new Point(371, 13);
             btnEditUser.Name = "btnEditUser";
             btnEditUser.Size = new Size(170, 45);
             btnEditUser.TabIndex = 2;
@@ -445,7 +472,7 @@
             btnAddUser.FlatStyle = FlatStyle.Flat;
             btnAddUser.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnAddUser.ForeColor = Color.White;
-            btnAddUser.Location = new Point(20, 15);
+            btnAddUser.Location = new Point(191, 13);
             btnAddUser.Name = "btnAddUser";
             btnAddUser.Size = new Size(170, 45);
             btnAddUser.TabIndex = 3;
@@ -494,8 +521,10 @@
             // panelMedicalButtons
             // 
             panelMedicalButtons.BackColor = Color.White;
-            panelMedicalButtons.Controls.Add(button1);
-            panelMedicalButtons.Controls.Add(button2);
+            panelMedicalButtons.Controls.Add(btnDeletePatient);
+            panelMedicalButtons.Controls.Add(BtnViewPatientProfile);
+            panelMedicalButtons.Controls.Add(btnEditPatient);
+            panelMedicalButtons.Controls.Add(btnAddPatient);
             panelMedicalButtons.Controls.Add(btnViewPatientRecord);
             panelMedicalButtons.Controls.Add(medicalBtnShadow);
             panelMedicalButtons.Dock = DockStyle.Top;
@@ -504,6 +533,74 @@
             panelMedicalButtons.Padding = new Padding(20, 15, 20, 15);
             panelMedicalButtons.Size = new Size(1165, 80);
             panelMedicalButtons.TabIndex = 2;
+            // 
+            // btnDeletePatient
+            // 
+            btnDeletePatient.BackColor = Color.FromArgb(229, 62, 62);
+            btnDeletePatient.Cursor = Cursors.Hand;
+            btnDeletePatient.FlatAppearance.BorderSize = 0;
+            btnDeletePatient.FlatAppearance.MouseOverBackColor = Color.FromArgb(197, 48, 48);
+            btnDeletePatient.FlatStyle = FlatStyle.Flat;
+            btnDeletePatient.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnDeletePatient.ForeColor = Color.White;
+            btnDeletePatient.Location = new Point(747, 17);
+            btnDeletePatient.Name = "btnDeletePatient";
+            btnDeletePatient.Size = new Size(170, 45);
+            btnDeletePatient.TabIndex = 5;
+            btnDeletePatient.Text = "🗑️ Delete User";
+            btnDeletePatient.UseVisualStyleBackColor = false;
+            btnDeletePatient.Click += btnDeletePatient_Click;
+            // 
+            // BtnViewPatientProfile
+            // 
+            BtnViewPatientProfile.BackColor = Color.FromArgb(52, 152, 219);
+            BtnViewPatientProfile.Cursor = Cursors.Hand;
+            BtnViewPatientProfile.FlatAppearance.BorderSize = 0;
+            BtnViewPatientProfile.FlatAppearance.MouseOverBackColor = Color.FromArgb(41, 128, 185);
+            BtnViewPatientProfile.FlatStyle = FlatStyle.Flat;
+            BtnViewPatientProfile.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            BtnViewPatientProfile.ForeColor = Color.White;
+            BtnViewPatientProfile.Location = new Point(219, 18);
+            BtnViewPatientProfile.Name = "BtnViewPatientProfile";
+            BtnViewPatientProfile.Size = new Size(170, 45);
+            BtnViewPatientProfile.TabIndex = 5;
+            BtnViewPatientProfile.Text = "👁 View Profile";
+            BtnViewPatientProfile.UseVisualStyleBackColor = false;
+            BtnViewPatientProfile.Click += BtnViewPatientProfile_Click;
+            // 
+            // btnEditPatient
+            // 
+            btnEditPatient.BackColor = Color.FromArgb(66, 153, 225);
+            btnEditPatient.Cursor = Cursors.Hand;
+            btnEditPatient.FlatAppearance.BorderSize = 0;
+            btnEditPatient.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
+            btnEditPatient.FlatStyle = FlatStyle.Flat;
+            btnEditPatient.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnEditPatient.ForeColor = Color.White;
+            btnEditPatient.Location = new Point(571, 17);
+            btnEditPatient.Name = "btnEditPatient";
+            btnEditPatient.Size = new Size(170, 45);
+            btnEditPatient.TabIndex = 6;
+            btnEditPatient.Text = "✏️ Edit Patient";
+            btnEditPatient.UseVisualStyleBackColor = false;
+            btnEditPatient.Click += btnEditPatient_Click;
+            // 
+            // btnAddPatient
+            // 
+            btnAddPatient.BackColor = Color.FromArgb(72, 187, 120);
+            btnAddPatient.Cursor = Cursors.Hand;
+            btnAddPatient.FlatAppearance.BorderSize = 0;
+            btnAddPatient.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 161, 105);
+            btnAddPatient.FlatStyle = FlatStyle.Flat;
+            btnAddPatient.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnAddPatient.ForeColor = Color.White;
+            btnAddPatient.Location = new Point(395, 18);
+            btnAddPatient.Name = "btnAddPatient";
+            btnAddPatient.Size = new Size(170, 45);
+            btnAddPatient.TabIndex = 7;
+            btnAddPatient.Text = "➕ Add Patient";
+            btnAddPatient.UseVisualStyleBackColor = false;
+            btnAddPatient.Click += btnAddPatient_Click;
             // 
             // btnViewPatientRecord
             // 
@@ -514,7 +611,7 @@
             btnViewPatientRecord.FlatStyle = FlatStyle.Flat;
             btnViewPatientRecord.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnViewPatientRecord.ForeColor = Color.White;
-            btnViewPatientRecord.Location = new Point(20, 15);
+            btnViewPatientRecord.Location = new Point(23, 18);
             btnViewPatientRecord.Name = "btnViewPatientRecord";
             btnViewPatientRecord.Size = new Size(190, 45);
             btnViewPatientRecord.TabIndex = 1;
@@ -534,13 +631,58 @@
             // tabBilling
             // 
             tabBilling.BackColor = Color.FromArgb(247, 250, 252);
-            tabBilling.Controls.Add(dgvBilling);
             tabBilling.Controls.Add(panelBillingButtons);
+            tabBilling.Controls.Add(panelBillingStats);
+            tabBilling.Controls.Add(lblActiveBillsTitle);
+            tabBilling.Controls.Add(dgvBilling);
+            tabBilling.Controls.Add(lblDischargedBillsTitle);
+            tabBilling.Controls.Add(dgvDischargedBills);
             tabBilling.Location = new Point(4, 34);
             tabBilling.Name = "tabBilling";
             tabBilling.Padding = new Padding(20);
             tabBilling.Size = new Size(1205, 746);
             tabBilling.TabIndex = 2;
+            tabBilling.AutoScroll = true;
+            //
+            // panelBillingStats
+            //
+            panelBillingStats.BackColor = Color.White;
+            panelBillingStats.BorderStyle = BorderStyle.FixedSingle;
+            panelBillingStats.Location = new Point(20, 100);
+            panelBillingStats.Name = "panelBillingStats";
+            panelBillingStats.Size = new Size(1165, 80);
+            panelBillingStats.TabIndex = 3;
+            panelBillingStats.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            // 
+            // dgvDischargedBills
+            // 
+            dgvDischargedBills.AllowUserToAddRows = false;
+            dgvDischargedBills.AllowUserToDeleteRows = false;
+            dgvDischargedBills.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvDischargedBills.BackgroundColor = Color.White;
+            dgvDischargedBills.BorderStyle = BorderStyle.None;
+            dgvDischargedBills.ColumnHeadersHeight = 50;
+            dgvDischargedBills.Location = new Point(20, 455);
+            dgvDischargedBills.Name = "dgvDischargedBills";
+            dgvDischargedBills.ReadOnly = true;
+            dgvDischargedBills.RowHeadersVisible = false;
+            dgvDischargedBills.RowTemplate.Height = 45;
+            dgvDischargedBills.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvDischargedBills.Size = new Size(1165, 271);
+            dgvDischargedBills.TabIndex = 6;
+            dgvDischargedBills.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            // 
+            // lblDischargedBillsTitle
+            //
+            lblDischargedBillsTitle.AutoSize = true;
+            lblDischargedBillsTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblDischargedBillsTitle.ForeColor = Color.FromArgb(52, 73, 94);
+            lblDischargedBillsTitle.Location = new Point(20, 430);
+            lblDischargedBillsTitle.Name = "lblDischargedBillsTitle";
+            lblDischargedBillsTitle.Size = new Size(308, 20);
+            lblDischargedBillsTitle.TabIndex = 5;
+            lblDischargedBillsTitle.Text = "✅ Discharged Bills (Completed & Archived)";
+            lblDischargedBillsTitle.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             // 
             // dgvBilling
             // 
@@ -550,15 +692,38 @@
             dgvBilling.BackgroundColor = Color.White;
             dgvBilling.BorderStyle = BorderStyle.None;
             dgvBilling.ColumnHeadersHeight = 50;
-            dgvBilling.Dock = DockStyle.Fill;
-            dgvBilling.Location = new Point(20, 100);
+            dgvBilling.Location = new Point(20, 215);
             dgvBilling.Name = "dgvBilling";
             dgvBilling.ReadOnly = true;
             dgvBilling.RowHeadersVisible = false;
             dgvBilling.RowTemplate.Height = 45;
             dgvBilling.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvBilling.Size = new Size(1165, 626);
+            dgvBilling.Size = new Size(1165, 200);
             dgvBilling.TabIndex = 1;
+            dgvBilling.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            // 
+            // lblActiveBillsTitle
+            // 
+            lblActiveBillsTitle.AutoSize = true;
+            lblActiveBillsTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblActiveBillsTitle.ForeColor = Color.FromArgb(52, 73, 94);
+            lblActiveBillsTitle.Location = new Point(20, 190);
+            lblActiveBillsTitle.Name = "lblActiveBillsTitle";
+            lblActiveBillsTitle.Size = new Size(263, 20);
+            lblActiveBillsTitle.TabIndex = 4;
+            lblActiveBillsTitle.Text = "📋 Active Bills (Not Yet Discharged)";
+            lblActiveBillsTitle.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+
+            // 
+            // panelBillingStats
+            // 
+            panelBillingStats.BackColor = Color.White;
+            panelBillingStats.BorderStyle = BorderStyle.FixedSingle;
+            panelBillingStats.Location = new Point(20, 100);
+            panelBillingStats.Name = "panelBillingStats";
+            panelBillingStats.Size = new Size(1165, 80);
+            panelBillingStats.TabIndex = 3;
+            panelBillingStats.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             // 
             // panelBillingButtons
             // 
@@ -566,12 +731,13 @@
             panelBillingButtons.Controls.Add(btnGenerateIncomeReport);
             panelBillingButtons.Controls.Add(btnViewBillDetails);
             panelBillingButtons.Controls.Add(billBtnShadow);
-            panelBillingButtons.Dock = DockStyle.Top;
+            panelBillingButtons.Dock = DockStyle.None;
             panelBillingButtons.Location = new Point(20, 20);
             panelBillingButtons.Name = "panelBillingButtons";
             panelBillingButtons.Padding = new Padding(20, 15, 20, 15);
             panelBillingButtons.Size = new Size(1165, 80);
             panelBillingButtons.TabIndex = 1;
+            panelBillingButtons.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             // 
             // btnGenerateIncomeReport
             // 
@@ -631,6 +797,7 @@
             // 
             // panelUniversalSearch
             // 
+            panelUniversalSearch.Anchor = AnchorStyles.None;
             panelUniversalSearch.BackColor = Color.White;
             panelUniversalSearch.BorderStyle = BorderStyle.FixedSingle;
             panelUniversalSearch.Controls.Add(lblUniversalSearchIcon);
@@ -716,38 +883,6 @@
             panelHeaderRight.TabIndex = 1;
             panelHeaderRight.Visible = false;
             // 
-            // button1
-            // 
-            button1.BackColor = Color.FromArgb(66, 153, 225);
-            button1.Cursor = Cursors.Hand;
-            button1.FlatAppearance.BorderSize = 0;
-            button1.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
-            button1.FlatStyle = FlatStyle.Flat;
-            button1.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            button1.ForeColor = Color.White;
-            button1.Location = new Point(396, 15);
-            button1.Name = "button1";
-            button1.Size = new Size(170, 45);
-            button1.TabIndex = 5;
-            button1.Text = "✏️ Edit Patient";
-            button1.UseVisualStyleBackColor = false;
-            // 
-            // button2
-            // 
-            button2.BackColor = Color.FromArgb(72, 187, 120);
-            button2.Cursor = Cursors.Hand;
-            button2.FlatAppearance.BorderSize = 0;
-            button2.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 161, 105);
-            button2.FlatStyle = FlatStyle.Flat;
-            button2.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            button2.ForeColor = Color.White;
-            button2.Location = new Point(216, 15);
-            button2.Name = "button2";
-            button2.Size = new Size(170, 45);
-            button2.TabIndex = 6;
-            button2.Text = "➕ Add Patient";
-            button2.UseVisualStyleBackColor = false;
-            // 
             // AdminDashboard
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -760,6 +895,7 @@
             Name = "AdminDashboard";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "St. Joseph's Hospital - Admin Dashboard";
+            WindowState = FormWindowState.Maximized;
             panelSidebar.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).EndInit();
             panelMainContent.ResumeLayout(false);
@@ -779,6 +915,8 @@
             ((System.ComponentModel.ISupportInitialize)dgvPatients).EndInit();
             panelMedicalButtons.ResumeLayout(false);
             tabBilling.ResumeLayout(false);
+            tabBilling.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvDischargedBills).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvBilling).EndInit();
             panelBillingButtons.ResumeLayout(false);
             panelHeader.ResumeLayout(false);
@@ -822,6 +960,10 @@
         private System.Windows.Forms.Button btnViewPatientRecord;
         private System.Windows.Forms.TabPage tabBilling;
         private System.Windows.Forms.DataGridView dgvBilling;
+        private System.Windows.Forms.DataGridView dgvDischargedBills;
+        private System.Windows.Forms.Label lblActiveBillsTitle;
+        private System.Windows.Forms.Label lblDischargedBillsTitle;
+        private System.Windows.Forms.Panel panelBillingStats;
         private System.Windows.Forms.Panel panelBillingButtons;
         private System.Windows.Forms.Button btnViewBillDetails;
         private System.Windows.Forms.Panel buttonShadow;
@@ -833,8 +975,11 @@
         private System.Windows.Forms.Label lblUniversalSearchIcon;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panelHeaderRight;
-        private Button btnGenerateIncomeReport;
-        private Button button1;
-        private Button button2;
+        private System.Windows.Forms.Button btnGenerateIncomeReport;
+        private Button btnDeletePatient;
+        private Button btnEditPatient;
+        private Button btnAddPatient;
+        private Button BtnViewPatientProfile;
+        private Button btnViewUserProfile;
     }
 }

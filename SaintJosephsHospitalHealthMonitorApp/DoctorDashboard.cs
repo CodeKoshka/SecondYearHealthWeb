@@ -21,6 +21,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private byte[] currentUserProfileImage;
         private System.Threading.Timer searchDebounceTimer;
         private const int SEARCH_DEBOUNCE_MS = 300;
+        private string currentDutyStatus = "Off Duty";
 
         public DoctorDashboard(User user)
         {
@@ -33,6 +34,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             LoadUserProfile();
             GetDoctorId();
             LoadData();
+            InitializeDutyStatusButton();
+            LoadDutyStatus();
         }
 
         private void ApplyStyle()
@@ -256,6 +259,64 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 case "Appointments": return "📅";
                 case "Patients": return "👤";
                 default: return "📄";
+            }
+        }
+
+        private void InitializeDutyStatusButton()
+        {
+            btnDoctorStatus.MouseEnter += (s, e) =>
+            {
+                btnDoctorStatus.BackColor = Color.FromArgb(45, 55, 72);
+            };
+            btnDoctorStatus.MouseLeave += (s, e) =>
+            {
+                btnDoctorStatus.BackColor = Color.Transparent;
+            };
+
+            panelSidebar.Controls.Add(btnDoctorStatus);
+            btnDoctorStatus.BringToFront();
+        }
+
+        private void LoadDutyStatus()
+        {
+            try
+            {
+                string query = "SELECT duty_status FROM Doctors WHERE doctor_id = @doctorId";
+                object result = DatabaseHelper.ExecuteScalar(query,
+                    new MySqlParameter("@doctorId", doctorId));
+
+                if (result != null && result != DBNull.Value)
+                {
+                    currentDutyStatus = result.ToString();
+                }
+                else
+                {
+                    currentDutyStatus = "Off Duty";
+                }
+
+                UpdateDutyStatusButton();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading duty status: {ex.Message}");
+                currentDutyStatus = "Off Duty";
+                UpdateDutyStatusButton();
+            }
+        }
+
+        private void UpdateDutyStatusButton()
+        {
+            if (currentDutyStatus == "On Duty")
+            {
+                btnDoctorStatus.Text = "🟢 On Duty";
+                btnDoctorStatus.FlatAppearance.BorderColor = Color.FromArgb(46, 204, 113);
+                btnDoctorStatus.ForeColor = Color.FromArgb(46, 204, 113);
+            }
+            else
+            {
+                btnDoctorStatus.Text = "🔴 Off Duty";
+                btnDoctorStatus.FlatAppearance.BorderColor = Color.FromArgb(220, 53, 69);
+                btnDoctorStatus.ForeColor = Color.FromArgb(220, 53, 69);
             }
         }
 
@@ -1481,6 +1542,297 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void BtnDoctorStatus_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string newStatus = currentDutyStatus == "On Duty" ? "Off Duty" : "On Duty";
+
+                if (newStatus == "Off Duty")
+                {
+                    string checkActivePatients = @"
+                SELECT COUNT(*) 
+                FROM patientqueue 
+                WHERE doctor_id = @doctorId 
+                AND queue_date = CURDATE()
+                AND status IN ('Called', 'In Progress')";
+
+                    int activeCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkActivePatients,
+                        new MySqlParameter("@doctorId", doctorId)));
+
+                    if (activeCount > 0)
+                    {
+                        DialogResult confirm = MessageBox.Show(
+                            $"⚠️ ACTIVE PATIENTS WARNING\n\n" +
+                            $"You have {activeCount} active patient(s) currently assigned to you.\n\n" +
+                            "Going off duty will:\n" +
+                            "• Keep your current patients assigned to you\n" +
+                            "• Prevent new patients from being assigned\n" +
+                            "• You should complete active consultations first\n\n" +
+                            "Are you sure you want to go off duty?",
+                            "Active Patients",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning,
+                            MessageBoxDefaultButton.Button2);
+
+                        if (confirm != DialogResult.Yes)
+                            return;
+                    }
+                }
+
+                string updateQuery = @"
+            UPDATE Doctors 
+            SET duty_status = @dutyStatus 
+            WHERE doctor_id = @doctorId";
+
+                DatabaseHelper.ExecuteNonQuery(updateQuery,
+                    new MySqlParameter("@dutyStatus", newStatus),
+                    new MySqlParameter("@doctorId", doctorId));
+
+                currentDutyStatus = newStatus;
+                UpdateDutyStatusButton();
+
+                string statusIcon = newStatus == "On Duty" ? "🟢" : "🔴";
+                string statusMessage = newStatus == "On Duty"
+                    ? "You are now ON DUTY and available to receive patients.\n\nReceptionists can now assign patients to you."
+                    : "You are now OFF DUTY.\n\nNew patients will not be assigned to you.\nComplete any active consultations before leaving.";
+
+                MessageBox.Show(
+                    $"{statusIcon} DUTY STATUS CHANGED\n\n" +
+                    $"Status: {newStatus}\n\n" +
+                    statusMessage,
+                    "Status Updated",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating duty status: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnEditMedicalRecord_Click(object sender, EventArgs e)
+        {
+            if (dgvPatients.SelectedRows.Count == 0)
+            {
+                MessageBox.Show(
+                    "⚠️ NO PATIENT SELECTED\n\n" +
+                    "Please select a patient from the list before editing their medical record.\n\n" +
+                    "Steps:\n" +
+                    "1. Click on a patient in the 'My Patients Records' list\n" +
+                    "2. Click 'Edit Medical Record' button again",
+                    "Selection Required",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            int patientId = Convert.ToInt32(dgvPatients.SelectedRows[0].Cells["patient_id"].Value);
+            string patientName = dgvPatients.SelectedRows[0].Cells["patient_name"].Value.ToString();
+
+            try
+            {
+                string checkActiveQueueQuery = @"
+            SELECT queue_id, status 
+            FROM patientqueue 
+            WHERE patient_id = @patientId
+            AND doctor_id = @doctorId
+            AND discharged_time IS NULL
+            AND status IN ('Called', 'In Progress')
+            ORDER BY registered_time DESC
+            LIMIT 1";
+
+                DataTable dtActiveQueue = DatabaseHelper.ExecuteQuery(checkActiveQueueQuery,
+                    new MySqlParameter("@patientId", patientId),
+                    new MySqlParameter("@doctorId", doctorId));
+
+                if (dtActiveQueue.Rows.Count == 0)
+                {
+                    MessageBox.Show(
+                        $"⚠️ NO ACTIVE CONSULTATION\n\n" +
+                        $"Patient: {patientName}\n\n" +
+                        "This patient is not currently in an active consultation with you.\n\n" +
+                        "You can only edit medical records for patients who are:\n" +
+                        "• Currently 'Called' or 'In Progress'\n" +
+                        "• Assigned to you as the attending doctor\n\n" +
+                        "Past medical records cannot be edited.",
+                        "No Active Consultation",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    return;
+                }
+
+                int queueId = Convert.ToInt32(dtActiveQueue.Rows[0]["queue_id"]);
+                string status = dtActiveQueue.Rows[0]["status"].ToString();
+
+                string findLatestRecordQuery = @"
+            SELECT record_id, record_date
+            FROM medicalrecords
+            WHERE patient_id = @patientId 
+            AND doctor_id = @doctorId 
+            AND queue_id = @queueId
+            ORDER BY record_date DESC
+            LIMIT 1";
+
+                DataTable dtLatestRecord = DatabaseHelper.ExecuteQuery(findLatestRecordQuery,
+                    new MySqlParameter("@patientId", patientId),
+                    new MySqlParameter("@doctorId", doctorId),
+                    new MySqlParameter("@queueId", queueId));
+
+                if (dtLatestRecord.Rows.Count == 0)
+                {
+                    MessageBox.Show(
+                        $"⚠️ NO MEDICAL RECORD TO EDIT\n\n" +
+                        $"Patient: {patientName}\n" +
+                        $"Queue Status: {status}\n\n" +
+                        "No medical record has been created for this consultation yet.\n\n" +
+                        "Please use 'Add Medical Record' to create one first.",
+                        "No Record Found",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    return;
+                }
+
+                int recordId = Convert.ToInt32(dtLatestRecord.Rows[0]["record_id"]);
+                DateTime recordDate = Convert.ToDateTime(dtLatestRecord.Rows[0]["record_date"]);
+
+                DialogResult confirm = MessageBox.Show(
+                    $"📝 EDIT MEDICAL RECORD\n\n" +
+                    $"Patient: {patientName}\n" +
+                    $"Consultation Status: {status}\n" +
+                    $"Record Created: {recordDate:MM/dd/yyyy HH:mm}\n\n" +
+                    "You are about to edit the medical record for this active consultation.\n\n" +
+                    "⚠️ Note: You can only edit the most recent record linked to this visit.\n\n" +
+                    "Do you want to proceed?",
+                    "Confirm Edit",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (confirm != DialogResult.Yes)
+                    return;
+
+                MedicalRecordForm editForm = MedicalRecordForm.CreateEditMode(recordId, patientId, doctorId, patientName, queueId);
+
+                editForm.FormClosed += (s, args) =>
+                {
+                    if (editForm.DialogResult == DialogResult.OK)
+                    {
+                        MessageBox.Show(
+                            $"✓ Medical record updated successfully for {patientName}!\n\n" +
+                            "The consultation record has been saved with your changes.",
+                            "Success",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    LoadData();
+                };
+
+                editForm.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnEditServiceChecklist_Click(object sender, EventArgs e)
+        {
+            if (dgvAppointments.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a patient from the appointments list.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int queueId = Convert.ToInt32(dgvAppointments.SelectedRows[0].Cells["queue_id"].Value);
+            int patientId = Convert.ToInt32(dgvAppointments.SelectedRows[0].Cells["patient_id"].Value);
+            string patientName = dgvAppointments.SelectedRows[0].Cells["patient_name"].Value.ToString();
+
+            try
+            {
+                string checkChecklistQuery = @"
+            SELECT equipment_checklist 
+            FROM patientqueue 
+            WHERE queue_id = @queueId";
+
+                DataTable dtChecklist = DatabaseHelper.ExecuteQuery(checkChecklistQuery,
+                    new MySqlParameter("@queueId", queueId));
+
+                if (dtChecklist.Rows.Count == 0)
+                {
+                    MessageBox.Show(
+                        $"⚠️ PATIENT NOT FOUND\n\n" +
+                        $"Queue ID: {queueId}\n\n" +
+                        "This patient record could not be found in the queue.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+
+                string checklistData = dtChecklist.Rows[0]["equipment_checklist"]?.ToString();
+
+                if (string.IsNullOrWhiteSpace(checklistData))
+                {
+                    MessageBox.Show(
+                        $"⚠️ NO EQUIPMENT REPORT TO EDIT\n\n" +
+                        $"Patient: {patientName}\n" +
+                        $"Queue ID: {queueId}\n\n" +
+                        "No equipment report has been created for this patient yet.\n\n" +
+                        "Please use 'Service Checklist' button to create one first.",
+                        "No Report Found",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    return;
+                }
+
+                DialogResult confirm = MessageBox.Show(
+                    $"📝 EDIT EQUIPMENT REPORT\n\n" +
+                    $"Patient: {patientName}\n" +
+                    $"Queue ID: {queueId}\n\n" +
+                    "You are about to edit the existing equipment & services report.\n\n" +
+                    "The current report will be replaced with your changes.\n\n" +
+                    "Do you want to proceed?",
+                    "Confirm Edit",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (confirm != DialogResult.Yes)
+                    return;
+
+                ServiceChecklistForm editForm = ServiceChecklistForm.CreateEditMode(queueId,patientId,doctorId,patientName,checklistData);
+
+                editForm.FormClosed += (s, args) =>
+                {
+                    if (editForm.DialogResult == DialogResult.OK)
+                    {
+                        MessageBox.Show(
+                            $"✅ EQUIPMENT REPORT UPDATED!\n\n" +
+                            $"Patient: {patientName}\n\n" +
+                            "The equipment & services report has been successfully updated.",
+                            "Success",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+
+                        LoadData();
+                    }
+                };
+
+                editForm.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error opening equipment report for editing:\n\n{ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
 
         private void BtnLogout_Click(object sender, EventArgs e)
         {

@@ -13,6 +13,9 @@
     <Compile Update="AssignDoctorForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="BillDetailsViewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="BillingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -22,10 +25,10 @@
     <Compile Update="DoctorDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="IncomeReportForm.cs">
+    <Compile Update="IncomeReportPreviewForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="ShowDetailedMedicalHistoryForm.cs">
+    <Compile Update="IncomeReportForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="LoginForm.cs">
@@ -83,6 +86,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="ReceptionistDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ShowDetailedMedicalHistoryForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="TestingForm.cs">

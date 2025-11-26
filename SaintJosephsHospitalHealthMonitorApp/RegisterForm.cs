@@ -32,6 +32,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private int? createdByUserId;
         private int? userId;
         private bool isDefaultImageLoaded = false;
+        private bool isPatientMode;
 
         private static Random random = new Random();
         private System.Windows.Forms.Timer inputCheckTimer;
@@ -40,6 +41,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             return new RegisterForm(userIdToView, viewOnly: true);
         }
+
+        public static RegisterForm CreatePatientMode(int creatorId, string creatorRole)
+        {
+            return new RegisterForm(creatorId, creatorRole, isPatientMode: true);
+        }
+
 
         public RegisterForm(int userIdToView, bool viewOnly)
         {
@@ -67,19 +74,29 @@ namespace SaintJosephsHospitalHealthMonitorApp
             LoadExistingUserData();
         }
 
-        public RegisterForm(int creatorId, string role)
+        public RegisterForm(int creatorId, string role, bool isPatientMode = false)
         {
             userId = null;
             isEditMode = false;
             isViewMode = false;
+            this.isPatientMode = isPatientMode;
             createdByUserId = creatorId;
             creatorRole = role;
             InitializeComponent();
             SetPlaceholderImage();
             InitializeRoleOptions();
             InitializeDoctorSpecializations();
-            ConfigureForCreateMode();
+
+            if (isPatientMode)
+            {
+                ConfigureForPatientMode();
+            }
+            else
+            {
+                ConfigureForCreateMode();
+            }
         }
+
 
         public RegisterForm()
         {
@@ -119,6 +136,33 @@ namespace SaintJosephsHospitalHealthMonitorApp
             });
             cmbSpecialization.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbSpecialization.SelectedIndex = 0;
+        }
+
+        private void ConfigureForPatientMode()
+        {
+            lblTitle.Text = "Add New Patient";
+            this.Text = "Add Patient - St. Joseph's Hospital";
+            btnSubmit.Text = "Add Patient";
+
+            chkChangePassword.Visible = false;
+            lblEmail.Text = "Email Address (Optional)";
+            lblPassword.Visible = false;
+            txtPassword.Visible = false;
+            lblConfirmPassword.Visible = false;
+            txtConfirmPassword.Visible = false;
+            chkShowPassword.Visible = false;
+            cmbRole.Visible = false;
+            lblRole.Visible = false;
+
+            Label lblPatientInfo = new Label();
+            lblPatientInfo.Text = "ℹ️ Adding Patient Record";
+            lblPatientInfo.Font = new Font("Segoe UI", 8F, FontStyle.Italic);
+            lblPatientInfo.ForeColor = Color.FromArgb(0, 102, 204);
+            lblPatientInfo.AutoSize = true;
+            lblPatientInfo.Location = new Point(403, 420);
+            lblPatientInfo.Name = "lblPatientInfo";
+            this.Controls.Add(lblPatientInfo);
+            lblPatientInfo.BringToFront();
         }
 
         private void SetPlaceholderImage()
@@ -445,6 +489,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             DebugConfig config = DebugConfig.LoadFromJson();
 
+            if (isPatientMode)
+            {
+                cmbRole.Items.Add("Patient");
+                cmbRole.SelectedIndex = 0;
+                return;
+            }
+
             if (isEditMode)
             {
                 if (creatorRole == "Receptionist")
@@ -467,9 +518,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                     if (config.AllowCreatePharmacist)
                         cmbRole.Items.Add("Pharmacist");
-
-                    if (config.AllowCreatePatient)
-                        cmbRole.Items.Add("Patient");
                 }
             }
             else if (creatorRole == "Registration")
@@ -496,16 +544,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 if (config.AllowCreatePharmacist)
                     cmbRole.Items.Add("Pharmacist");
-
-                if (config.AllowCreatePatient)
-                    cmbRole.Items.Add("Patient");
             }
             else if (creatorRole == "Receptionist")
             {
-                if (config.AllowCreatePatient)
-                {
-                    cmbRole.Items.Add("Patient");
-                }
+                MessageBox.Show(
+                    "Receptionists cannot create user accounts.\n\n" +
+                    "Use the 'Add Patient' button to add patient records.",
+                    "Access Restricted",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                this.Close();
+                return;
             }
             else
             {
@@ -581,15 +630,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             cmbRole.BackColor = readOnlyBg;
             cmbSpecialization.BackColor = readOnlyBg;
             txtSpecialization.BackColor = readOnlyBg;
-
-            Label lblViewInfo = new Label();
-            lblViewInfo.Text = "ℹ️ View Mode - Profile information is read-only";
-            lblViewInfo.Font = new Font("Segoe UI", 9F, FontStyle.Italic);
-            lblViewInfo.ForeColor = Color.FromArgb(108, 117, 125);
-            lblViewInfo.AutoSize = true;
-            lblViewInfo.Location = new Point(30, 555);
-            this.Controls.Add(lblViewInfo);
-            lblViewInfo.BringToFront();
         }
 
         private void ConfigureForEditMode()
@@ -1235,7 +1275,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private void CreateUser()
         {
             if (string.IsNullOrWhiteSpace(txtName.Text) ||
-                cmbRole.SelectedItem == null ||
                 cmbGender.SelectedItem == null)
             {
                 MessageBox.Show("Please fill in all required fields.", "Validation Error",
@@ -1243,7 +1282,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            string role = cmbRole.SelectedItem.ToString();
+            string role;
+            if (isPatientMode)
+            {
+                role = "Patient";
+            }
+            else
+            {
+                if (cmbRole.SelectedItem == null)
+                {
+                    MessageBox.Show("Please select a role.", "Validation Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                role = cmbRole.SelectedItem.ToString();
+            }
 
             if (!ValidateRoleCreationPermission(role))
             {
@@ -1265,10 +1318,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            if (creatorRole != "Headadmin" && creatorRole != "Admin" && creatorRole != "Receptionist" && role == "Patient")
+            if (role != "Patient" && age < 18)
             {
-                MessageBox.Show("Only Head Admin, Admin, or Receptionist can create Patient records.", "Access Denied",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    "System users must be at least 18 years old.\n\n" +
+                    "Staff members (Admin, Doctor, Receptionist, Pharmacist) must be adults.",
+                    "Age Requirement",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1374,7 +1431,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
 
                         string insertUser = @"INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image) 
-                      VALUES (@name, @role, @email, @password, @dateOfBirth, @age, @gender, @createdBy, @profileImage)";
+                  VALUES (@name, @role, @email, @password, @dateOfBirth, @age, @gender, @createdBy, @profileImage)";
                         using (MySqlCommand cmdInsertUser = new MySqlCommand(insertUser, conn, transaction))
                         {
                             cmdInsertUser.Parameters.AddWithValue("@name", name);
@@ -1414,7 +1471,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         if (role == "Patient")
                         {
                             string insertPatient = @"INSERT INTO Patients (user_id, medical_history) 
-                             VALUES (@userId, '')";
+                     VALUES (@userId, '')";
                             using (MySqlCommand cmdInsertPatient = new MySqlCommand(insertPatient, conn, transaction))
                             {
                                 cmdInsertPatient.Parameters.AddWithValue("@userId", newUserId);
@@ -1430,8 +1487,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         {
                             string specialization = GetDoctorSpecialization();
 
-                            string insertDoctor = @"INSERT INTO Doctors (user_id, specialization, is_available) 
-                            VALUES (@userId, @specialization, 1)";
+                            string insertDoctor = @"INSERT INTO Doctors (user_id, specialization, is_available, duty_status) 
+                           VALUES (@userId, @specialization, 1, 'Off Duty')";
                             using (MySqlCommand cmdInsertDoctor = new MySqlCommand(insertDoctor, conn, transaction))
                             {
                                 cmdInsertDoctor.Parameters.AddWithValue("@userId", newUserId);
@@ -1442,7 +1499,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         else if (role == "Headadmin" || role == "Admin" || role == "Receptionist" || role == "Pharmacist")
                         {
                             string insertStaff = @"INSERT INTO Staff (user_id, position, department) 
-                           VALUES (@userId, @position, @department)";
+                   VALUES (@userId, @position, @department)";
                             using (MySqlCommand cmdInsertStaff = new MySqlCommand(insertStaff, conn, transaction))
                             {
                                 cmdInsertStaff.Parameters.AddWithValue("@userId", newUserId);
@@ -1461,6 +1518,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                         transaction.Commit();
 
+                        UniqueIDHelper.AssignUniqueIDToUser(newUserId, role, email);
+
                         if (profileImageData != null)
                         {
                             SaveProfileImageToFile(profileImageData, newUserId, name);
@@ -1477,8 +1536,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                            $"Name: {name}\n" +
                                            $"Email: {displayEmail}\n" +
                                            $"Age: {age} years old\n\n" +
-                                           $"Patient is now registered in the system.\n" +
-                                           $"Phone number and allergies can be added during intake.";
+                                           $"Patient is now registered in the system.";
 
                             MessageBox.Show(successMessage, "Patient Created",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1586,8 +1644,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     if (count > 0)
                     {
                         string query = @"UPDATE Doctors 
-                                       SET specialization = @specialization
-                                       WHERE user_id = @userId";
+                           SET specialization = @specialization
+                           WHERE user_id = @userId";
 
                         using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
                         {
@@ -1598,8 +1656,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
                     else
                     {
-                        string query = @"INSERT INTO Doctors (user_id, specialization, is_available)
-                                       VALUES (@userId, @specialization, 1)";
+                        string query = @"INSERT INTO Doctors (user_id, specialization, is_available, duty_status)
+                           VALUES (@userId, @specialization, 1, 'Off Duty')";
 
                         using (MySqlCommand cmd = new MySqlCommand(query, conn, transaction))
                         {

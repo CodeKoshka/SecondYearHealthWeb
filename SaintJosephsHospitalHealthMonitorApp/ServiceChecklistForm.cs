@@ -14,6 +14,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private int doctorId;
         private string patientName;
         private bool isViewMode;
+        private bool isEditMode;
 
         public ServiceChecklistForm(int queueId, int patientId, int doctorId, string patientName)
         {
@@ -22,6 +23,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             this.doctorId = doctorId;
             this.patientName = patientName;
             this.isViewMode = false;
+            this.isEditMode = false;
 
             InitializeComponent();
             LoadServiceCategories();
@@ -33,20 +35,38 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         public static ServiceChecklistForm CreateViewMode(int queueId, int patientId, string patientName, string checklistData)
         {
-            return new ServiceChecklistForm(queueId, patientId, 0, patientName, checklistData, true);
+            return new ServiceChecklistForm(queueId, patientId, 0, patientName, checklistData, true, false);
         }
 
-        private ServiceChecklistForm(int queueId, int patientId, int doctorId, string patientName, string checklistData, bool viewMode)
+        public static ServiceChecklistForm CreateEditMode(int queueId, int patientId, int doctorId, string patientName, string checklistData)
+        {
+            return new ServiceChecklistForm(queueId, patientId, doctorId, patientName, checklistData, false, true);
+        }
+
+        private ServiceChecklistForm(int queueId, int patientId, int doctorId, string patientName, string checklistData, bool viewMode, bool editMode)
         {
             this.queueId = queueId;
             this.patientId = patientId;
             this.doctorId = doctorId;
             this.patientName = patientName;
             this.isViewMode = viewMode;
+            this.isEditMode = editMode;
 
             InitializeComponent();
+            LoadServiceCategories();
             SetupServicesList();
-            ConfigureForViewMode(checklistData);
+
+            lblPatientInfo.Text = $"Patient: {patientName} (ID: {patientId})";
+            lblTotal.Visible = false;
+
+            if (viewMode)
+            {
+                ConfigureForViewMode(checklistData);
+            }
+            else if (editMode)
+            {
+                ConfigureForEditMode(checklistData);
+            }
         }
 
         private void ConfigureForViewMode(string checklistData)
@@ -64,6 +84,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
             lstServices.CheckBoxes = false;
             lblServiceCount.Text = $"Total Services/Equipment Used: {lstServices.Items.Count}";
             lblTotal.Visible = false;
+        }
+
+        private void ConfigureForEditMode(string checklistData)
+        {
+            this.Text = "Equipment & Services Report - Edit Mode";
+            lblTitle.Text = "📝 Edit Equipment & Services Report";
+
+            ParseChecklistData(checklistData);
+
+            btnSaveAndComplete.Text = "✅ Save Changes";
+            lblServiceCount.Text = $"Services Selected: {lstServices.CheckedItems.Count} of {lstServices.Items.Count}";
         }
 
         private void ParseChecklistData(string data)
@@ -99,6 +130,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         string category = closeParen > 0 ? categoryPart.Substring(0, closeParen).Trim() : categoryPart;
 
                         ListViewItem item = new ListViewItem(serviceName);
+                        item.Checked = true;
                         item.SubItems.Add(category);
                         item.SubItems.Add(quantity);
                         lstServices.Items.Add(item);
@@ -281,17 +313,22 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (existingItem != null)
+            if (existingItem != null && category != "Other Services")
             {
                 int currentQuantity = int.Parse(existingItem.SubItems[2].Text);
                 int newQuantity = currentQuantity + quantity;
                 existingItem.SubItems[2].Text = newQuantity.ToString();
 
                 MessageBox.Show(
-                    $"Updated quantity for: {serviceName}\n\n" +
+                    $"⚠️ Duplicate Service Detected\n\n" +
+                    $"Service: {serviceName}\n" +
+                    $"Category: {category}\n\n" +
+                    $"This service already exists in the list.\n" +
+                    $"Quantity has been updated:\n\n" +
                     $"Previous: {currentQuantity}\n" +
                     $"Added: {quantity}\n" +
-                    $"New Total: {newQuantity}",
+                    $"New Total: {newQuantity}\n\n" +
+                    $"Note: Only 'Other Services' can have multiple entries with the same name.",
                     "Quantity Updated",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
@@ -304,6 +341,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 item.SubItems.Add(quantity.ToString());
 
                 lstServices.Items.Add(item);
+
+                if (category == "Other Services" && existingItem != null)
+                {
+                    MessageBox.Show(
+                        $"✓ Service Added\n\n" +
+                        $"Multiple entries with the same name are allowed in 'Other Services' category.\n\n" +
+                        $"Service: {serviceName}\n" +
+                        $"Quantity: {quantity}",
+                        "Service Added",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
             }
 
             UpdateServiceCount();
@@ -320,6 +369,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
+
+            DialogResult confirm = MessageBox.Show(
+                $"Are you sure you want to remove the selected service(s)?\n\n" +
+                $"Selected: {lstServices.SelectedItems.Count} item(s)",
+                "Confirm Removal",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (confirm != DialogResult.Yes)
+                return;
 
             foreach (ListViewItem item in lstServices.SelectedItems)
             {
@@ -366,15 +425,24 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
+            string actionText = isEditMode ? "Update" : "Save";
+            string confirmMessage = isEditMode
+                ? $"Save changes to equipment & services report?\n\n" +
+                  $"Patient: {patientName}\n" +
+                  $"Services/Equipment: {checkedCount} item(s)\n\n" +
+                  "This will update the existing equipment/services report.\n\n" +
+                  "Continue?"
+                : $"Save equipment & services report?\n\n" +
+                  $"Patient: {patientName}\n" +
+                  $"Services/Equipment: {checkedCount} item(s)\n\n" +
+                  "This will save the equipment/services report.\n\n" +
+                  "Note: Both the medical record and equipment report\n" +
+                  "must be completed before the consultation can be marked as complete.\n\n" +
+                  "Continue?";
+
             DialogResult confirm = MessageBox.Show(
-                $"Save equipment & services report?\n\n" +
-                $"Patient: {patientName}\n" +
-                $"Services/Equipment: {checkedCount} item(s)\n\n" +
-                "This will save the equipment/services report.\n\n" +
-                "Note: Both the medical record and equipment report\n" +
-                "must be completed before the consultation can be marked as complete.\n\n" +
-                "Continue?",
-                "Confirm Save",
+                confirmMessage,
+                $"Confirm {actionText}",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
@@ -401,12 +469,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     PatientId = patientId
                 };
 
+                string successMessage = isEditMode
+                    ? $"✅ Equipment Report Updated!\n\n" +
+                      $"Patient: {patientName}\n" +
+                      $"Services/Equipment: {checkedCount} item(s)\n\n" +
+                      "The equipment report has been updated successfully."
+                    : $"✅ Equipment Report Saved!\n\n" +
+                      $"Patient: {patientName}\n" +
+                      $"Services/Equipment: {checkedCount} item(s)\n\n" +
+                      "The equipment report has been saved to the database.";
+
                 MessageBox.Show(
-                    $"✅ Equipment Report Saved!\n\n" +
-                    $"Patient: {patientName}\n" +
-                    $"Services/Equipment: {checkedCount} item(s)\n\n" +
-                    "The equipment report has been saved to the database.",
-                    "Report Saved",
+                    successMessage,
+                    isEditMode ? "Report Updated" : "Report Saved",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
@@ -430,6 +505,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
             report.AppendLine($"EQUIPMENT & SERVICES REPORT");
             report.AppendLine($"Patient: {patientName}");
             report.AppendLine($"Date: {DateTime.Now:yyyy-MM-dd HH:mm}");
+            if (isEditMode)
+            {
+                report.AppendLine($"Status: Updated");
+            }
             report.AppendLine();
             report.AppendLine("Services/Equipment Used:");
             report.AppendLine();
@@ -458,12 +537,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (lstServices.Items.Count > 0)
             {
+                string cancelMessage = isEditMode
+                    ? "⚠️ You have unsaved changes to the equipment report.\n\n" +
+                      "If you cancel now, your changes will be lost.\n\n" +
+                      "Are you sure you want to cancel?"
+                    : "⚠️ You have unsaved services in the checklist.\n\n" +
+                      "If you cancel now:\n" +
+                      "• The equipment report will NOT be saved\n" +
+                      "• The patient will remain 'In Progress'\n\n" +
+                      "Are you sure you want to cancel?";
+
                 DialogResult result = MessageBox.Show(
-                    "⚠️ You have unsaved services in the checklist.\n\n" +
-                    "If you cancel now:\n" +
-                    "• The equipment report will NOT be saved\n" +
-                    "• The patient will remain 'In Progress'\n\n" +
-                    "Are you sure you want to cancel?",
+                    cancelMessage,
                     "Confirm Cancel",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning);

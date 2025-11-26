@@ -28,7 +28,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
                 string query = @"SELECT user_id, name, role, email, password, age, gender 
                                FROM Users 
-                               WHERE email = @email AND is_active = 1";
+                               WHERE BINARY email = @email AND is_active = 1";
 
                 DataTable dt = DatabaseHelper.ExecuteQuery(query,
                     new MySqlParameter("@email", email.Trim()));

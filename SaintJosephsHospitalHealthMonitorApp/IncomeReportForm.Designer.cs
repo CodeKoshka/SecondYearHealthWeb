@@ -231,7 +231,7 @@
             btnGenerateReport.Name = "btnGenerateReport";
             btnGenerateReport.Size = new Size(240, 50);
             btnGenerateReport.TabIndex = 0;
-            btnGenerateReport.Text = "🖨️ Generate PDF Report";
+            btnGenerateReport.Text = "💾 Save as PDF";
             btnGenerateReport.UseVisualStyleBackColor = false;
             btnGenerateReport.Click += BtnGenerateReport_Click;
             // 

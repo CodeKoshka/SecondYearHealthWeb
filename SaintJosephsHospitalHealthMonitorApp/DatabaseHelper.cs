@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace SaintJosephsHospitalHealthMonitorApp
 {
@@ -36,6 +37,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     string createUsersTable = @"
                     CREATE TABLE IF NOT EXISTS Users (
                     user_id INT PRIMARY KEY AUTO_INCREMENT,
+                    unique_id VARCHAR(20) UNIQUE NULL,
                     name VARCHAR(100) NOT NULL,
                     role VARCHAR(20) NOT NULL,
                     email VARCHAR(100) UNIQUE NULL,
@@ -313,7 +315,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     category_name VARCHAR(100) NOT NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
-
                     string createServicesTable = @"
                     CREATE TABLE IF NOT EXISTS Services (
                     service_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -323,7 +324,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     FOREIGN KEY (category_id) REFERENCES ServiceCategories(category_id) 
                     ON DELETE SET NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-
 
                     string createBillServicesTable = @"
                     CREATE TABLE IF NOT EXISTS BillServices (
@@ -373,38 +373,45 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     ExecuteNonQueryInternal(conn, createStockAdjustmentTable);
                     ExecuteNonQueryInternal(conn, createCompletedVisitsTable);
                     ExecuteNonQueryInternal(conn, createPaymentTransactionsTable);
-
                     ExecuteNonQueryInternal(conn, createServiceCategoriesTable);
                     ExecuteNonQueryInternal(conn, createServicesTable);
                     ExecuteNonQueryInternal(conn, createBillServicesTable);
 
-                    InsertDefaultUsers(conn);
-
                     try
                     {
-                        string checkColumn = @"
+                        string checkDutyColumn = @"
                         SELECT COUNT(*) 
                         FROM INFORMATION_SCHEMA.COLUMNS
                         WHERE TABLE_SCHEMA = DATABASE()
-                        AND TABLE_NAME = 'Users'
-                        AND COLUMN_NAME = 'date_of_birth';";
+                        AND TABLE_NAME = 'Doctors'
+                        AND COLUMN_NAME = 'duty_status'";
 
-                        int columnExists = Convert.ToInt32(ExecuteScalar(checkColumn));
+                        int dutyColumnExists = Convert.ToInt32(ExecuteScalarInternal(conn, checkDutyColumn));
 
-                        if (columnExists == 0)
+                        if (dutyColumnExists == 0)
                         {
-                            string addColumn = @"
-                            ALTER TABLE Users
-                            ADD COLUMN date_of_birth DATE NULL AFTER password;";
-                            ExecuteNonQuery(addColumn);
+                            string addDutyColumn = @"
+                            ALTER TABLE Doctors
+                            ADD COLUMN duty_status VARCHAR(20) DEFAULT 'Off Duty' 
+                            COMMENT 'Current duty status: On Duty, Off Duty'";
 
-                            System.Diagnostics.Debug.WriteLine("[DatabaseHelper] Added date_of_birth column to Users table");
+                            ExecuteNonQueryInternal(conn, addDutyColumn);
+
+                            string addDutyIndex = @"
+                            ALTER TABLE Doctors 
+                            ADD INDEX idx_duty_status (duty_status)";
+
+                            ExecuteNonQueryInternal(conn, addDutyIndex);
+
+                            System.Diagnostics.Debug.WriteLine("[DatabaseHelper] Added duty_status column to Doctors table");
                         }
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Failed to add date_of_birth column: {ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Failed to add duty_status column: {ex.Message}");
                     }
+
+                    InsertDefaultUsers(conn);
 
                     try
                     {
@@ -415,7 +422,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         AND TABLE_NAME = 'medicalrecords'
                         AND COLUMN_NAME = 'queue_id';";
 
-                        int columnExists = Convert.ToInt32(ExecuteScalar(checkQueueIdColumn));
+                        int columnExists = Convert.ToInt32(ExecuteScalarInternal(conn, checkQueueIdColumn));
 
                         if (columnExists == 0)
                         {
@@ -425,7 +432,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         ADD CONSTRAINT fk_medicalrecords_queue
                         FOREIGN KEY (queue_id) REFERENCES patientqueue(queue_id)
                         ON DELETE SET NULL;";
-                            ExecuteNonQuery(addQueueIdColumn);
+                            ExecuteNonQueryInternal(conn, addQueueIdColumn);
                         }
                     }
                     catch (Exception ex)
@@ -457,6 +464,56 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 throw new Exception($"Database Error: {ex.Message}", ex);
             }
         }
+
+        public static void EnsureDutyStatusColumn()
+        {
+            try
+            {
+                using (MySqlConnection conn = GetConnection())
+                {
+                    conn.Open();
+
+                    string checkColumn = @"
+                SELECT COUNT(*) 
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_SCHEMA = DATABASE()
+                AND TABLE_NAME = 'Doctors'
+                AND COLUMN_NAME = 'duty_status'";
+
+                    int columnExists = Convert.ToInt32(ExecuteScalarInternal(conn, checkColumn));
+
+                    if (columnExists == 0)
+                    {
+                        string addColumn = @"
+                    ALTER TABLE Doctors
+                    ADD COLUMN duty_status VARCHAR(20) DEFAULT 'Off Duty' 
+                    COMMENT 'Current duty status: On Duty, Off Duty'";
+
+                        ExecuteNonQueryInternal(conn, addColumn);
+
+                        string addIndex = @"
+                    ALTER TABLE Doctors 
+                    ADD INDEX idx_duty_status (duty_status)";
+
+                        ExecuteNonQueryInternal(conn, addIndex);
+
+                        string updateExisting = @"
+                    UPDATE Doctors 
+                    SET duty_status = 'Off Duty' 
+                    WHERE duty_status IS NULL";
+
+                        ExecuteNonQueryInternal(conn, updateExisting);
+
+                        System.Diagnostics.Debug.WriteLine("[DatabaseHelper] Added duty_status column to Doctors table");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Failed to add duty_status column: {ex.Message}");
+            }
+        }
+
 
         private static bool IsDefaultUserEnabled(string userType)
         {
@@ -530,6 +587,42 @@ namespace SaintJosephsHospitalHealthMonitorApp
             return null;
         }
 
+        private static byte[] LoadDoctorProfileImage()
+        {
+            try
+            {
+                string currentDir = AppDomain.CurrentDomain.BaseDirectory;
+
+                while (currentDir != null)
+                {
+                    string picturesPath = Path.Combine(currentDir, "Pictures", "LausSins#2.jpg");
+                    if (File.Exists(picturesPath))
+                    {
+                        return File.ReadAllBytes(picturesPath);
+                    }
+
+                    if (currentDir.EndsWith("SaintJosephsHospitalHealthMonitorApp"))
+                    {
+                        string innerProjectPath = Path.Combine(currentDir, "SaintJosephsHospitalHealthMonitorApp", "Pictures", "LausSins#2.jpg");
+                        if (File.Exists(innerProjectPath))
+                        {
+                            return File.ReadAllBytes(innerProjectPath);
+                        }
+                    }
+
+                    DirectoryInfo parentDir = Directory.GetParent(currentDir);
+                    if (parentDir == null) break;
+                    currentDir = parentDir.FullName;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Could not load doctor profile image: {ex.Message}");
+            }
+
+            return null;
+        }
+
         private static void InsertDefaultUsers(MySqlConnection conn)
         {
             byte[] defaultImage = LoadDefaultProfileImage();
@@ -548,8 +641,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         headAdminAge--;
 
                     string insertHeadadmin = @"
-            INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-            VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', @dob, @age, 'Other', NULL, @profileImage)";
+    INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image, unique_id)
+    VALUES ('Head Admin', 'Headadmin', 'Headadmin@hospital.com', 'admin123', @dob, @age, 'Other', NULL, @profileImage, 'hd00177013')";
 
                     using (MySqlCommand cmd = new MySqlCommand(insertHeadadmin, conn))
                     {
@@ -587,8 +680,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             adminAge--;
 
                         string insertAdmin = @"
-                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-                VALUES ('Admin', 'Admin', 'Admin@hospital.com', 'admin123', @dob, @age, 'Other', @createdBy, @profileImage)";
+                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image, unique_id)
+                VALUES ('Admin', 'Admin', 'Admin@hospital.com', 'admin123', @dob, @age, 'Other', @createdBy, @profileImage, 'ad00297789')";
 
                         using (MySqlCommand cmdAdmin = new MySqlCommand(insertAdmin, conn))
                         {
@@ -628,8 +721,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             receptionistAge--;
 
                         string insertreceptionist = @"
-                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-                VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', @dob, @age, 'Female', @createdBy, @profileImage)";
+                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image, unique_id)
+                VALUES ('Receptionist', 'Receptionist', 'Receptionist@hospital.com', 'receptionist123', @dob, @age, 'Female', @createdBy, @profileImage, 'rt00392034')";
 
                         using (MySqlCommand cmdReceptionist = new MySqlCommand(insertreceptionist, conn))
                         {
@@ -669,8 +762,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             pharmacistAge--;
 
                         string insertPharmacist = @"
-                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-                VALUES ('Pharmacist', 'Pharmacist', 'Pharmacist@hospital.com', 'pharmacist123', @dob, @age, 'Other', @createdBy, @profileImage)";
+                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image, unique_id)
+                VALUES ('Pharmacist', 'Pharmacist', 'Pharmacist@hospital.com', 'pharmacist123', @dob, @age, 'Other', @createdBy, @profileImage, 'pt00610316')";
 
                         using (MySqlCommand cmdPharmacist = new MySqlCommand(insertPharmacist, conn))
                         {
@@ -718,14 +811,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     {
                         long adminId = Convert.ToInt64(adminIdResult);
 
-                        DateTime doctorDob = new DateTime(1985, 8, 10);
+                        DateTime doctorDob = new DateTime(2005, 10, 14);
                         int doctorAge = DateTime.Today.Year - doctorDob.Year;
                         if (doctorDob.Date > DateTime.Today.AddYears(-doctorAge))
                             doctorAge--;
 
+                        byte[] doctorImage = LoadDoctorProfileImage();
+
                         string insertDoctor = @"
-                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-                VALUES ('Dr. Sample Doctor', 'Doctor', 'Doctor@hospital.com', 'doctor123', @dob, @age, 'Male', @createdBy, @profileImage)";
+                        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image, unique_id)
+                        VALUES ('Sean Laus', 'Doctor', 'Doctor@hospital.com', 'doctor123', @dob, @age, 'Male', @createdBy, @profileImage, 'dr00484426')";
 
                         using (MySqlCommand cmdDoctor = new MySqlCommand(insertDoctor, conn))
                         {
@@ -733,8 +828,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             cmdDoctor.Parameters.AddWithValue("@age", doctorAge);
                             cmdDoctor.Parameters.AddWithValue("@createdBy", adminId);
 
-                            if (defaultImage != null)
-                                cmdDoctor.Parameters.AddWithValue("@profileImage", defaultImage);
+                            if (doctorImage != null)
+                                cmdDoctor.Parameters.AddWithValue("@profileImage", doctorImage);
                             else
                                 cmdDoctor.Parameters.AddWithValue("@profileImage", DBNull.Value);
 
@@ -746,14 +841,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         long doctorId = Convert.ToInt64(doctorIdResult);
 
                         string insertDoctorRecord = @"
-                INSERT INTO Doctors (user_id, specialization, is_available)
-                VALUES (@userId, 'Clinical Cardiologist', 1)";
+                        INSERT INTO Doctors (user_id, specialization, is_available, duty_status)
+                        VALUES (@userId, 'Clinical Cardiologist', 1, 'On Duty')";
 
                         using (MySqlCommand cmdDoctorRecord = new MySqlCommand(insertDoctorRecord, conn))
                         {
                             cmdDoctorRecord.Parameters.AddWithValue("@userId", doctorId);
                             cmdDoctorRecord.ExecuteNonQuery();
                         }
+
+                        System.Diagnostics.Debug.WriteLine("[DatabaseHelper] Created default doctor with 'On Duty' status");
                     }
                 }
             }
@@ -779,8 +876,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             patientAge--;
 
                         string insertPatient = @"
-                INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
-                VALUES ('Sample Patient', 'Patient', 'Patient@hospital.com', 'PATIENT_NO_LOGIN', @dob, @age, 'Female', @createdBy, @profileImage)";
+                        INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image)
+                        VALUES ('Sample Patient', 'Patient', 'Patient@hospital.com', 'PATIENT_NO_LOGIN', @dob, @age, 'Female', @createdBy, @profileImage)";
 
                         using (MySqlCommand cmdPatient = new MySqlCommand(insertPatient, conn))
                         {
@@ -801,8 +898,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         long patientUserId = Convert.ToInt64(patientUserIdResult);
 
                         string insertPatientRecord = @"
-                INSERT INTO Patients (user_id, blood_type, medical_history)
-                VALUES (@userId, 'O+', 'Sample patient for testing')";
+        INSERT INTO Patients (user_id, blood_type, medical_history)
+        VALUES (@userId, 'O+', 'Sample patient for testing')";
 
                         using (MySqlCommand cmdPatientRecord = new MySqlCommand(insertPatientRecord, conn))
                         {
