@@ -27,52 +27,53 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-                    SELECT 
-                        b.bill_id,
-                        b.bill_date,
-                        u.name AS patient_name,
-                        u.age,
-                        u.gender,
-                        p.patient_id,
-                        p.blood_type,
-                        p.phone_number,
-                        d.name AS attending_physician,
-                        b.subtotal,
-                        b.discount_percent,
-                        b.discount_amount,
-                        b.tax_percent,
-                        b.tax_amount,
-                        b.amount,
-                        b.payment_method,
-                        b.status,
-                        b.notes,
-                        pq.queue_date,
-                        pq.reason_for_visit,
-                        creator.name AS created_by_name
-                    FROM Billing b
-                    INNER JOIN Patients p ON b.patient_id = p.patient_id
-                    INNER JOIN Users u ON p.user_id = u.user_id
-                    LEFT JOIN patientqueue pq ON b.queue_id = pq.queue_id
-                    LEFT JOIN Doctors doc ON pq.doctor_id = doc.doctor_id
-                    LEFT JOIN Users d ON doc.user_id = d.user_id
-                    LEFT JOIN Users creator ON b.created_by = creator.user_id
-                    WHERE b.bill_id = @billId";
+            SELECT 
+                b.bill_id,
+                b.bill_date,
+                u.name AS patient_name,
+                u.age,
+                u.gender,
+                p.patient_id,
+                p.blood_type,
+                p.phone_number,
+                d.name AS attending_physician,
+                b.subtotal,
+                b.discount_percent,
+                b.discount_amount,
+                b.tax_percent,
+                b.tax_amount,
+                b.amount,
+                b.payment_method,
+                b.status,
+                b.notes,
+                pq.queue_date,
+                pq.reason_for_visit,
+                pq.discharged_time,
+                creator.name AS created_by_name
+            FROM Billing b
+            INNER JOIN Patients p ON b.patient_id = p.patient_id
+            INNER JOIN Users u ON p.user_id = u.user_id
+            LEFT JOIN patientqueue pq ON b.queue_id = pq.queue_id
+            LEFT JOIN Doctors doc ON pq.doctor_id = doc.doctor_id
+            LEFT JOIN Users d ON doc.user_id = d.user_id
+            LEFT JOIN Users creator ON b.created_by = creator.user_id
+            WHERE b.bill_id = @billId";
 
                 billData = DatabaseHelper.ExecuteQuery(query,
                     new MySqlParameter("@billId", billId));
 
                 string servicesQuery = @"
-                    SELECT 
-                        COALESCE(s.service_name, 'Service') AS service_name,
-                        COALESCE(sc.category_name, 'General') AS category_name,
-                        bs.quantity,
-                        bs.unit_price,
-                        (bs.quantity * bs.unit_price) AS total
-                    FROM BillServices bs
-                    LEFT JOIN Services s ON bs.service_id = s.service_id
-                    LEFT JOIN ServiceCategories sc ON bs.category_id = sc.category_id
-                    WHERE bs.bill_id = @billId
-                    ORDER BY sc.category_name, s.service_name";
+            SELECT 
+                COALESCE(s.service_name, 'Service') AS service_name,
+                COALESCE(sc.category_name, 'General') AS category_name,
+                bs.quantity,
+                bs.unit_price,
+                (bs.quantity * bs.unit_price) AS total
+            FROM BillServices bs
+            LEFT JOIN Services s ON bs.service_id = s.service_id
+            LEFT JOIN ServiceCategories sc ON bs.category_id = sc.category_id
+            WHERE bs.bill_id = @billId
+            ORDER BY sc.category_name, s.service_name";
 
                 servicesData = DatabaseHelper.ExecuteQuery(servicesQuery,
                     new MySqlParameter("@billId", billId));

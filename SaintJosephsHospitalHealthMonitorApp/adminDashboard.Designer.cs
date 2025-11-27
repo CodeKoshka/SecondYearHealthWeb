@@ -64,15 +64,16 @@
             btnViewPatientRecord = new Button();
             medicalBtnShadow = new Panel();
             tabBilling = new TabPage();
-            dgvDischargedBills = new DataGridView();
-            lblDischargedBillsTitle = new Label();
-            dgvBilling = new DataGridView();
-            lblActiveBillsTitle = new Label();
-            panelBillingStats = new Panel();
+            tabBillingControl = new TabControl();        
+            tabActiveBills = new TabPage();              
+            tabDischargedBills = new TabPage();          
             panelBillingButtons = new Panel();
             btnGenerateIncomeReport = new Button();
             btnViewBillDetails = new Button();
             billBtnShadow = new Panel();
+            panelBillingStats = new Panel();
+            dgvBilling = new DataGridView();
+            dgvDischargedBills = new DataGridView();
             panelHeader = new Panel();
             panelUniversalSearch = new Panel();
             lblUniversalSearchIcon = new Label();
@@ -100,9 +101,12 @@
             ((System.ComponentModel.ISupportInitialize)dgvPatients).BeginInit();
             panelMedicalButtons.SuspendLayout();
             tabBilling.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvDischargedBills).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dgvBilling).BeginInit();
+            tabBillingControl.SuspendLayout();      
+            tabActiveBills.SuspendLayout();         
+            tabDischargedBills.SuspendLayout();
             panelBillingButtons.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvBilling).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvDischargedBills).BeginInit();
             panelHeader.SuspendLayout();
             panelUniversalSearch.SuspendLayout();
             SuspendLayout();
@@ -631,113 +635,84 @@
             // tabBilling
             // 
             tabBilling.BackColor = Color.FromArgb(247, 250, 252);
-            tabBilling.Controls.Add(panelBillingButtons);
-            tabBilling.Controls.Add(panelBillingStats);
-            tabBilling.Controls.Add(lblActiveBillsTitle);
-            tabBilling.Controls.Add(dgvBilling);
-            tabBilling.Controls.Add(lblDischargedBillsTitle);
-            tabBilling.Controls.Add(dgvDischargedBills);
+            tabBilling.Controls.Add(tabBillingControl);      
+            tabBilling.Controls.Add(panelBillingStats);      
+            tabBilling.Controls.Add(panelBillingButtons);    
             tabBilling.Location = new Point(4, 34);
             tabBilling.Name = "tabBilling";
             tabBilling.Padding = new Padding(20);
             tabBilling.Size = new Size(1205, 746);
             tabBilling.TabIndex = 2;
-            tabBilling.AutoScroll = true;
-            //
-            // panelBillingStats
-            //
-            panelBillingStats.BackColor = Color.White;
-            panelBillingStats.BorderStyle = BorderStyle.FixedSingle;
-            panelBillingStats.Location = new Point(20, 100);
-            panelBillingStats.Name = "panelBillingStats";
-            panelBillingStats.Size = new Size(1165, 80);
-            panelBillingStats.TabIndex = 3;
-            panelBillingStats.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             // 
-            // dgvDischargedBills
-            // 
-            dgvDischargedBills.AllowUserToAddRows = false;
-            dgvDischargedBills.AllowUserToDeleteRows = false;
-            dgvDischargedBills.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvDischargedBills.BackgroundColor = Color.White;
-            dgvDischargedBills.BorderStyle = BorderStyle.None;
-            dgvDischargedBills.ColumnHeadersHeight = 50;
-            dgvDischargedBills.Location = new Point(20, 455);
-            dgvDischargedBills.Name = "dgvDischargedBills";
-            dgvDischargedBills.ReadOnly = true;
-            dgvDischargedBills.RowHeadersVisible = false;
-            dgvDischargedBills.RowTemplate.Height = 45;
-            dgvDischargedBills.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvDischargedBills.Size = new Size(1165, 271);
-            dgvDischargedBills.TabIndex = 6;
-            dgvDischargedBills.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            // 
-            // lblDischargedBillsTitle
-            //
-            lblDischargedBillsTitle.AutoSize = true;
-            lblDischargedBillsTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            lblDischargedBillsTitle.ForeColor = Color.FromArgb(52, 73, 94);
-            lblDischargedBillsTitle.Location = new Point(20, 430);
-            lblDischargedBillsTitle.Name = "lblDischargedBillsTitle";
-            lblDischargedBillsTitle.Size = new Size(308, 20);
-            lblDischargedBillsTitle.TabIndex = 5;
-            lblDischargedBillsTitle.Text = "✅ Discharged Bills (Completed & Archived)";
-            lblDischargedBillsTitle.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            // 
-            // dgvBilling
-            // 
-            dgvBilling.AllowUserToAddRows = false;
-            dgvBilling.AllowUserToDeleteRows = false;
-            dgvBilling.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvBilling.BackgroundColor = Color.White;
-            dgvBilling.BorderStyle = BorderStyle.None;
-            dgvBilling.ColumnHeadersHeight = 50;
-            dgvBilling.Location = new Point(20, 215);
-            dgvBilling.Name = "dgvBilling";
-            dgvBilling.ReadOnly = true;
-            dgvBilling.RowHeadersVisible = false;
-            dgvBilling.RowTemplate.Height = 45;
-            dgvBilling.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvBilling.Size = new Size(1165, 200);
-            dgvBilling.TabIndex = 1;
-            dgvBilling.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            // 
-            // lblActiveBillsTitle
-            // 
-            lblActiveBillsTitle.AutoSize = true;
-            lblActiveBillsTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            lblActiveBillsTitle.ForeColor = Color.FromArgb(52, 73, 94);
-            lblActiveBillsTitle.Location = new Point(20, 190);
-            lblActiveBillsTitle.Name = "lblActiveBillsTitle";
-            lblActiveBillsTitle.Size = new Size(263, 20);
-            lblActiveBillsTitle.TabIndex = 4;
-            lblActiveBillsTitle.Text = "📋 Active Bills (Not Yet Discharged)";
-            lblActiveBillsTitle.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-
-            // 
-            // panelBillingStats
-            // 
-            panelBillingStats.BackColor = Color.White;
-            panelBillingStats.BorderStyle = BorderStyle.FixedSingle;
-            panelBillingStats.Location = new Point(20, 100);
-            panelBillingStats.Name = "panelBillingStats";
-            panelBillingStats.Size = new Size(1165, 80);
-            panelBillingStats.TabIndex = 3;
-            panelBillingStats.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            // 
-            // panelBillingButtons
+            // panelBillingButtons 
             // 
             panelBillingButtons.BackColor = Color.White;
             panelBillingButtons.Controls.Add(btnGenerateIncomeReport);
             panelBillingButtons.Controls.Add(btnViewBillDetails);
             panelBillingButtons.Controls.Add(billBtnShadow);
-            panelBillingButtons.Dock = DockStyle.None;
-            panelBillingButtons.Location = new Point(20, 20);
+            panelBillingButtons.Location = new Point(20, 20);  
             panelBillingButtons.Name = "panelBillingButtons";
             panelBillingButtons.Padding = new Padding(20, 15, 20, 15);
             panelBillingButtons.Size = new Size(1165, 80);
-            panelBillingButtons.TabIndex = 1;
-            panelBillingButtons.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            panelBillingButtons.TabIndex = 0;
+            // 
+            // panelBillingStats 
+            // 
+            panelBillingStats.BackColor = Color.White;
+            panelBillingStats.BorderStyle = BorderStyle.FixedSingle;
+            panelBillingStats.Location = new Point(20, 110);  
+            panelBillingStats.Name = "panelBillingStats";
+            panelBillingStats.Size = new Size(1165, 80);
+            panelBillingStats.TabIndex = 1;
+            // 
+            // tabBillingControl
+            // 
+            tabBillingControl.Controls.Add(tabActiveBills);
+            tabBillingControl.Controls.Add(tabDischargedBills);
+            tabBillingControl.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            tabBillingControl.Location = new Point(20, 200);  
+            tabBillingControl.Name = "tabBillingControl";
+            tabBillingControl.SelectedIndex = 0;
+            tabBillingControl.Size = new Size(1165, 526);
+            tabBillingControl.TabIndex = 2;
+            // 
+            // tabActiveBills
+            // 
+            tabActiveBills.BackColor = Color.White;
+            tabActiveBills.Controls.Add(dgvBilling);
+            tabActiveBills.Location = new Point(4, 26);
+            tabActiveBills.Name = "tabActiveBills";
+            tabActiveBills.Padding = new Padding(15);
+            tabActiveBills.Size = new Size(1157, 496);
+            tabActiveBills.TabIndex = 0;
+            tabActiveBills.Text = "📋 Active Bills";
+            // 
+            // dgvBilling
+            // 
+            dgvBilling.Dock = DockStyle.Fill;
+            dgvBilling.Location = new Point(15, 15);
+            dgvBilling.Name = "dgvBilling";
+            dgvBilling.Size = new Size(1127, 466);
+            dgvBilling.TabIndex = 0;
+            // 
+            // tabDischargedBills
+            // 
+            tabDischargedBills.BackColor = Color.White;
+            tabDischargedBills.Controls.Add(dgvDischargedBills);
+            tabDischargedBills.Location = new Point(4, 26);
+            tabDischargedBills.Name = "tabDischargedBills";
+            tabDischargedBills.Padding = new Padding(15);
+            tabDischargedBills.Size = new Size(1157, 496);
+            tabDischargedBills.TabIndex = 1;
+            tabDischargedBills.Text = "✅ Discharged Bills";
+            // 
+            // dgvDischargedBills
+            // 
+            dgvDischargedBills.Dock = DockStyle.Fill;
+            dgvDischargedBills.Location = new Point(15, 15);
+            dgvDischargedBills.Name = "dgvDischargedBills";
+            dgvDischargedBills.Size = new Size(1127, 466);
+            dgvDischargedBills.TabIndex = 0;
             // 
             // btnGenerateIncomeReport
             // 
@@ -781,6 +756,52 @@
             billBtnShadow.Name = "billBtnShadow";
             billBtnShadow.Size = new Size(1125, 1);
             billBtnShadow.TabIndex = 3;
+            // 
+            // panelBillingStats
+            // 
+            panelBillingStats.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            panelBillingStats.BackColor = Color.White;
+            panelBillingStats.BorderStyle = BorderStyle.FixedSingle;
+            panelBillingStats.Location = new Point(20, 100);
+            panelBillingStats.Name = "panelBillingStats";
+            panelBillingStats.Size = new Size(1165, 80);
+            panelBillingStats.TabIndex = 3;
+            // 
+            // dgvBilling
+            // 
+            dgvBilling.AllowUserToAddRows = false;
+            dgvBilling.AllowUserToDeleteRows = false;
+            dgvBilling.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            dgvBilling.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvBilling.BackgroundColor = Color.White;
+            dgvBilling.BorderStyle = BorderStyle.None;
+            dgvBilling.ColumnHeadersHeight = 50;
+            dgvBilling.Location = new Point(20, 215);
+            dgvBilling.Name = "dgvBilling";
+            dgvBilling.ReadOnly = true;
+            dgvBilling.RowHeadersVisible = false;
+            dgvBilling.RowTemplate.Height = 45;
+            dgvBilling.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvBilling.Size = new Size(1165, 200);
+            dgvBilling.TabIndex = 1;
+            // 
+            // dgvDischargedBills
+            // 
+            dgvDischargedBills.AllowUserToAddRows = false;
+            dgvDischargedBills.AllowUserToDeleteRows = false;
+            dgvDischargedBills.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvDischargedBills.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvDischargedBills.BackgroundColor = Color.White;
+            dgvDischargedBills.BorderStyle = BorderStyle.None;
+            dgvDischargedBills.ColumnHeadersHeight = 50;
+            dgvDischargedBills.Location = new Point(20, 455);
+            dgvDischargedBills.Name = "dgvDischargedBills";
+            dgvDischargedBills.ReadOnly = true;
+            dgvDischargedBills.RowHeadersVisible = false;
+            dgvDischargedBills.RowTemplate.Height = 45;
+            dgvDischargedBills.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvDischargedBills.Size = new Size(1165, 271);
+            dgvDischargedBills.TabIndex = 6;
             // 
             // panelHeader
             // 
@@ -891,6 +912,7 @@
             ClientSize = new Size(1493, 854);
             Controls.Add(panelMainContent);
             Controls.Add(panelSidebar);
+            MinimizeBox = false;
             MinimumSize = new Size(1200, 700);
             Name = "AdminDashboard";
             StartPosition = FormStartPosition.CenterScreen;
@@ -915,10 +937,12 @@
             ((System.ComponentModel.ISupportInitialize)dgvPatients).EndInit();
             panelMedicalButtons.ResumeLayout(false);
             tabBilling.ResumeLayout(false);
-            tabBilling.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvDischargedBills).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dgvBilling).EndInit();
+            tabBillingControl.ResumeLayout(false);  
+            tabActiveBills.ResumeLayout(false);     
+            tabDischargedBills.ResumeLayout(false);
             panelBillingButtons.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvBilling).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvDischargedBills).EndInit();
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();
             panelUniversalSearch.ResumeLayout(false);
@@ -946,6 +970,9 @@
         private System.Windows.Forms.TabPage tabAdmins;
         private System.Windows.Forms.TabPage tabDoctors;
         private System.Windows.Forms.TabPage tabStaff;
+        private System.Windows.Forms.TabControl tabBillingControl;
+        private System.Windows.Forms.TabPage tabActiveBills;
+        private System.Windows.Forms.TabPage tabDischargedBills;
         private System.Windows.Forms.DataGridView dgvUsers;
         private System.Windows.Forms.DataGridView dgvAdmins;
         private System.Windows.Forms.DataGridView dgvDoctors;
@@ -961,8 +988,6 @@
         private System.Windows.Forms.TabPage tabBilling;
         private System.Windows.Forms.DataGridView dgvBilling;
         private System.Windows.Forms.DataGridView dgvDischargedBills;
-        private System.Windows.Forms.Label lblActiveBillsTitle;
-        private System.Windows.Forms.Label lblDischargedBillsTitle;
         private System.Windows.Forms.Panel panelBillingStats;
         private System.Windows.Forms.Panel panelBillingButtons;
         private System.Windows.Forms.Button btnViewBillDetails;

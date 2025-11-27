@@ -37,10 +37,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void ApplyStyle()
         {
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer |ControlStyles.AllPaintingInWmPaint |ControlStyles.UserPaint, true);
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
             this.UpdateStyles();
+
             this.WindowState = FormWindowState.Maximized;
             this.MinimumSize = new Size(1200, 700);
+            this.MaximizeBox = false;  
+            this.MinimizeBox = true;   
 
             Color sidebarBg = Color.FromArgb(26, 32, 44);
             Color sidebarHover = Color.FromArgb(45, 55, 72);
@@ -290,11 +293,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private void ConfigureBillingGrids()
         {
             ConfigureDataGridView(dgvBilling);
-            dgvBilling.Dock = DockStyle.None;
-            dgvBilling.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            dgvBilling.Dock = DockStyle.Fill;
+
             ConfigureDataGridView(dgvDischargedBills);
-            dgvDischargedBills.Dock = DockStyle.None;
-            dgvDischargedBills.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvDischargedBills.Dock = DockStyle.Fill;  
 
             System.Diagnostics.Debug.WriteLine("[AdminDashboard] Billing grids configured with full styling");
         }
@@ -330,7 +332,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     column.SortMode = DataGridViewColumnSortMode.NotSortable;
                     column.Resizable = DataGridViewTriState.False;
 
-                    string friendlyName = GetFriendlyColumnName(column.Name);
+                    string friendlyName = RenameColumns(column.Name);
                     column.HeaderText = friendlyName;
 
                     string columnNameLower = (column.Name ?? "").ToLower();
@@ -379,7 +381,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private string GetFriendlyColumnName(string columnName)
+        private string RenameColumns(string columnName)
         {
             var columnMappings = new System.Collections.Generic.Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -876,12 +878,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             INNER JOIN Patients p ON b.patient_id = p.patient_id
             INNER JOIN Users u ON p.user_id = u.user_id
             LEFT JOIN Users creator ON b.created_by = creator.user_id
-            WHERE NOT EXISTS (
-                SELECT 1 FROM patientqueue pq 
-                WHERE pq.patient_id = p.patient_id 
-                AND pq.queue_date = DATE(b.bill_date)
-                AND pq.status = 'Discharged'
-            )
+            LEFT JOIN patientqueue pq ON b.queue_id = pq.queue_id
+            WHERE (pq.status IS NULL OR pq.status != 'Discharged')
             ORDER BY b.bill_date DESC";
 
                 DataTable activeBillingData = DatabaseHelper.ExecuteQuery(queryActiveBilling);
@@ -900,9 +898,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             FROM Billing b
             INNER JOIN Patients p ON b.patient_id = p.patient_id
             INNER JOIN Users u ON p.user_id = u.user_id
-            INNER JOIN patientqueue pq ON pq.patient_id = p.patient_id 
-                AND pq.queue_date = DATE(b.bill_date)
-                AND pq.status = 'Discharged'
+            INNER JOIN patientqueue pq ON b.queue_id = pq.queue_id AND pq.status = 'Discharged'
             LEFT JOIN Users creator ON b.created_by = creator.user_id
             ORDER BY pq.discharged_time DESC";
 
@@ -957,6 +953,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
                     }
                 }
+
+                dgvDischargedBills.Visible = true;
+                dgvDischargedBills.BringToFront();
+                dgvDischargedBills.Refresh();
+                Application.DoEvents();
+
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Discharged Bills - Rows: {dgvDischargedBills.Rows.Count}, Visible: {dgvDischargedBills.Visible}");
+
                 UpdateBillingStatistics(activeBillingData, dischargedBillingData);
                 RepositionBillingComponents();
 
@@ -1008,6 +1012,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
                 }
 
+                foreach (DataRow row in dischargedData.Rows)
+                {
+                    string status = row["Status"].ToString();
+                    if (status == "Paid")
+                    {
+                        paidCount++;
+
+                        decimal amount = 0;
+                        string amountStr = row["Total Amount"].ToString();
+                        amountStr = amountStr.Replace("₱", "").Replace(",", "").Trim();
+                        if (decimal.TryParse(amountStr, out amount))
+                        {
+                            paidAmount += amount;
+                        }
+                    }
+                }
+
                 int totalDischargedCount = dischargedData.Rows.Count;
                 int totalActiveCount = activeData.Rows.Count;
 
@@ -1019,31 +1040,33 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     Font = new Font("Segoe UI", 11F, FontStyle.Bold),
                     ForeColor = Color.FromArgb(52, 73, 94),
                     AutoSize = true,
-                    Location = new Point(20, 12),
-                    TextAlign = ContentAlignment.MiddleLeft
+                    TextAlign = ContentAlignment.MiddleCenter
                 };
 
                 panelBillingStats.Controls.Add(lblStatsTitle);
+                lblStatsTitle.Left = (panelBillingStats.Width - lblStatsTitle.Width) / 2;
+                lblStatsTitle.Top = 8;
 
                 int cardWidth = 210;
                 int cardSpacing = 20;
                 int totalCardsWidth = (cardWidth * 5) + (cardSpacing * 4);
                 int startX = (panelBillingStats.Width - totalCardsWidth) / 2;
+                int cardY = 35;
 
                 Panel cardPaid = CreateStatCard($"💰 Paid Bills", paidCount,
-                    $"₱{paidAmount:N2}", Color.FromArgb(46, 204, 113), startX, 40);
+                    $"₱{paidAmount:N2}", Color.FromArgb(46, 204, 113), startX, cardY);
 
                 Panel cardPending = CreateStatCard($"⏳ Pending Bills", pendingCount,
-                    "Awaiting Payment", Color.FromArgb(241, 196, 15), startX + (cardWidth + cardSpacing), 40);
+                    "Awaiting Payment", Color.FromArgb(241, 196, 15), startX + (cardWidth + cardSpacing), cardY);
 
                 Panel cardPartial = CreateStatCard($"📊 Partially Paid", partiallyPaidCount,
-                    "In Progress", Color.FromArgb(52, 152, 219), startX + (cardWidth + cardSpacing) * 2, 40);
+                    "In Progress", Color.FromArgb(52, 152, 219), startX + (cardWidth + cardSpacing) * 2, cardY);
 
                 Panel cardDischarged = CreateStatCard($"✅ Discharged & Completed", totalDischargedCount,
-                    "Archived", Color.FromArgb(155, 89, 182), startX + (cardWidth + cardSpacing) * 3, 40);
+                    "Archived", Color.FromArgb(155, 89, 182), startX + (cardWidth + cardSpacing) * 3, cardY);
 
                 Panel cardCancelled = CreateStatCard($"🚫 Cancelled", cancelledCount,
-                    "No Payment", Color.FromArgb(231, 76, 60), startX + (cardWidth + cardSpacing) * 4, 40);
+                    "No Payment", Color.FromArgb(231, 76, 60), startX + (cardWidth + cardSpacing) * 4, cardY);
 
                 panelBillingStats.Controls.AddRange(new Control[] {
             cardPaid, cardPending, cardPartial, cardDischarged, cardCancelled});
@@ -1061,69 +1084,39 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (panelBillingStats == null || !panelBillingStats.IsHandleCreated)
                 return;
 
-            int contentWidth = tabBilling.ClientSize.Width - 40;
-            int startX = 20;
+            int contentWidth = 1595;
 
-            panelBillingStats.Location = new Point(startX, 100);
+            panelBillingButtons.Location = new Point(20, 20);
+            panelBillingButtons.Size = new Size(contentWidth, 80);
+
+            panelBillingStats.Location = new Point(20, 110);
             panelBillingStats.Size = new Size(contentWidth, 80);
 
-            foreach (Control ctrl in panelBillingStats.Controls)
-            {
-                if (ctrl is Label && ctrl.Text.Contains("Billing Statistics Overview"))
-                {
-                    bool isMaximized = this.WindowState == FormWindowState.Maximized;
-                    if (isMaximized)
-                    {
-                        ctrl.Location = new Point((panelBillingStats.Width - ctrl.Width) / 2, 12);
-                    }
-                    else
-                    {
-                        ctrl.Location = new Point(20, 12);
-                    }
-                    break;
-                }
-            }
+            tabBillingControl.Location = new Point(20, 200);
+            tabBillingControl.Size = new Size(contentWidth, this.ClientSize.Height - 270);
 
-            if (panelBillingStats.Controls.Count > 1)
+            panelBillingButtons.BringToFront();
+            panelBillingStats.BringToFront();
+            tabBillingControl.BringToFront();
+
+            if (panelBillingStats.Controls.Count > 0)
             {
                 int cardWidth = 210;
                 int cardSpacing = 20;
                 int totalCardsWidth = (cardWidth * 5) + (cardSpacing * 4);
-                int centeredStartX = (panelBillingStats.Width - totalCardsWidth) / 2;
+                int startX = (panelBillingStats.Width - totalCardsWidth) / 2;
+                int cardY = 35;
 
-                int cardIndex = 0;
-                foreach (Control ctrl in panelBillingStats.Controls)
+                for (int i = 1; i <= 5; i++)
                 {
-                    if (ctrl is Panel && ctrl.Size.Width == cardWidth)
-                    {
-                        ctrl.Location = new Point(centeredStartX + (cardWidth + cardSpacing) * cardIndex, 40);
-                        cardIndex++;
-                    }
+                    Control card = panelBillingStats.Controls[i];
+                    card.Location = new Point(startX + (i - 1) * (cardWidth + cardSpacing), cardY);
                 }
+
+                Control title = panelBillingStats.Controls[0];
+                title.Left = (panelBillingStats.Width - title.Width) / 2;
+                title.Top = 8;
             }
-
-            panelBillingStats.BringToFront();
-
-            lblActiveBillsTitle.Location = new Point(startX, 190);
-            lblActiveBillsTitle.BringToFront();
-
-            int activeBillsHeight = 200;
-            dgvBilling.Location = new Point(startX, 215);
-            dgvBilling.Size = new Size(contentWidth, activeBillsHeight);
-            dgvBilling.BringToFront();
-
-            int dischargedSectionTop = dgvBilling.Location.Y + dgvBilling.Height + 15;
-
-            lblDischargedBillsTitle.Location = new Point(startX, dischargedSectionTop);
-            lblDischargedBillsTitle.BringToFront();
-
-            int dischargedGridTop = dischargedSectionTop + 25;
-            int availableHeight = tabBilling.ClientSize.Height - dischargedGridTop - 40;
-            dgvDischargedBills.Location = new Point(startX, dischargedGridTop);
-            dgvDischargedBills.Size = new Size(contentWidth, Math.Max(200, availableHeight));
-            dgvDischargedBills.BringToFront();
-
-            panelBillingButtons.BringToFront();
         }
 
         private Panel CreateStatCard(string title, int count, string subtitle, Color accentColor, int x, int y)

@@ -68,24 +68,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (currentStatus.ToUpper() == "PARTIALLY PAID" || amountPaid > 0)
                 {
                     numPaymentAmount.Value = remaining;
-                    numPaymentAmount.Maximum = remaining;
+                    numPaymentAmount.Maximum = 999999999;
                     lblRemainingValue.Text = $"₱{remaining:N2}";
                     panelPartialPayment.Visible = true;
-
-                    chkPartialPayment.Checked = true;
-                    chkPartialPayment.Text = $"Remaining from ₱{totalAmount:N2} (Already paid: ₱{amountPaid:N2})";
                 }
                 else if (currentStatus.ToUpper() == "PENDING")
                 {
                     numPaymentAmount.Value = totalAmount;
-                    numPaymentAmount.Maximum = totalAmount;
-                    panelPartialPayment.Visible = false;
-                    chkPartialPayment.Checked = false;
+                    numPaymentAmount.Maximum = 999999999; 
+                    panelPartialPayment.Visible = false; 
                 }
                 else
                 {
                     numPaymentAmount.Value = totalAmount;
-                    numPaymentAmount.Maximum = totalAmount;
+                    numPaymentAmount.Maximum = 999999999;
                     panelPartialPayment.Visible = false;
                 }
             }
@@ -248,23 +244,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             numPaymentAmount.Enabled = false;
             txtReferenceNumber.Enabled = false;
             txtPaymentNotes.Enabled = false;
-            chkPartialPayment.Enabled = false;
         }
 
-        private void ChkPartialPayment_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkPartialPayment.Checked)
-            {
-                panelPartialPayment.Visible = true;
-                numPaymentAmount.Value = 0;
-                numPaymentAmount.Maximum = totalAmount;
-            }
-            else
-            {
-                panelPartialPayment.Visible = false;
-                numPaymentAmount.Value = totalAmount;
-            }
-        }
 
         private void NumPaymentAmount_ValueChanged(object sender, EventArgs e)
         {
@@ -303,50 +284,31 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 decimal previouslyPaid = GetAmountAlreadyPaid();
                 decimal remainingBalance = totalAmount - previouslyPaid;
 
-                if (paymentAmount > remainingBalance)
-                {
-                    MessageBox.Show(
-                        "⚠️ PAYMENT EXCEEDS REMAINING BALANCE\n\n" +
-                        $"Total Bill Amount: ₱{totalAmount:N2}\n" +
-                        $"Already Paid: ₱{previouslyPaid:N2}\n" +
-                        $"Remaining Balance: ₱{remainingBalance:N2}\n\n" +
-                        $"Payment Entered: ₱{paymentAmount:N2}\n" +
-                        $"Excess Amount: ₱{(paymentAmount - remainingBalance):N2}\n\n" +
-                        "Payment amount cannot exceed the remaining balance.\n\n" +
-                        "Please enter a valid payment amount.",
-                        "Payment Exceeds Balance",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    numPaymentAmount.Focus();
-                    numPaymentAmount.Value = remainingBalance;
-                    return;
-                }
-
-                if (paymentAmount > totalAmount)
-                {
-                    MessageBox.Show(
-                        "⚠️ PAYMENT EXCEEDS TOTAL BILL\n\n" +
-                        $"Total Bill Amount: ₱{totalAmount:N2}\n" +
-                        $"Payment Entered: ₱{paymentAmount:N2}\n\n" +
-                        "Payment amount cannot exceed the total bill amount.\n\n" +
-                        "Please enter a valid payment amount.",
-                        "Invalid Amount",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    numPaymentAmount.Focus();
-                    return;
-                }
-
                 string paymentMethod = cmbPaymentMethod.SelectedItem.ToString();
                 string referenceNumber = txtReferenceNumber.Text.Trim();
                 string paymentNotes = txtPaymentNotes.Text.Trim();
-                bool isPartialPayment = paymentAmount < remainingBalance;
+
+                decimal actualPayment = Math.Min(paymentAmount, remainingBalance);
+                decimal change = paymentAmount - actualPayment;
+                bool isPartialPayment = actualPayment < remainingBalance;
 
                 string confirmMessage = "💳 CONFIRM PAYMENT PROCESSING\n\n" +
                     $"Patient: {patientName}\n" +
                     $"Bill ID: #{billId}\n" +
-                    $"Payment Amount: ₱{paymentAmount:N2}\n" +
-                    $"Payment Method: {paymentMethod}\n";
+                    $"Amount Tendered: ₱{paymentAmount:N2}\n";
+
+                if (change > 0)
+                {
+                    confirmMessage += $"Remaining Balance: ₱{remainingBalance:N2}\n";
+                    confirmMessage += $"Actual Payment: ₱{actualPayment:N2}\n";
+                    confirmMessage += $"💵 CHANGE: ₱{change:N2}\n\n";
+                }
+                else
+                {
+                    confirmMessage += $"Payment Amount: ₱{actualPayment:N2}\n";
+                }
+
+                confirmMessage += $"Payment Method: {paymentMethod}\n";
 
                 if (!string.IsNullOrWhiteSpace(referenceNumber))
                 {
@@ -356,11 +318,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (previouslyPaid > 0)
                 {
                     confirmMessage += $"\nPreviously Paid: ₱{previouslyPaid:N2}\n";
+                    confirmMessage += $"Total After Payment: ₱{(previouslyPaid + actualPayment):N2}\n";
                 }
 
                 if (isPartialPayment)
                 {
-                    decimal newRemaining = remainingBalance - paymentAmount;
+                    decimal newRemaining = remainingBalance - actualPayment;
                     confirmMessage += $"\n⚠️ PARTIAL PAYMENT\n" +
                         $"Remaining Balance: ₱{remainingBalance:N2}\n" +
                         $"After Payment: ₱{newRemaining:N2}\n";
@@ -378,7 +341,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (result != DialogResult.Yes)
                     return;
 
-                ProcessPayment(paymentAmount, paymentMethod, referenceNumber, paymentNotes, isPartialPayment);
+                ProcessPayment(actualPayment, paymentAmount, change, paymentMethod, referenceNumber, paymentNotes, isPartialPayment);
             }
             catch (Exception ex)
             {
@@ -387,26 +350,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private void ProcessPayment(decimal paymentAmount, string paymentMethod, string referenceNumber,
-    string paymentNotes, bool isPartialPayment)
+        private void ProcessPayment(decimal actualPayment, decimal amountTendered, decimal change,
+            string paymentMethod, string referenceNumber, string paymentNotes, bool isPartialPayment)
         {
             try
             {
                 decimal previouslyPaid = GetAmountAlreadyPaid();
-                decimal totalAmountPaid = previouslyPaid + paymentAmount;
+                decimal totalAmountPaid = previouslyPaid + actualPayment;
 
                 string newStatus;
                 if (totalAmountPaid >= totalAmount)
                 {
                     newStatus = "Paid";
-
-                    if (totalAmountPaid > totalAmount)
-                    {
-                        paymentAmount = totalAmount - previouslyPaid;
-                        totalAmountPaid = totalAmount;
-                    }
                 }
-                else if (totalAmountPaid > 0)
+                else if (totalAmountPaid > 0 && totalAmountPaid < totalAmount)
                 {
                     newStatus = "Partially Paid";
                 }
@@ -437,7 +394,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 DatabaseHelper.ExecuteNonQuery(insertTransactionQuery,
                     new MySqlParameter("@billId", billId),
                     new MySqlParameter("@patientId", patientId),
-                    new MySqlParameter("@amountPaid", paymentAmount),
+                    new MySqlParameter("@amountPaid", actualPayment),
                     new MySqlParameter("@paymentMethod", paymentMethod),
                     new MySqlParameter("@referenceNumber",
                         string.IsNullOrWhiteSpace(referenceNumber) ? DBNull.Value : (object)referenceNumber),
@@ -446,9 +403,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     new MySqlParameter("@processedBy", currentUserId));
 
                 string successMessage = "✅ PAYMENT PROCESSED SUCCESSFULLY\n\n" +
-                    $"Patient: {patientName}\n" +
-                    $"Amount Processed: ₱{paymentAmount:N2}\n" +
-                    $"Payment Method: {paymentMethod}\n";
+                    $"Patient: {patientName}\n";
+
+                if (change > 0)
+                {
+                    successMessage += $"Amount Tendered: ₱{amountTendered:N2}\n";
+                    successMessage += $"Amount Applied: ₱{actualPayment:N2}\n";
+                    successMessage += $"💵 CHANGE TO RETURN: ₱{change:N2}\n\n";
+                }
+                else
+                {
+                    successMessage += $"Amount Processed: ₱{actualPayment:N2}\n";
+                }
+
+                successMessage += $"Payment Method: {paymentMethod}\n";
 
                 if (!string.IsNullOrWhiteSpace(referenceNumber))
                 {
@@ -480,71 +448,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 MessageBox.Show($"Error saving payment: {ex.Message}\n\nThe payment was not processed.",
                     "Payment Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-        private void BtnPrintReceipt_Click(object sender, EventArgs e)
-        {
-            string receipt = GeneratePaymentReceipt();
-
-            using (Form receiptForm = new Form())
-            {
-                receiptForm.Text = "Payment Receipt Preview";
-                receiptForm.Size = new Size(600, 700);
-                receiptForm.StartPosition = FormStartPosition.CenterParent;
-                receiptForm.FormBorderStyle = FormBorderStyle.FixedDialog;
-                receiptForm.MaximizeBox = false;
-
-                TextBox txtReceipt = new TextBox
-                {
-                    Multiline = true,
-                    ReadOnly = true,
-                    ScrollBars = ScrollBars.Vertical,
-                    Font = new Font("Courier New", 9F),
-                    Dock = DockStyle.Fill,
-                    Text = receipt
-                };
-
-                receiptForm.Controls.Add(txtReceipt);
-                receiptForm.ShowDialog();
-            }
-        }
-
-        private string GeneratePaymentReceipt()
-        {
-            string receipt = "═══════════════════════════════════════════════════\n";
-            receipt += "          ST. JOSEPH'S HOSPITAL\n";
-            receipt += "            PAYMENT RECEIPT\n";
-            receipt += "═══════════════════════════════════════════════════\n\n";
-
-            receipt += $"Receipt Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n";
-            receipt += $"Bill ID: #{billId}\n";
-            receipt += $"Patient: {patientName}\n\n";
-
-            receipt += "───────────────────────────────────────────────────\n";
-            receipt += "BILL SUMMARY\n";
-            receipt += "───────────────────────────────────────────────────\n\n";
-
-            receipt += $"Subtotal:        {lblSubtotalValue.Text,25}\n";
-            receipt += $"Discount:        {lblDiscountValue.Text,25}\n";
-            receipt += $"Tax:             {lblTaxValue.Text,25}\n";
-            receipt += $"Total Amount:    {lblTotalAmountValue.Text,25}\n\n";
-
-            receipt += "───────────────────────────────────────────────────\n";
-            receipt += "PAYMENT DETAILS\n";
-            receipt += "───────────────────────────────────────────────────\n\n";
-
-            receipt += $"Payment Amount:  ₱{numPaymentAmount.Value:N2}\n";
-            receipt += $"Payment Method:  {cmbPaymentMethod.Text}\n";
-
-            if (!string.IsNullOrWhiteSpace(txtReferenceNumber.Text))
-            {
-                receipt += $"Reference #:     {txtReferenceNumber.Text}\n";
-            }
-
-            receipt += "\n═══════════════════════════════════════════════════\n";
-            receipt += "        Thank you for your payment!\n";
-            receipt += "═══════════════════════════════════════════════════\n";
-
-            return receipt;
         }
 
         private void BtnCancel_Click(object sender, EventArgs e)

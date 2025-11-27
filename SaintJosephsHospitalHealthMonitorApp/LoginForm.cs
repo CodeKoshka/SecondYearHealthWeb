@@ -89,6 +89,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
+        private void ChkShowPassword_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkShowPassword.Checked)
+            {
+                txtPassword.PasswordChar = '\0';
+            }
+            else
+            {
+                txtPassword.PasswordChar = '●';
+            }
+        }
+
         private void AnimateInputFocus(Panel borderPanel, bool isFocused)
         {
             Timer t = new Timer { Interval = 10 };

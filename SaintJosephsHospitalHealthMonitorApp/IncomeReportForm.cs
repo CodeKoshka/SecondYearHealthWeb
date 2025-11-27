@@ -212,13 +212,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void GeneratePDF(string filePath)
         {
-            Document document = new Document(PageSize.A4, 50, 50, 50, 50);
+            Document document = new Document(PageSize.A4, 40, 40, 40, 40);
             PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(filePath, FileMode.Create));
 
             iTextSharp.text.Font titleFont = FontFactory.GetFont("Arial", 18, iTextSharp.text.Font.BOLD);
             iTextSharp.text.Font headerFont = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD);
             iTextSharp.text.Font normalFont = FontFactory.GetFont("Arial", 10);
-            iTextSharp.text.Font smallFont = FontFactory.GetFont("Arial", 9);
+            iTextSharp.text.Font smallFont = FontFactory.GetFont("Arial", 8);
 
             document.Open();
 
@@ -252,6 +252,39 @@ namespace SaintJosephsHospitalHealthMonitorApp
             summaryHeader.Padding = 10;
             summaryTable.AddCell(summaryHeader);
 
+            PdfPTable transactionsTable = new PdfPTable(6);
+            transactionsTable.WidthPercentage = 100;
+
+            transactionsTable.SetWidths(new float[]{1.3f, 2.8f,2.0f,1.3f,1.3f,1.3f});
+
+            string[] headers = { "Bill ID", "Patient Name", "Bill Date", "Discount", "Tax", "Total" };
+            foreach (string header in headers)
+            {
+                PdfPCell cell = new PdfPCell(new Phrase(header, smallFont));
+                cell.BackgroundColor = new BaseColor(52, 73, 94);
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                cell.Padding = 5;
+                transactionsTable.AddCell(cell);
+            }
+
+            float rowPadding = 4;
+
+            foreach (DataRow row in reportData.Rows)
+            {
+                transactionsTable.AddCell(new PdfPCell(new Phrase(row["Bill ID"].ToString(), smallFont)) { Padding = rowPadding });
+                transactionsTable.AddCell(new PdfPCell(new Phrase(row["Patient Name"].ToString(), smallFont)) { Padding = rowPadding });
+                transactionsTable.AddCell(new PdfPCell(new Phrase(row["Bill Date"].ToString(), smallFont)) { Padding = rowPadding });
+                transactionsTable.AddCell(new PdfPCell(new Phrase($"₱{Convert.ToDecimal(row["Discount"]):N2}", smallFont)) { Padding = rowPadding });
+                transactionsTable.AddCell(new PdfPCell(new Phrase($"₱{Convert.ToDecimal(row["Tax"]):N2}", smallFont)) { Padding = rowPadding });
+                transactionsTable.AddCell(new PdfPCell(new Phrase($"₱{Convert.ToDecimal(row["Total"]):N2}", smallFont)) { Padding = rowPadding });
+            }
+
+            PdfPCell transactionsCell = new PdfPCell(transactionsTable);
+            transactionsCell.Colspan = 2;
+            transactionsCell.Border = 0;
+            transactionsCell.Padding = 10;
+            summaryTable.AddCell(transactionsCell);
+
             summaryTable.AddCell(new PdfPCell(new Phrase($"Total Transactions:", normalFont)) { Border = 0, Padding = 5 });
             summaryTable.AddCell(new PdfPCell(new Phrase($"{reportData.Rows.Count}", normalFont)) { Border = 0, Padding = 5, HorizontalAlignment = Element.ALIGN_RIGHT });
 
@@ -279,32 +312,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             document.Add(summaryTable);
 
-            PdfPTable transactionsTable = new PdfPTable(6);
-            transactionsTable.WidthPercentage = 100;
-            transactionsTable.SetWidths(new float[] { 1f, 3f, 2f, 1.5f, 1.5f, 1.5f });
-
-            string[] headers = { "Bill ID", "Patient Name", "Bill Date", "Discount", "Tax", "Total" };
-            foreach (string header in headers)
-            {
-                PdfPCell cell = new PdfPCell(new Phrase(header, smallFont));
-                cell.BackgroundColor = new BaseColor(52, 73, 94);
-                cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                cell.Padding = 8;
-                transactionsTable.AddCell(cell);
-            }
-
-            foreach (DataRow row in reportData.Rows)
-            {
-                transactionsTable.AddCell(new Phrase(row["Bill ID"].ToString(), smallFont));
-                transactionsTable.AddCell(new Phrase(row["Patient Name"].ToString(), smallFont));
-                transactionsTable.AddCell(new Phrase(row["Bill Date"].ToString(), smallFont));
-                transactionsTable.AddCell(new Phrase($"₱{Convert.ToDecimal(row["Discount"]):N2}", smallFont));
-                transactionsTable.AddCell(new Phrase($"₱{Convert.ToDecimal(row["Tax"]):N2}", smallFont));
-                transactionsTable.AddCell(new Phrase($"₱{Convert.ToDecimal(row["Total"]):N2}", smallFont));
-            }
-
-            document.Add(transactionsTable);
-
             Paragraph footer = new Paragraph("\n\nSt. Joseph's Hospital | Healthcare Excellence", smallFont);
             footer.Alignment = Element.ALIGN_CENTER;
             document.Add(footer);
@@ -312,5 +319,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             document.Close();
             writer.Close();
         }
+
     }
 }

@@ -397,18 +397,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     return;
 
                 string assignQuery = @"
-                    UPDATE PatientQueue 
-                    SET doctor_id = @doctorId 
-                    WHERE queue_id = @queueId";
+                UPDATE PatientQueue 
+                SET doctor_id = @doctorId,
+                    status = CASE WHEN status = 'Waiting' THEN 'Waiting' ELSE status END
+                WHERE queue_id = @queueId";
 
                 DatabaseHelper.ExecuteNonQuery(assignQuery,
                     new MySqlParameter("@doctorId", doctorId),
                     new MySqlParameter("@queueId", queueId));
 
                 string updateDoctorQuery = @"
-                    UPDATE Doctors 
-                    SET is_available = 0 
-                    WHERE doctor_id = @doctorId";
+                UPDATE Doctors 
+                SET is_available = 0 
+                WHERE doctor_id = @doctorId";
 
                 DatabaseHelper.ExecuteNonQuery(updateDoctorQuery,
                     new MySqlParameter("@doctorId", doctorId));

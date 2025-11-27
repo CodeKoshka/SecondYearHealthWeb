@@ -53,3 +53,4 @@ C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHos
 C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\obj\Debug\net8.0-windows\SaintJosephsHospitalHealthMonitorApp.BillDetailsViewForm.resources
 C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\bin\Debug\net8.0-windows\BouncyCastle.Cryptography.dll
 C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\bin\Debug\net8.0-windows\itextsharp.dll
+C:\Users\josep\source\repos\SaintJosephsHospitalHealthMonitorApp\SaintJosephsHospitalHealthMonitorApp\obj\Debug\net8.0-windows\SaintJosephsHospitalHealthMonitorApp.IncomeReportPreviewForm.resources

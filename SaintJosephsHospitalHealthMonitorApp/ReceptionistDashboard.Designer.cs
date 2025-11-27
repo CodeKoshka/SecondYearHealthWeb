@@ -46,9 +46,6 @@
         private ListBox searchSuggestionsListBox;
         private Label lblSearchStatus;
         private Panel panelSearchCategories;
-        private CheckBox chkSearchQueue;
-        private CheckBox chkSearchPatients;
-        private CheckBox chkSearchBilling;
 
         protected override void Dispose(bool disposing)
         {
@@ -819,7 +816,7 @@
             ClientSize = new Size(1484, 761);
             Controls.Add(panelMainContent);
             Controls.Add(panelSidebar);
-            MinimumSize = new Size(1200, 700);
+            MaximizeBox = false;
             Name = "ReceptionistDashboard";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "St. Joseph's Hospital - Receptionist Dashboard";
@@ -850,34 +847,6 @@
             panelSearchCategories.Height = 40;
             panelSearchCategories.Visible = false;
             panelSearchCategories.Name = "panelSearchCategories";
-
-            chkSearchQueue = new CheckBox();
-            chkSearchQueue.Text = "👥 Queue";
-            chkSearchQueue.Checked = true;
-            chkSearchQueue.Font = new Font("Segoe UI", 9F);
-            chkSearchQueue.Location = new Point(15, 10);
-            chkSearchQueue.AutoSize = true;
-            chkSearchQueue.CheckedChanged += (s, e) => RefreshSearchResults();
-
-            chkSearchPatients = new CheckBox();
-            chkSearchPatients.Text = "📋 Patients";
-            chkSearchPatients.Checked = true;
-            chkSearchPatients.Font = new Font("Segoe UI", 9F);
-            chkSearchPatients.Location = new Point(130, 10);
-            chkSearchPatients.AutoSize = true;
-            chkSearchPatients.CheckedChanged += (s, e) => RefreshSearchResults();
-
-            chkSearchBilling = new CheckBox();
-            chkSearchBilling.Text = "💰 Billing";
-            chkSearchBilling.Checked = true;
-            chkSearchBilling.Font = new Font("Segoe UI", 9F);
-            chkSearchBilling.Location = new Point(260, 10);
-            chkSearchBilling.AutoSize = true;
-            chkSearchBilling.CheckedChanged += (s, e) => RefreshSearchResults();
-
-            panelSearchCategories.Controls.AddRange(new Control[] {
-                chkSearchQueue, chkSearchPatients, chkSearchBilling
-            });
 
             lblSearchStatus = new Label();
             lblSearchStatus.Font = new Font("Segoe UI", 9F, FontStyle.Italic);
@@ -916,9 +885,11 @@
             searchSuggestionsListBox.IntegralHeight = false;
             searchSuggestionsListBox.DrawMode = DrawMode.OwnerDrawFixed;
             searchSuggestionsListBox.ItemHeight = 50;
+            searchSuggestionsListBox.ScrollAlwaysVisible = false;
             searchSuggestionsListBox.Click += SearchSuggestionsListBox_Click;
             searchSuggestionsListBox.KeyDown += SearchSuggestionsListBox_KeyDown;
             searchSuggestionsListBox.MouseMove += SearchSuggestionsListBox_MouseMove;
+            searchSuggestionsListBox.MouseWheel += SearchSuggestionsListBox_MouseWheel; 
 
             searchSuggestionsListBox.DrawItem += SearchSuggestionsListBox_DrawItem;
 
@@ -935,6 +906,23 @@
                 Container = suggestionsContainer,
                 Shadow = suggestionsShadow
             };
+        }
+
+        private void SearchSuggestionsListBox_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (searchSuggestionsListBox.Items.Count == 0)
+                return;
+
+            int currentIndex = searchSuggestionsListBox.TopIndex;
+            int scrollAmount = e.Delta > 0 ? -1 : 1;
+
+            int newIndex = Math.Max(0, Math.Min(currentIndex + scrollAmount,
+                searchSuggestionsListBox.Items.Count - 1));
+
+            if (newIndex != currentIndex)
+            {
+                searchSuggestionsListBox.TopIndex = newIndex;
+            }
         }
 
         private void SearchSuggestionsListBox_DrawItem(object sender, DrawItemEventArgs e)
@@ -1045,7 +1033,6 @@
 
             e.DrawFocusRectangle();
         }
-
         private void PositionSearchSuggestions()
         {
             dynamic refs = searchSuggestionsListBox.Tag;
@@ -1060,9 +1047,8 @@
             int maxVisibleItems = 6;
 
             int statusHeight = 35;
-            int filterHeight = 40;
             int listHeight = Math.Min(itemCount, maxVisibleItems) * searchSuggestionsListBox.ItemHeight;
-            int totalHeight = statusHeight + filterHeight + listHeight + 2;
+            int totalHeight = statusHeight + listHeight + 2;
 
             container.Location = new Point(searchPanelLocation.X, searchPanelBottom);
             container.Size = new Size(width, totalHeight);
@@ -1087,30 +1073,18 @@
             lblSearchStatus.AutoSize = true;
             lblSearchStatus.BringToFront();
 
-            panelSearchCategories.Parent = container;
-            panelSearchCategories.Location = new Point(0, statusHeight);
-            panelSearchCategories.Size = new Size(width, filterHeight);
-            panelSearchCategories.BackColor = Color.FromArgb(249, 250, 251);
-            panelSearchCategories.Visible = true;
-            panelSearchCategories.BorderStyle = BorderStyle.None;
-
-            Panel filterTopBorder = panelSearchCategories.Controls.Find("filterTopBorder", false).FirstOrDefault() as Panel;
-            if (filterTopBorder == null)
-            {
-                filterTopBorder = new Panel();
-                filterTopBorder.Name = "filterTopBorder";
-                filterTopBorder.Dock = DockStyle.Top;
-                filterTopBorder.Height = 1;
-                filterTopBorder.BackColor = Color.FromArgb(226, 232, 240);
-                panelSearchCategories.Controls.Add(filterTopBorder);
-                filterTopBorder.BringToFront();
-            }
+            panelSearchCategories.Visible = false;
 
             searchSuggestionsListBox.Parent = container;
-            searchSuggestionsListBox.Location = new Point(1, statusHeight + filterHeight);
+            searchSuggestionsListBox.Location = new Point(1, statusHeight);
             searchSuggestionsListBox.Size = new Size(width - 2, listHeight);
             searchSuggestionsListBox.BorderStyle = BorderStyle.FixedSingle;
             searchSuggestionsListBox.Region = null;
+
+            if (searchSuggestionsListBox.Items.Count > 0)
+            {
+                searchSuggestionsListBox.TopIndex = 0;
+            }
 
             shadow.Location = new Point(searchPanelLocation.X + 2, searchPanelBottom + 2);
             shadow.Size = new Size(width, totalHeight);

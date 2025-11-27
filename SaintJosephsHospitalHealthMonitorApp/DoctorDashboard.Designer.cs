@@ -31,9 +31,6 @@
         private System.Windows.Forms.Label lblUniversalSearchIcon;
         private ListBox searchSuggestionsListBox;
         private Label lblSearchStatus;
-        private Panel panelSearchCategories;
-        private CheckBox chkSearchAppointments;
-        private CheckBox chkSearchPatients;
 
         protected override void Dispose(bool disposing)
         {
@@ -50,6 +47,7 @@
             pictureBoxProfile = new PictureBox();
             lblWelcome = new Label();
             lblRole = new Label();
+            btnDoctorStatus = new Button();
             btnAppointmentsMenu = new Button();
             btnPatientsMenu = new Button();
             btnLogout = new Button();
@@ -69,7 +67,6 @@
             btnAddRecord = new Button();
             btnViewHistory = new Button();
             panelHeader = new Panel();
-            btnDoctorStatus = new Button();
             label1 = new Label();
             panelUniversalSearch = new Panel();
             lblUniversalSearchIcon = new Label();
@@ -96,6 +93,7 @@
             panelSidebar.Controls.Add(pictureBoxProfile);
             panelSidebar.Controls.Add(lblWelcome);
             panelSidebar.Controls.Add(lblRole);
+            panelSidebar.Controls.Add(btnDoctorStatus);
             panelSidebar.Controls.Add(btnAppointmentsMenu);
             panelSidebar.Controls.Add(btnPatientsMenu);
             panelSidebar.Controls.Add(btnLogout);
@@ -137,6 +135,23 @@
             lblRole.Text = "Role: Doctor";
             lblRole.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // btnDoctorStatus
+            // 
+            btnDoctorStatus.BackColor = Color.Transparent;
+            btnDoctorStatus.Cursor = Cursors.Hand;
+            btnDoctorStatus.FlatAppearance.BorderColor = Color.FromArgb(220, 53, 69);
+            btnDoctorStatus.FlatAppearance.BorderSize = 3;
+            btnDoctorStatus.FlatStyle = FlatStyle.Flat;
+            btnDoctorStatus.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnDoctorStatus.ForeColor = Color.White;
+            btnDoctorStatus.Location = new Point(15, 260);
+            btnDoctorStatus.Name = "btnDoctorStatus";
+            btnDoctorStatus.Size = new Size(250, 50);
+            btnDoctorStatus.TabIndex = 0;
+            btnDoctorStatus.Text = "🔴 Off Duty";
+            btnDoctorStatus.UseVisualStyleBackColor = false;
+            btnDoctorStatus.Click += BtnDoctorStatus_Click;
+            // 
             // btnAppointmentsMenu
             // 
             btnAppointmentsMenu.BackColor = Color.FromArgb(26, 188, 156);
@@ -146,7 +161,7 @@
             btnAppointmentsMenu.FlatStyle = FlatStyle.Flat;
             btnAppointmentsMenu.Font = new Font("Segoe UI", 10F);
             btnAppointmentsMenu.ForeColor = Color.White;
-            btnAppointmentsMenu.Location = new Point(15, 290);
+            btnAppointmentsMenu.Location = new Point(15, 320);
             btnAppointmentsMenu.Name = "btnAppointmentsMenu";
             btnAppointmentsMenu.Padding = new Padding(20, 0, 0, 0);
             btnAppointmentsMenu.Size = new Size(250, 45);
@@ -165,7 +180,7 @@
             btnPatientsMenu.FlatStyle = FlatStyle.Flat;
             btnPatientsMenu.Font = new Font("Segoe UI", 10F);
             btnPatientsMenu.ForeColor = Color.FromArgb(226, 232, 240);
-            btnPatientsMenu.Location = new Point(15, 345);
+            btnPatientsMenu.Location = new Point(15, 375);
             btnPatientsMenu.Name = "btnPatientsMenu";
             btnPatientsMenu.Padding = new Padding(20, 0, 0, 0);
             btnPatientsMenu.Size = new Size(250, 45);
@@ -423,7 +438,6 @@
             // panelHeader
             // 
             panelHeader.BackColor = Color.FromArgb(26, 188, 156);
-            panelHeader.Controls.Add(btnDoctorStatus);
             panelHeader.Controls.Add(label1);
             panelHeader.Controls.Add(panelUniversalSearch);
             panelHeader.Controls.Add(lblHospitalName);
@@ -432,23 +446,6 @@
             panelHeader.Name = "panelHeader";
             panelHeader.Size = new Size(1204, 80);
             panelHeader.TabIndex = 1;
-            // 
-            // btnDoctorStatus
-            // 
-            btnDoctorStatus.BackColor = Color.Transparent;
-            btnDoctorStatus.Cursor = Cursors.Hand;
-            btnDoctorStatus.FlatAppearance.BorderColor = Color.FromArgb(220, 53, 69);
-            btnDoctorStatus.FlatAppearance.BorderSize = 3;
-            btnDoctorStatus.FlatStyle = FlatStyle.Flat;
-            btnDoctorStatus.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnDoctorStatus.ForeColor = Color.White;
-            btnDoctorStatus.Location = new Point(15, 400);
-            btnDoctorStatus.Name = "btnDoctorStatus";
-            btnDoctorStatus.Size = new Size(250, 50);
-            btnDoctorStatus.TabIndex = 0;
-            btnDoctorStatus.Text = "🔴 Off Duty";
-            btnDoctorStatus.UseVisualStyleBackColor = false;
-            btnDoctorStatus.Click += BtnDoctorStatus_Click;
             // 
             // label1
             // 
@@ -537,6 +534,7 @@
             ClientSize = new Size(1484, 761);
             Controls.Add(panelMainContent);
             Controls.Add(panelSidebar);
+            MinimizeBox = false;
             MinimumSize = new Size(1200, 700);
             Name = "DoctorDashboard";
             StartPosition = FormStartPosition.CenterScreen;
@@ -560,32 +558,6 @@
 
         private void InitializeSearchComponents()
         {
-            panelSearchCategories = new Panel();
-            panelSearchCategories.BackColor = Color.White;
-            panelSearchCategories.Height = 40;
-            panelSearchCategories.Visible = false;
-            panelSearchCategories.Name = "panelSearchCategories";
-
-            chkSearchAppointments = new CheckBox();
-            chkSearchAppointments.Text = "📅 Appointments";
-            chkSearchAppointments.Checked = true;
-            chkSearchAppointments.Font = new Font("Segoe UI", 9F);
-            chkSearchAppointments.Location = new Point(15, 10);
-            chkSearchAppointments.AutoSize = true;
-            chkSearchAppointments.CheckedChanged += (s, e) => RefreshSearchResults();
-
-            chkSearchPatients = new CheckBox();
-            chkSearchPatients.Text = "👥 Patients";
-            chkSearchPatients.Checked = true;
-            chkSearchPatients.Font = new Font("Segoe UI", 9F);
-            chkSearchPatients.Location = new Point(160, 10);
-            chkSearchPatients.AutoSize = true;
-            chkSearchPatients.CheckedChanged += (s, e) => RefreshSearchResults();
-
-            panelSearchCategories.Controls.AddRange(new Control[] {
-                chkSearchAppointments, chkSearchPatients
-            });
-
             lblSearchStatus = new Label();
             lblSearchStatus.Font = new Font("Segoe UI", 9F, FontStyle.Italic);
             lblSearchStatus.ForeColor = Color.FromArgb(113, 128, 150);
@@ -604,13 +576,11 @@
             suggestionsShadow.Name = "suggestionsShadow";
 
             this.Controls.Add(lblSearchStatus);
-            this.Controls.Add(panelSearchCategories);
             this.Controls.Add(suggestionsShadow);
             this.Controls.Add(suggestionsContainer);
 
             suggestionsShadow.SendToBack();
             suggestionsContainer.BringToFront();
-            panelSearchCategories.BringToFront();
         }
 
         private void SetupSearchSuggestionsList()
@@ -765,9 +735,8 @@
             int maxVisibleItems = 6;
 
             int statusHeight = 35;
-            int filterHeight = 40;
             int listHeight = Math.Min(itemCount, maxVisibleItems) * searchSuggestionsListBox.ItemHeight;
-            int totalHeight = statusHeight + filterHeight + listHeight + 2;
+            int totalHeight = statusHeight + listHeight + 2;
 
             container.Location = new Point(searchPanelLocation.X, searchPanelBottom);
             container.Size = new Size(width, totalHeight);
@@ -792,27 +761,8 @@
             lblSearchStatus.AutoSize = true;
             lblSearchStatus.BringToFront();
 
-            panelSearchCategories.Parent = container;
-            panelSearchCategories.Location = new Point(0, statusHeight);
-            panelSearchCategories.Size = new Size(width, filterHeight);
-            panelSearchCategories.BackColor = Color.FromArgb(249, 250, 251);
-            panelSearchCategories.Visible = true;
-            panelSearchCategories.BorderStyle = BorderStyle.None;
-
-            Panel filterTopBorder = panelSearchCategories.Controls.Find("filterTopBorder", false).FirstOrDefault() as Panel;
-            if (filterTopBorder == null)
-            {
-                filterTopBorder = new Panel();
-                filterTopBorder.Name = "filterTopBorder";
-                filterTopBorder.Dock = DockStyle.Top;
-                filterTopBorder.Height = 1;
-                filterTopBorder.BackColor = Color.FromArgb(226, 232, 240);
-                panelSearchCategories.Controls.Add(filterTopBorder);
-                filterTopBorder.BringToFront();
-            }
-
             searchSuggestionsListBox.Parent = container;
-            searchSuggestionsListBox.Location = new Point(1, statusHeight + filterHeight);
+            searchSuggestionsListBox.Location = new Point(1, statusHeight);
             searchSuggestionsListBox.Size = new Size(width - 2, listHeight);
             searchSuggestionsListBox.BorderStyle = BorderStyle.FixedSingle;
             searchSuggestionsListBox.Region = null;
@@ -828,7 +778,6 @@
             container.BringToFront();
             shadow.SendToBack();
         }
-
         private Label label1;
         private Button btnDoctorStatus;
         private Button btnEditServiceChecklist;

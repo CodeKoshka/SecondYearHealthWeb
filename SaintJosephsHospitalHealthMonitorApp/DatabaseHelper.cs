@@ -898,8 +898,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         long patientUserId = Convert.ToInt64(patientUserIdResult);
 
                         string insertPatientRecord = @"
-        INSERT INTO Patients (user_id, blood_type, medical_history)
-        VALUES (@userId, 'O+', 'Sample patient for testing')";
+                        INSERT INTO Patients (user_id, blood_type, medical_history)
+                        VALUES (@userId, 'O+', 'Sample patient for testing')";
 
                         using (MySqlCommand cmdPatientRecord = new MySqlCommand(insertPatientRecord, conn))
                         {
@@ -1010,13 +1010,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
 
 /* Not Updated Many Things Change
-Members and their contributions so far in the program
-Tristan: head designer
-Marco and Puno: sub designer
-Cherry, Stephen, and Carl thalla: Programmers
+Ramilo: Lead Programmer
+Tristan: head designer / assistant Programmer / Debugger / Documentation Author
+all designers 
+Marco
+Puno
+Cherry 
+Stephen
+Carl thalla
 provided the ideas for the program also helped and contributed to the code aswell
 
-known issues / (tinatamad pang ayusin) by lead programmer ramilo
 
 final notes by lead programmer
 di po pwede gumamit ng sql express naging corrupted download ng sql saka localdb no choice 

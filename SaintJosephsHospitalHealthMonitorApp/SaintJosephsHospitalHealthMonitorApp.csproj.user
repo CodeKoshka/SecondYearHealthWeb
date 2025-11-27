@@ -70,6 +70,9 @@
     <Compile Update="PharmacyRelated%28DONTTOUCH%29\ViewOrderDetailsForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="ReceptionistDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="RegisterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -83,9 +86,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="PatientIntakeForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="ReceptionistDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="ShowDetailedMedicalHistoryForm.cs">

@@ -64,7 +64,6 @@
             panelPartialPayment = new Panel();
             lblRemainingValue = new Label();
             lblRemaining = new Label();
-            chkPartialPayment = new CheckBox();
             txtPaymentNotes = new TextBox();
             lblPaymentNotes = new Label();
             txtReferenceNumber = new TextBox();
@@ -75,7 +74,6 @@
             lblPaymentMethod = new Label();
             panelActions = new Panel();
             btnViewPaymentHistory = new Button();
-            btnPrintReceipt = new Button();
             btnCancel = new Button();
             btnProcessPayment = new Button();
             panelHeader.SuspendLayout();
@@ -451,7 +449,6 @@
             // 
             grpPaymentDetails.BackColor = Color.White;
             grpPaymentDetails.Controls.Add(panelPartialPayment);
-            grpPaymentDetails.Controls.Add(chkPartialPayment);
             grpPaymentDetails.Controls.Add(txtPaymentNotes);
             grpPaymentDetails.Controls.Add(lblPaymentNotes);
             grpPaymentDetails.Controls.Add(txtReferenceNumber);
@@ -505,19 +502,6 @@
             lblRemaining.TabIndex = 0;
             lblRemaining.Text = "Remaining Balance:";
             // 
-            // chkPartialPayment
-            // 
-            chkPartialPayment.AutoSize = true;
-            chkPartialPayment.Font = new Font("Segoe UI", 9F);
-            chkPartialPayment.ForeColor = Color.FromArgb(113, 128, 150);
-            chkPartialPayment.Location = new Point(230, 130);
-            chkPartialPayment.Name = "chkPartialPayment";
-            chkPartialPayment.Size = new Size(142, 19);
-            chkPartialPayment.TabIndex = 8;
-            chkPartialPayment.Text = "Allow Partial Payment";
-            chkPartialPayment.UseVisualStyleBackColor = true;
-            chkPartialPayment.CheckedChanged += ChkPartialPayment_CheckedChanged;
-            // 
             // txtPaymentNotes
             // 
             txtPaymentNotes.Font = new Font("Segoe UI", 9F);
@@ -567,7 +551,7 @@
             numPaymentAmount.Location = new Point(23, 125);
             numPaymentAmount.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
             numPaymentAmount.Name = "numPaymentAmount";
-            numPaymentAmount.Size = new Size(200, 29);
+            numPaymentAmount.Size = new Size(344, 29);
             numPaymentAmount.TabIndex = 3;
             numPaymentAmount.ThousandsSeparator = true;
             numPaymentAmount.ValueChanged += NumPaymentAmount_ValueChanged;
@@ -608,7 +592,6 @@
             // 
             panelActions.BackColor = Color.White;
             panelActions.Controls.Add(btnViewPaymentHistory);
-            panelActions.Controls.Add(btnPrintReceipt);
             panelActions.Controls.Add(btnCancel);
             panelActions.Controls.Add(btnProcessPayment);
             panelActions.Dock = DockStyle.Bottom;
@@ -626,29 +609,13 @@
             btnViewPaymentHistory.FlatStyle = FlatStyle.Flat;
             btnViewPaymentHistory.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnViewPaymentHistory.ForeColor = Color.White;
-            btnViewPaymentHistory.Location = new Point(23, 95);
+            btnViewPaymentHistory.Location = new Point(23, 90);
             btnViewPaymentHistory.Name = "btnViewPaymentHistory";
-            btnViewPaymentHistory.Size = new Size(165, 40);
+            btnViewPaymentHistory.Size = new Size(344, 40);
             btnViewPaymentHistory.TabIndex = 3;
             btnViewPaymentHistory.Text = "📜 Payment History";
             btnViewPaymentHistory.UseVisualStyleBackColor = false;
             btnViewPaymentHistory.Click += BtnViewPaymentHistory_Click;
-            // 
-            // btnPrintReceipt
-            // 
-            btnPrintReceipt.BackColor = Color.FromArgb(156, 39, 176);
-            btnPrintReceipt.Cursor = Cursors.Hand;
-            btnPrintReceipt.FlatAppearance.BorderSize = 0;
-            btnPrintReceipt.FlatStyle = FlatStyle.Flat;
-            btnPrintReceipt.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnPrintReceipt.ForeColor = Color.White;
-            btnPrintReceipt.Location = new Point(202, 95);
-            btnPrintReceipt.Name = "btnPrintReceipt";
-            btnPrintReceipt.Size = new Size(165, 40);
-            btnPrintReceipt.TabIndex = 2;
-            btnPrintReceipt.Text = "🖨️ Print Receipt";
-            btnPrintReceipt.UseVisualStyleBackColor = false;
-            btnPrintReceipt.Click += BtnPrintReceipt_Click;
             // 
             // btnCancel
             // 
@@ -755,7 +722,6 @@
         private System.Windows.Forms.Panel panelPartialPayment;
         private System.Windows.Forms.Label lblRemainingValue;
         private System.Windows.Forms.Label lblRemaining;
-        private System.Windows.Forms.CheckBox chkPartialPayment;
         private System.Windows.Forms.TextBox txtPaymentNotes;
         private System.Windows.Forms.Label lblPaymentNotes;
         private System.Windows.Forms.TextBox txtReferenceNumber;
@@ -766,7 +732,6 @@
         private System.Windows.Forms.Label lblPaymentMethod;
         private System.Windows.Forms.Panel panelActions;
         private System.Windows.Forms.Button btnViewPaymentHistory;
-        private System.Windows.Forms.Button btnPrintReceipt;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnProcessPayment;
     }

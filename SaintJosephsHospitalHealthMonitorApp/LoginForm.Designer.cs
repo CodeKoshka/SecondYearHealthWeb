@@ -21,6 +21,7 @@
         private System.Windows.Forms.Label lblFooter;
         private System.Windows.Forms.Panel panelEmailContainer;
         private System.Windows.Forms.Panel panelPasswordContainer;
+        private System.Windows.Forms.CheckBox chkShowPassword;
 
         protected override void Dispose(bool disposing)
         {
@@ -48,6 +49,7 @@
             panelPasswordContainer = new Panel();
             panelPasswordBorder = new Panel();
             txtPassword = new TextBox();
+            chkShowPassword = new CheckBox();
             btnLogin = new Button();
             panelMain.SuspendLayout();
             panelLeft.SuspendLayout();
@@ -117,6 +119,7 @@
             panelRight.BackColor = Color.FromArgb(247, 250, 252);
             panelRight.Controls.Add(lblError);
             panelRight.Controls.Add(btnLogin);
+            panelRight.Controls.Add(chkShowPassword);
             panelRight.Controls.Add(panelPasswordContainer);
             panelRight.Controls.Add(lblPassword);
             panelRight.Controls.Add(panelEmailContainer);
@@ -135,7 +138,7 @@
             lblError.BackColor = Color.Transparent;
             lblError.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
             lblError.ForeColor = Color.FromArgb(229, 62, 62);
-            lblError.Location = new Point(65, 388);
+            lblError.Location = new Point(65, 418);
             lblError.Name = "lblError";
             lblError.Size = new Size(420, 20);
             lblError.TabIndex = 6;
@@ -248,6 +251,19 @@
             txtPassword.Size = new Size(400, 22);
             txtPassword.TabIndex = 0;
             // 
+            // chkShowPassword
+            // 
+            chkShowPassword.AutoSize = true;
+            chkShowPassword.Font = new Font("Segoe UI", 9F);
+            chkShowPassword.ForeColor = Color.FromArgb(74, 85, 104);
+            chkShowPassword.Location = new Point(65, 393);
+            chkShowPassword.Name = "chkShowPassword";
+            chkShowPassword.Size = new Size(108, 19);
+            chkShowPassword.TabIndex = 7;
+            chkShowPassword.Text = "Show Password";
+            chkShowPassword.UseVisualStyleBackColor = true;
+            chkShowPassword.CheckedChanged += ChkShowPassword_CheckedChanged;
+            // 
             // btnLogin
             // 
             btnLogin.BackColor = Color.FromArgb(66, 153, 225);
@@ -257,7 +273,7 @@
             btnLogin.FlatStyle = FlatStyle.Flat;
             btnLogin.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             btnLogin.ForeColor = Color.White;
-            btnLogin.Location = new Point(60, 420);
+            btnLogin.Location = new Point(60, 450);
             btnLogin.Name = "btnLogin";
             btnLogin.Size = new Size(430, 50);
             btnLogin.TabIndex = 2;
@@ -280,6 +296,7 @@
             panelMain.ResumeLayout(false);
             panelLeft.ResumeLayout(false);
             panelRight.ResumeLayout(false);
+            panelRight.PerformLayout();
             panelEmailContainer.ResumeLayout(false);
             panelEmailContainer.PerformLayout();
             panelPasswordContainer.ResumeLayout(false);

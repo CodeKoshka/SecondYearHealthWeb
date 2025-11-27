@@ -40,10 +40,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void ApplyStyle()
         {
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
-                         ControlStyles.AllPaintingInWmPaint |
-                         ControlStyles.UserPaint, true);
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer |ControlStyles.AllPaintingInWmPaint |ControlStyles.UserPaint, true);
             this.UpdateStyles();
+
+            this.WindowState = FormWindowState.Maximized;
+            this.MinimumSize = new Size(1200, 700);
+            this.MaximizeBox = false;
+            this.MinimizeBox = true;
 
             Color sidebarBg = Color.FromArgb(26, 32, 44);
             Color accentColor = Color.FromArgb(26, 188, 156);
@@ -87,8 +90,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             lblRole.Width = 240;
             lblRole.TextAlign = ContentAlignment.MiddleCenter;
 
-            UpdateMenuButton(btnAppointmentsMenu, 290, "📅", "My Appointments");
-            UpdateMenuButton(btnPatientsMenu, 345, "👥", "My Patients & Records");
+            UpdateMenuButton(btnAppointmentsMenu, 320, "📅", "My Appointments"); 
+            UpdateMenuButton(btnPatientsMenu, 375, "👥", "My Patients & Records");  
 
             btnLogout.BackColor = Color.FromArgb(74, 85, 104);
             btnLogout.FlatAppearance.BorderSize = 0;
@@ -128,6 +131,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             };
         }
 
+        private void InitializeUniversalSearch()
+        {
+            InitializeSearchComponents();
+            SetupSearchSuggestionsList();
+        }
+
         private void UpdateWelcomeMessage()
         {
             lblWelcome.Text = $"Dr. {currentUser.Name}";
@@ -161,24 +170,26 @@ namespace SaintJosephsHospitalHealthMonitorApp
             dgv.EnableHeadersVisualStyles = false;
             dgv.AllowUserToResizeRows = false;
             dgv.AllowUserToOrderColumns = false;
+            dgv.AllowUserToResizeColumns = false;
 
             dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(26, 188, 156);
             dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(26, 188, 156);
             dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
-            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 8, 12, 8);
-            dgv.ColumnHeadersHeight = 50;
+            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(10, 6, 10, 6);
+            dgv.ColumnHeadersHeight = 45; 
             dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
 
             dgv.DefaultCellStyle.BackColor = Color.White;
             dgv.DefaultCellStyle.ForeColor = Color.FromArgb(26, 32, 44);
             dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(178, 235, 225);
             dgv.DefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44);
-            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
-            dgv.DefaultCellStyle.Padding = new Padding(12, 5, 12, 5);
-            dgv.RowTemplate.Height = 45;
+            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 9F);
+            dgv.DefaultCellStyle.Padding = new Padding(10, 4, 10, 4);
+            dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
+            dgv.RowTemplate.Height = 40;
 
             dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 251);
             dgv.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(178, 235, 225);
@@ -198,11 +209,50 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 foreach (DataGridViewColumn column in dgv.Columns)
                 {
                     column.SortMode = DataGridViewColumnSortMode.NotSortable;
+                    column.Resizable = DataGridViewTriState.False;
+
+                    if (column.Name == "patient_id" || column.Name == "user_id" ||
+                        column.Name == "queue_id")
+                    {
+                        column.Visible = false;
+                    }
                 }
+
+                RenameColumns(dgv);
             };
 
             dgv.RowPostPaint -= DgvUniversal_RowPostPaint;
             dgv.RowPostPaint += DgvUniversal_RowPostPaint;
+        }
+
+
+        private void RenameColumns(DataGridView dgv)
+            {
+            var columnMappings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"queue_number", "Queue"},
+                {"patient_name", "Patient Name"},
+                {"age", "Age"},
+                {"gender", "Gender"},
+                {"priority", "Priority"},
+                {"status", "Status"},
+                {"registered_time", "Registered"},
+                {"called_time", "Called"},
+                {"completed_time", "Completed"},
+                {"blood_type", "Blood Type"},
+                {"allergies", "Allergies"},
+                {"email", "Email"},
+                {"total_visits", "Total Visits"},
+                {"last_visit", "Last Visit"}
+            };
+
+            foreach (DataGridViewColumn column in dgv.Columns)
+            {
+                if (columnMappings.ContainsKey(column.Name))
+                {
+                    column.HeaderText = columnMappings[column.Name];
+                }
+            }
         }
 
         private void DgvUniversal_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
@@ -236,11 +286,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private void InitializeUniversalSearch()
-        {
-            InitializeSearchComponents();
-            SetupSearchSuggestionsList();
-        }
 
         private Color GetCategoryColor(string source)
         {
@@ -272,9 +317,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 btnDoctorStatus.BackColor = Color.Transparent;
             };
-
-            panelSidebar.Controls.Add(btnDoctorStatus);
-            btnDoctorStatus.BringToFront();
         }
 
         private void LoadDutyStatus()
@@ -329,13 +371,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private void RefreshSearchResults()
-        {
-            if (!string.IsNullOrWhiteSpace(txtUniversalSearch.Text))
-            {
-                ShowUniversalSearchSuggestions(txtUniversalSearch.Text.Trim());
-            }
-        }
 
         private void LoadUserProfile()
         {
@@ -476,11 +511,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string checkRecordQuery = @"
-            SELECT COUNT(*) 
-            FROM medicalrecords 
-            WHERE patient_id = @patientId 
-            AND doctor_id = @doctorId 
-            AND queue_id = @queueId";
+                SELECT COUNT(*) 
+                FROM medicalrecords 
+                WHERE patient_id = @patientId 
+                AND doctor_id = @doctorId 
+                AND queue_id = @queueId";
 
                 int recordCount = Convert.ToInt32(DatabaseHelper.ExecuteScalar(checkRecordQuery,
                     new MySqlParameter("@patientId", patientId),
@@ -488,9 +523,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     new MySqlParameter("@queueId", queueId)));
 
                 string checkChecklistQuery = @"
-            SELECT equipment_checklist 
-            FROM patientqueue 
-            WHERE queue_id = @queueId";
+                SELECT equipment_checklist 
+                FROM patientqueue 
+                WHERE queue_id = @queueId";
 
                 DataTable dtChecklist = DatabaseHelper.ExecuteQuery(checkChecklistQuery,
                     new MySqlParameter("@queueId", queueId));
@@ -576,18 +611,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     return;
 
                 string updateQuery = @"
-            UPDATE patientqueue 
-            SET status = 'Completed', 
-                completed_time = NOW()
-            WHERE queue_id = @queueId";
+                UPDATE patientqueue 
+                SET status = 'Completed', 
+                    completed_time = NOW()
+                WHERE queue_id = @queueId";
 
                 DatabaseHelper.ExecuteNonQuery(updateQuery,
                     new MySqlParameter("@queueId", queueId));
 
                 string makeDoctorAvailableQuery = @"
-            UPDATE Doctors 
-            SET is_available = 1 
-            WHERE doctor_id = @doctorId";
+                UPDATE Doctors 
+                SET is_available = 1 
+                WHERE doctor_id = @doctorId";
 
                 DatabaseHelper.ExecuteNonQuery(makeDoctorAvailableQuery,
                     new MySqlParameter("@doctorId", doctorId));
@@ -1113,7 +1148,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 HideSearchSuggestions();
                 txtUniversalSearch.Clear();
                 lblSearchStatus.Visible = false;
-                panelSearchCategories.Visible = false;
             }
         }
 
@@ -1121,22 +1155,30 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             try
             {
+                if (searchSuggestionsListBox == null || searchSuggestionsListBox.Items == null)
+                {
+                    return;
+                }
+
                 searchSuggestionsListBox.Items.Clear();
                 int totalResults = 0;
+                int activeTabIndex = tabControl.SelectedIndex;
 
-                if (chkSearchAppointments.Checked)
+                if (activeTabIndex == 0)
                 {
                     string apptQuery = @"
-                        SELECT q.queue_id, u.name AS patient_name, 
-                        q.priority, q.status, 'Appointments' as source
-                        FROM patientqueue q
-                        INNER JOIN Patients p ON q.patient_id = p.patient_id
-                        INNER JOIN Users u ON p.user_id = u.user_id
-                        WHERE q.doctor_id = @doctorId
-                        AND q.queue_date = CURDATE()
-                        AND (u.name LIKE @search OR q.status LIKE @search)
-                        ORDER BY q.called_time DESC
-                        LIMIT 5";
+                    SELECT q.queue_id, u.name AS patient_name, 
+                    q.priority, q.status, 'Appointments' as source
+                    FROM patientqueue q
+                    INNER JOIN Patients p ON q.patient_id = p.patient_id
+                    INNER JOIN Users u ON p.user_id = u.user_id
+                    WHERE q.doctor_id = @doctorId
+                    AND q.queue_date = CURDATE()
+                    AND q.status IN ('Called', 'In Progress')
+                    AND q.discharged_time IS NULL
+                    AND (u.name LIKE @search OR q.status LIKE @search OR q.priority LIKE @search)
+                    ORDER BY q.called_time DESC
+                    LIMIT 10";
 
                     DataTable appointments = DatabaseHelper.ExecuteQuery(apptQuery,
                         new MySqlParameter("@doctorId", doctorId),
@@ -1154,19 +1196,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         totalResults++;
                     }
                 }
-
-                if (chkSearchPatients.Checked)
+                else if (activeTabIndex == 1)
                 {
                     string patientQuery = @"
-                        SELECT DISTINCT p.patient_id, u.user_id, u.name, u.email, u.age, u.gender,
-                        p.blood_type, 'Patients' as source
-                        FROM PatientQueue pq
-                        INNER JOIN Patients p ON pq.patient_id = p.patient_id
-                        INNER JOIN Users u ON p.user_id = u.user_id
-                        WHERE pq.doctor_id = @doctorId
-                        AND (u.name LIKE @search OR u.email LIKE @search OR p.blood_type LIKE @search)
-                        ORDER BY u.name
-                        LIMIT 5";
+                SELECT DISTINCT p.patient_id, u.user_id, u.name, u.email, u.age, u.gender,
+                p.blood_type, 'Patients' as source
+                FROM PatientQueue pq
+                INNER JOIN Patients p ON pq.patient_id = p.patient_id
+                INNER JOIN Users u ON p.user_id = u.user_id
+                WHERE pq.doctor_id = @doctorId
+                AND (u.name LIKE @search OR u.email LIKE @search OR p.blood_type LIKE @search)
+                ORDER BY u.name
+                LIMIT 10";
 
                     DataTable patients = DatabaseHelper.ExecuteQuery(patientQuery,
                         new MySqlParameter("@doctorId", doctorId),
@@ -1185,9 +1226,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
                 }
 
+                string tabName = activeTabIndex == 0 ? "Appointments" : "Patients";
                 lblSearchStatus.Text = totalResults > 0
-                    ? $"Found {totalResults} result{(totalResults != 1 ? "s" : "")}"
-                    : "No results found";
+                    ? $"Found {totalResults} result{(totalResults != 1 ? "s" : "")} in {tabName}"
+                    : $"No results found in {tabName}";
                 lblSearchStatus.ForeColor = totalResults > 0
                     ? Color.FromArgb(72, 187, 120)
                     : Color.FromArgb(229, 62, 62);
@@ -1449,11 +1491,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 else
                 {
                     string checkRecentQueueQuery = @"
-                SELECT queue_id, status, discharged_time 
-                FROM patientqueue 
-                WHERE patient_id = @patientId 
-                ORDER BY registered_time DESC 
-                LIMIT 1";
+                    SELECT queue_id, status, discharged_time 
+                    FROM patientqueue 
+                    WHERE patient_id = @patientId 
+                    ORDER BY registered_time DESC 
+                    LIMIT 1";
 
                     DataTable dtRecentQueue = DatabaseHelper.ExecuteQuery(checkRecentQueueQuery,
                         new MySqlParameter("@patientId", patientId));
@@ -1582,9 +1624,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
 
                 string updateQuery = @"
-            UPDATE Doctors 
-            SET duty_status = @dutyStatus 
-            WHERE doctor_id = @doctorId";
+                UPDATE Doctors 
+                SET duty_status = @dutyStatus 
+                WHERE doctor_id = @doctorId";
 
                 DatabaseHelper.ExecuteNonQuery(updateQuery,
                     new MySqlParameter("@dutyStatus", newStatus),
@@ -1635,14 +1677,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string checkActiveQueueQuery = @"
-            SELECT queue_id, status 
-            FROM patientqueue 
-            WHERE patient_id = @patientId
-            AND doctor_id = @doctorId
-            AND discharged_time IS NULL
-            AND status IN ('Called', 'In Progress')
-            ORDER BY registered_time DESC
-            LIMIT 1";
+                SELECT queue_id, status 
+                FROM patientqueue 
+                WHERE patient_id = @patientId
+                AND doctor_id = @doctorId
+                AND discharged_time IS NULL
+                AND status IN ('Called', 'In Progress')
+                ORDER BY registered_time DESC
+                LIMIT 1";
 
                 DataTable dtActiveQueue = DatabaseHelper.ExecuteQuery(checkActiveQueueQuery,
                     new MySqlParameter("@patientId", patientId),
@@ -1668,13 +1710,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 string status = dtActiveQueue.Rows[0]["status"].ToString();
 
                 string findLatestRecordQuery = @"
-            SELECT record_id, record_date
-            FROM medicalrecords
-            WHERE patient_id = @patientId 
-            AND doctor_id = @doctorId 
-            AND queue_id = @queueId
-            ORDER BY record_date DESC
-            LIMIT 1";
+                SELECT record_id, record_date
+                FROM medicalrecords
+                WHERE patient_id = @patientId 
+                AND doctor_id = @doctorId 
+                AND queue_id = @queueId
+                ORDER BY record_date DESC
+                LIMIT 1";
 
                 DataTable dtLatestRecord = DatabaseHelper.ExecuteQuery(findLatestRecordQuery,
                     new MySqlParameter("@patientId", patientId),
