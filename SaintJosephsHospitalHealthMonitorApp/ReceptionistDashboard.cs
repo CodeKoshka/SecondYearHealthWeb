@@ -434,6 +434,264 @@ namespace SaintJosephsHospitalHealthMonitorApp
             SetupSearchSuggestionsList();
         }
 
+        private void InitializeSearchComponents()
+        {
+            panelSearchCategories = new Panel();
+            panelSearchCategories.BackColor = Color.White;
+            panelSearchCategories.Height = 40;
+            panelSearchCategories.Visible = false;
+            panelSearchCategories.Name = "panelSearchCategories";
+
+            lblSearchStatus = new Label();
+            lblSearchStatus.Font = new Font("Segoe UI", 9F, FontStyle.Italic);
+            lblSearchStatus.ForeColor = Color.FromArgb(113, 128, 150);
+            lblSearchStatus.Visible = false;
+            lblSearchStatus.AutoSize = true;
+            lblSearchStatus.Name = "lblSearchStatus";
+
+            Panel suggestionsContainer = new Panel();
+            suggestionsContainer.BackColor = Color.Transparent;
+            suggestionsContainer.Visible = false;
+            suggestionsContainer.Name = "suggestionsContainer";
+
+            Panel suggestionsShadow = new Panel();
+            suggestionsShadow.BackColor = Color.FromArgb(40, 0, 0, 0);
+            suggestionsShadow.Visible = false;
+            suggestionsShadow.Name = "suggestionsShadow";
+
+            this.Controls.Add(lblSearchStatus);
+            this.Controls.Add(panelSearchCategories);
+            this.Controls.Add(suggestionsShadow);
+            this.Controls.Add(suggestionsContainer);
+
+            suggestionsShadow.SendToBack();
+            suggestionsContainer.BringToFront();
+            panelSearchCategories.BringToFront();
+        }
+
+        private void SetupSearchSuggestionsList()
+        {
+            searchSuggestionsListBox = new ListBox();
+            searchSuggestionsListBox.Font = new Font("Segoe UI", 10F);
+            searchSuggestionsListBox.BorderStyle = BorderStyle.None;
+            searchSuggestionsListBox.BackColor = Color.White;
+            searchSuggestionsListBox.ForeColor = Color.FromArgb(26, 32, 44);
+            searchSuggestionsListBox.IntegralHeight = false;
+            searchSuggestionsListBox.DrawMode = DrawMode.OwnerDrawFixed;
+            searchSuggestionsListBox.ItemHeight = 50;
+            searchSuggestionsListBox.ScrollAlwaysVisible = false;
+            searchSuggestionsListBox.Click += SearchSuggestionsListBox_Click;
+            searchSuggestionsListBox.KeyDown += SearchSuggestionsListBox_KeyDown;
+            searchSuggestionsListBox.MouseMove += SearchSuggestionsListBox_MouseMove;
+            searchSuggestionsListBox.MouseWheel += SearchSuggestionsListBox_MouseWheel;
+
+            searchSuggestionsListBox.DrawItem += SearchSuggestionsListBox_DrawItem;
+
+            Panel suggestionsContainer = this.Controls.Find("suggestionsContainer", true).FirstOrDefault() as Panel;
+            Panel suggestionsShadow = this.Controls.Find("suggestionsShadow", true).FirstOrDefault() as Panel;
+
+            if (suggestionsContainer != null)
+            {
+                suggestionsContainer.Controls.Add(searchSuggestionsListBox);
+            }
+
+            searchSuggestionsListBox.Tag = new
+            {
+                Container = suggestionsContainer,
+                Shadow = suggestionsShadow
+            };
+        }
+
+        private void SearchSuggestionsListBox_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (searchSuggestionsListBox.Items.Count == 0)
+                return;
+
+            int currentIndex = searchSuggestionsListBox.TopIndex;
+            int scrollAmount = e.Delta > 0 ? -1 : 1;
+
+            int newIndex = Math.Max(0, Math.Min(currentIndex + scrollAmount,
+                searchSuggestionsListBox.Items.Count - 1));
+
+            if (newIndex != currentIndex)
+            {
+                searchSuggestionsListBox.TopIndex = newIndex;
+            }
+        }
+
+        private void SearchSuggestionsListBox_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index < 0) return;
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            e.DrawBackground();
+
+            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+
+            if (isSelected)
+            {
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(237, 242, 247)))
+                {
+                    e.Graphics.FillRectangle(brush, e.Bounds);
+                }
+            }
+
+            if (searchSuggestionsListBox.Items[e.Index] is UniversalSearchItem item)
+            {
+                int photoSize = 36;
+                int photoX = e.Bounds.X + 8;
+                int photoY = e.Bounds.Y + (e.Bounds.Height - photoSize) / 2;
+
+                using (SolidBrush iconBg = new SolidBrush(GetCategoryColor(item.Source)))
+                {
+                    e.Graphics.FillEllipse(iconBg, photoX, photoY, photoSize, photoSize);
+                }
+
+                string icon = GetCategoryIcon(item.Source);
+                using (Font iconFont = new Font("Segoe UI Emoji", 16F))
+                using (SolidBrush iconBrush = new SolidBrush(Color.White))
+                {
+                    SizeF iconSize = e.Graphics.MeasureString(icon, iconFont);
+                    e.Graphics.DrawString(icon, iconFont, iconBrush,
+                        photoX + (photoSize - iconSize.Width) / 2,
+                        photoY + (photoSize - iconSize.Height) / 2);
+                }
+
+                string searchTerm = txtUniversalSearch.Text.Trim();
+                string displayText = item.DisplayText;
+
+                using (SolidBrush textBrush = new SolidBrush(Color.FromArgb(26, 32, 44)))
+                using (SolidBrush highlightBrush = new SolidBrush(Color.FromArgb(231, 76, 60)))
+                using (Font boldFont = new Font(e.Font, FontStyle.Bold))
+                {
+                    float x = photoX + photoSize + 12;
+                    float y = e.Bounds.Y + (e.Bounds.Height - e.Font.GetHeight(e.Graphics)) / 2;
+
+                    if (!string.IsNullOrEmpty(searchTerm))
+                    {
+                        int index = displayText.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase);
+                        if (index >= 0)
+                        {
+                            string before = displayText.Substring(0, index);
+                            string match = displayText.Substring(index, Math.Min(searchTerm.Length, displayText.Length - index));
+                            string after = displayText.Substring(index + match.Length);
+
+                            e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+
+                            using (StringFormat format = new StringFormat(StringFormat.GenericTypographic))
+                            {
+                                float currentX = x;
+
+                                if (!string.IsNullOrEmpty(before))
+                                {
+                                    e.Graphics.DrawString(before, e.Font, textBrush, currentX, y, format);
+                                    SizeF beforeSize = e.Graphics.MeasureString(before, e.Font, new PointF(currentX, y), format);
+                                    currentX += beforeSize.Width;
+                                }
+
+                                if (!string.IsNullOrEmpty(match))
+                                {
+                                    e.Graphics.DrawString(match, boldFont, highlightBrush, currentX, y, format);
+                                    SizeF matchSize = e.Graphics.MeasureString(match, boldFont, new PointF(currentX, y), format);
+                                    currentX += matchSize.Width;
+                                }
+
+                                if (!string.IsNullOrEmpty(after))
+                                {
+                                    e.Graphics.DrawString(after, e.Font, textBrush, currentX, y, format);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            e.Graphics.DrawString(displayText, e.Font, textBrush, x, y);
+                        }
+                    }
+                    else
+                    {
+                        e.Graphics.DrawString(displayText, e.Font, textBrush, x, y);
+                    }
+                }
+            }
+
+            if (e.Index < searchSuggestionsListBox.Items.Count - 1)
+            {
+                using (Pen pen = new Pen(Color.FromArgb(226, 232, 240)))
+                {
+                    e.Graphics.DrawLine(pen,
+                        e.Bounds.Left + 15,
+                        e.Bounds.Bottom - 1,
+                        e.Bounds.Right - 15,
+                        e.Bounds.Bottom - 1);
+                }
+            }
+
+            e.DrawFocusRectangle();
+        }
+        private void PositionSearchSuggestions()
+        {
+            dynamic refs = searchSuggestionsListBox.Tag;
+            Panel container = refs.Container;
+            Panel shadow = refs.Shadow;
+
+            Point searchPanelLocation = this.PointToClient(panelUniversalSearch.Parent.PointToScreen(panelUniversalSearch.Location));
+            int searchPanelBottom = searchPanelLocation.Y + panelUniversalSearch.Height;
+
+            int width = panelUniversalSearch.Width;
+            int itemCount = searchSuggestionsListBox.Items.Count;
+            int maxVisibleItems = 6;
+
+            int statusHeight = 35;
+            int listHeight = Math.Min(itemCount, maxVisibleItems) * searchSuggestionsListBox.ItemHeight;
+            int totalHeight = statusHeight + listHeight + 2;
+
+            container.Location = new Point(searchPanelLocation.X, searchPanelBottom);
+            container.Size = new Size(width, totalHeight);
+            container.BackColor = Color.White;
+            container.Padding = new Padding(0);
+
+            System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+            int radius = 12;
+
+            path.AddLine(0, 0, width, 0);
+            path.AddLine(width, 0, width, totalHeight - radius);
+            path.AddArc(width - radius, totalHeight - radius, radius, radius, 0, 90);
+            path.AddLine(width - radius, totalHeight, radius, totalHeight);
+            path.AddArc(0, totalHeight - radius, radius, radius, 90, 90);
+            path.AddLine(0, totalHeight - radius, 0, 0);
+            path.CloseFigure();
+
+            container.Region = new Region(path);
+
+            lblSearchStatus.Parent = container;
+            lblSearchStatus.Location = new Point(20, 8);
+            lblSearchStatus.AutoSize = true;
+            lblSearchStatus.BringToFront();
+
+            panelSearchCategories.Visible = false;
+
+            searchSuggestionsListBox.Parent = container;
+            searchSuggestionsListBox.Location = new Point(1, statusHeight);
+            searchSuggestionsListBox.Size = new Size(width - 2, listHeight);
+            searchSuggestionsListBox.BorderStyle = BorderStyle.FixedSingle;
+            searchSuggestionsListBox.Region = null;
+
+            if (searchSuggestionsListBox.Items.Count > 0)
+            {
+                searchSuggestionsListBox.TopIndex = 0;
+            }
+
+            shadow.Location = new Point(searchPanelLocation.X + 2, searchPanelBottom + 2);
+            shadow.Size = new Size(width, totalHeight);
+            shadow.Region = new Region(path.Clone() as System.Drawing.Drawing2D.GraphicsPath);
+
+            shadow.Visible = true;
+            container.Visible = true;
+            lblSearchStatus.Visible = true;
+
+            container.BringToFront();
+            shadow.SendToBack();
+        }
+
         private Color GetCategoryColor(string source)
         {
             switch (source)

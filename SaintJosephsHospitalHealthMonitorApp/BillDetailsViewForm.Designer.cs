@@ -2,8 +2,15 @@
 {
     partial class BillDetailsViewForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -13,6 +20,12 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
             panelHeader = new Panel();
@@ -39,12 +52,11 @@
             lblStatus = new Label();
             grpHospitalCharges = new GroupBox();
             dgvHospitalCharges = new DataGridView();
-            colParticulars = new DataGridViewTextBoxColumn();
-            colTotal = new DataGridViewTextBoxColumn();
-            colPHIC = new DataGridViewTextBoxColumn();
-            colMSS = new DataGridViewTextBoxColumn();
-            colCash = new DataGridViewTextBoxColumn();
-            colBalance = new DataGridViewTextBoxColumn();
+            colServiceItem = new DataGridViewTextBoxColumn();
+            colCategory = new DataGridViewTextBoxColumn();
+            colQuantity = new DataGridViewTextBoxColumn();
+            colUnitPrice = new DataGridViewTextBoxColumn();
+            colAmount = new DataGridViewTextBoxColumn();
             lblGrandTotal = new Label();
             panelFooter = new Panel();
             lblAcknowledgement = new Label();
@@ -328,7 +340,7 @@
             dgvHospitalCharges.BorderStyle = BorderStyle.None;
             dgvHospitalCharges.ColumnHeadersHeight = 30;
             dgvHospitalCharges.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dgvHospitalCharges.Columns.AddRange(new DataGridViewColumn[] { colParticulars, colTotal, colPHIC, colMSS, colCash, colBalance });
+            dgvHospitalCharges.Columns.AddRange(new DataGridViewColumn[] { colServiceItem, colCategory, colQuantity, colUnitPrice, colAmount });
             dgvHospitalCharges.Dock = DockStyle.Fill;
             dgvHospitalCharges.Location = new Point(10, 26);
             dgvHospitalCharges.Name = "dgvHospitalCharges";
@@ -338,47 +350,40 @@
             dgvHospitalCharges.Size = new Size(856, 264);
             dgvHospitalCharges.TabIndex = 0;
             //
-            // colParticulars
+            // colServiceItem
             //
-            colParticulars.HeaderText = "PARTICULARS";
-            colParticulars.Name = "colParticulars";
-            colParticulars.ReadOnly = true;
-            colParticulars.Width = 300;
+            colServiceItem.HeaderText = "SERVICE/ITEM";
+            colServiceItem.Name = "colServiceItem";
+            colServiceItem.ReadOnly = true;
+            colServiceItem.Width = 300;
             //
-            // colTotal
+            // colCategory
             //
-            colTotal.HeaderText = "TOTAL";
-            colTotal.Name = "colTotal";
-            colTotal.ReadOnly = true;
-            colTotal.Width = 110;
+            colCategory.HeaderText = "CATEGORY";
+            colCategory.Name = "colCategory";
+            colCategory.ReadOnly = true;
+            colCategory.Width = 150;
             //
-            // colPHIC
+            // colQuantity
             //
-            colPHIC.HeaderText = "PHIC";
-            colPHIC.Name = "colPHIC";
-            colPHIC.ReadOnly = true;
-            colPHIC.Width = 90;
+            colQuantity.HeaderText = "QUANTITY";
+            colQuantity.Name = "colQuantity";
+            colQuantity.ReadOnly = true;
+            colQuantity.Width = 100;
             //
-            // colMSS
+            // colUnitPrice
             //
-            colMSS.HeaderText = "MSS DISCOUNT";
-            colMSS.Name = "colMSS";
-            colMSS.ReadOnly = true;
-            colMSS.Width = 120;
+            colUnitPrice.HeaderText = "UNIT PRICE";
+            colUnitPrice.Name = "colUnitPrice";
+            colUnitPrice.ReadOnly = true;
+            colUnitPrice.Width = 130;
             //
-            // colCash
+            // colAmount
             //
-            colCash.HeaderText = "CASH";
-            colCash.Name = "colCash";
-            colCash.ReadOnly = true;
-            colCash.Width = 90;
-            //
-            // colBalance
-            //
-            colBalance.HeaderText = "BALANCE";
-            colBalance.Name = "colBalance";
-            colBalance.ReadOnly = true;
-            colBalance.Width = 120;
+            colAmount.HeaderText = "AMOUNT";
+            colAmount.Name = "colAmount";
+            colAmount.ReadOnly = true;
+            colAmount.Width = 150;
             //
             // lblGrandTotal
             //
@@ -570,6 +575,9 @@
             panelButtons.ResumeLayout(false);
             ResumeLayout(false);
         }
+
+        #endregion
+
         private Panel panelHeader;
         private PictureBox pictureBoxLogo;
         private Label lblHospitalName;
@@ -594,12 +602,11 @@
         private Label lblStatus;
         private GroupBox grpHospitalCharges;
         private DataGridView dgvHospitalCharges;
-        private DataGridViewTextBoxColumn colParticulars;
-        private DataGridViewTextBoxColumn colTotal;
-        private DataGridViewTextBoxColumn colPHIC;
-        private DataGridViewTextBoxColumn colMSS;
-        private DataGridViewTextBoxColumn colCash;
-        private DataGridViewTextBoxColumn colBalance;
+        private DataGridViewTextBoxColumn colServiceItem;
+        private DataGridViewTextBoxColumn colCategory;
+        private DataGridViewTextBoxColumn colQuantity;
+        private DataGridViewTextBoxColumn colUnitPrice;
+        private DataGridViewTextBoxColumn colAmount;
         private Label lblGrandTotal;
         private Panel panelFooter;
         private Label lblAcknowledgement;

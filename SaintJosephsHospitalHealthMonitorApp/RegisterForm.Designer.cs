@@ -2,34 +2,15 @@
 {
     partial class RegisterForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.TextBox txtName;
-        private System.Windows.Forms.TextBox txtEmail;
-        private System.Windows.Forms.TextBox txtPassword;
-        private System.Windows.Forms.TextBox txtConfirmPassword;
-        private System.Windows.Forms.TextBox txtSpecialization;
-        private System.Windows.Forms.ComboBox cmbRole;
-        private System.Windows.Forms.ComboBox cmbGender;
-        private System.Windows.Forms.ComboBox cmbSpecialization;
-        private System.Windows.Forms.Button btnSubmit;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.CheckBox chkShowPassword;
-        private System.Windows.Forms.CheckBox chkChangePassword;
-        private System.Windows.Forms.Panel panelHeader;
-        private System.Windows.Forms.Panel panelDoctorInfo;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblName;
-        private System.Windows.Forms.Label lblEmail;
-        private System.Windows.Forms.Label lblPassword;
-        private System.Windows.Forms.Label lblConfirmPassword;
-        private System.Windows.Forms.Label lblAge;
-        private System.Windows.Forms.Label lblGender;
-        private System.Windows.Forms.Label lblRole;
-        private System.Windows.Forms.Label lblSpecialization;
-        private System.Windows.Forms.PictureBox pictureBoxProfile;
-        private System.Windows.Forms.Button btnUploadPhoto;
-        private System.Windows.Forms.Button btnRemovePhoto;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -39,6 +20,12 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
             panelHeader = new Panel();
@@ -282,7 +269,6 @@
             cmbGender.FlatStyle = FlatStyle.Flat;
             cmbGender.Font = new Font("Segoe UI", 10F);
             cmbGender.FormattingEnabled = true;
-            cmbGender.Items.AddRange(new object[] { "Male", "Female", "Other" });
             cmbGender.SelectedIndex = 0;
             cmbGender.Location = new Point(244, 445);
             cmbGender.Name = "cmbGender";
@@ -448,6 +434,35 @@
             ResumeLayout(false);
             PerformLayout();
         }
+
+        #endregion
+
         private DateTimePicker dtpDateOfBirth;
+        private TextBox txtName;
+        private TextBox txtEmail;
+        private TextBox txtPassword;
+        private TextBox txtConfirmPassword;
+        private TextBox txtSpecialization;
+        private ComboBox cmbRole;
+        private ComboBox cmbGender;
+        private ComboBox cmbSpecialization;
+        private Button btnSubmit;
+        private Button btnCancel;
+        private CheckBox chkShowPassword;
+        private CheckBox chkChangePassword;
+        private Panel panelHeader;
+        private Panel panelDoctorInfo;
+        private Label lblTitle;
+        private Label lblName;
+        private Label lblEmail;
+        private Label lblPassword;
+        private Label lblConfirmPassword;
+        private Label lblAge;
+        private Label lblGender;
+        private Label lblRole;
+        private Label lblSpecialization;
+        private PictureBox pictureBoxProfile;
+        private Button btnUploadPhoto;
+        private Button btnRemovePhoto;
     }
 }

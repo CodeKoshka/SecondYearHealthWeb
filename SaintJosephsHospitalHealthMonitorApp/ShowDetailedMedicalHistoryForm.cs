@@ -119,23 +119,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 displayDt.Columns.Add("Date & Time", typeof(string));
                 displayDt.Columns.Add("Visit Type", typeof(string));
                 displayDt.Columns.Add("Attending Doctor", typeof(string));
-                displayDt.Columns.Add("Clinical Summary", typeof(string));
 
                 foreach (DataRow row in dt.Rows)
                 {
-                    string diagnosis = row["diagnosis"].ToString();
-                    string summary = diagnosis.Length > 100
-                        ? diagnosis.Substring(0, 100) + "..."
-                        : diagnosis;
-
                     DateTime recordDate = Convert.ToDateTime(row["record_date"]);
 
                     displayDt.Rows.Add(
                         row["record_id"],
                         recordDate.ToString("yyyy-MM-dd HH:mm"),
                         row["visit_type"],
-                        row["doctor_name"],
-                        summary
+                        row["doctor_name"]
                     );
                 }
 
@@ -157,15 +150,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
             if (dgvHistory.Columns["Date & Time"] != null)
             {
-                dgvHistory.Columns["Date & Time"].Width = 150;
+                dgvHistory.Columns["Date & Time"].FillWeight = 33;
             }
             if (dgvHistory.Columns["Visit Type"] != null)
             {
-                dgvHistory.Columns["Visit Type"].Width = 120;
+                dgvHistory.Columns["Visit Type"].FillWeight = 33;
             }
             if (dgvHistory.Columns["Attending Doctor"] != null)
             {
-                dgvHistory.Columns["Attending Doctor"].Width = 150;
+                dgvHistory.Columns["Attending Doctor"].FillWeight = 34;
             }
 
             foreach (DataGridViewColumn column in dgvHistory.Columns)
@@ -211,24 +204,26 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             try
             {
-                using (SaveFileDialog saveDialog = new SaveFileDialog())
+                if (dgvHistory.SelectedRows.Count == 0)
                 {
-                    saveDialog.Filter = "PDF Files (*.pdf)|*.pdf";
-                    saveDialog.FileName = $"MedicalHistory_{patientName.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
-                    saveDialog.Title = "Save Medical History as PDF";
-
-                    if (saveDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        GeneratePDF(saveDialog.FileName);
-
-                        MessageBox.Show(
-                            $"✅ Medical History PDF saved successfully!\n\n" +
-                            $"Location: {saveDialog.FileName}",
-                            "Success",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
+                    MessageBox.Show(
+                        "Please select a medical record to print.",
+                        "Selection Required",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    return;
                 }
+
+                int selectedRecordId = Convert.ToInt32(dgvHistory.SelectedRows[0].Cells["record_id"].Value);
+
+                string tempPdfPath = Path.Combine(Path.GetTempPath(), $"MedicalRecord_{patientName.Replace(" ", "_")}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
+                GeneratePDF(tempPdfPath, selectedRecordId);
+
+                MessageBox.Show(
+                    $"✅ Medical Record PDF preview opened.",
+                    "Preview",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -239,102 +234,120 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     MessageBoxIcon.Error);
             }
         }
-        private void GeneratePDF(string filePath)
+
+        private DataTable GetSingleMedicalRecord(int recordId)
         {
-            Document document = new Document(PageSize.A4, 35, 35, 35, 35);
-            PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(filePath, FileMode.Create));
-            document.Open();
+            string query = @"
+            SELECT 
+            mr.record_id,
+            mr.record_date,
+            mr.diagnosis,
+            mr.prescription,
+            mr.visit_type,
+            u.name AS doctor_name
+            FROM MedicalRecords mr
+            INNER JOIN Doctors d ON mr.doctor_id = d.doctor_id
+            INNER JOIN Users u ON d.user_id = u.user_id
+            WHERE mr.record_id = @recordId";
 
-            Font titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 13, BaseColor.BLACK);
-            Font headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
-            Font sectionFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
-            Font normalFont = FontFactory.GetFont(FontFactory.HELVETICA, 9, BaseColor.BLACK);
-            Font smallFont = FontFactory.GetFont(FontFactory.HELVETICA, 7, BaseColor.BLACK);
+            return DatabaseHelper.ExecuteQuery(query,
+                new MySqlParameter("@recordId", recordId));
+        }
 
-            var patientInfo = GetPatientInfo();
-
-            Paragraph hospitalTitle = new Paragraph("MEDICAL RECORD - ST. JOSEPH'S CARDIAC HOSPITAL", titleFont);
-            hospitalTitle.Alignment = Element.ALIGN_CENTER;
-            hospitalTitle.SpacingAfter = 4;
-            document.Add(hospitalTitle);
-
-            Paragraph dept = new Paragraph("Department of Cardiology", normalFont);
-            dept.Alignment = Element.ALIGN_CENTER;
-            dept.SpacingAfter = 3;
-            document.Add(dept);
-
-            Paragraph contactInfo = new Paragraph("Tarlac City, Black Market District | Phone: 09111111111", smallFont);
-            contactInfo.Alignment = Element.ALIGN_CENTER;
-            contactInfo.SpacingAfter = 8;
-            document.Add(contactInfo);
-
-            Paragraph patientName = new Paragraph($"Patient: {patientInfo["name"]}", headerFont);
-            patientName.SpacingAfter = 2;
-            document.Add(patientName);
-
-            if (patientInfo["date_of_birth"] != DBNull.Value && patientInfo["date_of_birth"] != null)
+        private void GeneratePDF(string filePath, int recordId)
+        {
+            try
             {
-                DateTime dob = Convert.ToDateTime(patientInfo["date_of_birth"]);
-                Paragraph dobInfo = new Paragraph($"Date of Birth: {dob:MM/dd/yyyy}", normalFont);
-                dobInfo.SpacingAfter = 1;
-                document.Add(dobInfo);
-            }
+                Document document = new Document(PageSize.A4, 35, 35, 35, 35);
+                PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(filePath, FileMode.Create));
+                document.Open();
 
-            Paragraph ageInfo = new Paragraph($"Age: {patientInfo["age"]}", normalFont);
-            ageInfo.SpacingAfter = 1;
-            document.Add(ageInfo);
+                Font titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 13, BaseColor.BLACK);
+                Font headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
+                Font sectionFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
+                Font normalFont = FontFactory.GetFont(FontFactory.HELVETICA, 9, BaseColor.BLACK);
+                Font smallFont = FontFactory.GetFont(FontFactory.HELVETICA, 7, BaseColor.BLACK);
 
-            Paragraph genderInfo = new Paragraph($"Gender: {patientInfo["gender"]}", normalFont);
-            genderInfo.SpacingAfter = 1;
-            document.Add(genderInfo);
+                var patientInfo = GetPatientInfo();
 
-            Paragraph phoneInfo = new Paragraph($"Phone: {patientInfo["phone_number"] ?? "N/A"}", normalFont);
-            phoneInfo.SpacingAfter = 1;
-            document.Add(phoneInfo);
+                Paragraph hospitalTitle = new Paragraph("MEDICAL RECORD - ST. JOSEPH'S CARDIAC HOSPITAL", titleFont);
+                hospitalTitle.Alignment = Element.ALIGN_CENTER;
+                hospitalTitle.SpacingAfter = 4;
+                document.Add(hospitalTitle);
 
-            Paragraph emergencyInfo = new Paragraph($"Emergency Contact: {patientInfo["emergency_contact"] ?? "N/A"}", normalFont);
-            emergencyInfo.SpacingAfter = 1;
-            document.Add(emergencyInfo);
+                Paragraph dept = new Paragraph("Department of Cardiology", normalFont);
+                dept.Alignment = Element.ALIGN_CENTER;
+                dept.SpacingAfter = 3;
+                document.Add(dept);
 
-            Paragraph bloodTypeInfo = new Paragraph($"Blood Type: {patientInfo["blood_type"] ?? "N/A"}", normalFont);
-            bloodTypeInfo.SpacingAfter = 10;
-            document.Add(bloodTypeInfo);
+                Paragraph contactInfo = new Paragraph("Tarlac City, Black Market District | Phone: 09111111111", smallFont);
+                contactInfo.Alignment = Element.ALIGN_CENTER;
+                contactInfo.SpacingAfter = 8;
+                document.Add(contactInfo);
 
-            var records = GetMedicalRecords();
+                Paragraph patientName = new Paragraph($"Patient: {patientInfo["name"]}", headerFont);
+                patientName.SpacingAfter = 2;
+                document.Add(patientName);
 
-            foreach (DataRow record in records.Rows)
-            {
-                DateTime recordDate = Convert.ToDateTime(record["record_date"]);
-
-                if (writer.GetVerticalPosition(false) < 150)
+                if (patientInfo["date_of_birth"] != DBNull.Value && patientInfo["date_of_birth"] != null)
                 {
-                    document.NewPage();
+                    DateTime dob = Convert.ToDateTime(patientInfo["date_of_birth"]);
+                    Paragraph dobInfo = new Paragraph($"Date of Birth: {dob:MM/dd/yyyy}", normalFont);
+                    dobInfo.SpacingAfter = 1;
+                    document.Add(dobInfo);
                 }
 
-                Paragraph recordDatePara = new Paragraph($"Record Date: {recordDate:MM/dd/yyyy HH:mm}", sectionFont);
-                recordDatePara.SpacingAfter = 3;
-                document.Add(recordDatePara);
+                Paragraph ageInfo = new Paragraph($"Age: {patientInfo["age"]}", normalFont);
+                ageInfo.SpacingAfter = 1;
+                document.Add(ageInfo);
 
-                Paragraph visitType = new Paragraph($"Visit Type: {record["visit_type"]}", normalFont);
-                visitType.SpacingAfter = 2;
-                document.Add(visitType);
+                Paragraph genderInfo = new Paragraph($"Gender: {patientInfo["gender"]}", normalFont);
+                genderInfo.SpacingAfter = 1;
+                document.Add(genderInfo);
 
-                Paragraph attendingDoc = new Paragraph($"Attending Physician: Dr. {record["doctor_name"]}", normalFont);
-                attendingDoc.SpacingAfter = 5;
-                document.Add(attendingDoc);
+                Paragraph phoneInfo = new Paragraph($"Phone: {patientInfo["phone_number"] ?? "N/A"}", normalFont);
+                phoneInfo.SpacingAfter = 1;
+                document.Add(phoneInfo);
 
-                Paragraph assessmentHeader = new Paragraph("ASSESSMENT & DIAGNOSIS:", sectionFont);
-                assessmentHeader.SpacingAfter = 2;
-                document.Add(assessmentHeader);
+                Paragraph emergencyInfo = new Paragraph($"Emergency Contact: {patientInfo["emergency_contact"] ?? "N/A"}", normalFont);
+                emergencyInfo.SpacingAfter = 1;
+                document.Add(emergencyInfo);
 
-                LineSeparator line = new LineSeparator(1f, 100f, BaseColor.BLACK, Element.ALIGN_CENTER, -2);
-                document.Add(new Chunk(line));
+                Paragraph bloodTypeInfo = new Paragraph($"Blood Type: {patientInfo["blood_type"] ?? "N/A"}", normalFont);
+                bloodTypeInfo.SpacingAfter = 10;
+                document.Add(bloodTypeInfo);
 
-                string diagnosis = record["diagnosis"].ToString();
-                string cleanedDiagnosis = GetDiagnosisWithBoldHeaders(diagnosis, out string doctorNotes, out string doctorSignature, sectionFont, normalFont, document);
+                var record = GetSingleMedicalRecord(recordId);
 
-                if (!string.IsNullOrWhiteSpace(doctorNotes))
+                if (record != null && record.Rows.Count > 0)
                 {
+                    DataRow recordRow = record.Rows[0];
+                    DateTime recordDate = Convert.ToDateTime(recordRow["record_date"]);
+
+                    Paragraph recordDatePara = new Paragraph($"Record Date: {recordDate:MM/dd/yyyy HH:mm}", sectionFont);
+                    recordDatePara.SpacingAfter = 3;
+                    document.Add(recordDatePara);
+
+                    Paragraph visitType = new Paragraph($"Visit Type: {recordRow["visit_type"]}", normalFont);
+                    visitType.SpacingAfter = 2;
+                    document.Add(visitType);
+
+                    Paragraph attendingDoc = new Paragraph($"Attending Physician: Dr. {recordRow["doctor_name"]}", normalFont);
+                    attendingDoc.SpacingAfter = 5;
+                    document.Add(attendingDoc);
+
+                    Paragraph assessmentHeader = new Paragraph("ASSESSMENT & DIAGNOSIS:", sectionFont);
+                    assessmentHeader.SpacingAfter = 2;
+                    document.Add(assessmentHeader);
+
+                    LineSeparator line = new LineSeparator(1f, 100f, BaseColor.BLACK, Element.ALIGN_CENTER, -2);
+                    document.Add(new Chunk(line));
+
+                    string diagnosis = recordRow["diagnosis"].ToString();
+                    string cleanedDiagnosis = GetDiagnosisWithBoldHeaders(
+                        diagnosis, out string doctorNotes, out string doctorSignature,
+                        sectionFont, normalFont, document);
+
                     document.Add(new Chunk(line));
 
                     Paragraph notesHeader = new Paragraph("DOCTOR'S NOTES / ADDITIONAL COMMENTS:", sectionFont);
@@ -342,66 +355,108 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     notesHeader.SpacingAfter = 3;
                     document.Add(notesHeader);
 
-                    Paragraph notesContent = new Paragraph(doctorNotes, normalFont);
-                    notesContent.SpacingAfter = 3;
-                    document.Add(notesContent);
+                    if (!string.IsNullOrWhiteSpace(doctorNotes))
+                    {
+                        Paragraph notesContent = new Paragraph(doctorNotes, normalFont);
+                        notesContent.SpacingAfter = 3;
+                        document.Add(notesContent);
+                    }
+                    else
+                    {
+                        Paragraph blankContent = new Paragraph(" ", normalFont);
+                        blankContent.SpacingAfter = 3;
+                        document.Add(blankContent);
+                    }
 
                     document.Add(new Chunk(line));
-                    document.Add(new Paragraph(" ", normalFont) { SpacingAfter = 10 }); 
+                    document.Add(new Paragraph(" ", normalFont) { SpacingAfter = 10 });
+
+                    document.Add(new Paragraph(" ", normalFont) { SpacingAfter = 8 });
+
+                    PdfPTable sigTable = new PdfPTable(2);
+                    sigTable.WidthPercentage = 100;
+                    sigTable.SpacingBefore = 8;
+                    sigTable.SpacingAfter = 8;
+
+                    string signatureName = !string.IsNullOrWhiteSpace(doctorSignature)
+                        ? doctorSignature
+                        : recordRow["doctor_name"].ToString();
+
+                    PdfPCell sigLeft = new PdfPCell(new Phrase($"Physician Signature: {signatureName}", normalFont));
+                    sigLeft.Border = Rectangle.NO_BORDER;
+                    sigLeft.PaddingTop = 5;
+                    sigTable.AddCell(sigLeft);
+
+                    PdfPCell sigRight = new PdfPCell(new Phrase($"Printed Date: {DateTime.Now:MM/dd/yyyy HH:mm}", normalFont));
+                    sigRight.Border = Rectangle.NO_BORDER;
+                    sigRight.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    sigRight.PaddingTop = 5;
+                    sigTable.AddCell(sigRight);
+
+                    document.Add(sigTable);
                 }
 
-                document.Add(new Paragraph(" ", normalFont) { SpacingAfter = 8 });
+                document.Add(new Paragraph(" ", normalFont) { SpacingBefore = 12 });
 
-                PdfPTable sigTable = new PdfPTable(2);
-                sigTable.WidthPercentage = 100;
-                sigTable.SpacingBefore = 8; 
-                sigTable.SpacingAfter = 8;
+                LineSeparator footerLine = new LineSeparator(1f, 100f, BaseColor.BLACK, Element.ALIGN_CENTER, -2);
+                document.Add(new Chunk(footerLine));
 
-                string signatureName = !string.IsNullOrWhiteSpace(doctorSignature) ? doctorSignature : record["doctor_name"].ToString();
+                Paragraph confidential = new Paragraph(
+                    "CONFIDENTIAL MEDICAL RECORD - Protected Health Information",
+                    FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 7, BaseColor.BLACK));
+                confidential.Alignment = Element.ALIGN_CENTER;
+                confidential.SpacingBefore = 3;
+                confidential.SpacingAfter = 2;
+                document.Add(confidential);
 
-                PdfPCell sigLeft = new PdfPCell(new Phrase($"Physician Signature: {signatureName}", normalFont));
-                sigLeft.Border = Rectangle.NO_BORDER;
-                sigLeft.PaddingTop = 5;
-                sigTable.AddCell(sigLeft);
+                Paragraph disclaimer = new Paragraph(
+                    "This document contains privileged medical information. Unauthorized disclosure is prohibited by law.",
+                    smallFont);
+                disclaimer.Alignment = Element.ALIGN_CENTER;
+                document.Add(disclaimer);
 
-                PdfPCell sigRight = new PdfPCell(new Phrase($"Printed Date: {DateTime.Now:MM/dd/yyyy HH:mm}", normalFont));
-                sigRight.Border = Rectangle.NO_BORDER;
-                sigRight.HorizontalAlignment = Element.ALIGN_RIGHT;
-                sigRight.PaddingTop = 5; 
-                sigTable.AddCell(sigRight);
+                Paragraph docId = new Paragraph(
+                    $"Document ID: MR-{recordId:D6}-{DateTime.Now:yyyyMMdd}", smallFont);
+                docId.Alignment = Element.ALIGN_CENTER;
+                document.Add(docId);
 
-                document.Add(sigTable);
+                document.Close();
+                writer.Close();
 
-                if (records.Rows.Count > 1 && record != records.Rows[records.Rows.Count - 1])
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
                 {
-                    LineSeparator separator = new LineSeparator(0.5f, 100f, BaseColor.LIGHT_GRAY, Element.ALIGN_CENTER, -2);
-                    document.Add(new Chunk(separator));
-                    document.Add(new Paragraph(" ", normalFont) { SpacingAfter = 8 });
+                    FileName = filePath,
+                    UseShellExecute = true
+                });
+
+                DialogResult saveResult = MessageBox.Show(
+                    "PDF preview has been opened. Would you like to save a permanent copy?",
+                    "Save PDF",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (saveResult == DialogResult.Yes)
+                {
+                    SaveFileDialog saveDialog = new SaveFileDialog();
+                    saveDialog.Filter = "PDF Files (*.pdf)|*.pdf";
+                    saveDialog.FileName = $"MedicalRecord_{recordId}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+
+                    if (saveDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        File.Copy(filePath, saveDialog.FileName, true);
+                        MessageBox.Show(
+                            $"PDF saved successfully!\n{saveDialog.FileName}",
+                            "Success",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
                 }
             }
-
-            document.Add(new Paragraph(" ", normalFont) { SpacingBefore = 12 });
-
-            LineSeparator footerLine = new LineSeparator(1f, 100f, BaseColor.BLACK, Element.ALIGN_CENTER, -2);
-            document.Add(new Chunk(footerLine));
-
-            Paragraph confidential = new Paragraph("CONFIDENTIAL MEDICAL RECORD - Protected Health Information",
-                FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 7, BaseColor.BLACK));
-            confidential.Alignment = Element.ALIGN_CENTER;
-            confidential.SpacingBefore = 3;
-            confidential.SpacingAfter = 2;
-            document.Add(confidential);
-
-            Paragraph disclaimer = new Paragraph("This document contains privileged medical information. Unauthorized disclosure is prohibited by law.", smallFont);
-            disclaimer.Alignment = Element.ALIGN_CENTER;
-            disclaimer.SpacingAfter = 2;
-            document.Add(disclaimer);
-
-            Paragraph docId = new Paragraph($"Document ID: MH-{patientId:D6}-{DateTime.Now:yyyyMMdd}", smallFont);
-            docId.Alignment = Element.ALIGN_CENTER;
-            document.Add(docId);
-
-            document.Close();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error generating PDF: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private string GetDiagnosisWithBoldHeaders(string diagnosis, out string doctorNotes, out string doctorSignature, Font sectionFont, Font normalFont, Document document)
@@ -418,6 +473,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 mainDiagnosis = diagnosis.Substring(0, doctorNotesIndex);
                 string notesSection = diagnosis.Substring(doctorNotesIndex);
+
                 int signatureIndex = notesSection.IndexOf("Physician Signature:");
 
                 if (signatureIndex >= 0)
@@ -426,6 +482,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
 
                 doctorNotes = notesSection.Replace("DOCTOR'S NOTES / ADDITIONAL COMMENTS:", "").Trim();
+
+                var noteLines = doctorNotes.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                StringBuilder cleanNotes = new StringBuilder();
+
+                foreach (var line in noteLines)
+                {
+                    string trimmedLine = line.Trim();
+                    if (!trimmedLine.StartsWith("Assessment Date:"))
+                    {
+                        cleanNotes.AppendLine(trimmedLine);
+                    }
+                }
+
+                doctorNotes = cleanNotes.ToString().Trim();
             }
             else
             {
@@ -473,7 +543,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            return string.Empty; 
+            return string.Empty;
         }
 
         private Dictionary<string, object> GetPatientInfo()
@@ -514,26 +584,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             return info;
-        }
-
-        private DataTable GetMedicalRecords()
-        {
-            string query = @"
-                SELECT 
-                mr.record_id,
-                mr.record_date,
-                mr.diagnosis,
-                mr.prescription,
-                mr.visit_type,
-                u.name AS doctor_name
-                FROM MedicalRecords mr
-                INNER JOIN Doctors d ON mr.doctor_id = d.doctor_id
-                INNER JOIN Users u ON d.user_id = u.user_id
-                WHERE mr.patient_id = @patientId
-                ORDER BY mr.record_date DESC";
-
-            return DatabaseHelper.ExecuteQuery(query,
-                new MySqlParameter("@patientId", patientId));
         }
 
         private void BtnClose_Click(object sender, EventArgs e)

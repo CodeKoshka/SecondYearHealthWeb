@@ -2,23 +2,15 @@
 {
     partial class AssignDoctorForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Button btnAssign;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblPatientInfo;
-        private System.Windows.Forms.DataGridView dgvDoctors;
-        private System.Windows.Forms.Panel panelHeader;
-        private System.Windows.Forms.Panel panelSearch;
-        private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.Label lblSearch;
-        private System.Windows.Forms.Panel panelFilters;
-        private System.Windows.Forms.RadioButton rbAll;
-        private System.Windows.Forms.RadioButton rbOnDuty;
-        private System.Windows.Forms.RadioButton rbOffDuty;
-        private System.Windows.Forms.Label lblDoctorCount;
-        private System.Windows.Forms.Panel panelButtons;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -28,256 +20,280 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
-            this.panelHeader = new System.Windows.Forms.Panel();
-            this.lblTitle = new System.Windows.Forms.Label();
-            this.lblPatientInfo = new System.Windows.Forms.Label();
-            this.panelSearch = new System.Windows.Forms.Panel();
-            this.lblSearch = new System.Windows.Forms.Label();
-            this.txtSearch = new System.Windows.Forms.TextBox();
-            this.panelFilters = new System.Windows.Forms.Panel();
-            this.rbAll = new System.Windows.Forms.RadioButton();
-            this.rbOnDuty = new System.Windows.Forms.RadioButton();
-            this.rbOffDuty = new System.Windows.Forms.RadioButton();
-            this.lblDoctorCount = new System.Windows.Forms.Label();
-            this.dgvDoctors = new System.Windows.Forms.DataGridView();
-            this.panelButtons = new System.Windows.Forms.Panel();
-            this.btnAssign = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.panelHeader.SuspendLayout();
-            this.panelSearch.SuspendLayout();
-            this.panelFilters.SuspendLayout();
+            panelHeader = new System.Windows.Forms.Panel();
+            lblTitle = new System.Windows.Forms.Label();
+            lblPatientInfo = new System.Windows.Forms.Label();
+            panelSearch = new System.Windows.Forms.Panel();
+            lblSearch = new System.Windows.Forms.Label();
+            txtSearch = new System.Windows.Forms.TextBox();
+            panelFilters = new System.Windows.Forms.Panel();
+            rbAll = new System.Windows.Forms.RadioButton();
+            rbOnDuty = new System.Windows.Forms.RadioButton();
+            rbOffDuty = new System.Windows.Forms.RadioButton();
+            lblDoctorCount = new System.Windows.Forms.Label();
+            dgvDoctors = new System.Windows.Forms.DataGridView();
+            panelButtons = new System.Windows.Forms.Panel();
+            btnAssign = new System.Windows.Forms.Button();
+            btnCancel = new System.Windows.Forms.Button();
+            panelHeader.SuspendLayout();
+            panelSearch.SuspendLayout();
+            panelFilters.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDoctors)).BeginInit();
-            this.panelButtons.SuspendLayout();
-            this.SuspendLayout();
+            panelButtons.SuspendLayout();
+            SuspendLayout();
             // 
             // panelHeader
             // 
-            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.panelHeader.Controls.Add(this.lblTitle);
-            this.panelHeader.Controls.Add(this.lblPatientInfo);
-            this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelHeader.Location = new System.Drawing.Point(0, 0);
-            this.panelHeader.Name = "panelHeader";
-            this.panelHeader.Size = new System.Drawing.Size(900, 90);
-            this.panelHeader.TabIndex = 0;
+            panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            panelHeader.Controls.Add(this.lblTitle);
+            panelHeader.Controls.Add(this.lblPatientInfo);
+            panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            panelHeader.Location = new System.Drawing.Point(0, 0);
+            panelHeader.Name = "panelHeader";
+            panelHeader.Size = new System.Drawing.Size(900, 90);
+            panelHeader.TabIndex = 0;
             // 
             // lblTitle
             // 
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Location = new System.Drawing.Point(20, 15);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(220, 30);
-            this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "👨‍⚕️ Assign Doctor";
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            lblTitle.ForeColor = System.Drawing.Color.White;
+            lblTitle.Location = new System.Drawing.Point(20, 15);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new System.Drawing.Size(220, 30);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "👨‍⚕️ Assign Doctor";
             // 
             // lblPatientInfo
             // 
-            this.lblPatientInfo.AutoSize = true;
-            this.lblPatientInfo.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.lblPatientInfo.ForeColor = System.Drawing.Color.White;
-            this.lblPatientInfo.Location = new System.Drawing.Point(20, 55);
-            this.lblPatientInfo.Name = "lblPatientInfo";
-            this.lblPatientInfo.Size = new System.Drawing.Size(150, 20);
-            this.lblPatientInfo.TabIndex = 1;
-            this.lblPatientInfo.Text = "Assigning doctor for: ";
+            lblPatientInfo.AutoSize = true;
+            lblPatientInfo.Font = new System.Drawing.Font("Segoe UI", 11F);
+            lblPatientInfo.ForeColor = System.Drawing.Color.White;
+            lblPatientInfo.Location = new System.Drawing.Point(20, 55);
+            lblPatientInfo.Name = "lblPatientInfo";
+            lblPatientInfo.Size = new System.Drawing.Size(150, 20);
+            lblPatientInfo.TabIndex = 1;
+            lblPatientInfo.Text = "Assigning doctor for: ";
             // 
             // panelSearch
             // 
-            this.panelSearch.BackColor = System.Drawing.Color.White;
-            this.panelSearch.Controls.Add(this.lblSearch);
-            this.panelSearch.Controls.Add(this.txtSearch);
-            this.panelSearch.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelSearch.Location = new System.Drawing.Point(0, 90);
-            this.panelSearch.Name = "panelSearch";
-            this.panelSearch.Padding = new System.Windows.Forms.Padding(20, 15, 20, 15);
-            this.panelSearch.Size = new System.Drawing.Size(900, 70);
-            this.panelSearch.TabIndex = 1;
+            panelSearch.BackColor = System.Drawing.Color.White;
+            panelSearch.Controls.Add(this.lblSearch);
+            panelSearch.Controls.Add(this.txtSearch);
+            panelSearch.Dock = System.Windows.Forms.DockStyle.Top;
+            panelSearch.Location = new System.Drawing.Point(0, 90);
+            panelSearch.Name = "panelSearch";
+            panelSearch.Padding = new System.Windows.Forms.Padding(20, 15, 20, 15);
+            panelSearch.Size = new System.Drawing.Size(900, 70);
+            panelSearch.TabIndex = 1;
             // 
             // lblSearch
             // 
-            this.lblSearch.AutoSize = true;
-            this.lblSearch.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.lblSearch.Location = new System.Drawing.Point(20, 15);
-            this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(216, 15);
-            this.lblSearch.TabIndex = 0;
-            this.lblSearch.Text = "🔍 Search by name or specialization:";
+            lblSearch.AutoSize = true;
+            lblSearch.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblSearch.Location = new System.Drawing.Point(20, 15);
+            lblSearch.Name = "lblSearch";
+            lblSearch.Size = new System.Drawing.Size(216, 15);
+            lblSearch.TabIndex = 0;
+            lblSearch.Text = "🔍 Search by name or specialization:";
             // 
             // txtSearch
             // 
-            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtSearch.Location = new System.Drawing.Point(20, 35);
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.PlaceholderText = "Type doctor name or specialization...";
-            this.txtSearch.Size = new System.Drawing.Size(400, 25);
-            this.txtSearch.TabIndex = 1;
-            this.txtSearch.TextChanged += new System.EventHandler(this.TxtSearch_TextChanged);
+            txtSearch.Font = new System.Drawing.Font("Segoe UI", 10F);
+            txtSearch.Location = new System.Drawing.Point(20, 35);
+            txtSearch.Name = "txtSearch";
+            txtSearch.PlaceholderText = "Type doctor name or specialization...";
+            txtSearch.Size = new System.Drawing.Size(400, 25);
+            txtSearch.TabIndex = 1;
+            txtSearch.TextChanged += new System.EventHandler(this.TxtSearch_TextChanged);
             // 
             // panelFilters
             // 
-            this.panelFilters.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
-            this.panelFilters.Controls.Add(this.lblDoctorCount);
-            this.panelFilters.Controls.Add(this.rbAll);
-            this.panelFilters.Controls.Add(this.rbOnDuty);
-            this.panelFilters.Controls.Add(this.rbOffDuty);
-            this.panelFilters.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelFilters.Location = new System.Drawing.Point(0, 160);
-            this.panelFilters.Name = "panelFilters";
-            this.panelFilters.Padding = new System.Windows.Forms.Padding(20, 10, 20, 10);
-            this.panelFilters.Size = new System.Drawing.Size(900, 60);
-            this.panelFilters.TabIndex = 2;
+            panelFilters.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
+            panelFilters.Controls.Add(this.lblDoctorCount);
+            panelFilters.Controls.Add(this.rbAll);
+            panelFilters.Controls.Add(this.rbOnDuty);
+            panelFilters.Controls.Add(this.rbOffDuty);
+            panelFilters.Dock = System.Windows.Forms.DockStyle.Top;
+            panelFilters.Location = new System.Drawing.Point(0, 160);
+            panelFilters.Name = "panelFilters";
+            panelFilters.Padding = new System.Windows.Forms.Padding(20, 10, 20, 10);
+            panelFilters.Size = new System.Drawing.Size(900, 60);
+            panelFilters.TabIndex = 2;
             // 
             // rbAll
             // 
-            this.rbAll.AutoSize = true;
-            this.rbAll.Checked = true;
-            this.rbAll.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.rbAll.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.rbAll.Location = new System.Drawing.Point(20, 18);
-            this.rbAll.Name = "rbAll";
-            this.rbAll.Size = new System.Drawing.Size(107, 23);
-            this.rbAll.TabIndex = 0;
-            this.rbAll.TabStop = true;
-            this.rbAll.Text = "📋 All (Show All)";
-            this.rbAll.UseVisualStyleBackColor = true;
-            this.rbAll.CheckedChanged += new System.EventHandler(this.RbAll_CheckedChanged);
+            rbAll.AutoSize = true;
+            rbAll.Checked = true;
+            rbAll.Cursor = System.Windows.Forms.Cursors.Hand;
+            rbAll.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            rbAll.Location = new System.Drawing.Point(20, 18);
+            rbAll.Name = "rbAll";
+            rbAll.Size = new System.Drawing.Size(107, 23);
+            rbAll.TabIndex = 0;
+            rbAll.TabStop = true;
+            rbAll.Text = "📋 All (Show All)";
+            rbAll.UseVisualStyleBackColor = true;
+            rbAll.CheckedChanged += new System.EventHandler(this.RbAll_CheckedChanged);
             // 
             // rbOnDuty
             // 
-            this.rbOnDuty.AutoSize = true;
-            this.rbOnDuty.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.rbOnDuty.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.rbOnDuty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.rbOnDuty.Location = new System.Drawing.Point(200, 18);
-            this.rbOnDuty.Name = "rbOnDuty";
-            this.rbOnDuty.Size = new System.Drawing.Size(106, 23);
-            this.rbOnDuty.TabIndex = 1;
-            this.rbOnDuty.Text = "🟢 On Duty";
-            this.rbOnDuty.UseVisualStyleBackColor = true;
-            this.rbOnDuty.CheckedChanged += new System.EventHandler(this.RbOnDuty_CheckedChanged);
+            rbOnDuty.AutoSize = true;
+            rbOnDuty.Cursor = System.Windows.Forms.Cursors.Hand;
+            rbOnDuty.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            rbOnDuty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            rbOnDuty.Location = new System.Drawing.Point(200, 18);
+            rbOnDuty.Name = "rbOnDuty";
+            rbOnDuty.Size = new System.Drawing.Size(106, 23);
+            rbOnDuty.TabIndex = 1;
+            rbOnDuty.Text = "🟢 On Duty";
+            rbOnDuty.UseVisualStyleBackColor = true;
+            rbOnDuty.CheckedChanged += new System.EventHandler(this.RbOnDuty_CheckedChanged);
             // 
             // rbOffDuty
             // 
-            this.rbOffDuty.AutoSize = true;
-            this.rbOffDuty.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.rbOffDuty.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.rbOffDuty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.rbOffDuty.Location = new System.Drawing.Point(360, 18);
-            this.rbOffDuty.Name = "rbOffDuty";
-            this.rbOffDuty.Size = new System.Drawing.Size(111, 23);
-            this.rbOffDuty.TabIndex = 2;
-            this.rbOffDuty.Text = "🔴 Off Duty";
-            this.rbOffDuty.UseVisualStyleBackColor = true;
-            this.rbOffDuty.CheckedChanged += new System.EventHandler(this.RbOffDuty_CheckedChanged);
+            rbOffDuty.AutoSize = true;
+            rbOffDuty.Cursor = System.Windows.Forms.Cursors.Hand;
+            rbOffDuty.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            rbOffDuty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
+            rbOffDuty.Location = new System.Drawing.Point(360, 18);
+            rbOffDuty.Name = "rbOffDuty";
+            rbOffDuty.Size = new System.Drawing.Size(111, 23);
+            rbOffDuty.TabIndex = 2;
+            rbOffDuty.Text = "🔴 Off Duty";
+            rbOffDuty.UseVisualStyleBackColor = true;
+            rbOffDuty.CheckedChanged += new System.EventHandler(this.RbOffDuty_CheckedChanged);
             // 
             // lblDoctorCount
             // 
-            this.lblDoctorCount.AutoSize = true;
-            this.lblDoctorCount.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.lblDoctorCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.lblDoctorCount.Location = new System.Drawing.Point(550, 20);
-            this.lblDoctorCount.Name = "lblDoctorCount";
-            this.lblDoctorCount.Size = new System.Drawing.Size(0, 15);
-            this.lblDoctorCount.TabIndex = 3;
+            lblDoctorCount.AutoSize = true;
+            lblDoctorCount.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblDoctorCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            lblDoctorCount.Location = new System.Drawing.Point(550, 20);
+            lblDoctorCount.Name = "lblDoctorCount";
+            lblDoctorCount.Size = new System.Drawing.Size(0, 15);
+            lblDoctorCount.TabIndex = 3;
             // 
             // dgvDoctors
             // 
-            this.dgvDoctors.AllowUserToAddRows = false;
-            this.dgvDoctors.AllowUserToDeleteRows = false;
-            this.dgvDoctors.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvDoctors.BackgroundColor = System.Drawing.Color.White;
-            this.dgvDoctors.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dgvDoctors.ColumnHeadersHeight = 45;
-            this.dgvDoctors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.dgvDoctors.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.dgvDoctors.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvDoctors.Location = new System.Drawing.Point(0, 220);
-            this.dgvDoctors.MultiSelect = false;
-            this.dgvDoctors.Name = "dgvDoctors";
-            this.dgvDoctors.ReadOnly = true;
-            this.dgvDoctors.RowHeadersVisible = false;
-            this.dgvDoctors.RowTemplate.Height = 40;
-            this.dgvDoctors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvDoctors.Size = new System.Drawing.Size(900, 320);
-            this.dgvDoctors.TabIndex = 3;
-            this.dgvDoctors.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvDoctors_CellDoubleClick);
-            this.dgvDoctors.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DgvDoctors_CellFormatting);
-            this.dgvDoctors.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.DgvDoctors_RowPrePaint);
+            dgvDoctors.AllowUserToAddRows = false;
+            dgvDoctors.AllowUserToDeleteRows = false;
+            dgvDoctors.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            dgvDoctors.BackgroundColor = System.Drawing.Color.White;
+            dgvDoctors.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dgvDoctors.ColumnHeadersHeight = 45;
+            dgvDoctors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dgvDoctors.Cursor = System.Windows.Forms.Cursors.Hand;
+            dgvDoctors.Dock = System.Windows.Forms.DockStyle.Fill;
+            dgvDoctors.Location = new System.Drawing.Point(0, 220);
+            dgvDoctors.MultiSelect = false;
+            dgvDoctors.Name = "dgvDoctors";
+            dgvDoctors.ReadOnly = true;
+            dgvDoctors.RowHeadersVisible = false;
+            dgvDoctors.RowTemplate.Height = 40;
+            dgvDoctors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            dgvDoctors.Size = new System.Drawing.Size(900, 320);
+            dgvDoctors.TabIndex = 3;
+            dgvDoctors.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvDoctors_CellDoubleClick);
+            dgvDoctors.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DgvDoctors_CellFormatting);
+            dgvDoctors.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.DgvDoctors_RowPrePaint);
             // 
             // panelButtons
             // 
-            this.panelButtons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
-            this.panelButtons.Controls.Add(this.btnAssign);
-            this.panelButtons.Controls.Add(this.btnCancel);
-            this.panelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelButtons.Location = new System.Drawing.Point(0, 540);
-            this.panelButtons.Name = "panelButtons";
-            this.panelButtons.Padding = new System.Windows.Forms.Padding(20, 15, 20, 15);
-            this.panelButtons.Size = new System.Drawing.Size(900, 80);
-            this.panelButtons.TabIndex = 4;
+            panelButtons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
+            panelButtons.Controls.Add(this.btnAssign);
+            panelButtons.Controls.Add(this.btnCancel);
+            panelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            panelButtons.Location = new System.Drawing.Point(0, 540);
+            panelButtons.Name = "panelButtons";
+            panelButtons.Padding = new System.Windows.Forms.Padding(20, 15, 20, 15);
+            panelButtons.Size = new System.Drawing.Size(900, 80);
+            panelButtons.TabIndex = 4;
             // 
             // btnAssign
             // 
-            this.btnAssign.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.btnAssign.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnAssign.FlatAppearance.BorderSize = 0;
-            this.btnAssign.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAssign.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnAssign.ForeColor = System.Drawing.Color.White;
-            this.btnAssign.Location = new System.Drawing.Point(580, 15);
-            this.btnAssign.Name = "btnAssign";
-            this.btnAssign.Size = new System.Drawing.Size(150, 50);
-            this.btnAssign.TabIndex = 0;
-            this.btnAssign.Text = "✓ Assign";
-            this.btnAssign.UseVisualStyleBackColor = false;
-            this.btnAssign.Click += new System.EventHandler(this.BtnAssign_Click);
+            btnAssign.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            btnAssign.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnAssign.FlatAppearance.BorderSize = 0;
+            btnAssign.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnAssign.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnAssign.ForeColor = System.Drawing.Color.White;
+            btnAssign.Location = new System.Drawing.Point(580, 15);
+            btnAssign.Name = "btnAssign";
+            btnAssign.Size = new System.Drawing.Size(150, 50);
+            btnAssign.TabIndex = 0;
+            btnAssign.Text = "✓ Assign";
+            btnAssign.UseVisualStyleBackColor = false;
+            btnAssign.Click += new System.EventHandler(this.BtnAssign_Click);
             // 
             // btnCancel
             // 
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
-            this.btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnCancel.FlatAppearance.BorderSize = 0;
-            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(740, 15);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(150, 50);
-            this.btnCancel.TabIndex = 1;
-            this.btnCancel.Text = "✕ Cancel";
-            this.btnCancel.UseVisualStyleBackColor = false;
-            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
+            btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
+            btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnCancel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnCancel.ForeColor = System.Drawing.Color.White;
+            btnCancel.Location = new System.Drawing.Point(740, 15);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new System.Drawing.Size(150, 50);
+            btnCancel.TabIndex = 1;
+            btnCancel.Text = "✕ Cancel";
+            btnCancel.UseVisualStyleBackColor = false;
+            btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // AssignDoctorForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(900, 620);
-            this.Controls.Add(this.dgvDoctors);
-            this.Controls.Add(this.panelFilters);
-            this.Controls.Add(this.panelSearch);
-            this.Controls.Add(this.panelHeader);
-            this.Controls.Add(this.panelButtons);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "AssignDoctorForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Assign Doctor - St. Joseph's Hospital";
-            this.panelHeader.ResumeLayout(false);
-            this.panelHeader.PerformLayout();
-            this.panelSearch.ResumeLayout(false);
-            this.panelSearch.PerformLayout();
-            this.panelFilters.ResumeLayout(false);
-            this.panelFilters.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.White;
+            ClientSize = new System.Drawing.Size(900, 620);
+            Controls.Add(this.dgvDoctors);
+            Controls.Add(this.panelFilters);
+            Controls.Add(this.panelSearch);
+            Controls.Add(this.panelHeader);
+            Controls.Add(this.panelButtons);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "AssignDoctorForm";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            Text = "Assign Doctor - St. Joseph's Hospital";
+            panelHeader.ResumeLayout(false);
+            panelHeader.PerformLayout();
+            panelSearch.ResumeLayout(false);
+            panelSearch.PerformLayout();
+            panelFilters.ResumeLayout(false);
+            panelFilters.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDoctors)).EndInit();
-            this.panelButtons.ResumeLayout(false);
-            this.ResumeLayout(false);
+            panelButtons.ResumeLayout(false);
+            ResumeLayout(false);
         }
+
+        #endregion
+
+        private Button btnAssign;
+        private Button btnCancel;
+        private Label lblTitle;
+        private Label lblPatientInfo;
+        private DataGridView dgvDoctors;
+        private Panel panelHeader;
+        private Panel panelSearch;
+        private TextBox txtSearch;
+        private Label lblSearch;
+        private Panel panelFilters;
+        private RadioButton rbAll;
+        private RadioButton rbOnDuty;
+        private RadioButton rbOffDuty;
+        private Label lblDoctorCount;
+        private Panel panelButtons;
     }
 }

@@ -2,44 +2,15 @@
 {
     partial class PatientIntakeForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Panel panelHeader;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblPatientName;
-        private System.Windows.Forms.Label lblAge;
-        private System.Windows.Forms.Label lblBloodType;
-        private System.Windows.Forms.Label lblContact;
-        private System.Windows.Forms.Label lblEmergency;
-        private System.Windows.Forms.Label lblPatientStatus;
-        private System.Windows.Forms.GroupBox grpIntakeInfo;
-        private System.Windows.Forms.Label lblChiefComplaint;
-        private System.Windows.Forms.TextBox txtChiefComplaint;
-        private System.Windows.Forms.Label lblSymptoms;
-        private System.Windows.Forms.TextBox txtSymptoms;
-        private System.Windows.Forms.Label lblCurrentMeds;
-        private System.Windows.Forms.TextBox txtCurrentMedications;
-        private System.Windows.Forms.GroupBox grpPatientInfo;
-        private System.Windows.Forms.Label lblBloodTypeInput;
-        private System.Windows.Forms.ComboBox cmbBloodType;
-        private System.Windows.Forms.Label lblPhoneType;
-        private System.Windows.Forms.ComboBox cmbPhoneType;
-        private System.Windows.Forms.Label lblPhone;
-        private System.Windows.Forms.TextBox txtPhone;
-        private System.Windows.Forms.Label lblEmergencyContactPhoneType;
-        private System.Windows.Forms.ComboBox cmbEmergencyContactPhoneType;
-        private System.Windows.Forms.Label lblEmergencyContact;
-        private System.Windows.Forms.TextBox txtEmergencyContact;
-        private System.Windows.Forms.Label lblAllergies;
-        private System.Windows.Forms.TextBox txtAllergies;
-        private System.Windows.Forms.Label lblMedicalHistory;
-        private System.Windows.Forms.TextBox txtMedicalHistory;
-        private System.Windows.Forms.Panel panelPriorityInfo;
-        private System.Windows.Forms.Label lblPriorityLabel;
-        private System.Windows.Forms.ComboBox cmbPriority;
-        private System.Windows.Forms.Label lblPriorityInfo;
-        private System.Windows.Forms.Button btnSaveAndQueue;
-        private System.Windows.Forms.Button btnCancel;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -49,6 +20,12 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
             panelHeader = new Panel();
@@ -311,7 +288,6 @@
             cmbBloodType.FlatStyle = FlatStyle.Flat;
             cmbBloodType.Font = new Font("Segoe UI", 10F);
             cmbBloodType.FormattingEnabled = true;
-            cmbBloodType.Items.AddRange(new object[] { "Unknown", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" });
             cmbBloodType.Location = new Point(15, 47);
             cmbBloodType.Name = "cmbBloodType";
             cmbBloodType.Size = new Size(120, 25);
@@ -335,7 +311,6 @@
             cmbPhoneType.FlatStyle = FlatStyle.Flat;
             cmbPhoneType.Font = new Font("Segoe UI", 10F);
             cmbPhoneType.FormattingEnabled = true;
-            cmbPhoneType.Items.AddRange(new object[] { "Mobile", "Landline" });
             cmbPhoneType.Location = new Point(150, 47);
             cmbPhoneType.Name = "cmbPhoneType";
             cmbPhoneType.Size = new Size(120, 25);
@@ -380,7 +355,6 @@
             cmbEmergencyContactPhoneType.FlatStyle = FlatStyle.Flat;
             cmbEmergencyContactPhoneType.Font = new Font("Segoe UI", 10F);
             cmbEmergencyContactPhoneType.FormattingEnabled = true;
-            cmbEmergencyContactPhoneType.Items.AddRange(new object[] { "Mobile", "Landline" });
             cmbEmergencyContactPhoneType.Location = new Point(490, 47);
             cmbEmergencyContactPhoneType.Name = "cmbEmergencyContactPhoneType";
             cmbEmergencyContactPhoneType.Size = new Size(120, 25);
@@ -477,7 +451,6 @@
             // 
             cmbPriority.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbPriority.Font = new Font("Segoe UI", 10F);
-            cmbPriority.Items.AddRange(new object[] { "Normal", "Urgent", "Emergency" });
             cmbPriority.Location = new Point(130, 12);
             cmbPriority.Name = "cmbPriority";
             cmbPriority.Size = new Size(150, 25);
@@ -555,5 +528,44 @@
             panelPriorityInfo.PerformLayout();
             ResumeLayout(false);
         }
+
+        #endregion
+
+        private Panel panelHeader;
+        private Label lblTitle;
+        private Label lblPatientName;
+        private Label lblAge;
+        private Label lblBloodType;
+        private Label lblContact;
+        private Label lblEmergency;
+        private Label lblPatientStatus;
+        private GroupBox grpIntakeInfo;
+        private Label lblChiefComplaint;
+        private TextBox txtChiefComplaint;
+        private Label lblSymptoms;
+        private TextBox txtSymptoms;
+        private Label lblCurrentMeds;
+        private TextBox txtCurrentMedications;
+        private GroupBox grpPatientInfo;
+        private Label lblBloodTypeInput;
+        private ComboBox cmbBloodType;
+        private Label lblPhoneType;
+        private ComboBox cmbPhoneType;
+        private Label lblPhone;
+        private TextBox txtPhone;
+        private Label lblEmergencyContactPhoneType;
+        private ComboBox cmbEmergencyContactPhoneType;
+        private Label lblEmergencyContact;
+        private TextBox txtEmergencyContact;
+        private Label lblAllergies;
+        private TextBox txtAllergies;
+        private Label lblMedicalHistory;
+        private TextBox txtMedicalHistory;
+        private Panel panelPriorityInfo;
+        private Label lblPriorityLabel;
+        private ComboBox cmbPriority;
+        private Label lblPriorityInfo;
+        private Button btnSaveAndQueue;
+        private Button btnCancel;
     }
 }

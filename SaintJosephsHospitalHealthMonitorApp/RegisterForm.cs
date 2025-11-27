@@ -110,6 +110,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             InitializeRoleOptions();
             InitializeDoctorSpecializations();
             ConfigureForRegistrationMode();
+            InitializeGenderRoles();
         }
 
         private void InitializeDoctorSpecializations()
@@ -136,6 +137,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             });
             cmbSpecialization.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbSpecialization.SelectedIndex = 0;
+        }
+
+        private void InitializeGenderRoles()
+        {
+            cmbGender.Items.AddRange(new object[] { "Male", "Female", "Other" });
         }
 
         private void ConfigureForPatientMode()

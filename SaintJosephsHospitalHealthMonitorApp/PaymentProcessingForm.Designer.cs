@@ -35,11 +35,6 @@
             panelLeft = new Panel();
             grpBillSummary = new GroupBox();
             lstServices = new ListView();
-            colService = new ColumnHeader();
-            colCategory = new ColumnHeader();
-            colQty = new ColumnHeader();
-            colUnitPrice = new ColumnHeader();
-            colTotal = new ColumnHeader();
             panelBillNotes = new Panel();
             txtBillNotes = new TextBox();
             lblBillNotes = new Label();
@@ -76,6 +71,11 @@
             btnViewPaymentHistory = new Button();
             btnCancel = new Button();
             btnProcessPayment = new Button();
+            colService = new ColumnHeader();
+            colCategory = new ColumnHeader();
+            colQty = new ColumnHeader();
+            colUnitPrice = new ColumnHeader();
+            colTotal = new ColumnHeader();
             panelHeader.SuspendLayout();
             panelMain.SuspendLayout();
             panelLeft.SuspendLayout();
@@ -166,7 +166,6 @@
             // 
             // lstServices
             // 
-            lstServices.Columns.AddRange(new ColumnHeader[] { colService, colCategory, colQty, colUnitPrice, colTotal });
             lstServices.Dock = DockStyle.Fill;
             lstServices.Font = new Font("Segoe UI", 9F);
             lstServices.FullRowSelect = true;
@@ -177,30 +176,6 @@
             lstServices.TabIndex = 0;
             lstServices.UseCompatibleStateImageBehavior = false;
             lstServices.View = View.Details;
-            // 
-            // colService
-            // 
-            colService.Text = "Service/Item";
-            colService.Width = 250;
-            // 
-            // colCategory
-            // 
-            colCategory.Text = "Category";
-            colCategory.Width = 150;
-            // 
-            // colQty
-            // 
-            colQty.Text = "Qty";
-            // 
-            // colUnitPrice
-            // 
-            colUnitPrice.Text = "Unit Price";
-            colUnitPrice.Width = 120;
-            // 
-            // colTotal
-            // 
-            colTotal.Text = "Total";
-            colTotal.Width = 120;
             // 
             // panelBillNotes
             // 
@@ -649,6 +624,30 @@
             btnProcessPayment.UseVisualStyleBackColor = false;
             btnProcessPayment.Click += BtnProcessPayment_Click;
             // 
+            // colService
+            // 
+            colService.Text = "Service/Item";
+            colService.Width = 250;
+            // 
+            // colCategory
+            // 
+            colCategory.Text = "Category";
+            colCategory.Width = 150;
+            // 
+            // colQty
+            // 
+            colQty.Text = "Qty";
+            // 
+            // colUnitPrice
+            // 
+            colUnitPrice.Text = "Unit Price";
+            colUnitPrice.Width = 120;
+            // 
+            // colTotal
+            // 
+            colTotal.Text = "Total";
+            colTotal.Width = 120;
+            // 
             // PaymentProcessingForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -686,53 +685,53 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel panelHeader;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblSubtitle;
-        private System.Windows.Forms.Panel panelMain;
-        private System.Windows.Forms.Panel panelLeft;
-        private System.Windows.Forms.GroupBox grpPatientInfo;
-        private System.Windows.Forms.Label lblPatientValue;
-        private System.Windows.Forms.Label lblPatient;
-        private System.Windows.Forms.Label lblBillIdValue;
-        private System.Windows.Forms.Label lblBillId;
-        private System.Windows.Forms.Label lblStatusValue;
-        private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.GroupBox grpBillSummary;
-        private System.Windows.Forms.ListView lstServices;
-        private System.Windows.Forms.ColumnHeader colService;
-        private System.Windows.Forms.ColumnHeader colCategory;
-        private System.Windows.Forms.ColumnHeader colQty;
-        private System.Windows.Forms.ColumnHeader colUnitPrice;
-        private System.Windows.Forms.ColumnHeader colTotal;
-        private System.Windows.Forms.Panel panelTotals;
-        private System.Windows.Forms.Label lblTotalAmountValue;
-        private System.Windows.Forms.Label lblTotalAmount;
-        private System.Windows.Forms.Label lblTaxValue;
-        private System.Windows.Forms.Label lblTax;
-        private System.Windows.Forms.Label lblDiscountValue;
-        private System.Windows.Forms.Label lblDiscount;
-        private System.Windows.Forms.Label lblSubtotalValue;
-        private System.Windows.Forms.Label lblSubtotal;
-        private System.Windows.Forms.Panel panelBillNotes;
-        private System.Windows.Forms.TextBox txtBillNotes;
-        private System.Windows.Forms.Label lblBillNotes;
-        private System.Windows.Forms.Panel panelRight;
-        private System.Windows.Forms.GroupBox grpPaymentDetails;
-        private System.Windows.Forms.Panel panelPartialPayment;
-        private System.Windows.Forms.Label lblRemainingValue;
-        private System.Windows.Forms.Label lblRemaining;
-        private System.Windows.Forms.TextBox txtPaymentNotes;
-        private System.Windows.Forms.Label lblPaymentNotes;
-        private System.Windows.Forms.TextBox txtReferenceNumber;
-        private System.Windows.Forms.Label lblReferenceNumber;
-        private System.Windows.Forms.NumericUpDown numPaymentAmount;
-        private System.Windows.Forms.Label lblPaymentAmount;
-        private System.Windows.Forms.ComboBox cmbPaymentMethod;
-        private System.Windows.Forms.Label lblPaymentMethod;
-        private System.Windows.Forms.Panel panelActions;
-        private System.Windows.Forms.Button btnViewPaymentHistory;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnProcessPayment;
+        private Panel panelHeader;
+        private Label lblTitle;
+        private Label lblSubtitle;
+        private Panel panelMain;
+        private Panel panelLeft;
+        private GroupBox grpPatientInfo;
+        private Label lblPatientValue;
+        private Label lblPatient;
+        private Label lblBillIdValue;
+        private Label lblBillId;
+        private Label lblStatusValue;
+        private Label lblStatus;
+        private GroupBox grpBillSummary;
+        private ListView lstServices;
+        private ColumnHeader colService;
+        private ColumnHeader colCategory;
+        private ColumnHeader colQty;
+        private ColumnHeader colUnitPrice;
+        private ColumnHeader colTotal;
+        private Panel panelTotals;
+        private Label lblTotalAmountValue;
+        private Label lblTotalAmount;
+        private Label lblTaxValue;
+        private Label lblTax;
+        private Label lblDiscountValue;
+        private Label lblDiscount;
+        private Label lblSubtotalValue;
+        private Label lblSubtotal;
+        private Panel panelBillNotes;
+        private TextBox txtBillNotes;
+        private Label lblBillNotes;
+        private Panel panelRight;
+        private GroupBox grpPaymentDetails;
+        private Panel panelPartialPayment;
+        private Label lblRemainingValue;
+        private Label lblRemaining;
+        private TextBox txtPaymentNotes;
+        private Label lblPaymentNotes;
+        private TextBox txtReferenceNumber;
+        private Label lblReferenceNumber;
+        private NumericUpDown numPaymentAmount;
+        private Label lblPaymentAmount;
+        private ComboBox cmbPaymentMethod;
+        private Label lblPaymentMethod;
+        private Panel panelActions;
+        private Button btnViewPaymentHistory;
+        private Button btnCancel;
+        private Button btnProcessPayment;
     }
 }

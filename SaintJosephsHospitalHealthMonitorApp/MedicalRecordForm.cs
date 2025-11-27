@@ -221,6 +221,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
+        private void ChkNoSurgeries_CheckedChanged(object sender, System.EventArgs e)
+        {
+            if (chkNoSurgeries.Checked)
+                chkYesSurgery.Checked = false;
+        }
+
+        private void ChkYesSurgery_CheckedChanged(object sender, System.EventArgs e)
+        {
+            if (chkYesSurgery.Checked)
+                chkNoSurgeries.Checked = false;
+        }
+
         private void AllergyCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if ((chkLatexAllergy.Checked || chkIodineAllergy.Checked || chkBromineAllergy.Checked) &&

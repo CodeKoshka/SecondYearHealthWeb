@@ -2,53 +2,15 @@
 {
     partial class MedicalRecordForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Panel panelHeader;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Panel panelCauseProblem;
-        private System.Windows.Forms.Panel panelCardiacSymptoms;
-        private System.Windows.Forms.Panel panelPastHistory;
-        private System.Windows.Forms.Panel panelSurgeries;
-        private System.Windows.Forms.Panel panelMedications;
-        private System.Windows.Forms.Panel panelAllergies;
-        private System.Windows.Forms.Panel panelAdditional;
-        private System.Windows.Forms.Panel panelSignature;
-        private System.Windows.Forms.CheckBox chkChestPain, chkShortBreath, chkPalpitations, chkDizziness;
-        private System.Windows.Forms.CheckBox chkFatigue, chkSwelling, chkIrregularHeartbeat, chkFainting;
-        private System.Windows.Forms.CheckBox chkCarAccident, chkWorkInjury, chkGradualOnset, chkOther;
-        private System.Windows.Forms.CheckBox chkBreathingProblems, chkPregnant, chkHeartProblems, chkCurrentWound;
-        private System.Windows.Forms.CheckBox chkPacemaker, chkDiabetes, chkTumorCancer, chkAnxietyAttacks, chkSleepApnea;
-        private System.Windows.Forms.CheckBox chkStroke, chkBoneJoint, chkKidneyProblems, chkGallbladderLiver;
-        private System.Windows.Forms.CheckBox chkElectricalImplants, chkDepression, chkBowelBladder, chkAlcoholUse;
-        private System.Windows.Forms.CheckBox chkDrugUse, chkSmoking, chkHeadaches, chkHighBloodPressure, chkHighCholesterol;
-        private System.Windows.Forms.CheckBox chkNoSurgeries;
-        private System.Windows.Forms.CheckBox chkYesSurgery;
-        private System.Windows.Forms.CheckBox chkNoMedication;
-        private System.Windows.Forms.CheckBox chkNoKnownAllergies;
-        private System.Windows.Forms.CheckBox chkLatexAllergy, chkIodineAllergy, chkBromineAllergy;
-        private System.Windows.Forms.CheckBox chkReligiousCultural;
-        private System.Windows.Forms.TextBox txtOtherCause;
-        private System.Windows.Forms.TextBox txtProblemStarted;
-        private System.Windows.Forms.TextBox txtSurgeryDetails;
-        private System.Windows.Forms.TextBox txtMedications;
-        private System.Windows.Forms.TextBox txtOtherAllergies;
-        private System.Windows.Forms.TextBox txtAdditionalComments;
-        private System.Windows.Forms.TextBox txtDoctorSignature;
-        private System.Windows.Forms.Label lblCauseProblem;
-        private System.Windows.Forms.Label lblCardiacSymptoms;
-        private System.Windows.Forms.Label lblProblemStarted;
-        private System.Windows.Forms.Label lblPastHistory;
-        private System.Windows.Forms.Label lblSurgeries;
-        private System.Windows.Forms.Label lblMedications;
-        private System.Windows.Forms.Label lblAllergies;
-        private System.Windows.Forms.Label lblOtherAllergies;
-        private System.Windows.Forms.Label lblDoctorsNotes;
-        private System.Windows.Forms.Label lblAdditionalComments;
-        private System.Windows.Forms.Label lblSignature;
-        private System.Windows.Forms.Label lblDate;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -58,6 +20,12 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
             panelHeader = new Panel();
@@ -947,16 +915,78 @@
             ResumeLayout(false);
         }
 
-        private void ChkNoSurgeries_CheckedChanged(object sender, System.EventArgs e)
-        {
-            if (chkNoSurgeries.Checked)
-                chkYesSurgery.Checked = false;
-        }
+        #endregion
 
-        private void ChkYesSurgery_CheckedChanged(object sender, System.EventArgs e)
-        {
-            if (chkYesSurgery.Checked)
-                chkNoSurgeries.Checked = false;
-        }
+        private Panel panelHeader;
+        private Label lblTitle;
+        private Button btnSave;
+        private Button btnCancel;
+        private Panel panelCauseProblem;
+        private Panel panelCardiacSymptoms;
+        private Panel panelPastHistory;
+        private Panel panelSurgeries;
+        private Panel panelMedications;
+        private Panel panelAllergies;
+        private Panel panelAdditional;
+        private Panel panelSignature;
+        private CheckBox chkChestPain;
+        private CheckBox chkShortBreath;
+        private CheckBox chkPalpitations;
+        private CheckBox chkDizziness;
+        private CheckBox chkFatigue;
+        private CheckBox chkSwelling;
+        private CheckBox chkIrregularHeartbeat;
+        private CheckBox chkFainting;
+        private CheckBox chkCarAccident;
+        private CheckBox chkWorkInjury;
+        private CheckBox chkGradualOnset;
+        private CheckBox chkOther;
+        private CheckBox chkBreathingProblems;
+        private CheckBox chkPregnant;
+        private CheckBox chkHeartProblems;
+        private CheckBox chkCurrentWound;
+        private CheckBox chkPacemaker;
+        private CheckBox chkDiabetes;
+        private CheckBox chkTumorCancer;
+        private CheckBox chkAnxietyAttacks;
+        private CheckBox chkSleepApnea;
+        private CheckBox chkStroke;
+        private CheckBox chkBoneJoint;
+        private CheckBox chkKidneyProblems;
+        private CheckBox chkGallbladderLiver;
+        private CheckBox chkElectricalImplants;
+        private CheckBox chkDepression;
+        private CheckBox chkBowelBladder;
+        private CheckBox chkAlcoholUse;
+        private CheckBox chkDrugUse;
+        private CheckBox chkSmoking;
+        private CheckBox chkHeadaches;
+        private CheckBox chkHighBloodPressure;
+        private CheckBox chkHighCholesterol;
+        private CheckBox chkNoSurgeries;
+        private CheckBox chkYesSurgery;
+        private CheckBox chkNoMedication;
+        private CheckBox chkNoKnownAllergies;
+        private CheckBox chkLatexAllergy, chkIodineAllergy, chkBromineAllergy;
+        private CheckBox chkReligiousCultural;
+        private TextBox txtOtherCause;
+        private TextBox txtProblemStarted;
+        private TextBox txtSurgeryDetails;
+        private TextBox txtMedications;
+        private TextBox txtOtherAllergies;
+        private TextBox txtAdditionalComments;
+        private TextBox txtDoctorSignature;
+        private Label lblCauseProblem;
+        private Label lblCardiacSymptoms;
+        private Label lblProblemStarted;
+        private Label lblPastHistory;
+        private Label lblSurgeries;
+        private Label lblMedications;
+        private Label lblAllergies;
+        private Label lblOtherAllergies;
+        private Label lblDoctorsNotes;
+        private Label lblAdditionalComments;
+        private Label lblSignature;
+        private Label lblDate;
     }
 }

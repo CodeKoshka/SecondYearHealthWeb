@@ -26,6 +26,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             InitializeComponent();
             ApplyStyles();
+            InitializeColumnHeader();
             LoadPaymentDetails();
             ConfigurePaymentOptions();
         }
@@ -33,6 +34,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private void ApplyStyles()
         {
             this.BackColor = Color.FromArgb(247, 250, 252);
+        }
+
+        private void InitializeColumnHeader()
+        {
+            lstServices.Columns.AddRange(new ColumnHeader[] { colService, colCategory, colQty, colUnitPrice, colTotal });
         }
 
         private void LoadPaymentDetails()

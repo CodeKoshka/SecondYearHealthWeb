@@ -411,7 +411,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {"amount", "Amount"},
         {"Total Amount", "Total Amount"},
         {"subtotal", "Subtotal"},
-        {"Subtotal", "Subtotal"},
         {"discount_percent", "Discount %"},
         {"discount_amount", "Discount Amount"},
         {"Discount", "Discount"},
@@ -1297,14 +1296,25 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnViewBillDetails_Click(object sender, EventArgs e)
         {
-            if (dgvBilling.SelectedRows.Count == 0)
+            DataGridView activeGrid = null;
+
+            if (tabBillingControl.SelectedTab == tabActiveBills)
+            {
+                activeGrid = dgvBilling;
+            }
+            else if (tabBillingControl.SelectedTab == tabDischargedBills)
+            {
+                activeGrid = dgvDischargedBills;
+            }
+
+            if (activeGrid == null || activeGrid.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Please select a bill to view details.", "Selection Required",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            var billIdCell = dgvBilling.SelectedRows[0].Cells["Bill ID"];
+            var billIdCell = activeGrid.SelectedRows[0].Cells["Bill ID"];
             if (billIdCell?.Value == null || billIdCell.Value == DBNull.Value)
             {
                 MessageBox.Show("Invalid bill data selected.", "Error",

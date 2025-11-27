@@ -20,6 +20,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         public BillingForm(int? userId, int patientId, int billId, bool viewOnly)
         {
             InitializeComponent();
+            InitializeComboBoxes();
             currentUserId = userId;
             editingBillId = billId;
             isPreselectedPatient = true;
@@ -50,6 +51,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         public BillingForm(int? userId = null, int? patientId = null)
         {
             InitializeComponent();
+            InitializeComboBoxes();
             currentUserId = userId;
             editingBillId = null;
             preselectedPatientId = patientId;
@@ -90,6 +92,48 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
+        private void InitializeComboBoxes()
+        {
+
+            cmbServiceCategory.Items.Clear();
+            cmbServiceCategory.Items.AddRange(new object[] {
+            "-- Select Category --",
+            "Consultation",
+            "Laboratory",
+            "Radiology",
+            "Procedures",
+            "Medications",
+            "Room Charges",
+            "Emergency Services",
+            "Surgery",
+            "Other Services"
+            });
+            cmbServiceCategory.SelectedIndex = 0;
+
+            cmbServiceItem.Items.Clear();
+            cmbServiceItem.Items.Add("-- Select Service --");
+            cmbServiceItem.SelectedIndex = 0;
+
+            cmbPaymentMethod.Items.Clear();
+            cmbPaymentMethod.Items.AddRange(new object[] {
+            "Cash",
+            "Credit Card",
+            "Debit Card",
+            "Check",
+            "Bank Transfer",
+            "Insurance",
+            "Mixed Payment"
+            });
+
+            cmbStatus.Items.Clear();
+            cmbStatus.Items.AddRange(new object[] {
+            "Pending",
+            "Partially Paid",
+            "Paid",
+            "Cancelled"
+            });
+        }
+
         private void ConfigurePaymentControls()
         {
             cmbPaymentMethod.Items.Clear();
@@ -97,11 +141,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
             cmbPaymentMethod.SelectedIndex = 0;
             cmbPaymentMethod.Visible = false;
             lblPaymentMethod.Visible = false;
+
             cmbStatus.Items.Clear();
-            cmbStatus.Items.Add("Pending");
-            cmbStatus.Items.Add("Partially Paid");
-            cmbStatus.Items.Add("Paid");
-            cmbStatus.Items.Add("Cancelled");
+            cmbStatus.Items.AddRange(new object[] {
+            "Pending",
+            "Partially Paid",
+            "Paid",
+            "Cancelled"
+            });
             cmbStatus.SelectedIndex = 0;
             cmbStatus.Enabled = false;
         }
@@ -109,6 +156,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         public BillingForm(int? userId, int patientId, int billId)
         {
             InitializeComponent();
+            InitializeComboBoxes();
             currentUserId = userId;
             editingBillId = billId;
             isPreselectedPatient = true;
@@ -314,18 +362,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void LoadServiceCategories()
         {
-            cmbServiceCategory.Items.Clear();
-            cmbServiceCategory.Items.Add("-- Select Category --");
-            cmbServiceCategory.Items.Add("Consultation");
-            cmbServiceCategory.Items.Add("Laboratory");
-            cmbServiceCategory.Items.Add("Radiology");
-            cmbServiceCategory.Items.Add("Procedures");
-            cmbServiceCategory.Items.Add("Medications");
-            cmbServiceCategory.Items.Add("Room Charges");
-            cmbServiceCategory.Items.Add("Emergency Services");
-            cmbServiceCategory.Items.Add("Surgery");
-            cmbServiceCategory.Items.Add("Other Services");
-            cmbServiceCategory.SelectedIndex = 0;
+            InitializeComboBoxes();
         }
 
         private void SetupServiceItems()

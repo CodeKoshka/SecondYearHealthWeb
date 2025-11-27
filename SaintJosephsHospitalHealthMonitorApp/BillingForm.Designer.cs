@@ -2,40 +2,15 @@
 {
     partial class BillingForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblPatient;
-        private System.Windows.Forms.ComboBox cmbPatient;
-        private System.Windows.Forms.GroupBox grpServices;
-        private System.Windows.Forms.Label lblServiceCategory;
-        private System.Windows.Forms.ComboBox cmbServiceCategory;
-        private System.Windows.Forms.Label lblServiceItem;
-        private System.Windows.Forms.ComboBox cmbServiceItem;
-        private System.Windows.Forms.Label lblQuantity;
-        private System.Windows.Forms.NumericUpDown numQuantity;
-        private System.Windows.Forms.Button btnAddService;
-        private System.Windows.Forms.Button btnRemoveService;
-        private System.Windows.Forms.ListView lstServices;
-        private System.Windows.Forms.GroupBox grpCalculations;
-        private System.Windows.Forms.Label lblDiscountLabel;
-        private System.Windows.Forms.NumericUpDown numDiscount;
-        private System.Windows.Forms.Label lblTaxLabel;
-        private System.Windows.Forms.NumericUpDown numTax;
-        private System.Windows.Forms.Label lblSubtotal;
-        private System.Windows.Forms.Label lblDiscountAmount;
-        private System.Windows.Forms.Label lblTaxAmount;
-        private System.Windows.Forms.Label lblGrandTotal;
-        private System.Windows.Forms.GroupBox grpPaymentInfo;
-        private System.Windows.Forms.Label lblPaymentMethod;
-        private System.Windows.Forms.ComboBox cmbPaymentMethod;
-        private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.ComboBox cmbStatus;
-        private System.Windows.Forms.Label lblNotes;
-        private System.Windows.Forms.TextBox txtNotes;
-        private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnPrintPreview;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -45,6 +20,12 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
             lblTitle = new Label();
@@ -383,7 +364,6 @@
             cmbStatus.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbStatus.Font = new Font("Segoe UI", 9F);
             cmbStatus.FormattingEnabled = true;
-            cmbStatus.Items.AddRange(new object[] { "Pending", "Partially Paid", "Cancelled" });
             cmbStatus.Location = new Point(270, 50);
             cmbStatus.Name = "cmbStatus";
             cmbStatus.Size = new Size(230, 23);
@@ -404,7 +384,6 @@
             cmbPaymentMethod.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbPaymentMethod.Font = new Font("Segoe UI", 9F);
             cmbPaymentMethod.FormattingEnabled = true;
-            cmbPaymentMethod.Items.AddRange(new object[] { "Cash", "Credit Card", "Debit Card", "Check", "Bank Transfer", "Insurance", "Mixed Payment" });
             cmbPaymentMethod.Location = new Point(20, 50);
             cmbPaymentMethod.Name = "cmbPaymentMethod";
             cmbPaymentMethod.Size = new Size(230, 23);
@@ -501,5 +480,40 @@
             ResumeLayout(false);
             PerformLayout();
         }
+
+        #endregion
+
+        private Label lblTitle;
+        private Label lblPatient;
+        private ComboBox cmbPatient;
+        private GroupBox grpServices;
+        private Label lblServiceCategory;
+        private ComboBox cmbServiceCategory;
+        private Label lblServiceItem;
+        private ComboBox cmbServiceItem;
+        private Label lblQuantity;
+        private NumericUpDown numQuantity;
+        private Button btnAddService;
+        private Button btnRemoveService;
+        private ListView lstServices;
+        private GroupBox grpCalculations;
+        private Label lblDiscountLabel;
+        private NumericUpDown numDiscount;
+        private Label lblTaxLabel;
+        private NumericUpDown numTax;
+        private Label lblSubtotal;
+        private Label lblDiscountAmount;
+        private Label lblTaxAmount;
+        private Label lblGrandTotal;
+        private GroupBox grpPaymentInfo;
+        private Label lblPaymentMethod;
+        private ComboBox cmbPaymentMethod;
+        private Label lblStatus;
+        private ComboBox cmbStatus;
+        private Label lblNotes;
+        private TextBox txtNotes;
+        private Button btnSave;
+        private Button btnCancel;
+        private Button btnPrintPreview;
     }
 }

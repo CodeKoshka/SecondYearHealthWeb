@@ -27,6 +27,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             isViewMode = false;
             isEditMode = false;
             InitializeComponent();
+            InitializeComboBoxes();
             LoadPatientBasicInfo();
             CheckIfNewPatient();
             ConfigureForIntakeMode();
@@ -44,6 +45,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             isViewMode = viewOnly;
             isEditMode = !viewOnly;
             InitializeComponent();
+            InitializeComboBoxes();
             LoadPatientBasicInfo();
             CheckIfNewPatient();
 
@@ -56,6 +58,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 ConfigureForEditMode();
             }
+        }
+
+        private void InitializeComboBoxes()
+        {
+            cmbBloodType.Items.AddRange(new object[] { "Unknown", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" });
+            cmbPhoneType.Items.AddRange(new object[] { "Mobile", "Landline" });
+            cmbEmergencyContactPhoneType.Items.AddRange(new object[] { "Mobile", "Landline" });
+            cmbPriority.Items.AddRange(new object[] { "Normal", "Urgent", "Emergency" });
         }
 
         private void ConfigureForViewMode()

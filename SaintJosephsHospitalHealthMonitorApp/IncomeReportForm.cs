@@ -176,30 +176,38 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     LoadReportData();
                 }
 
-                SaveFileDialog saveDialog = new SaveFileDialog
+                string tempPdfPath = Path.Combine(Path.GetTempPath(), $"IncomeReport_{startDate:yyyyMMdd}_to_{endDate:yyyyMMdd}_{DateTime.Now:HHmmss}.pdf");
+                GeneratePDF(tempPdfPath);
+
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
                 {
-                    Filter = "PDF Files (*.pdf)|*.pdf",
-                    FileName = $"IncomeReport_{startDate:yyyyMMdd}_to_{endDate:yyyyMMdd}.pdf",
-                    Title = "Save Income Report"
-                };
+                    FileName = tempPdfPath,
+                    UseShellExecute = true
+                });
 
-                if (saveDialog.ShowDialog() == DialogResult.OK)
+                DialogResult saveResult = MessageBox.Show(
+                    "PDF preview has been opened. Would you like to save a permanent copy?",
+                    "Save PDF",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (saveResult == DialogResult.Yes)
                 {
-                    GeneratePDF(saveDialog.FileName);
-
-                    DialogResult openResult = MessageBox.Show(
-                        $"PDF saved successfully!\n\n{saveDialog.FileName}\n\nWould you like to open it now?",
-                        "Success",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Information);
-
-                    if (openResult == DialogResult.Yes)
+                    SaveFileDialog saveDialog = new SaveFileDialog
                     {
-                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
-                        {
-                            FileName = saveDialog.FileName,
-                            UseShellExecute = true
-                        });
+                        Filter = "PDF Files (*.pdf)|*.pdf",
+                        FileName = $"IncomeReport_{startDate:yyyyMMdd}_to_{endDate:yyyyMMdd}.pdf",
+                        Title = "Save Income Report"
+                    };
+
+                    if (saveDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        File.Copy(tempPdfPath, saveDialog.FileName, true);
+                        MessageBox.Show(
+                            $"PDF saved successfully!\n{saveDialog.FileName}",
+                            "Success",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
                     }
                 }
             }
@@ -255,7 +263,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             PdfPTable transactionsTable = new PdfPTable(6);
             transactionsTable.WidthPercentage = 100;
 
-            transactionsTable.SetWidths(new float[]{1.3f, 2.8f,2.0f,1.3f,1.3f,1.3f});
+            transactionsTable.SetWidths(new float[] { 1.3f, 2.8f, 2.0f, 1.3f, 1.3f, 1.3f });
 
             string[] headers = { "Bill ID", "Patient Name", "Bill Date", "Discount", "Tax", "Total" };
             foreach (string header in headers)
@@ -319,6 +327,5 @@ namespace SaintJosephsHospitalHealthMonitorApp
             document.Close();
             writer.Close();
         }
-
     }
 }

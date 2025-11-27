@@ -114,31 +114,76 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             foreach (DataRow service in servicesData.Rows)
             {
-                string particulars = service["service_name"].ToString();
+                string serviceName = service["service_name"].ToString();
+                string categoryName = service["category_name"].ToString();
+                int quantity = Convert.ToInt32(service["quantity"]);
+                decimal unitPrice = Convert.ToDecimal(service["unit_price"]);
                 decimal total = Convert.ToDecimal(service["total"]);
 
                 dgvHospitalCharges.Rows.Add(
-                    particulars,
-                    $"₱{total:N2}",
-                    "0.00",
-                    "0.00",
-                    "0.00",
+                    serviceName,
+                    categoryName,
+                    quantity.ToString(),
+                    $"₱{unitPrice:N2}",
                     $"₱{total:N2}"
                 );
 
                 hospitalChargesTotal += total;
             }
 
-            dgvHospitalCharges.Rows.Add(
-                "TOTAL:",
-                $"₱{hospitalChargesTotal:N2}",
-                "0.00",
-                "0.00",
-                "0.00",
-                $"₱{hospitalChargesTotal:N2}"
-            );
+            decimal subtotal = Convert.ToDecimal(bill["subtotal"]);
+            decimal discountAmount = Convert.ToDecimal(bill["discount_amount"]);
+            decimal taxAmount = Convert.ToDecimal(bill["tax_amount"]);
+            decimal grandTotal = Convert.ToDecimal(bill["amount"]);
 
-            lblGrandTotal.Text = $"GRAND TOTAL:   ₱{hospitalChargesTotal:N2}";
+            DataGridViewRow subtotalRow = new DataGridViewRow();
+            subtotalRow.CreateCells(dgvHospitalCharges);
+            subtotalRow.Cells[0].Value = "SUBTOTAL:";
+            subtotalRow.Cells[0].Style.Font = new System.Drawing.Font("Arial", 11F, FontStyle.Bold);
+            subtotalRow.Cells[4].Value = $"₱{subtotal:N2}";
+            subtotalRow.Cells[4].Style.Font = new System.Drawing.Font("Arial", 11F, FontStyle.Bold);
+            subtotalRow.DefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
+            subtotalRow.Height = 40;
+            dgvHospitalCharges.Rows.Add(subtotalRow);
+
+            if (discountAmount > 0)
+            {
+                decimal discountPercent = Convert.ToDecimal(bill["discount_percent"]);
+                DataGridViewRow discountRow = new DataGridViewRow();
+                discountRow.CreateCells(dgvHospitalCharges);
+                discountRow.Cells[0].Value = $"DISCOUNT ({discountPercent}%):";
+                discountRow.Cells[0].Style.Font = new System.Drawing.Font(dgvHospitalCharges.Font, FontStyle.Bold);
+                discountRow.Cells[4].Value = $"-₱{discountAmount:N2}";
+                discountRow.Cells[4].Style.Font = new System.Drawing.Font(dgvHospitalCharges.Font, FontStyle.Bold);
+                discountRow.Cells[4].Style.ForeColor = Color.FromArgb(231, 76, 60);
+                discountRow.DefaultCellStyle.BackColor = Color.FromArgb(255, 250, 235);
+                dgvHospitalCharges.Rows.Add(discountRow);
+            }
+
+            if (taxAmount > 0)
+            {
+                decimal taxPercent = Convert.ToDecimal(bill["tax_percent"]);
+                DataGridViewRow taxRow = new DataGridViewRow();
+                taxRow.CreateCells(dgvHospitalCharges);
+                taxRow.Cells[0].Value = $"TAX ({taxPercent}%):";
+                taxRow.Cells[0].Style.Font = new System.Drawing.Font(dgvHospitalCharges.Font, FontStyle.Bold);
+                taxRow.Cells[4].Value = $"₱{taxAmount:N2}";
+                taxRow.Cells[4].Style.Font = new System.Drawing.Font(dgvHospitalCharges.Font, FontStyle.Bold);
+                taxRow.DefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
+                dgvHospitalCharges.Rows.Add(taxRow);
+            }
+
+            DataGridViewRow totalRow = new DataGridViewRow();
+            totalRow.CreateCells(dgvHospitalCharges);
+            totalRow.Cells[0].Value = "TOTAL:";
+            totalRow.Cells[0].Style.Font = new System.Drawing.Font(dgvHospitalCharges.Font, FontStyle.Bold);
+            totalRow.Cells[4].Value = $"₱{grandTotal:N2}";
+            totalRow.Cells[4].Style.Font = new System.Drawing.Font(dgvHospitalCharges.Font, FontStyle.Bold);
+            totalRow.DefaultCellStyle.BackColor = Color.FromArgb(66, 153, 225);
+            totalRow.DefaultCellStyle.ForeColor = Color.White;
+            dgvHospitalCharges.Rows.Add(totalRow);
+
+            lblGrandTotal.Text = $"GRAND TOTAL:   ₱{grandTotal:N2}";
 
             lblPreparedBy.Text = bill["created_by_name"] != DBNull.Value
                 ? bill["created_by_name"].ToString()
@@ -173,88 +218,238 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 Document document = new Document(PageSize.A4, 50, 50, 50, 50);
                 PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(tempPdfPath, FileMode.Create));
 
-                iTextSharp.text.Font titleFont = FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.BOLD);
-                iTextSharp.text.Font headerFont = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD);
-                iTextSharp.text.Font normalFont = FontFactory.GetFont("Arial", 9);
-                iTextSharp.text.Font smallFont = FontFactory.GetFont("Arial", 8);
+                document.Open();
+
+                iTextSharp.text.Font titleFont = FontFactory.GetFont("Arial", 18, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font headerFont = FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD);
+                iTextSharp.text.Font normalFont = FontFactory.GetFont("Arial", 11);
+                iTextSharp.text.Font smallFont = FontFactory.GetFont("Arial", 10);
+                iTextSharp.text.Font tableHeaderFont = FontFactory.GetFont("Arial", 10, iTextSharp.text.Font.BOLD);
 
                 DataRow bill = billData.Rows[0];
 
                 Paragraph hospitalName = new Paragraph("ST. JOSEPH'S HOSPITAL", headerFont);
                 hospitalName.Alignment = Element.ALIGN_CENTER;
+                hospitalName.SpacingAfter = 5;
                 document.Add(hospitalName);
 
                 Paragraph statementTitle = new Paragraph("STATEMENT OF ACCOUNT", titleFont);
                 statementTitle.Alignment = Element.ALIGN_CENTER;
-                statementTitle.SpacingAfter = 20;
+                statementTitle.SpacingAfter = 25;
                 document.Add(statementTitle);
 
                 PdfPTable patientTable = new PdfPTable(2);
                 patientTable.WidthPercentage = 100;
                 patientTable.SetWidths(new float[] { 1, 1 });
-
-                patientTable.AddCell(new PdfPCell(new Phrase($"Patient: {bill["patient_name"]}", normalFont)) { Border = 0 });
-                patientTable.AddCell(new PdfPCell(new Phrase($"ACCOUNT NO. {bill["bill_id"]}", normalFont)) { Border = 0, HorizontalAlignment = Element.ALIGN_RIGHT });
-
-                patientTable.AddCell(new PdfPCell(new Phrase($"Age: {bill["age"]}   Sex: {bill["gender"]}", normalFont)) { Border = 0 });
-                patientTable.AddCell(new PdfPCell(new Phrase($"Date Admitted: {(bill["queue_date"] != DBNull.Value ? Convert.ToDateTime(bill["queue_date"]).ToString("MMMM dd, yyyy") : "N/A")}", normalFont)) { Border = 0, HorizontalAlignment = Element.ALIGN_RIGHT });
-
-                patientTable.AddCell(new PdfPCell(new Phrase($"Attending Physician: {(bill["attending_physician"] != DBNull.Value ? bill["attending_physician"].ToString() : "N/A")}", normalFont)) { Border = 0 });
-                patientTable.AddCell(new PdfPCell(new Phrase($"Time Admitted: {(bill["bill_date"] != DBNull.Value ? Convert.ToDateTime(bill["bill_date"]).ToString("hh:mm tt") : "")}", normalFont)) { Border = 0, HorizontalAlignment = Element.ALIGN_RIGHT });
-
-                patientTable.AddCell(new PdfPCell(new Phrase($"Status: {bill["status"]}", normalFont)) { Border = 0 });
-                patientTable.AddCell(new PdfPCell(new Phrase($"Date Today: {DateTime.Now:MMMM dd, yyyy}", normalFont)) { Border = 0, HorizontalAlignment = Element.ALIGN_RIGHT });
-
                 patientTable.SpacingAfter = 20;
+
+                PdfPCell cellPatient = new PdfPCell(new Phrase($"Patient: {bill["patient_name"]}", normalFont));
+                cellPatient.Border = 0;
+                cellPatient.PaddingBottom = 8;
+                patientTable.AddCell(cellPatient);
+
+                PdfPCell cellAccount = new PdfPCell(new Phrase($"ACCOUNT NO. {bill["bill_id"]}", normalFont));
+                cellAccount.Border = 0;
+                cellAccount.HorizontalAlignment = Element.ALIGN_RIGHT;
+                cellAccount.PaddingBottom = 8;
+                patientTable.AddCell(cellAccount);
+
+                PdfPCell cellAge = new PdfPCell(new Phrase($"Age: {bill["age"]}   Sex: {bill["gender"]}", normalFont));
+                cellAge.Border = 0;
+                cellAge.PaddingBottom = 8;
+                patientTable.AddCell(cellAge);
+
+                PdfPCell cellDateAdmitted = new PdfPCell(new Phrase($"Date Admitted: {(bill["queue_date"] != DBNull.Value ? Convert.ToDateTime(bill["queue_date"]).ToString("MMMM dd, yyyy") : "N/A")}", normalFont));
+                cellDateAdmitted.Border = 0;
+                cellDateAdmitted.HorizontalAlignment = Element.ALIGN_RIGHT;
+                cellDateAdmitted.PaddingBottom = 8;
+                patientTable.AddCell(cellDateAdmitted);
+
+                PdfPCell cellPhysician = new PdfPCell(new Phrase($"Attending Physician: {(bill["attending_physician"] != DBNull.Value ? bill["attending_physician"].ToString() : "N/A")}", normalFont));
+                cellPhysician.Border = 0;
+                cellPhysician.PaddingBottom = 8;
+                patientTable.AddCell(cellPhysician);
+
+                PdfPCell cellTimeAdmitted = new PdfPCell(new Phrase($"Time Admitted: {(bill["bill_date"] != DBNull.Value ? Convert.ToDateTime(bill["bill_date"]).ToString("hh:mm tt") : "")}", normalFont));
+                cellTimeAdmitted.Border = 0;
+                cellTimeAdmitted.HorizontalAlignment = Element.ALIGN_RIGHT;
+                cellTimeAdmitted.PaddingBottom = 8;
+                patientTable.AddCell(cellTimeAdmitted);
+
+                PdfPCell cellStatus = new PdfPCell(new Phrase($"Status: {bill["status"]}", normalFont));
+                cellStatus.Border = 0;
+                cellStatus.PaddingBottom = 8;
+                patientTable.AddCell(cellStatus);
+
+                PdfPCell cellDateToday = new PdfPCell(new Phrase($"Date Today: {DateTime.Now:MMMM dd, yyyy}", normalFont));
+                cellDateToday.Border = 0;
+                cellDateToday.HorizontalAlignment = Element.ALIGN_RIGHT;
+                cellDateToday.PaddingBottom = 8;
+                patientTable.AddCell(cellDateToday);
+
                 document.Add(patientTable);
 
-                document.Add(new Paragraph("HOSPITAL CHARGES", headerFont));
+                Paragraph chargesTitle = new Paragraph("HOSPITAL CHARGES", headerFont);
+                chargesTitle.SpacingAfter = 10;
+                document.Add(chargesTitle);
 
-                PdfPTable chargesTable = new PdfPTable(6);
+                PdfPTable chargesTable = new PdfPTable(5);
                 chargesTable.WidthPercentage = 100;
-                chargesTable.SetWidths(new float[] { 3, 1, 1, 1, 1, 1 });
+                chargesTable.SetWidths(new float[] { 3, 1.5f, 1, 1.2f, 1.3f });
+                chargesTable.SpacingAfter = 15;
 
-                chargesTable.AddCell(new PdfPCell(new Phrase("PARTICULARS", smallFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
-                chargesTable.AddCell(new PdfPCell(new Phrase("TOTAL", smallFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
-                chargesTable.AddCell(new PdfPCell(new Phrase("PHIC", smallFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
-                chargesTable.AddCell(new PdfPCell(new Phrase("MSS", smallFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
-                chargesTable.AddCell(new PdfPCell(new Phrase("CASH", smallFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
-                chargesTable.AddCell(new PdfPCell(new Phrase("BALANCE", smallFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
+                PdfPCell headerService = new PdfPCell(new Phrase("SERVICE/ITEM", tableHeaderFont));
+                headerService.BackgroundColor = new BaseColor(240, 240, 240);
+                headerService.Padding = 8;
+                headerService.HorizontalAlignment = Element.ALIGN_LEFT;
+                chargesTable.AddCell(headerService);
+
+                PdfPCell headerCategory = new PdfPCell(new Phrase("CATEGORY", tableHeaderFont));
+                headerCategory.BackgroundColor = new BaseColor(240, 240, 240);
+                headerCategory.Padding = 8;
+                headerCategory.HorizontalAlignment = Element.ALIGN_LEFT;
+                chargesTable.AddCell(headerCategory);
+
+                PdfPCell headerQty = new PdfPCell(new Phrase("QTY", tableHeaderFont));
+                headerQty.BackgroundColor = new BaseColor(240, 240, 240);
+                headerQty.Padding = 8;
+                headerQty.HorizontalAlignment = Element.ALIGN_CENTER;
+                chargesTable.AddCell(headerQty);
+
+                PdfPCell headerUnitPrice = new PdfPCell(new Phrase("UNIT PRICE", tableHeaderFont));
+                headerUnitPrice.BackgroundColor = new BaseColor(240, 240, 240);
+                headerUnitPrice.Padding = 8;
+                headerUnitPrice.HorizontalAlignment = Element.ALIGN_RIGHT;
+                chargesTable.AddCell(headerUnitPrice);
+
+                PdfPCell headerAmount = new PdfPCell(new Phrase("AMOUNT", tableHeaderFont));
+                headerAmount.BackgroundColor = new BaseColor(240, 240, 240);
+                headerAmount.Padding = 8;
+                headerAmount.HorizontalAlignment = Element.ALIGN_RIGHT;
+                chargesTable.AddCell(headerAmount);
 
                 decimal hospitalChargesTotal = 0;
                 foreach (DataRow service in servicesData.Rows)
                 {
-                    string particulars = service["service_name"].ToString();
+                    string serviceName = service["service_name"].ToString();
+                    string categoryName = service["category_name"].ToString();
+                    int quantity = Convert.ToInt32(service["quantity"]);
+                    decimal unitPrice = Convert.ToDecimal(service["unit_price"]);
                     decimal total = Convert.ToDecimal(service["total"]);
                     hospitalChargesTotal += total;
 
-                    chargesTable.AddCell(new Phrase(particulars, smallFont));
-                    chargesTable.AddCell(new Phrase($"₱{total:N2}", smallFont));
-                    chargesTable.AddCell(new Phrase("0.00", smallFont));
-                    chargesTable.AddCell(new Phrase("0.00", smallFont));
-                    chargesTable.AddCell(new Phrase("0.00", smallFont));
-                    chargesTable.AddCell(new Phrase($"₱{total:N2}", smallFont));
+                    PdfPCell cellService = new PdfPCell(new Phrase(serviceName, smallFont));
+                    cellService.Padding = 6;
+                    cellService.HorizontalAlignment = Element.ALIGN_LEFT;
+                    chargesTable.AddCell(cellService);
+
+                    PdfPCell cellCategory = new PdfPCell(new Phrase(categoryName, smallFont));
+                    cellCategory.Padding = 6;
+                    cellCategory.HorizontalAlignment = Element.ALIGN_LEFT;
+                    chargesTable.AddCell(cellCategory);
+
+                    PdfPCell cellQty = new PdfPCell(new Phrase(quantity.ToString(), smallFont));
+                    cellQty.Padding = 6;
+                    cellQty.HorizontalAlignment = Element.ALIGN_CENTER;
+                    chargesTable.AddCell(cellQty);
+
+                    PdfPCell cellUnit = new PdfPCell(new Phrase($"₱{unitPrice:N2}", smallFont));
+                    cellUnit.Padding = 6;
+                    cellUnit.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    chargesTable.AddCell(cellUnit);
+
+                    PdfPCell cellTotal = new PdfPCell(new Phrase($"₱{total:N2}", smallFont));
+                    cellTotal.Padding = 6;
+                    cellTotal.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    chargesTable.AddCell(cellTotal);
                 }
 
-                chargesTable.AddCell(new PdfPCell(new Phrase("TOTAL:", headerFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
-                chargesTable.AddCell(new PdfPCell(new Phrase($"₱{hospitalChargesTotal:N2}", headerFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
-                chargesTable.AddCell(new PdfPCell(new Phrase("0.00", headerFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
-                chargesTable.AddCell(new PdfPCell(new Phrase("0.00", headerFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
-                chargesTable.AddCell(new PdfPCell(new Phrase("0.00", headerFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
-                chargesTable.AddCell(new PdfPCell(new Phrase($"₱{hospitalChargesTotal:N2}", headerFont)) { BackgroundColor = new BaseColor(240, 240, 240) });
+                decimal subtotal = Convert.ToDecimal(bill["subtotal"]);
+                decimal discountAmount = Convert.ToDecimal(bill["discount_amount"]);
+                decimal discountPercent = Convert.ToDecimal(bill["discount_percent"]);
+                decimal taxAmount = Convert.ToDecimal(bill["tax_amount"]);
+                decimal taxPercent = Convert.ToDecimal(bill["tax_percent"]);
+                decimal grandTotal = Convert.ToDecimal(bill["amount"]);
 
-                chargesTable.SpacingAfter = 20;
+                PdfPCell subtotalLabel = new PdfPCell(new Phrase("SUBTOTAL:", headerFont));
+                subtotalLabel.Colspan = 4;
+                subtotalLabel.BackgroundColor = new BaseColor(240, 240, 240);
+                subtotalLabel.Padding = 10;
+                subtotalLabel.HorizontalAlignment = Element.ALIGN_LEFT;
+                chargesTable.AddCell(subtotalLabel);
+
+                PdfPCell subtotalValue = new PdfPCell(new Phrase($"₱{subtotal:N2}", headerFont));
+                subtotalValue.BackgroundColor = new BaseColor(240, 240, 240);
+                subtotalValue.Padding = 10;
+                subtotalValue.HorizontalAlignment = Element.ALIGN_RIGHT;
+                chargesTable.AddCell(subtotalValue);
+
+                if (discountAmount > 0)
+                {
+                    PdfPCell discountLabel = new PdfPCell(new Phrase($"DISCOUNT ({discountPercent}%):", headerFont));
+                    discountLabel.Colspan = 4;
+                    discountLabel.BackgroundColor = new BaseColor(255, 250, 235);
+                    discountLabel.Padding = 10;
+                    discountLabel.HorizontalAlignment = Element.ALIGN_LEFT;
+                    chargesTable.AddCell(discountLabel);
+
+                    PdfPCell discountValue = new PdfPCell(new Phrase($"-₱{discountAmount:N2}", headerFont));
+                    discountValue.BackgroundColor = new BaseColor(255, 250, 235);
+                    discountValue.Padding = 10;
+                    discountValue.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    chargesTable.AddCell(discountValue);
+                }
+
+                if (taxAmount > 0)
+                {
+                    PdfPCell taxLabel = new PdfPCell(new Phrase($"TAX ({taxPercent}%):", headerFont));
+                    taxLabel.Colspan = 4;
+                    taxLabel.BackgroundColor = new BaseColor(240, 240, 240);
+                    taxLabel.Padding = 10;
+                    taxLabel.HorizontalAlignment = Element.ALIGN_LEFT;
+                    chargesTable.AddCell(taxLabel);
+
+                    PdfPCell taxValue = new PdfPCell(new Phrase($"₱{taxAmount:N2}", headerFont));
+                    taxValue.BackgroundColor = new BaseColor(240, 240, 240);
+                    taxValue.Padding = 10;
+                    taxValue.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    chargesTable.AddCell(taxValue);
+                }
+
+                PdfPCell totalLabel = new PdfPCell(new Phrase("TOTAL:", headerFont));
+                totalLabel.Colspan = 4;
+                totalLabel.BackgroundColor = new BaseColor(66, 153, 225);
+                totalLabel.Padding = 10;
+                totalLabel.HorizontalAlignment = Element.ALIGN_LEFT;
+                chargesTable.AddCell(totalLabel);
+
+                PdfPCell totalValue = new PdfPCell(new Phrase($"₱{grandTotal:N2}", headerFont));
+                totalValue.BackgroundColor = new BaseColor(66, 153, 225);
+                totalValue.Padding = 10;
+                totalValue.HorizontalAlignment = Element.ALIGN_RIGHT;
+                chargesTable.AddCell(totalValue);
+
                 document.Add(chargesTable);
 
-                Paragraph totalPara = new Paragraph($"GRAND TOTAL:   ₱{hospitalChargesTotal:N2}", titleFont);
+                Paragraph totalPara = new Paragraph($"GRAND TOTAL:   ₱{grandTotal:N2}", titleFont);
                 totalPara.Alignment = Element.ALIGN_RIGHT;
-                totalPara.SpacingAfter = 30;
+                totalPara.SpacingAfter = 40;
                 document.Add(totalPara);
 
-                document.Add(new Paragraph("ACKNOWLEDGEMENT OF MEMBER/REPRESENTATIVE", smallFont));
-                document.Add(new Paragraph("\n_________________________________", normalFont));
-                document.Add(new Paragraph("Signature Over Printed Name", smallFont));
-                document.Add(new Paragraph($"\nPrepared by: {(bill["created_by_name"] != DBNull.Value ? bill["created_by_name"].ToString() : "System")}", smallFont));
+                Paragraph acknowledgement = new Paragraph("ACKNOWLEDGEMENT OF MEMBER/REPRESENTATIVE", smallFont);
+                acknowledgement.SpacingAfter = 20;
+                document.Add(acknowledgement);
+
+                Paragraph signatureLine = new Paragraph("_________________________________", normalFont);
+                signatureLine.SpacingAfter = 5;
+                document.Add(signatureLine);
+
+                Paragraph signatureText = new Paragraph("Signature Over Printed Name", smallFont);
+                signatureText.SpacingAfter = 20;
+                document.Add(signatureText);
+
+                Paragraph preparedBy = new Paragraph($"Prepared by: {(bill["created_by_name"] != DBNull.Value ? bill["created_by_name"].ToString() : "System")}", smallFont);
+                document.Add(preparedBy);
 
                 document.Close();
                 writer.Close();

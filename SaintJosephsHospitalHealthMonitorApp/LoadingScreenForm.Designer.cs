@@ -1,27 +1,31 @@
-﻿using System.Windows.Forms;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
-
-namespace SaintJosephsHospitalHealthMonitorApp
+﻿namespace SaintJosephsHospitalHealthMonitorApp
 {
     partial class LoadingScreenForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Panel panelMain;
-        private System.Windows.Forms.Label lblLogo;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Panel panelSpinner;
-        private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.ProgressBar progressBar;
-        private System.Windows.Forms.Label lblProgress;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
+            {
                 components.Dispose();
+            }
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
             panelMain = new Panel();
@@ -125,5 +129,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
             panelMain.ResumeLayout(false);
             ResumeLayout(false);
         }
+
+        #endregion
+
+        private Panel panelMain;
+        private Label lblLogo;
+        private Label lblTitle;
+        private Panel panelSpinner;
+        private Label lblStatus;
+        private ProgressBar progressBar;
+        private Label lblProgress;
     }
 }

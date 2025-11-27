@@ -2,34 +2,30 @@
 {
     partial class LoginForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Panel panelMain;
-        private System.Windows.Forms.Panel panelLeft;
-        private System.Windows.Forms.Panel panelRight;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblSubtitle;
-        private System.Windows.Forms.Label lblEmail;
-        private System.Windows.Forms.TextBox txtEmail;
-        private System.Windows.Forms.Panel panelEmailBorder;
-        private System.Windows.Forms.Label lblPassword;
-        private System.Windows.Forms.TextBox txtPassword;
-        private System.Windows.Forms.Panel panelPasswordBorder;
-        private System.Windows.Forms.Button btnLogin;
-        private System.Windows.Forms.Label lblError;
-        private System.Windows.Forms.Label lblBrandLogo;
-        private System.Windows.Forms.Label lblBrandName;
-        private System.Windows.Forms.Label lblFooter;
-        private System.Windows.Forms.Panel panelEmailContainer;
-        private System.Windows.Forms.Panel panelPasswordContainer;
-        private System.Windows.Forms.CheckBox chkShowPassword;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
+            {
                 components.Dispose();
+            }
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
             panelMain = new Panel();
@@ -303,5 +299,27 @@
             panelPasswordContainer.PerformLayout();
             ResumeLayout(false);
         }
+
+        #endregion
+
+        private Panel panelLeft;
+        private Panel panelMain;
+        private Panel panelRight;
+        private Label lblTitle;
+        private Label lblSubtitle;
+        private Label lblEmail;
+        private TextBox txtEmail;
+        private Panel panelEmailBorder;
+        private Label lblPassword;
+        private TextBox txtPassword;
+        private Panel panelPasswordBorder;
+        private Button btnLogin;
+        private Label lblError;
+        private Label lblBrandLogo;
+        private Label lblBrandName;
+        private Label lblFooter;
+        private Panel panelEmailContainer;
+        private Panel panelPasswordContainer;
+        private CheckBox chkShowPassword;
     }
 }
