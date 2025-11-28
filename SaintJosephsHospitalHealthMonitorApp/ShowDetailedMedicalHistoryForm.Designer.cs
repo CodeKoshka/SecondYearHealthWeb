@@ -28,15 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            panelHeader = new System.Windows.Forms.Panel();
-            lblInstruction = new System.Windows.Forms.Label();
-            lblStats = new System.Windows.Forms.Label();
-            lblTitle = new System.Windows.Forms.Label();
-            dgvHistory = new System.Windows.Forms.DataGridView();
-            panelButtons = new System.Windows.Forms.Panel();
-            btnClose = new System.Windows.Forms.Button();
-            btnPrint = new System.Windows.Forms.Button();
-            btnViewDetails = new System.Windows.Forms.Button();
+            panelHeader = new Panel();
+            lblInstruction = new Label();
+            lblStats = new Label();
+            lblTitle = new Label();
+            dgvHistory = new DataGridView();
+            panelButtons = new Panel();
+            btnClose = new Button();
+            btnPrint = new Button();
+            btnViewDetails = new Button();
             panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvHistory)).BeginInit();
             panelButtons.SuspendLayout();
@@ -48,7 +48,7 @@
             panelHeader.Controls.Add(this.lblInstruction);
             panelHeader.Controls.Add(this.lblStats);
             panelHeader.Controls.Add(this.lblTitle);
-            panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            panelHeader.Dock = DockStyle.Top;
             panelHeader.Location = new System.Drawing.Point(0, 0);
             panelHeader.Name = "panelHeader";
             panelHeader.Size = new System.Drawing.Size(1200, 100);
@@ -92,7 +92,7 @@
             dgvHistory.AllowUserToAddRows = false;
             dgvHistory.AllowUserToDeleteRows = false;
             dgvHistory.BackgroundColor = System.Drawing.Color.White;
-            dgvHistory.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dgvHistory.BorderStyle = BorderStyle.None;
             dgvHistory.ColumnHeadersHeight = 50;
             dgvHistory.Location = new System.Drawing.Point(20, 120);
             dgvHistory.MultiSelect = false;
@@ -100,10 +100,10 @@
             dgvHistory.ReadOnly = true;
             dgvHistory.RowHeadersVisible = false;
             dgvHistory.RowTemplate.Height = 40;
-            dgvHistory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            dgvHistory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvHistory.Size = new System.Drawing.Size(1160, 520);
             dgvHistory.TabIndex = 1;
-            dgvHistory.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvHistory_CellDoubleClick);
+            dgvHistory.CellDoubleClick += new DataGridViewCellEventHandler(this.DgvHistory_CellDoubleClick);
             // 
             // panelButtons
             // 
@@ -111,7 +111,7 @@
             panelButtons.Controls.Add(this.btnClose);
             panelButtons.Controls.Add(this.btnPrint);
             panelButtons.Controls.Add(this.btnViewDetails);
-            panelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            panelButtons.Dock = DockStyle.Bottom;
             panelButtons.Location = new System.Drawing.Point(0, 660);
             panelButtons.Name = "panelButtons";
             panelButtons.Size = new System.Drawing.Size(1200, 90);
@@ -119,11 +119,11 @@
             // 
             // btnClose
             // 
-            btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            btnClose.Anchor = ((AnchorStyles)((AnchorStyles.Bottom | AnchorStyles.Right)));
             btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnClose.Cursor = Cursors.Hand;
             btnClose.FlatAppearance.BorderSize = 0;
-            btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnClose.FlatStyle = FlatStyle.Flat;
             btnClose.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             btnClose.ForeColor = System.Drawing.Color.White;
             btnClose.Location = new System.Drawing.Point(1030, 22);
@@ -137,9 +137,9 @@
             // btnPrint
             // 
             btnPrint.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
-            btnPrint.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnPrint.Cursor = Cursors.Hand;
             btnPrint.FlatAppearance.BorderSize = 0;
-            btnPrint.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnPrint.FlatStyle = FlatStyle.Flat;
             btnPrint.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             btnPrint.ForeColor = System.Drawing.Color.White;
             btnPrint.Location = new System.Drawing.Point(210, 22);
@@ -153,9 +153,9 @@
             // btnViewDetails
             // 
             btnViewDetails.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            btnViewDetails.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnViewDetails.Cursor = Cursors.Hand;
             btnViewDetails.FlatAppearance.BorderSize = 0;
-            btnViewDetails.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnViewDetails.FlatStyle = FlatStyle.Flat;
             btnViewDetails.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             btnViewDetails.ForeColor = System.Drawing.Color.White;
             btnViewDetails.Location = new System.Drawing.Point(20, 22);
@@ -169,17 +169,17 @@
             // ShowDetailedMedicalHistoryForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleMode = AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
             ClientSize = new System.Drawing.Size(1200, 750);
             Controls.Add(this.panelButtons);
             Controls.Add(this.dgvHistory);
             Controls.Add(this.panelHeader);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "ShowDetailedMedicalHistoryForm";
-            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.CenterParent;
             Text = "Medical History";
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();

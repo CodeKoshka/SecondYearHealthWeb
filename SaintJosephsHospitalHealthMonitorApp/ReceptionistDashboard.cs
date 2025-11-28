@@ -1526,44 +1526,32 @@ namespace SaintJosephsHospitalHealthMonitorApp
             activeBtn.ForeColor = Color.White;
         }
 
-        private void BtnViewBill_Click(object sender, EventArgs e)
+        private void BtnViewBillDetails_Click(object sender, EventArgs e)
         {
             if (dgvBilling.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Please select a patient first.", "No Selection",
+                MessageBox.Show("Please select a bill to view details.", "Selection Required",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            var selectedRow = dgvBilling.SelectedRows[0];
-            object billIdObj = selectedRow.Cells["bill_id"].Value;
-            object patientIdObj = selectedRow.Cells["patient_id"].Value;
-
-            if (patientIdObj == DBNull.Value || patientIdObj == null)
-            {
-                MessageBox.Show("This patient record is invalid.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            int patientId = Convert.ToInt32(patientIdObj);
-            if (billIdObj == DBNull.Value || billIdObj == null)
+            var billIdCell = dgvBilling.SelectedRows[0].Cells["bill_id"];
+            if (billIdCell?.Value == null || billIdCell.Value == DBNull.Value)
             {
                 MessageBox.Show(
-                    "No bill found for this patient.\n\n" +
-                    "Please create a bill first using the 'Create Bill' or 'Update Bill' button.",
+                    "❌ NO BILL FOUND\n\n" +
+                    "This patient doesn't have a bill yet.\n" +
+                    "Please create a bill first using 'Create Bill' button.",
                     "No Bill Available",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                    MessageBoxIcon.Warning);
                 return;
             }
 
-            int billId = Convert.ToInt32(billIdObj);
-            int currentUserIdValue = currentUser?.UserId ?? 1;
-            using (BillingForm billingForm = new BillingForm(currentUserIdValue, patientId, billId, viewOnly: true))
-            {
-                billingForm.ShowDialog();
-            }
+            int billId = Convert.ToInt32(billIdCell.Value);
+
+            BillDetailsViewForm detailsForm = new BillDetailsViewForm(billId);
+            detailsForm.ShowDialog();
         }
 
         private void ShowEquipmentReportFromQueue(int patientId, string patientName)
@@ -2093,11 +2081,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             "⚠️ IMPORTANT NOTICE:\n" +
                             "Editing this bill will:\n" +
                             "• REFUND all payments (₱" + amountPaid.ToString("N2") + ")\n" +
+                            "• CLEAR all payment transactions\n" +
                             "• Reset bill status to 'Pending'\n" +
-                            "• Preserve payment records for audit\n" +
+                            "• Reset bill amount to ₱0.00\n" +
                             "• Require re-processing payment after editing\n\n" +
-                            "💡 The payment transactions will remain in history\n" +
-                            "but the bill will need to be paid again.\n\n" +
+                            "💡 Payment transactions will be archived in notes\n" +
+                            "for audit purposes before being deleted.\n\n" +
                             "Continue with editing?",
                             "⚠️ Confirm Bill Edit & Refund",
                             MessageBoxButtons.YesNo,
@@ -2111,31 +2100,69 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                         try
                         {
+                            string getTransactionsQuery = @"
+                            SELECT 
+                            transaction_id,
+                            amount_paid,
+                            payment_method,
+                            reference_number,
+                            payment_date,
+                            u.name as processed_by_name
+                            FROM PaymentTransactions pt
+                            LEFT JOIN Users u ON pt.processed_by = u.user_id
+                            WHERE bill_id = @billId
+                            ORDER BY payment_date";
+
+                            DataTable dtTransactions = DatabaseHelper.ExecuteQuery(getTransactionsQuery,
+                                new MySqlParameter("@billId", billId));
+
+                            System.Text.StringBuilder transactionNotes = new System.Text.StringBuilder();
+                            transactionNotes.AppendLine("\n\n--- PAYMENT TRANSACTIONS ARCHIVED (REFUNDED) ---");
+                            transactionNotes.AppendLine($"Refunded on: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                            transactionNotes.AppendLine($"Total Refunded: ₱{amountPaid:N2}");
+                            transactionNotes.AppendLine($"Refunded by user ID: {currentUser.UserId}");
+                            transactionNotes.AppendLine("\nOriginal Transactions:");
+
+                            foreach (DataRow row in dtTransactions.Rows)
+                            {
+                                transactionNotes.AppendLine($"  • Transaction #{row["transaction_id"]}");
+                                transactionNotes.AppendLine($"    Amount: ₱{Convert.ToDecimal(row["amount_paid"]):N2}");
+                                transactionNotes.AppendLine($"    Method: {row["payment_method"]}");
+                                if (row["reference_number"] != DBNull.Value && !string.IsNullOrEmpty(row["reference_number"].ToString()))
+                                {
+                                    transactionNotes.AppendLine($"    Reference: {row["reference_number"]}");
+                                }
+                                transactionNotes.AppendLine($"    Date: {Convert.ToDateTime(row["payment_date"]):yyyy-MM-dd HH:mm:ss}");
+                                transactionNotes.AppendLine($"    Processed By: {row["processed_by_name"]}");
+                            }
+                            transactionNotes.AppendLine("--- END OF ARCHIVED TRANSACTIONS ---");
+
+                            string deleteTransactionsQuery = @"
+                            DELETE FROM PaymentTransactions 
+                            WHERE bill_id = @billId";
+
+                            DatabaseHelper.ExecuteNonQuery(deleteTransactionsQuery,
+                                new MySqlParameter("@billId", billId));
+
                             string refundQuery = @"
-                        UPDATE Billing 
-                        SET status = 'Pending',
+                            UPDATE Billing 
+                            SET status = 'Pending',
                             payment_method = 'Pending Payment',
-                            notes = CONCAT(
-                                IFNULL(notes, ''), 
-                                CHAR(10), CHAR(10),
-                                '--- BILL EDITED & PAYMENTS REFUNDED ---', CHAR(10),
-                                'Edited on: ', NOW(), CHAR(10),
-                                'Previous payments refunded: ₱', @amountPaid, CHAR(10),
-                                'Edited by user ID: ', @userId, CHAR(10),
-                                'Payment records preserved in PaymentTransactions table'
-                            )
-                        WHERE bill_id = @billId";
+                            notes = CONCAT(IFNULL(notes, ''), @transactionNotes)
+                            WHERE bill_id = @billId";
 
                             DatabaseHelper.ExecuteNonQuery(refundQuery,
                                 new MySqlParameter("@billId", billId),
-                                new MySqlParameter("@amountPaid", amountPaid.ToString("N2")),
-                                new MySqlParameter("@userId", currentUser.UserId));
+                                new MySqlParameter("@transactionNotes", transactionNotes.ToString()));
 
                             MessageBox.Show(
-                                $"💰 PAYMENTS REFUNDED\n\n" +
+                                $"💰 PAYMENTS REFUNDED & CLEARED\n\n" +
                                 $"Amount Refunded: ₱{amountPaid:N2}\n" +
-                                $"Bill Status: Pending\n\n" +
-                                "Payment records have been preserved for audit.\n" +
+                                $"Bill Status: Pending\n" +
+                                $"Payment Transactions: Deleted\n\n" +
+                                "✓ Payment records archived in bill notes for audit\n" +
+                                "✓ Bill reset to ₱0.00\n" +
+                                "✓ All payment data cleared\n\n" +
                                 "You can now edit the bill.\n\n" +
                                 "After editing, use 'Process Payment' to collect payment again.",
                                 "Refund Complete",
@@ -2170,7 +2197,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             $"Patient: {patientName}\n" +
                             $"Bill ID: #{billId}\n\n" +
                             "The bill has been updated.\n" +
-                            "Status: Pending\n\n" +
+                            "Status: Pending\n" +
+                            "Amount: Reset to new total\n\n" +
                             "💡 Use 'Process Payment' to collect payment for the updated bill.",
                             "Bill Updated",
                             MessageBoxButtons.OK,

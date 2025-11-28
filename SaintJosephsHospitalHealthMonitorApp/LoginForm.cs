@@ -11,7 +11,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
     {
         private Timer animationTimer;
         private float currentOpacity = 0f;
-
+        private bool isAuthenticating = false;
         private DebugForm debugForm;
 
         public LoginForm()
@@ -161,6 +161,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void BtnLogin_Click(object sender, EventArgs e)
         {
+            if (isAuthenticating)
+            {
+                return;
+            }
+
             if (txtEmail.Text.Trim() == "--debug" && txtPassword.Text.Trim() == "--debug")
             {
                 DebugForm.ShowDebugDialog(this);
@@ -177,34 +182,58 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            User user = User.Authenticate(txtEmail.Text, txtPassword.Text);
+            isAuthenticating = true;
+            string originalButtonText = btnLogin.Text;
+            btnLogin.Text = "Authenticating...";
 
-            if (user != null)
+            try
             {
-                bool roleEnabled = IsRoleEnabled(user.Role);
+                User user = User.Authenticate(txtEmail.Text, txtPassword.Text);
 
-                if (!roleEnabled)
+                if (user != null)
                 {
-                    ShowError($"{user.Role} dashboard is currently disabled in debug mode.");
-                    return;
-                }
+                    bool roleEnabled = IsRoleEnabled(user.Role);
 
-                if (user.Role != "Headadmin" &&
-                    user.Role != "Admin" &&
-                    user.Role != "Receptionist" &&
-                    user.Role != "Doctor" &&
-                    user.Role != "Pharmacist")
+                    if (!roleEnabled)
+                    {
+                        ShowError($"{user.Role} dashboard is currently disabled in debug mode.");
+                        return;
+                    }
+
+                    if (user.Role != "Headadmin" &&
+                        user.Role != "Admin" &&
+                        user.Role != "Receptionist" &&
+                        user.Role != "Doctor" &&
+                        user.Role != "Pharmacist")
+                    {
+                        ShowError("Invalid role for login. Patients cannot login here.");
+                        return;
+                    }
+
+                    AnimateSuccessfulLogin(user);
+                }
+                else
                 {
-                    ShowError("Invalid role for login. Patients cannot login here.");
-                    return;
+                    ClearPasswordField();
                 }
-
-                AnimateSuccessfulLogin(user);
             }
-            else
+            catch (Exception ex)
             {
-                ShowError("Invalid email or password.");
+                ShowError("An unexpected error occurred. Please try again.");
+                System.Diagnostics.Debug.WriteLine($"Login error: {ex.Message}");
                 ClearPasswordField();
+            }
+            finally
+            {
+                Timer resetTimer = new Timer { Interval = 1000 };
+                resetTimer.Tick += (s, e) =>
+                {
+                    isAuthenticating = false;
+                    btnLogin.Text = originalButtonText;
+                    resetTimer.Stop();
+                    resetTimer.Dispose();
+                };
+                resetTimer.Start();
             }
         }
 
@@ -324,8 +353,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             lblError.Text = message;
             lblError.Visible = true;
+            lblError.MaximumSize = new Size(420, 0);
+            lblError.AutoSize = true;
 
-            Timer hideTimer = new Timer { Interval = 3000 };
+            Timer hideTimer = new Timer { Interval = 5000 }; 
             hideTimer.Tick += (s, e) =>
             {
                 lblError.Visible = false;

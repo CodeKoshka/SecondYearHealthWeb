@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SaintJosephsHospitalHealthMonitorApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7079e63e18c2107a2e923270c4d9652937439032")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+27bdd6b3aa2a50841cceb0e10d0a5f72f2658aaf")]
 [assembly: System.Reflection.AssemblyProductAttribute("SaintJosephsHospitalHealthMonitorApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SaintJosephsHospitalHealthMonitorApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

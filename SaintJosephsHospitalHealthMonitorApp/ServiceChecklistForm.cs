@@ -176,7 +176,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             string category = cmbCategory.SelectedItem?.ToString();
             if (string.IsNullOrEmpty(category) || category == "-- Select Category --")
+            {
+                numQuantity.Enabled = false;
+                numQuantity.Value = 1;
                 return;
+            }
+
+            numQuantity.Enabled = false;
+            numQuantity.Value = 1;
 
             switch (category)
             {
@@ -268,6 +275,54 @@ namespace SaintJosephsHospitalHealthMonitorApp
             cmbService.SelectedIndex = 0;
         }
 
+        private void CmbService_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string category = cmbCategory.SelectedItem?.ToString();
+            string service = cmbService.SelectedItem?.ToString();
+
+            if (string.IsNullOrEmpty(category) || string.IsNullOrEmpty(service) ||
+                category == "-- Select Category --" || service == "-- Select Service --")
+            {
+                numQuantity.Enabled = false;
+                numQuantity.Value = 1;
+                return;
+            }
+
+            numQuantity.Enabled = ServiceAllowsQuantity(service, category);
+            numQuantity.Value = 1;
+        }
+
+        private bool ServiceAllowsQuantity(string serviceName, string category)
+        {
+            if (category == "Laboratory" || category == "Medications")
+            {
+                return true; 
+            }
+
+            var quantityAllowedServices = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Private Room (per day)",
+                "Semi-Private Room (per day)",
+                "Ward Bed (per day)",
+                "ICU (per day)",
+                "Observation Bed (per day)",
+        
+                "Wound Dressing",
+                "Nebulization",
+
+                "Physical Therapy Session",
+                "Oxygen Therapy (per hour)",
+                "Cardiac Monitor (per day)",
+                "Infusion Pump (per day)",
+                "Medical Supplies (Sterile Gloves, Syringes, etc.)",
+
+                "Custom Medication (Enter Details)",
+                "Custom Service (Enter Details)"
+            };
+
+            return quantityAllowedServices.Contains(serviceName);
+        }
+
         private void BtnAddService_Click(object sender, EventArgs e)
         {
             if (cmbCategory.SelectedIndex <= 0 || cmbService.SelectedIndex <= 0)
@@ -313,46 +368,64 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (existingItem != null && category != "Other Services")
+            bool allowQuantityIncrement = ServiceAllowsQuantity(serviceName, category);
+
+            if (allowQuantityIncrement)
             {
-                int currentQuantity = int.Parse(existingItem.SubItems[2].Text);
-                int newQuantity = currentQuantity + quantity;
-                existingItem.SubItems[2].Text = newQuantity.ToString();
-
-                MessageBox.Show(
-                    $"⚠️ Duplicate Service Detected\n\n" +
-                    $"Service: {serviceName}\n" +
-                    $"Category: {category}\n\n" +
-                    $"This service already exists in the list.\n" +
-                    $"Quantity has been updated:\n\n" +
-                    $"Previous: {currentQuantity}\n" +
-                    $"Added: {quantity}\n" +
-                    $"New Total: {newQuantity}\n\n" +
-                    $"Note: Only 'Other Services' can have multiple entries with the same name.",
-                    "Quantity Updated",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-            }
-            else
-            {
-                ListViewItem item = new ListViewItem(serviceName);
-                item.Checked = true;
-                item.SubItems.Add(category);
-                item.SubItems.Add(quantity.ToString());
-
-                lstServices.Items.Add(item);
-
-                if (category == "Other Services" && existingItem != null)
+                if (existingItem != null)
                 {
+                    int currentQuantity = int.Parse(existingItem.SubItems[2].Text);
+                    int newQuantity = currentQuantity + quantity;
+                    existingItem.SubItems[2].Text = newQuantity.ToString();
+
                     MessageBox.Show(
-                        $"✓ Service Added\n\n" +
-                        $"Multiple entries with the same name are allowed in 'Other Services' category.\n\n" +
+                        $"⚠️ Service Quantity Updated\n\n" +
                         $"Service: {serviceName}\n" +
-                        $"Quantity: {quantity}",
-                        "Service Added",
+                        $"Category: {category}\n\n" +
+                        $"Previous Quantity: {currentQuantity}\n" +
+                        $"Added: {quantity}\n" +
+                        $"New Total: {newQuantity}",
+                        "Quantity Updated",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                 }
+                else
+                {
+                    ListViewItem item = new ListViewItem(serviceName);
+                    item.Checked = true;
+                    item.SubItems.Add(category);
+                    item.SubItems.Add(quantity.ToString());
+                    lstServices.Items.Add(item);
+                }
+            }
+            else
+            {
+                if (existingItem != null)
+                {
+                    MessageBox.Show(
+                        $"⚠️ Duplicate Service Not Allowed\n\n" +
+                        $"Service: {serviceName}\n" +
+                        $"Category: {category}\n\n" +
+                        $"This service already exists in the list and can only be added once.\n\n" +
+                        $"Services that allow quantities:\n" +
+                        $"• All Laboratory tests\n" +
+                        $"• All Medications\n" +
+                        $"• Room charges (per day)\n" +
+                        $"• Wound Dressing, Nebulization\n" +
+                        $"• Physical Therapy, Oxygen Therapy\n" +
+                        $"• Medical Supplies\n\n" +
+                        $"Please select a different service or remove the existing entry first.",
+                        "Duplicate Service",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                ListViewItem item = new ListViewItem(serviceName);
+                item.Checked = true;
+                item.SubItems.Add(category);
+                item.SubItems.Add("1");
+                lstServices.Items.Add(item);
             }
 
             UpdateServiceCount();
@@ -559,6 +632,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void cmbService_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -2,26 +2,15 @@
 {
     partial class ServiceChecklistForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Panel panelHeader;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblPatientInfo;
-        private System.Windows.Forms.Label lblServiceCount;
-        private System.Windows.Forms.GroupBox grpAddService;
-        private System.Windows.Forms.Label lblCategory;
-        private System.Windows.Forms.ComboBox cmbCategory;
-        private System.Windows.Forms.Label lblService;
-        private System.Windows.Forms.ComboBox cmbService;
-        private System.Windows.Forms.Label lblQuantity;
-        private System.Windows.Forms.NumericUpDown numQuantity;
-        private System.Windows.Forms.Button btnAddService;
-        private System.Windows.Forms.Button btnRemoveService;
-        private System.Windows.Forms.ListView lstServices;
-        private System.Windows.Forms.Panel panelFooter;
-        private System.Windows.Forms.Label lblTotal;
-        private System.Windows.Forms.Button btnSaveAndComplete;
-        private System.Windows.Forms.Button btnCancel;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -31,283 +20,310 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
-            this.panelHeader = new System.Windows.Forms.Panel();
-            this.lblTitle = new System.Windows.Forms.Label();
-            this.lblPatientInfo = new System.Windows.Forms.Label();
-            this.lblServiceCount = new System.Windows.Forms.Label();
-            this.grpAddService = new System.Windows.Forms.GroupBox();
-            this.btnRemoveService = new System.Windows.Forms.Button();
-            this.btnAddService = new System.Windows.Forms.Button();
-            this.numQuantity = new System.Windows.Forms.NumericUpDown();
-            this.lblQuantity = new System.Windows.Forms.Label();
-            this.cmbService = new System.Windows.Forms.ComboBox();
-            this.lblService = new System.Windows.Forms.Label();
-            this.cmbCategory = new System.Windows.Forms.ComboBox();
-            this.lblCategory = new System.Windows.Forms.Label();
-            this.lstServices = new System.Windows.Forms.ListView();
-            this.panelFooter = new System.Windows.Forms.Panel();
-            this.lblTotal = new System.Windows.Forms.Label();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.btnSaveAndComplete = new System.Windows.Forms.Button();
-            this.panelHeader.SuspendLayout();
-            this.grpAddService.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numQuantity)).BeginInit();
-            this.panelFooter.SuspendLayout();
-            this.SuspendLayout();
+            panelHeader = new Panel();
+            lblTitle = new Label();
+            lblPatientInfo = new Label();
+            lblServiceCount = new Label();
+            grpAddService = new GroupBox();
+            btnRemoveService = new Button();
+            btnAddService = new Button();
+            numQuantity = new NumericUpDown();
+            lblQuantity = new Label();
+            cmbService = new ComboBox();
+            lblService = new Label();
+            cmbCategory = new ComboBox();
+            lblCategory = new Label();
+            lstServices = new ListView();
+            panelFooter = new Panel();
+            lblTotal = new Label();
+            btnCancel = new Button();
+            btnSaveAndComplete = new Button();
+            panelHeader.SuspendLayout();
+            grpAddService.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numQuantity).BeginInit();
+            panelFooter.SuspendLayout();
+            SuspendLayout();
             // 
             // panelHeader
             // 
-            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.panelHeader.Controls.Add(this.lblTitle);
-            this.panelHeader.Controls.Add(this.lblPatientInfo);
-            this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelHeader.Location = new System.Drawing.Point(0, 0);
-            this.panelHeader.Name = "panelHeader";
-            this.panelHeader.Size = new System.Drawing.Size(1000, 80);
-            this.panelHeader.TabIndex = 0;
+            panelHeader.BackColor = Color.FromArgb(52, 152, 219);
+            panelHeader.Controls.Add(lblTitle);
+            panelHeader.Controls.Add(lblPatientInfo);
+            panelHeader.Dock = DockStyle.Top;
+            panelHeader.Location = new Point(0, 0);
+            panelHeader.Name = "panelHeader";
+            panelHeader.Size = new Size(889, 80);
+            panelHeader.TabIndex = 0;
             // 
             // lblTitle
             // 
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Location = new System.Drawing.Point(20, 15);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(398, 30);
-            this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "📋 Equipment & Services Report";
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            lblTitle.ForeColor = Color.White;
+            lblTitle.Location = new Point(20, 15);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new Size(337, 30);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "📋 Equipment & Services Report";
             // 
             // lblPatientInfo
             // 
-            this.lblPatientInfo.AutoSize = true;
-            this.lblPatientInfo.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblPatientInfo.ForeColor = System.Drawing.Color.White;
-            this.lblPatientInfo.Location = new System.Drawing.Point(20, 50);
-            this.lblPatientInfo.Name = "lblPatientInfo";
-            this.lblPatientInfo.Size = new System.Drawing.Size(150, 19);
-            this.lblPatientInfo.TabIndex = 1;
-            this.lblPatientInfo.Text = "Patient: [Patient Name]";
+            lblPatientInfo.AutoSize = true;
+            lblPatientInfo.Font = new Font("Segoe UI", 10F);
+            lblPatientInfo.ForeColor = Color.White;
+            lblPatientInfo.Location = new Point(20, 50);
+            lblPatientInfo.Name = "lblPatientInfo";
+            lblPatientInfo.Size = new Size(150, 19);
+            lblPatientInfo.TabIndex = 1;
+            lblPatientInfo.Text = "Patient: [Patient Name]";
             // 
             // lblServiceCount
             // 
-            this.lblServiceCount.AutoSize = true;
-            this.lblServiceCount.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblServiceCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.lblServiceCount.Location = new System.Drawing.Point(20, 100);
-            this.lblServiceCount.Name = "lblServiceCount";
-            this.lblServiceCount.Size = new System.Drawing.Size(165, 19);
-            this.lblServiceCount.TabIndex = 1;
-            this.lblServiceCount.Text = "Services Selected: 0 of 0";
+            lblServiceCount.AutoSize = true;
+            lblServiceCount.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblServiceCount.ForeColor = Color.FromArgb(52, 152, 219);
+            lblServiceCount.Location = new Point(20, 100);
+            lblServiceCount.Name = "lblServiceCount";
+            lblServiceCount.Size = new Size(172, 19);
+            lblServiceCount.TabIndex = 1;
+            lblServiceCount.Text = "Services Selected: 0 of 0";
             // 
             // grpAddService
             // 
-            this.grpAddService.Controls.Add(this.btnRemoveService);
-            this.grpAddService.Controls.Add(this.btnAddService);
-            this.grpAddService.Controls.Add(this.numQuantity);
-            this.grpAddService.Controls.Add(this.lblQuantity);
-            this.grpAddService.Controls.Add(this.cmbService);
-            this.grpAddService.Controls.Add(this.lblService);
-            this.grpAddService.Controls.Add(this.cmbCategory);
-            this.grpAddService.Controls.Add(this.lblCategory);
-            this.grpAddService.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.grpAddService.Location = new System.Drawing.Point(20, 135);
-            this.grpAddService.Name = "grpAddService";
-            this.grpAddService.Size = new System.Drawing.Size(960, 120);
-            this.grpAddService.TabIndex = 2;
-            this.grpAddService.TabStop = false;
-            this.grpAddService.Text = "Add Service/Equipment";
+            grpAddService.Controls.Add(btnRemoveService);
+            grpAddService.Controls.Add(btnAddService);
+            grpAddService.Controls.Add(numQuantity);
+            grpAddService.Controls.Add(lblQuantity);
+            grpAddService.Controls.Add(cmbService);
+            grpAddService.Controls.Add(lblService);
+            grpAddService.Controls.Add(cmbCategory);
+            grpAddService.Controls.Add(lblCategory);
+            grpAddService.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            grpAddService.Location = new Point(20, 135);
+            grpAddService.Name = "grpAddService";
+            grpAddService.Size = new Size(843, 120);
+            grpAddService.TabIndex = 2;
+            grpAddService.TabStop = false;
+            grpAddService.Text = "Add Service/Equipment";
             // 
             // btnRemoveService
             // 
-            this.btnRemoveService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-            this.btnRemoveService.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnRemoveService.FlatAppearance.BorderSize = 0;
-            this.btnRemoveService.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRemoveService.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnRemoveService.ForeColor = System.Drawing.Color.White;
-            this.btnRemoveService.Location = new System.Drawing.Point(820, 65);
-            this.btnRemoveService.Name = "btnRemoveService";
-            this.btnRemoveService.Size = new System.Drawing.Size(120, 40);
-            this.btnRemoveService.TabIndex = 7;
-            this.btnRemoveService.Text = "❌ Remove";
-            this.btnRemoveService.UseVisualStyleBackColor = false;
-            this.btnRemoveService.Click += new System.EventHandler(this.BtnRemoveService_Click);
+            btnRemoveService.BackColor = Color.FromArgb(231, 76, 60);
+            btnRemoveService.Cursor = Cursors.Hand;
+            btnRemoveService.FlatAppearance.BorderSize = 0;
+            btnRemoveService.FlatStyle = FlatStyle.Flat;
+            btnRemoveService.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnRemoveService.ForeColor = Color.White;
+            btnRemoveService.Location = new Point(702, 60);
+            btnRemoveService.Name = "btnRemoveService";
+            btnRemoveService.Size = new Size(120, 40);
+            btnRemoveService.TabIndex = 7;
+            btnRemoveService.Text = "❌ Remove";
+            btnRemoveService.UseVisualStyleBackColor = false;
+            btnRemoveService.Click += BtnRemoveService_Click;
             // 
             // btnAddService
             // 
-            this.btnAddService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.btnAddService.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnAddService.FlatAppearance.BorderSize = 0;
-            this.btnAddService.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAddService.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnAddService.ForeColor = System.Drawing.Color.White;
-            this.btnAddService.Location = new System.Drawing.Point(680, 65);
-            this.btnAddService.Name = "btnAddService";
-            this.btnAddService.Size = new System.Drawing.Size(120, 40);
-            this.btnAddService.TabIndex = 6;
-            this.btnAddService.Text = "➕ Add";
-            this.btnAddService.UseVisualStyleBackColor = false;
-            this.btnAddService.Click += new System.EventHandler(this.BtnAddService_Click);
+            btnAddService.BackColor = Color.FromArgb(46, 204, 113);
+            btnAddService.Cursor = Cursors.Hand;
+            btnAddService.FlatAppearance.BorderSize = 0;
+            btnAddService.FlatStyle = FlatStyle.Flat;
+            btnAddService.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnAddService.ForeColor = Color.White;
+            btnAddService.Location = new Point(562, 60);
+            btnAddService.Name = "btnAddService";
+            btnAddService.Size = new Size(120, 40);
+            btnAddService.TabIndex = 6;
+            btnAddService.Text = "➕ Add";
+            btnAddService.UseVisualStyleBackColor = false;
+            btnAddService.Click += BtnAddService_Click;
             // 
             // numQuantity
             // 
-            this.numQuantity.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.numQuantity.Location = new System.Drawing.Point(540, 70);
-            this.numQuantity.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
-            this.numQuantity.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            this.numQuantity.Name = "numQuantity";
-            this.numQuantity.Size = new System.Drawing.Size(120, 25);
-            this.numQuantity.TabIndex = 5;
-            this.numQuantity.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            numQuantity.Font = new Font("Segoe UI", 10F);
+            numQuantity.Location = new Point(400, 69);
+            numQuantity.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
+            numQuantity.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numQuantity.Name = "numQuantity";
+            numQuantity.Size = new Size(108, 25);
+            numQuantity.TabIndex = 5;
+            numQuantity.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // lblQuantity
             // 
-            this.lblQuantity.AutoSize = true;
-            this.lblQuantity.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblQuantity.Location = new System.Drawing.Point(540, 40);
-            this.lblQuantity.Name = "lblQuantity";
-            this.lblQuantity.Size = new System.Drawing.Size(56, 15);
-            this.lblQuantity.TabIndex = 4;
-            this.lblQuantity.Text = "Quantity:";
+            lblQuantity.AutoSize = true;
+            lblQuantity.Font = new Font("Segoe UI", 9F);
+            lblQuantity.Location = new Point(400, 50);
+            lblQuantity.Name = "lblQuantity";
+            lblQuantity.Size = new Size(56, 15);
+            lblQuantity.TabIndex = 4;
+            lblQuantity.Text = "Quantity:";
             // 
             // cmbService
             // 
-            this.cmbService.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbService.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbService.FormattingEnabled = true;
-            this.cmbService.Location = new System.Drawing.Point(260, 68);
-            this.cmbService.Name = "cmbService";
-            this.cmbService.Size = new System.Drawing.Size(260, 25);
-            this.cmbService.TabIndex = 3;
+            cmbService.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbService.Font = new Font("Segoe UI", 10F);
+            cmbService.FormattingEnabled = true;
+            cmbService.Location = new Point(191, 68);
+            cmbService.Name = "cmbService";
+            cmbService.Size = new Size(203, 25);
+            cmbService.TabIndex = 3;
+            cmbService.SelectedIndexChanged += new System.EventHandler(this.CmbService_SelectedIndexChanged);
             // 
             // lblService
             // 
-            this.lblService.AutoSize = true;
-            this.lblService.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblService.Location = new System.Drawing.Point(260, 40);
-            this.lblService.Name = "lblService";
-            this.lblService.Size = new System.Drawing.Size(104, 15);
-            this.lblService.TabIndex = 2;
-            this.lblService.Text = "Service/Equipment:";
+            lblService.AutoSize = true;
+            lblService.Font = new Font("Segoe UI", 9F);
+            lblService.Location = new Point(191, 50);
+            lblService.Name = "lblService";
+            lblService.Size = new Size(110, 15);
+            lblService.TabIndex = 2;
+            lblService.Text = "Service/Equipment:";
             // 
             // cmbCategory
             // 
-            this.cmbCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbCategory.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbCategory.FormattingEnabled = true;
-            this.cmbCategory.Location = new System.Drawing.Point(20, 68);
-            this.cmbCategory.Name = "cmbCategory";
-            this.cmbCategory.Size = new System.Drawing.Size(220, 25);
-            this.cmbCategory.TabIndex = 1;
-            this.cmbCategory.SelectedIndexChanged += new System.EventHandler(this.CmbCategory_SelectedIndexChanged);
+            cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbCategory.Font = new Font("Segoe UI", 10F);
+            cmbCategory.FormattingEnabled = true;
+            cmbCategory.Location = new Point(20, 68);
+            cmbCategory.Name = "cmbCategory";
+            cmbCategory.Size = new Size(165, 25);
+            cmbCategory.TabIndex = 1;
+            cmbCategory.SelectedIndexChanged += CmbCategory_SelectedIndexChanged;
             // 
             // lblCategory
             // 
-            this.lblCategory.AutoSize = true;
-            this.lblCategory.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblCategory.Location = new System.Drawing.Point(20, 40);
-            this.lblCategory.Name = "lblCategory";
-            this.lblCategory.Size = new System.Drawing.Size(58, 15);
-            this.lblCategory.TabIndex = 0;
-            this.lblCategory.Text = "Category:";
+            lblCategory.AutoSize = true;
+            lblCategory.Font = new Font("Segoe UI", 9F);
+            lblCategory.Location = new Point(20, 50);
+            lblCategory.Name = "lblCategory";
+            lblCategory.Size = new Size(58, 15);
+            lblCategory.TabIndex = 0;
+            lblCategory.Text = "Category:";
             // 
             // lstServices
             // 
-            this.lstServices.CheckBoxes = true;
-            this.lstServices.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lstServices.FullRowSelect = true;
-            this.lstServices.GridLines = true;
-            this.lstServices.HideSelection = false;
-            this.lstServices.Location = new System.Drawing.Point(20, 270);
-            this.lstServices.Name = "lstServices";
-            this.lstServices.Size = new System.Drawing.Size(960, 320);
-            this.lstServices.TabIndex = 3;
-            this.lstServices.UseCompatibleStateImageBehavior = false;
-            this.lstServices.View = System.Windows.Forms.View.Details;
-            this.lstServices.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.LstServices_ItemChecked);
+            lstServices.CheckBoxes = true;
+            lstServices.Font = new Font("Segoe UI", 9F);
+            lstServices.FullRowSelect = true;
+            lstServices.GridLines = true;
+            lstServices.Location = new Point(20, 270);
+            lstServices.Name = "lstServices";
+            lstServices.Size = new Size(843, 313);
+            lstServices.TabIndex = 3;
+            lstServices.UseCompatibleStateImageBehavior = false;
+            lstServices.View = View.Details;
+            lstServices.ItemChecked += LstServices_ItemChecked;
             // 
             // panelFooter
             // 
-            this.panelFooter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
-            this.panelFooter.Controls.Add(this.lblTotal);
-            this.panelFooter.Controls.Add(this.btnCancel);
-            this.panelFooter.Controls.Add(this.btnSaveAndComplete);
-            this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelFooter.Location = new System.Drawing.Point(0, 610);
-            this.panelFooter.Name = "panelFooter";
-            this.panelFooter.Size = new System.Drawing.Size(1000, 90);
-            this.panelFooter.TabIndex = 4;
+            panelFooter.BackColor = Color.FromArgb(236, 240, 241);
+            panelFooter.Controls.Add(lblTotal);
+            panelFooter.Controls.Add(btnCancel);
+            panelFooter.Controls.Add(btnSaveAndComplete);
+            panelFooter.Dock = DockStyle.Bottom;
+            panelFooter.Location = new Point(0, 611);
+            panelFooter.Name = "panelFooter";
+            panelFooter.Size = new Size(889, 90);
+            panelFooter.TabIndex = 4;
             // 
             // lblTotal
             // 
-            this.lblTotal.AutoSize = true;
-            this.lblTotal.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.lblTotal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.lblTotal.Location = new System.Drawing.Point(20, 30);
-            this.lblTotal.Name = "lblTotal";
-            this.lblTotal.Size = new System.Drawing.Size(0, 25);
-            this.lblTotal.TabIndex = 0;
-            this.lblTotal.Visible = false;
+            lblTotal.AutoSize = true;
+            lblTotal.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            lblTotal.ForeColor = Color.FromArgb(52, 152, 219);
+            lblTotal.Location = new Point(20, 30);
+            lblTotal.Name = "lblTotal";
+            lblTotal.Size = new Size(0, 25);
+            lblTotal.TabIndex = 0;
+            lblTotal.Visible = false;
             // 
             // btnCancel
             // 
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
-            this.btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnCancel.FlatAppearance.BorderSize = 0;
-            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(830, 20);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(150, 50);
-            this.btnCancel.TabIndex = 2;
-            this.btnCancel.Text = "❌ Cancel";
-            this.btnCancel.UseVisualStyleBackColor = false;
-            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
+            btnCancel.BackColor = Color.FromArgb(149, 165, 166);
+            btnCancel.Cursor = Cursors.Hand;
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.FlatStyle = FlatStyle.Flat;
+            btnCancel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnCancel.ForeColor = Color.White;
+            btnCancel.Location = new Point(692, 19);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new Size(150, 50);
+            btnCancel.TabIndex = 2;
+            btnCancel.Text = "❌ Cancel";
+            btnCancel.UseVisualStyleBackColor = false;
+            btnCancel.Click += BtnCancel_Click;
             // 
             // btnSaveAndComplete
             // 
-            this.btnSaveAndComplete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.btnSaveAndComplete.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSaveAndComplete.FlatAppearance.BorderSize = 0;
-            this.btnSaveAndComplete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSaveAndComplete.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnSaveAndComplete.ForeColor = System.Drawing.Color.White;
-            this.btnSaveAndComplete.Location = new System.Drawing.Point(580, 20);
-            this.btnSaveAndComplete.Name = "btnSaveAndComplete";
-            this.btnSaveAndComplete.Size = new System.Drawing.Size(230, 50);
-            this.btnSaveAndComplete.TabIndex = 1;
-            this.btnSaveAndComplete.Text = "✅ Complete Equipment Report";
-            this.btnSaveAndComplete.UseVisualStyleBackColor = false;
-            this.btnSaveAndComplete.Click += new System.EventHandler(this.BtnSaveAndComplete_Click);
+            btnSaveAndComplete.BackColor = Color.FromArgb(46, 204, 113);
+            btnSaveAndComplete.Cursor = Cursors.Hand;
+            btnSaveAndComplete.FlatAppearance.BorderSize = 0;
+            btnSaveAndComplete.FlatStyle = FlatStyle.Flat;
+            btnSaveAndComplete.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnSaveAndComplete.ForeColor = Color.White;
+            btnSaveAndComplete.Location = new Point(442, 19);
+            btnSaveAndComplete.Name = "btnSaveAndComplete";
+            btnSaveAndComplete.Size = new Size(230, 50);
+            btnSaveAndComplete.TabIndex = 1;
+            btnSaveAndComplete.Text = "✅ Complete Equipment Report";
+            btnSaveAndComplete.UseVisualStyleBackColor = false;
+            btnSaveAndComplete.Click += BtnSaveAndComplete_Click;
             // 
             // ServiceChecklistForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1000, 700);
-            this.Controls.Add(this.panelFooter);
-            this.Controls.Add(this.lstServices);
-            this.Controls.Add(this.grpAddService);
-            this.Controls.Add(this.lblServiceCount);
-            this.Controls.Add(this.panelHeader);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.Name = "ServiceChecklistForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Equipment & Services Report";
-            this.panelHeader.ResumeLayout(false);
-            this.panelHeader.PerformLayout();
-            this.grpAddService.ResumeLayout(false);
-            this.grpAddService.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numQuantity)).EndInit();
-            this.panelFooter.ResumeLayout(false);
-            this.panelFooter.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.White;
+            ClientSize = new Size(889, 701);
+            Controls.Add(panelFooter);
+            Controls.Add(lstServices);
+            Controls.Add(grpAddService);
+            Controls.Add(lblServiceCount);
+            Controls.Add(panelHeader);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            Name = "ServiceChecklistForm";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Equipment & Services Report";
+            panelHeader.ResumeLayout(false);
+            panelHeader.PerformLayout();
+            grpAddService.ResumeLayout(false);
+            grpAddService.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numQuantity).EndInit();
+            panelFooter.ResumeLayout(false);
+            panelFooter.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
+
+        #endregion 
+
+        private Panel panelHeader;
+        private Label lblTitle;
+        private Label lblPatientInfo;
+        private Label lblServiceCount;
+        private GroupBox grpAddService;
+        private Label lblCategory;
+        private ComboBox cmbCategory;
+        private Label lblService;
+        private ComboBox cmbService;
+        private Label lblQuantity;
+        private NumericUpDown numQuantity;
+        private Button btnAddService;
+        private Button btnRemoveService;
+        private ListView lstServices;
+        private Panel panelFooter;
+        private Label lblTotal;
+        private Button btnSaveAndComplete;
+        private Button btnCancel;
     }
 }

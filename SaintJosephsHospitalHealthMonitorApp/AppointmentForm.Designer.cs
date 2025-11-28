@@ -28,17 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblTitle = new System.Windows.Forms.Label();
-            this.lblPatient = new System.Windows.Forms.Label();
-            this.cmbPatient = new System.Windows.Forms.ComboBox();
-            this.lblDoctor = new System.Windows.Forms.Label();
-            this.cmbDoctor = new System.Windows.Forms.ComboBox();
-            this.lblDate = new System.Windows.Forms.Label();
-            this.dtpAppointment = new System.Windows.Forms.DateTimePicker();
-            this.lblNotes = new System.Windows.Forms.Label();
-            this.txtNotes = new System.Windows.Forms.TextBox();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
+            this.lblTitle = new Label();
+            this.lblPatient = new Label();
+            this.cmbPatient = new ComboBox();
+            this.lblDoctor = new Label();
+            this.cmbDoctor = new ComboBox();
+            this.lblDate = new Label();
+            this.dtpAppointment = new DateTimePicker();
+            this.lblNotes = new Label();
+            this.txtNotes = new TextBox();
+            this.btnSave = new Button();
+            this.btnCancel = new Button();
             this.SuspendLayout();
             // 
             // lblTitle
@@ -62,7 +62,7 @@
             // 
             // cmbPatient
             // 
-            cmbPatient.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cmbPatient.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbPatient.FormattingEnabled = true;
             cmbPatient.Location = new System.Drawing.Point(30, 95);
             cmbPatient.Name = "cmbPatient";
@@ -80,7 +80,7 @@
             // 
             // cmbDoctor
             // 
-            cmbDoctor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cmbDoctor.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbDoctor.FormattingEnabled = true;
             cmbDoctor.Location = new System.Drawing.Point(30, 165);
             cmbDoctor.Name = "cmbDoctor";
@@ -99,7 +99,7 @@
             // dtpAppointment
             // 
             dtpAppointment.CustomFormat = "MMMM dd, yyyy hh:mm tt";
-            dtpAppointment.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            dtpAppointment.Format = DateTimePickerFormat.Custom;
             dtpAppointment.Location = new System.Drawing.Point(30, 235);
             dtpAppointment.Name = "dtpAppointment";
             dtpAppointment.Size = new System.Drawing.Size(420, 23);
@@ -125,9 +125,9 @@
             // btnSave
             // 
             btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            btnSave.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnSave.Cursor = Cursors.Hand;
             btnSave.FlatAppearance.BorderSize = 0;
-            btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnSave.FlatStyle = FlatStyle.Flat;
             btnSave.ForeColor = System.Drawing.Color.White;
             btnSave.Location = new System.Drawing.Point(30, 380);
             btnSave.Name = "btnSave";
@@ -140,9 +140,9 @@
             // btnCancel
             // 
             btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
-            btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnCancel.Cursor = Cursors.Hand;
             btnCancel.FlatAppearance.BorderSize = 0;
-            btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.ForeColor = System.Drawing.Color.White;
             btnCancel.Location = new System.Drawing.Point(250, 380);
             btnCancel.Name = "btnCancel";
@@ -155,7 +155,7 @@
             // AppointmentForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleMode = AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
             ClientSize = new System.Drawing.Size(484, 450);
             Controls.Add(this.btnCancel);
@@ -169,10 +169,10 @@
             Controls.Add(this.cmbPatient);
             Controls.Add(this.lblPatient);
             Controls.Add(this.lblTitle);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             Name = "AppointmentForm";
-            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.CenterParent;
             Text = "Schedule Appointment";
             ResumeLayout(false);
             PerformLayout();

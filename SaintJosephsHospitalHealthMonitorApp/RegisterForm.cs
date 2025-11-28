@@ -47,6 +47,31 @@ namespace SaintJosephsHospitalHealthMonitorApp
             return new RegisterForm(creatorId, creatorRole, isPatientMode: true);
         }
 
+        private void SetupNameValidation()
+        {
+            txtName.KeyPress += (s, e) =>
+            {
+                if (char.IsControl(e.KeyChar))
+                    return;
+
+                if (char.IsDigit(e.KeyChar))
+                {
+                    e.Handled = true;
+                    System.Media.SystemSounds.Beep.Play();
+                    return;
+                }
+
+                if (!char.IsLetter(e.KeyChar) &&
+                    e.KeyChar != ' ' &&
+                    e.KeyChar != '-' &&
+                    e.KeyChar != '\'' &&
+                    e.KeyChar != '.')
+                {
+                    e.Handled = true;
+                    System.Media.SystemSounds.Beep.Play();
+                }
+            };
+        }
 
         public RegisterForm(int userIdToView, bool viewOnly)
         {
@@ -59,6 +84,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             InitializeDoctorSpecializations();
             ConfigureForViewMode();
             LoadExistingUserData();
+            InitializeGenderRoles();
+            SetupNameValidation();
         }
 
         public RegisterForm(int userIdToEdit)
@@ -72,6 +99,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             InitializeDoctorSpecializations();
             ConfigureForEditMode();
             LoadExistingUserData();
+            InitializeGenderRoles();
         }
 
         public RegisterForm(int creatorId, string role, bool isPatientMode = false)
@@ -86,6 +114,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             SetPlaceholderImage();
             InitializeRoleOptions();
             InitializeDoctorSpecializations();
+            InitializeGenderRoles();
 
             if (isPatientMode)
             {
@@ -96,7 +125,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 ConfigureForCreateMode();
             }
         }
-
 
         public RegisterForm()
         {
@@ -142,6 +170,19 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private void InitializeGenderRoles()
         {
             cmbGender.Items.AddRange(new object[] { "Male", "Female", "Other" });
+            cmbGender.SelectedIndex = 0;
+        }
+
+        private bool IsValidName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return false;
+
+            if (name.Any(char.IsDigit))
+                return false;
+
+            string allowedPattern = @"^[a-zA-Z\s\-'\.]+$";
+            return Regex.IsMatch(name, allowedPattern);
         }
 
         private void ConfigureForPatientMode()
@@ -778,6 +819,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 cmbGender.SelectedItem = row["gender"].ToString();
                 originalRole = row["role"].ToString();
 
+                if (isViewMode && originalRole == "Patient")
+                {
+                    cmbRole.Visible = false;
+                    lblRole.Visible = false;
+                }
+
                 if (originalRole == "Headadmin")
                 {
                     if (!cmbRole.Items.Contains("Headadmin"))
@@ -834,6 +881,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 LoadRoleSpecificData(originalRole);
             }
         }
+
 
         private void LoadRoleSpecificData(string role)
         {
@@ -1010,6 +1058,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 MessageBox.Show("Please fill in all required fields.", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!IsValidName(txtName.Text.Trim()))
+            {
+                MessageBox.Show(
+                    "Invalid name format.\n\n" +
+                    "• Name cannot contain numbers\n" +
+                    "• Only letters, spaces, hyphens, and apostrophes are allowed\n" +
+                    "• Example: John Doe, Mary-Jane O'Connor",
+                    "Name Validation Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                txtName.Focus();
                 return;
             }
 
@@ -1288,6 +1350,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
+            if (!IsValidName(txtName.Text.Trim()))
+            {
+                MessageBox.Show(
+                    "Invalid name format.\n\n" +
+                    "• Name cannot contain numbers\n" +
+                    "• Only letters, spaces, hyphens, and apostrophes are allowed\n" +
+                    "• Example: John Doe, Mary-Jane O'Connor",
+                    "Name Validation Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                txtName.Focus();
+                return;
+            }
+
             string role;
             if (isPatientMode)
             {
@@ -1437,7 +1513,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
 
                         string insertUser = @"INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image) 
-                  VALUES (@name, @role, @email, @password, @dateOfBirth, @age, @gender, @createdBy, @profileImage)";
+                                            VALUES (@name, @role, @email, @password, @dateOfBirth, @age, @gender, @createdBy, @profileImage)";
                         using (MySqlCommand cmdInsertUser = new MySqlCommand(insertUser, conn, transaction))
                         {
                             cmdInsertUser.Parameters.AddWithValue("@name", name);
@@ -1477,7 +1553,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         if (role == "Patient")
                         {
                             string insertPatient = @"INSERT INTO Patients (user_id, medical_history) 
-                     VALUES (@userId, '')";
+                                                    VALUES (@userId, '')";
                             using (MySqlCommand cmdInsertPatient = new MySqlCommand(insertPatient, conn, transaction))
                             {
                                 cmdInsertPatient.Parameters.AddWithValue("@userId", newUserId);
@@ -1494,7 +1570,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             string specialization = GetDoctorSpecialization();
 
                             string insertDoctor = @"INSERT INTO Doctors (user_id, specialization, is_available, duty_status) 
-                           VALUES (@userId, @specialization, 1, 'Off Duty')";
+                                                  VALUES (@userId, @specialization, 1, 'Off Duty')";
                             using (MySqlCommand cmdInsertDoctor = new MySqlCommand(insertDoctor, conn, transaction))
                             {
                                 cmdInsertDoctor.Parameters.AddWithValue("@userId", newUserId);
@@ -1505,16 +1581,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         else if (role == "Headadmin" || role == "Admin" || role == "Receptionist" || role == "Pharmacist")
                         {
                             string insertStaff = @"INSERT INTO Staff (user_id, position, department) 
-                   VALUES (@userId, @position, @department)";
+                                                 VALUES (@userId, @position, @department)";
                             using (MySqlCommand cmdInsertStaff = new MySqlCommand(insertStaff, conn, transaction))
                             {
                                 cmdInsertStaff.Parameters.AddWithValue("@userId", newUserId);
 
                                 string position = role;
-                                string department = role == "Headadmin" ? "Administration" :
-                                                   role == "Admin" ? "Administration" :
-                                                   role == "Receptionist" ? "Reception" :
-                                                   "Pharmacy";
+                                string department = role == "Headadmin" ? "Administration" :role == "Admin" ? "Administration" :role == "Receptionist" ? "Reception" :"Pharmacy";
 
                                 cmdInsertStaff.Parameters.AddWithValue("@position", position);
                                 cmdInsertStaff.Parameters.AddWithValue("@department", department);
@@ -1574,44 +1647,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
                 }
             }
-        }
-
-        private void ShowRolePermissionsInfo()
-        {
-            DebugConfig config = DebugConfig.LoadFromJson();
-
-            string message = "📋 CURRENT ROLE CREATION PERMISSIONS\n\n";
-            message += "Roles you can create:\n\n";
-
-            if (config.AllowCreateAdmin || creatorRole == "Headadmin")
-                message += "✓ Admin\n";
-            else
-                message += "✗ Admin (Disabled)\n";
-
-            if (config.AllowCreateReceptionist)
-                message += "✓ Receptionist\n";
-            else
-                message += "✗ Receptionist (Disabled)\n";
-
-            if (config.AllowCreateDoctor)
-                message += "✓ Doctor\n";
-            else
-                message += "✗ Doctor (Disabled)\n";
-
-            if (config.AllowCreatePharmacist)
-                message += "✓ Pharmacist\n";
-            else
-                message += "✗ Pharmacist (Disabled)\n";
-
-            if (config.AllowCreatePatient)
-                message += "✓ Patient\n";
-            else
-                message += "✗ Patient (Disabled)\n";
-
-            message += "\n💡 Contact Head Administrator to change permissions";
-
-            MessageBox.Show(message, "Role Permissions",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void UpdateRoleSpecificTable(MySqlConnection conn, MySqlTransaction transaction, string role)
@@ -1729,18 +1764,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
     }
 }
 
-//private System.Windows.Forms.Timer inputCheckCheckTimer;
+//private System.Windows.Forms.Timer inputcheckchecktimer;
 
-//private void InitializeinputCheckChecker()
+//private void initializeinputcheckchecker()
 //{
-//    inputCheckCheckTimer = new System.Windows.Forms.Timer();
-//    inputCheckCheckTimer.Interval = 5000;
-//    inputCheckCheckTimer.Tick += (s, e) => CheckinputCheck();
-//    inputCheckCheckTimer.Start();
+//    inputcheckchecktimer = new System.Windows.Forms.Timer();
+//    inputcheckchecktimer.Interval = 5000;
+//    inputcheckchecktimer.Tick += (s, e) => checkinputcheck();
+//    inputcheckchecktimer.Start();
 //}
 
-//private void CheckinputCheck()
+//private void checkinputcheck()
 //{
-//    RegisterForm registerForm = new RegisterForm();
-//    registerForm.TriggerinputCheck(yourProfilePictureBox);
+//    RegisterForm registerform = new RegisterForm();
+//    registerform.TriggerinputCheck(pictureBoxProfile);
 //}

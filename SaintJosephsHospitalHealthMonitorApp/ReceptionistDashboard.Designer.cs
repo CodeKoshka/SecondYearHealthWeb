@@ -58,8 +58,8 @@
             tabBilling = new TabPage();
             dgvBilling = new DataGridView();
             panelBillingButtons = new Panel();
+            btnViewBillDetails = new Button();
             BtnCancelBill = new Button();
-            btnViewBill = new Button();
             btnUpdateBill = new Button();
             btnProcessPayment = new Button();
             btnDischargePatient = new Button();
@@ -543,8 +543,8 @@
             // panelBillingButtons
             // 
             panelBillingButtons.BackColor = Color.White;
+            panelBillingButtons.Controls.Add(btnViewBillDetails);
             panelBillingButtons.Controls.Add(BtnCancelBill);
-            panelBillingButtons.Controls.Add(btnViewBill);
             panelBillingButtons.Controls.Add(btnUpdateBill);
             panelBillingButtons.Controls.Add(btnProcessPayment);
             panelBillingButtons.Controls.Add(btnDischargePatient);
@@ -556,6 +556,23 @@
             panelBillingButtons.Padding = new Padding(20, 15, 20, 15);
             panelBillingButtons.Size = new Size(1156, 80);
             panelBillingButtons.TabIndex = 1;
+            // 
+            // btnViewBillDetails
+            // 
+            btnViewBillDetails.BackColor = Color.Gray;
+            btnViewBillDetails.Cursor = Cursors.Hand;
+            btnViewBillDetails.FlatAppearance.BorderSize = 0;
+            btnViewBillDetails.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
+            btnViewBillDetails.FlatStyle = FlatStyle.Flat;
+            btnViewBillDetails.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnViewBillDetails.ForeColor = Color.White;
+            btnViewBillDetails.Location = new Point(501, 18);
+            btnViewBillDetails.Name = "btnViewBillDetails";
+            btnViewBillDetails.Size = new Size(130, 45);
+            btnViewBillDetails.TabIndex = 7;
+            btnViewBillDetails.Text = "📄 View Bill";
+            btnViewBillDetails.UseVisualStyleBackColor = false;
+            btnViewBillDetails.Click += BtnViewBillDetails_Click;
             // 
             // BtnCancelBill
             // 
@@ -573,23 +590,6 @@
             BtnCancelBill.Text = "🗑️ Cancel Bill";
             BtnCancelBill.UseVisualStyleBackColor = false;
             BtnCancelBill.Click += BtnCancelBill_Click;
-            // 
-            // btnViewBill
-            // 
-            btnViewBill.BackColor = Color.FromArgb(149, 165, 166);
-            btnViewBill.Cursor = Cursors.Hand;
-            btnViewBill.FlatAppearance.BorderSize = 0;
-            btnViewBill.FlatAppearance.MouseOverBackColor = Color.FromArgb(127, 140, 141);
-            btnViewBill.FlatStyle = FlatStyle.Flat;
-            btnViewBill.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnViewBill.ForeColor = Color.White;
-            btnViewBill.Location = new Point(501, 18);
-            btnViewBill.Name = "btnViewBill";
-            btnViewBill.Size = new Size(130, 45);
-            btnViewBill.TabIndex = 0;
-            btnViewBill.Text = "👁️ View Bill";
-            btnViewBill.UseVisualStyleBackColor = false;
-            btnViewBill.Click += BtnViewBill_Click;
             // 
             // btnUpdateBill
             // 
@@ -636,7 +636,7 @@
             btnDischargePatient.ForeColor = Color.White;
             btnDischargePatient.Location = new Point(939, 18);
             btnDischargePatient.Name = "btnDischargePatient";
-            btnDischargePatient.Size = new Size(200, 45);
+            btnDischargePatient.Size = new Size(194, 45);
             btnDischargePatient.TabIndex = 3;
             btnDischargePatient.Text = "🚪 Discharge Patient";
             btnDischargePatient.UseVisualStyleBackColor = false;
@@ -843,7 +843,6 @@
         private Button btnCheckMedicalHistory;
         private Panel panelBillingButtons;
         private Button btnDoctorServiceReport;
-        private Button btnViewBill;
         private Button btnUpdateBill;
         private Button btnProcessPayment;
         private Button btnDischargePatient;
@@ -860,5 +859,6 @@
         private Button btnEditPatient;
         private Button BtnViewProfile;
         private Button BtnCancelBill;
+        private Button btnViewBillDetails;
     }
 }

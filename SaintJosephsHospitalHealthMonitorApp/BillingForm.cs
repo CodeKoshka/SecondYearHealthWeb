@@ -217,8 +217,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 (this.ClientSize.Width - btnCancel.Width) / 2,
                 btnCancel.Location.Y
             );
-
-            btnPrintPreview.BackColor = Color.FromArgb(52, 152, 219);
         }
 
         private bool VerifyPatientCompleted(int patientId)
@@ -458,30 +456,48 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void AddOrUpdateService(string serviceName, string category, int quantity, decimal unitPrice)
         {
-            foreach (ListViewItem existingItem in lstServices.Items)
+            ListViewItem existingItem = null;
+            foreach (ListViewItem item in lstServices.Items)
             {
-                if (existingItem.SubItems[0].Text == serviceName &&
-                    existingItem.SubItems[1].Text == category)
+                if (item.SubItems[0].Text == serviceName && item.SubItems[1].Text == category)
                 {
-                    int existingQty = Convert.ToInt32(existingItem.SubItems[2].Text);
-                    int newQty = existingQty + quantity;
-                    decimal amount = unitPrice * newQty;
-
-                    existingItem.SubItems[2].Text = newQty.ToString();
-                    existingItem.SubItems[4].Text = "₱" + amount.ToString("N2");
-
-                    return;
+                    existingItem = item;
+                    break;
                 }
             }
 
-            decimal totalAmount = unitPrice * quantity;
-            ListViewItem item = new ListViewItem(serviceName);
-            item.SubItems.Add(category);
-            item.SubItems.Add(quantity.ToString());
-            item.SubItems.Add("₱" + unitPrice.ToString("N2"));
-            item.SubItems.Add("₱" + totalAmount.ToString("N2"));
-            lstServices.Items.Add(item);
+            if (category == "Other Services")
+            {
+                decimal totalAmount = unitPrice * quantity;
+                ListViewItem item = new ListViewItem(serviceName);
+                item.SubItems.Add(category);
+                item.SubItems.Add(quantity.ToString());
+                item.SubItems.Add("₱" + unitPrice.ToString("N2"));
+                item.SubItems.Add("₱" + totalAmount.ToString("N2"));
+                lstServices.Items.Add(item);
+                return;
+            }
+
+            if (existingItem != null)
+            {
+                int currentQty = Convert.ToInt32(existingItem.SubItems[2].Text);
+                int newQty = currentQty + quantity; 
+                decimal newAmount = unitPrice * newQty;
+
+                existingItem.SubItems[2].Text = newQty.ToString();
+                existingItem.SubItems[4].Text = "₱" + newAmount.ToString("N2");
+                return;
+            }
+
+            decimal amount = unitPrice * quantity;
+            ListViewItem newItem = new ListViewItem(serviceName);
+            newItem.SubItems.Add(category);
+            newItem.SubItems.Add(quantity.ToString());
+            newItem.SubItems.Add("₱" + unitPrice.ToString("N2"));
+            newItem.SubItems.Add("₱" + amount.ToString("N2"));
+            lstServices.Items.Add(newItem);
         }
+
         private int? GetCurrentQueueId(int patientId)
         {
             try
@@ -610,8 +626,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (string.IsNullOrEmpty(category) || category == "-- Select Category --")
             {
                 cmbServiceItem.SelectedIndex = 0;
+                numQuantity.Enabled = false;
+                numQuantity.Value = 1;
                 return;
             }
+
+            numQuantity.Enabled = false;
+            numQuantity.Value = 1;
 
             switch (category)
             {
@@ -690,6 +711,54 @@ namespace SaintJosephsHospitalHealthMonitorApp
             cmbServiceItem.SelectedIndex = 0;
         }
 
+        private void CmbServiceItem_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string category = cmbServiceCategory.SelectedItem?.ToString();
+            string serviceText = cmbServiceItem.SelectedItem?.ToString();
+
+            if (string.IsNullOrEmpty(category) || string.IsNullOrEmpty(serviceText) ||
+                category == "-- Select Category --" || serviceText == "-- Select Service --")
+            {
+                numQuantity.Enabled = false;
+                numQuantity.Value = 1;
+                return;
+            }
+
+            string[] parts = serviceText.Split(new[] { " - ₱" }, StringSplitOptions.None);
+            string serviceName = parts.Length > 0 ? parts[0].Trim() : serviceText;
+
+            numQuantity.Enabled = ServiceAllowsQuantity(serviceName, category);
+            numQuantity.Value = 1;
+        }
+
+
+        private bool ServiceAllowsQuantity(string serviceName, string category)
+        {
+            if (category == "Laboratory" || category == "Medications")
+            {
+                return true;
+            }
+
+            var quantityAllowedServices = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Private Room (per day)",
+                "Semi-Private Room (per day)",
+                "Ward Bed (per day)",
+                "ICU (per day)",
+                "Observation Bed (per day)",
+
+                "Wound Dressing",
+                "Nebulization",
+
+                "Physical Therapy Session",
+                "Oxygen Therapy (per hour)",
+                "Cardiac Monitor (per day)",
+                "Infusion Pump (per day)",
+                "Medical Supplies (Sterile Gloves, Syringes, etc.)"
+            };
+            return quantityAllowedServices.Contains(serviceName);
+        }
+
         private void BtnAddService_Click(object sender, EventArgs e)
         {
             try
@@ -723,28 +792,85 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     return;
                 }
 
-                AddOrUpdateService(serviceName, categoryName, quantity, unitPrice);
-                UpdateTotals();
-
-                bool serviceExists = false;
+                ListViewItem existingItem = null;
                 foreach (ListViewItem item in lstServices.Items)
                 {
                     if (item.SubItems[0].Text == serviceName && item.SubItems[1].Text == categoryName)
                     {
-                        int currentQty = Convert.ToInt32(item.SubItems[2].Text);
-                        if (currentQty > quantity)
-                        {
-                            serviceExists = true;
-                            MessageBox.Show(
-                                $"Service already exists!\n\n" +
-                                $"Updated quantity from {currentQty - quantity} to {currentQty}.",
-                                "Service Updated",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
-                            break;
-                        }
+                        existingItem = item;
+                        break;
                     }
                 }
+
+                bool allowQuantityIncrement = ServiceAllowsQuantity(serviceName, categoryName);
+
+                if (allowQuantityIncrement)
+                {
+                    if (existingItem != null)
+                    {
+                        int currentQty = Convert.ToInt32(existingItem.SubItems[2].Text);
+                        int newQty = currentQty + quantity;
+                        decimal newAmount = unitPrice * newQty;
+
+                        existingItem.SubItems[2].Text = newQty.ToString();
+                        existingItem.SubItems[4].Text = "₱" + newAmount.ToString("N2");
+
+                        MessageBox.Show(
+                            $"⚠️ Service Quantity Updated\n\n" +
+                            $"Service: {serviceName}\n" +
+                            $"Category: {categoryName}\n\n" +
+                            $"Previous Quantity: {currentQty}\n" +
+                            $"Added: {quantity}\n" +
+                            $"New Total: {newQty}\n" +
+                            $"New Amount: ₱{newAmount:N2}",
+                            "Quantity Updated",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        decimal totalAmount = unitPrice * quantity;
+                        ListViewItem item = new ListViewItem(serviceName);
+                        item.SubItems.Add(categoryName);
+                        item.SubItems.Add(quantity.ToString());
+                        item.SubItems.Add("₱" + unitPrice.ToString("N2"));
+                        item.SubItems.Add("₱" + totalAmount.ToString("N2"));
+                        lstServices.Items.Add(item);
+                    }
+                }
+                else
+                {
+                    if (existingItem != null)
+                    {
+                        MessageBox.Show(
+                            $"⚠️ Duplicate Service Not Allowed\n\n" +
+                            $"Service: {serviceName}\n" +
+                            $"Category: {categoryName}\n\n" +
+                            $"This service already exists in the invoice and can only be added once.\n\n" +
+                            $"Services that allow quantities:\n" +
+                            $"• All Laboratory tests\n" +
+                            $"• All Medications\n" +
+                            $"• Room charges (per day)\n" +
+                            $"• Wound Dressing, Nebulization\n" +
+                            $"• Physical Therapy, Oxygen Therapy\n" +
+                            $"• Medical Supplies\n\n" +
+                            $"Please select a different service or remove the existing entry first.",
+                            "Duplicate Service",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    decimal totalAmount = unitPrice * 1;
+                    ListViewItem item = new ListViewItem(serviceName);
+                    item.SubItems.Add(categoryName);
+                    item.SubItems.Add("1");
+                    item.SubItems.Add("₱" + unitPrice.ToString("N2"));
+                    item.SubItems.Add("₱" + totalAmount.ToString("N2"));
+                    lstServices.Items.Add(item);
+                }
+
+                UpdateTotals();
 
                 cmbServiceCategory.SelectedIndex = 0;
                 numQuantity.Value = 1;
@@ -1195,80 +1321,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private void BtnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void BtnPrintPreview_Click(object sender, EventArgs e)
-        {
-            if (lstServices.Items.Count == 0)
-            {
-                MessageBox.Show("Please add services before generating preview.", "No Services",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            string preview = GenerateInvoicePreview();
-            MessageBox.Show(preview, "Invoice Preview", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private string GenerateInvoicePreview()
-        {
-            string patientName = "Unknown Patient";
-
-            if (isPreselectedPatient)
-            {
-                Panel patientInfoPanel = this.Controls.Find("patientInfoPanel", true).FirstOrDefault() as Panel;
-                if (patientInfoPanel != null)
-                {
-                    Label lblPatientInfo = patientInfoPanel.Controls.Find("lblPatientInfo", true).FirstOrDefault() as Label;
-                    if (lblPatientInfo != null)
-                    {
-                        patientName = lblPatientInfo.Text.Replace("👤 ", "");
-                    }
-                }
-            }
-            else
-            {
-                if (cmbPatient.SelectedItem != null)
-                {
-                    DataRowView drv = cmbPatient.SelectedItem as DataRowView;
-                    if (drv != null)
-                    {
-                        patientName = drv["display_name"].ToString().Split('(')[0].Trim();
-                    }
-                }
-            }
-
-            string preview = "SAINT JOSEPH'S HOSPITAL\n";
-            preview += "INVOICE PREVIEW\n";
-            preview += new string('=', 50) + "\n\n";
-            preview += $"Patient: {patientName}\n";
-            preview += $"Date: {DateTime.Now:yyyy-MM-dd HH:mm}\n";
-            preview += $"Payment Method: {cmbPaymentMethod.Text}\n";
-            preview += $"Status: {cmbStatus.Text}\n\n";
-            preview += new string('=', 50) + "\n";
-            preview += "SERVICES:\n";
-            preview += new string('=', 50) + "\n\n";
-
-            foreach (ListViewItem item in lstServices.Items)
-            {
-                preview += $"{item.SubItems[0].Text}\n";
-                preview += $"  Category: {item.SubItems[1].Text}\n";
-                preview += $"  Qty: {item.SubItems[2].Text} x {item.SubItems[3].Text} = {item.SubItems[4].Text}\n\n";
-            }
-
-            preview += new string('=', 50) + "\n";
-            preview += lblSubtotal.Text + "\n";
-            preview += lblDiscountAmount.Text + "\n";
-            preview += lblTaxAmount.Text + "\n";
-            preview += new string('=', 50) + "\n";
-            preview += lblGrandTotal.Text + "\n";
-
-            if (!string.IsNullOrWhiteSpace(txtNotes.Text))
-            {
-                preview += $"\nNotes: {txtNotes.Text}\n";
-            }
-
-            return preview;
         }
     }
 }

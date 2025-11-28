@@ -59,6 +59,8 @@
             panelPartialPayment = new Panel();
             lblRemainingValue = new Label();
             lblRemaining = new Label();
+            lblChangeValue = new Label();
+            lblChange = new Label();
             txtPaymentNotes = new TextBox();
             lblPaymentNotes = new Label();
             txtReferenceNumber = new TextBox();
@@ -448,10 +450,12 @@
             panelPartialPayment.BackColor = Color.FromArgb(255, 250, 235);
             panelPartialPayment.Controls.Add(lblRemainingValue);
             panelPartialPayment.Controls.Add(lblRemaining);
+            panelPartialPayment.Controls.Add(lblChangeValue);
+            panelPartialPayment.Controls.Add(lblChange);
             panelPartialPayment.Location = new Point(23, 160);
             panelPartialPayment.Name = "panelPartialPayment";
             panelPartialPayment.Padding = new Padding(10);
-            panelPartialPayment.Size = new Size(344, 50);
+            panelPartialPayment.Size = new Size(344, 75);
             panelPartialPayment.TabIndex = 9;
             panelPartialPayment.Visible = false;
             // 
@@ -476,6 +480,30 @@
             lblRemaining.Size = new Size(126, 19);
             lblRemaining.TabIndex = 0;
             lblRemaining.Text = "Remaining Balance:";
+            // 
+            // lblChangeValue
+            // 
+            lblChangeValue.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblChangeValue.ForeColor = Color.FromArgb(46, 204, 113);
+            lblChangeValue.Location = new Point(170, 38);
+            lblChangeValue.Name = "lblChangeValue";
+            lblChangeValue.Size = new Size(164, 22);
+            lblChangeValue.TabIndex = 3;
+            lblChangeValue.Text = "₱0.00";
+            lblChangeValue.TextAlign = ContentAlignment.MiddleRight;
+            lblChangeValue.Visible = false;
+            // 
+            // lblChange
+            // 
+            lblChange.AutoSize = true;
+            lblChange.Font = new Font("Segoe UI", 10F);
+            lblChange.ForeColor = Color.FromArgb(113, 128, 150);
+            lblChange.Location = new Point(10, 40);
+            lblChange.Name = "lblChange";
+            lblChange.Size = new Size(59, 19);
+            lblChange.TabIndex = 2;
+            lblChange.Text = "Change:";
+            lblChange.Visible = false;
             // 
             // txtPaymentNotes
             // 
@@ -502,7 +530,7 @@
             // txtReferenceNumber
             // 
             txtReferenceNumber.Font = new Font("Segoe UI", 10F);
-            txtReferenceNumber.Location = new Point(23, 238);
+            txtReferenceNumber.Location = new Point(23, 248);
             txtReferenceNumber.Name = "txtReferenceNumber";
             txtReferenceNumber.PlaceholderText = "Transaction/Check/Reference #";
             txtReferenceNumber.Size = new Size(344, 25);
@@ -733,5 +761,7 @@
         private Button btnViewPaymentHistory;
         private Button btnCancel;
         private Button btnProcessPayment;
+        private Label lblChange;
+        private Label lblChangeValue;
     }
 }

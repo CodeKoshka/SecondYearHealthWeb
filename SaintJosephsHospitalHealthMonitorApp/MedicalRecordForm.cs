@@ -530,7 +530,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     DateTime dob = Convert.ToDateTime(row["date_of_birth"]);
                     lblAge = new Label
                     {
-                        Text = $"DOB: {dob:MM/dd/yyyy} (Age: {age})",
+                        Text = $"Date Of Birth: {dob:MM/dd/yyyy} (Age: {age})",
                         Font = new Font("Segoe UI", 9F),
                         ForeColor = Color.FromArgb(200, 220, 240),
                         Location = new Point(20, 80),
@@ -903,6 +903,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (line.StartsWith("Physician Signature:"))
                 {
                     txtDoctorSignature.Text = line.Replace("Physician Signature:", "").Trim();
+                }
+
+                if (line.StartsWith("Assessment Date:"))
+                {
+                    string dateText = line.Replace("Assessment Date:", "").Trim();
+                    lblDate.Text = $"Date: {dateText}";
                     break;
                 }
             }

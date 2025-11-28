@@ -357,6 +357,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     INDEX idx_payment_date (payment_date)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
+                    string addLoginAttemptsColumn = @"
+                    ALTER TABLE Users 
+                    ADD COLUMN IF NOT EXISTS failed_login_attempts INT DEFAULT 0,
+                    ADD COLUMN IF NOT EXISTS last_failed_attempt DATETIME NULL,
+                    ADD COLUMN IF NOT EXISTS locked_until DATETIME NULL";
+
                     ExecuteNonQueryInternal(conn, createUsersTable);
                     ExecuteNonQueryInternal(conn, createPatientsTable);
                     ExecuteNonQueryInternal(conn, createDoctorsTable);
@@ -376,6 +382,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     ExecuteNonQueryInternal(conn, createServiceCategoriesTable);
                     ExecuteNonQueryInternal(conn, createServicesTable);
                     ExecuteNonQueryInternal(conn, createBillServicesTable);
+                    ExecuteNonQueryInternal(conn, addLoginAttemptsColumn);
 
                     try
                     {

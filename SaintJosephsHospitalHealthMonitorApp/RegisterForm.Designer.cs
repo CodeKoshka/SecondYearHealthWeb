@@ -269,7 +269,6 @@
             cmbGender.FlatStyle = FlatStyle.Flat;
             cmbGender.Font = new Font("Segoe UI", 10F);
             cmbGender.FormattingEnabled = true;
-            cmbGender.SelectedIndex = 0;
             cmbGender.Location = new Point(244, 445);
             cmbGender.Name = "cmbGender";
             cmbGender.Size = new Size(153, 25);

@@ -6,12 +6,6 @@
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.PictureBox pictureBoxCrop;
-        private System.Windows.Forms.Button btnCrop;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Label lblInstructions;
-        private System.Windows.Forms.Panel panelHeader;
-        private System.Windows.Forms.Label lblTitle;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -26,122 +20,132 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
         /// <summary>
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBoxCrop = new System.Windows.Forms.PictureBox();
-            this.btnCrop = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.lblInstructions = new System.Windows.Forms.Label();
-            this.panelHeader = new System.Windows.Forms.Panel();
-            this.lblTitle = new System.Windows.Forms.Label();
+            pictureBoxCrop = new PictureBox();
+            btnCrop = new Button();
+            btnCancel = new Button();
+            lblInstructions = new Label();
+            panelHeader = new Panel();
+            lblTitle = new Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCrop)).BeginInit();
-            this.panelHeader.SuspendLayout();
-            this.SuspendLayout();
+            panelHeader.SuspendLayout();
+            SuspendLayout();
             // 
             // panelHeader
             // 
-            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
-            this.panelHeader.Controls.Add(this.lblTitle);
-            this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelHeader.Location = new System.Drawing.Point(0, 0);
-            this.panelHeader.Name = "panelHeader";
-            this.panelHeader.Size = new System.Drawing.Size(700, 60);
-            this.panelHeader.TabIndex = 0;
+            panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
+            panelHeader.Controls.Add(this.lblTitle);
+            panelHeader.Dock = DockStyle.Top;
+            panelHeader.Location = new System.Drawing.Point(0, 0);
+            panelHeader.Name = "panelHeader";
+            panelHeader.Size = new System.Drawing.Size(700, 60);
+            panelHeader.TabIndex = 0;
             // 
             // lblTitle
             // 
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Location = new System.Drawing.Point(20, 15);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(180, 30);
-            this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "✂️ Crop Picture";
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            lblTitle.ForeColor = System.Drawing.Color.White;
+            lblTitle.Location = new System.Drawing.Point(20, 15);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new System.Drawing.Size(180, 30);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "✂️ Crop Picture";
             // 
             // pictureBoxCrop
             // 
-            this.pictureBoxCrop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
-            this.pictureBoxCrop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxCrop.Location = new System.Drawing.Point(20, 120);
-            this.pictureBoxCrop.Name = "pictureBoxCrop";
-            this.pictureBoxCrop.Size = new System.Drawing.Size(660, 440);
-            this.pictureBoxCrop.TabIndex = 1;
-            this.pictureBoxCrop.TabStop = false;
-            this.pictureBoxCrop.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBoxCrop_Paint);
-            this.pictureBoxCrop.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBoxCrop_MouseDown);
-            this.pictureBoxCrop.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBoxCrop_MouseMove);
-            this.pictureBoxCrop.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBoxCrop_MouseUp);
+            pictureBoxCrop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
+            pictureBoxCrop.BorderStyle = BorderStyle.FixedSingle;
+            pictureBoxCrop.Location = new System.Drawing.Point(20, 120);
+            pictureBoxCrop.Name = "pictureBoxCrop";
+            pictureBoxCrop.Size = new System.Drawing.Size(660, 440);
+            pictureBoxCrop.TabIndex = 1;
+            pictureBoxCrop.TabStop = false;
+            pictureBoxCrop.Paint += new PaintEventHandler(this.PictureBoxCrop_Paint);
+            pictureBoxCrop.MouseDown += new MouseEventHandler(this.PictureBoxCrop_MouseDown);
+            pictureBoxCrop.MouseMove += new MouseEventHandler(this.PictureBoxCrop_MouseMove);
+            pictureBoxCrop.MouseUp += new MouseEventHandler(this.PictureBoxCrop_MouseUp);
             // 
             // lblInstructions
             // 
-            this.lblInstructions.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblInstructions.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lblInstructions.Location = new System.Drawing.Point(20, 75);
-            this.lblInstructions.Name = "lblInstructions";
-            this.lblInstructions.Size = new System.Drawing.Size(660, 35);
-            this.lblInstructions.TabIndex = 2;
-            this.lblInstructions.Text = "Drag to select the area you want to keep. The selected area will be cropped to a" +
-    " square.";
-            this.lblInstructions.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            lblInstructions.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblInstructions.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            lblInstructions.Location = new System.Drawing.Point(20, 75);
+            lblInstructions.Name = "lblInstructions";
+            lblInstructions.Size = new System.Drawing.Size(660, 35);
+            lblInstructions.TabIndex = 2;
+            lblInstructions.Text = "Drag to select the area you want to keep. The selected area will be cropped to a" + " square.";
+            lblInstructions.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnCrop
             // 
-            this.btnCrop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
-            this.btnCrop.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnCrop.FlatAppearance.BorderSize = 0;
-            this.btnCrop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCrop.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnCrop.ForeColor = System.Drawing.Color.White;
-            this.btnCrop.Location = new System.Drawing.Point(20, 575);
-            this.btnCrop.Name = "btnCrop";
-            this.btnCrop.Size = new System.Drawing.Size(320, 45);
-            this.btnCrop.TabIndex = 3;
-            this.btnCrop.Text = "✔️ Crop && Save";
-            this.btnCrop.UseVisualStyleBackColor = false;
-            this.btnCrop.Click += new System.EventHandler(this.BtnCrop_Click);
+            btnCrop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
+            btnCrop.Cursor = Cursors.Hand;
+            btnCrop.FlatAppearance.BorderSize = 0;
+            btnCrop.FlatStyle = FlatStyle.Flat;
+            btnCrop.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnCrop.ForeColor = System.Drawing.Color.White;
+            btnCrop.Location = new System.Drawing.Point(20, 575);
+            btnCrop.Name = "btnCrop";
+            btnCrop.Size = new System.Drawing.Size(320, 45);
+            btnCrop.TabIndex = 3;
+            btnCrop.Text = "✔️ Crop && Save";
+            btnCrop.UseVisualStyleBackColor = false;
+            btnCrop.Click += new System.EventHandler(this.BtnCrop_Click);
             // 
             // btnCancel
             // 
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnCancel.FlatAppearance.BorderSize = 0;
-            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(360, 575);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(320, 45);
-            this.btnCancel.TabIndex = 4;
-            this.btnCancel.Text = "❌ Cancel";
-            this.btnCancel.UseVisualStyleBackColor = false;
-            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
+            btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            btnCancel.Cursor = Cursors.Hand;
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.FlatStyle = FlatStyle.Flat;
+            btnCancel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnCancel.ForeColor = System.Drawing.Color.White;
+            btnCancel.Location = new System.Drawing.Point(360, 575);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new System.Drawing.Size(320, 45);
+            btnCancel.TabIndex = 4;
+            btnCancel.Text = "❌ Cancel";
+            btnCancel.UseVisualStyleBackColor = false;
+            btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // ImageCropperForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(700, 640);
-            this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnCrop);
-            this.Controls.Add(this.lblInstructions);
-            this.Controls.Add(this.pictureBoxCrop);
-            this.Controls.Add(this.panelHeader);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "ImageCropperForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Crop Picture - St. Joseph\'s Hospital";
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.White;
+            ClientSize = new System.Drawing.Size(700, 640);
+            Controls.Add(this.btnCancel);
+            Controls.Add(this.btnCrop);
+            Controls.Add(this.lblInstructions);
+            Controls.Add(this.pictureBoxCrop);
+            Controls.Add(this.panelHeader);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "ImageCropperForm";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Crop Picture - St. Joseph\'s Hospital";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCrop)).EndInit();
-            this.panelHeader.ResumeLayout(false);
-            this.panelHeader.PerformLayout();
-            this.ResumeLayout(false);
+            panelHeader.ResumeLayout(false);
+            panelHeader.PerformLayout();
+            ResumeLayout(false);
         }
+
+        #endregion
+
+        private PictureBox pictureBoxCrop;
+        private Button btnCrop;
+        private Button btnCancel;
+        private Label lblInstructions;
+        private Panel panelHeader;
+        private Label lblTitle;
     }
 }

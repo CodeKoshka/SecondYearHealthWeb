@@ -103,16 +103,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-                    SELECT 
-                        b.subtotal,
-                        b.discount_percent,
-                        b.discount_amount,
-                        b.tax_percent,
-                        b.tax_amount,
-                        b.amount,
-                        b.notes
-                    FROM Billing b
-                    WHERE b.bill_id = @billId";
+            SELECT 
+                b.subtotal,
+                b.discount_percent,
+                b.discount_amount,
+                b.tax_percent,
+                b.tax_amount,
+                b.amount,
+                b.notes
+            FROM Billing b
+            WHERE b.bill_id = @billId";
 
                 DataTable dt = DatabaseHelper.ExecuteQuery(query,
                     new MySqlParameter("@billId", billId));
@@ -134,7 +134,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     string notes = row["notes"]?.ToString();
                     if (!string.IsNullOrWhiteSpace(notes))
                     {
-                        txtBillNotes.Text = notes;
+                        txtBillNotes.Text = FormatBillNotes(notes);
                         panelBillNotes.Visible = true;
                     }
                     else
@@ -147,6 +147,52 @@ namespace SaintJosephsHospitalHealthMonitorApp
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error loading bill breakdown: {ex.Message}");
+            }
+        }
+
+        private string FormatBillNotes(string notes)
+        {
+            notes = notes.Replace("---", new string('-', 50) + Environment.NewLine);
+
+            notes = notes.Replace("Edited on:", Environment.NewLine + "Edited on:");
+            notes = notes.Replace("Previous payments refunded:", Environment.NewLine + "Previous payments refunded:");
+            notes = notes.Replace("Edited by user ID:", Environment.NewLine + "Edited by user ID:");
+            notes = notes.Replace("Payment records preserved", Environment.NewLine + "Payment records preserved");
+
+            while (notes.Contains(Environment.NewLine + Environment.NewLine + Environment.NewLine))
+            {
+                notes = notes.Replace(Environment.NewLine + Environment.NewLine + Environment.NewLine,
+                                    Environment.NewLine + Environment.NewLine);
+            }
+
+            return notes.Trim();
+        }
+
+        private void NumPaymentAmount_ValueChanged(object sender, EventArgs e)
+        {
+            decimal paymentAmount = numPaymentAmount.Value;
+            decimal previouslyPaid = GetAmountAlreadyPaid();
+            decimal remainingBalance = totalAmount - previouslyPaid;
+
+            decimal appliedAmount = Math.Min(paymentAmount, remainingBalance);
+            decimal change = Math.Max(0, paymentAmount - remainingBalance);
+            decimal newRemaining = Math.Max(0, remainingBalance - paymentAmount);
+
+            lblRemainingValue.Text = $"₱{newRemaining:N2}";
+            lblRemainingValue.ForeColor = newRemaining > 0
+                ? Color.FromArgb(243, 156, 18)  
+                : Color.FromArgb(46, 204, 113); 
+
+            if (change > 0)
+            {
+                lblChange.Visible = true;
+                lblChangeValue.Visible = true;
+                lblChangeValue.Text = $"₱{change:N2}";
+            }
+            else
+            {
+                lblChange.Visible = false;
+                lblChangeValue.Visible = false;
             }
         }
 
@@ -250,20 +296,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             numPaymentAmount.Enabled = false;
             txtReferenceNumber.Enabled = false;
             txtPaymentNotes.Enabled = false;
-        }
-
-
-        private void NumPaymentAmount_ValueChanged(object sender, EventArgs e)
-        {
-            decimal paymentAmount = numPaymentAmount.Value;
-            decimal previouslyPaid = GetAmountAlreadyPaid();
-            decimal totalPaidAfterThis = previouslyPaid + paymentAmount;
-            decimal remaining = totalAmount - totalPaidAfterThis;
-
-            lblRemainingValue.Text = $"₱{remaining:N2}";
-            lblRemainingValue.ForeColor = remaining > 0
-                ? Color.FromArgb(243, 156, 18)  
-                : Color.FromArgb(46, 204, 113); 
         }
 
         private void BtnProcessPayment_Click(object sender, EventArgs e)

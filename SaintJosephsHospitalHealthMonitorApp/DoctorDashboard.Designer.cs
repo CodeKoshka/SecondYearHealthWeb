@@ -378,7 +378,7 @@
             btnEditMedicalRecord.FlatStyle = FlatStyle.Flat;
             btnEditMedicalRecord.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnEditMedicalRecord.ForeColor = Color.White;
-            btnEditMedicalRecord.Location = new Point(416, 15);
+            btnEditMedicalRecord.Location = new Point(406, 18);
             btnEditMedicalRecord.Name = "btnEditMedicalRecord";
             btnEditMedicalRecord.Size = new Size(190, 45);
             btnEditMedicalRecord.TabIndex = 3;
@@ -395,7 +395,7 @@
             btnAddRecord.FlatStyle = FlatStyle.Flat;
             btnAddRecord.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnAddRecord.ForeColor = Color.White;
-            btnAddRecord.Location = new Point(220, 15);
+            btnAddRecord.Location = new Point(210, 18);
             btnAddRecord.Name = "btnAddRecord";
             btnAddRecord.Size = new Size(190, 45);
             btnAddRecord.TabIndex = 1;
@@ -412,7 +412,7 @@
             btnViewHistory.FlatStyle = FlatStyle.Flat;
             btnViewHistory.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnViewHistory.ForeColor = Color.White;
-            btnViewHistory.Location = new Point(20, 15);
+            btnViewHistory.Location = new Point(14, 18);
             btnViewHistory.Name = "btnViewHistory";
             btnViewHistory.Size = new Size(190, 45);
             btnViewHistory.TabIndex = 2;

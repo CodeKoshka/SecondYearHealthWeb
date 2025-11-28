@@ -28,21 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
-            panelHeader = new System.Windows.Forms.Panel();
-            lblTitle = new System.Windows.Forms.Label();
-            lblPatientInfo = new System.Windows.Forms.Label();
-            panelSearch = new System.Windows.Forms.Panel();
-            lblSearch = new System.Windows.Forms.Label();
-            txtSearch = new System.Windows.Forms.TextBox();
-            panelFilters = new System.Windows.Forms.Panel();
-            rbAll = new System.Windows.Forms.RadioButton();
-            rbOnDuty = new System.Windows.Forms.RadioButton();
-            rbOffDuty = new System.Windows.Forms.RadioButton();
-            lblDoctorCount = new System.Windows.Forms.Label();
-            dgvDoctors = new System.Windows.Forms.DataGridView();
-            panelButtons = new System.Windows.Forms.Panel();
-            btnAssign = new System.Windows.Forms.Button();
-            btnCancel = new System.Windows.Forms.Button();
+            panelHeader = new Panel();
+            lblTitle = new Label();
+            lblPatientInfo = new Label();
+            panelSearch = new Panel();
+            lblSearch = new Label();
+            txtSearch = new TextBox();
+            panelFilters = new Panel();
+            rbAll = new RadioButton();
+            rbOnDuty = new RadioButton();
+            rbOffDuty = new RadioButton();
+            lblDoctorCount = new Label();
+            dgvDoctors = new DataGridView();
+            panelButtons = new Panel();
+            btnAssign = new Button();
+            btnCancel = new Button();
             panelHeader.SuspendLayout();
             panelSearch.SuspendLayout();
             panelFilters.SuspendLayout();
@@ -55,7 +55,7 @@
             panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
             panelHeader.Controls.Add(this.lblTitle);
             panelHeader.Controls.Add(this.lblPatientInfo);
-            panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            panelHeader.Dock = DockStyle.Top;
             panelHeader.Location = new System.Drawing.Point(0, 0);
             panelHeader.Name = "panelHeader";
             panelHeader.Size = new System.Drawing.Size(900, 90);
@@ -88,10 +88,10 @@
             panelSearch.BackColor = System.Drawing.Color.White;
             panelSearch.Controls.Add(this.lblSearch);
             panelSearch.Controls.Add(this.txtSearch);
-            panelSearch.Dock = System.Windows.Forms.DockStyle.Top;
+            panelSearch.Dock = DockStyle.Top;
             panelSearch.Location = new System.Drawing.Point(0, 90);
             panelSearch.Name = "panelSearch";
-            panelSearch.Padding = new System.Windows.Forms.Padding(20, 15, 20, 15);
+            panelSearch.Padding = new Padding(20, 15, 20, 15);
             panelSearch.Size = new System.Drawing.Size(900, 70);
             panelSearch.TabIndex = 1;
             // 
@@ -122,10 +122,10 @@
             panelFilters.Controls.Add(this.rbAll);
             panelFilters.Controls.Add(this.rbOnDuty);
             panelFilters.Controls.Add(this.rbOffDuty);
-            panelFilters.Dock = System.Windows.Forms.DockStyle.Top;
+            panelFilters.Dock = DockStyle.Top;
             panelFilters.Location = new System.Drawing.Point(0, 160);
             panelFilters.Name = "panelFilters";
-            panelFilters.Padding = new System.Windows.Forms.Padding(20, 10, 20, 10);
+            panelFilters.Padding = new Padding(20, 10, 20, 10);
             panelFilters.Size = new System.Drawing.Size(900, 60);
             panelFilters.TabIndex = 2;
             // 
@@ -133,7 +133,7 @@
             // 
             rbAll.AutoSize = true;
             rbAll.Checked = true;
-            rbAll.Cursor = System.Windows.Forms.Cursors.Hand;
+            rbAll.Cursor = Cursors.Hand;
             rbAll.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             rbAll.Location = new System.Drawing.Point(20, 18);
             rbAll.Name = "rbAll";
@@ -147,7 +147,7 @@
             // rbOnDuty
             // 
             rbOnDuty.AutoSize = true;
-            rbOnDuty.Cursor = System.Windows.Forms.Cursors.Hand;
+            rbOnDuty.Cursor = Cursors.Hand;
             rbOnDuty.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             rbOnDuty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
             rbOnDuty.Location = new System.Drawing.Point(200, 18);
@@ -161,7 +161,7 @@
             // rbOffDuty
             // 
             rbOffDuty.AutoSize = true;
-            rbOffDuty.Cursor = System.Windows.Forms.Cursors.Hand;
+            rbOffDuty.Cursor = Cursors.Hand;
             rbOffDuty.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             rbOffDuty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
             rbOffDuty.Location = new System.Drawing.Point(360, 18);
@@ -186,44 +186,44 @@
             // 
             dgvDoctors.AllowUserToAddRows = false;
             dgvDoctors.AllowUserToDeleteRows = false;
-            dgvDoctors.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            dgvDoctors.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvDoctors.BackgroundColor = System.Drawing.Color.White;
-            dgvDoctors.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dgvDoctors.BorderStyle = BorderStyle.None;
             dgvDoctors.ColumnHeadersHeight = 45;
-            dgvDoctors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dgvDoctors.Cursor = System.Windows.Forms.Cursors.Hand;
-            dgvDoctors.Dock = System.Windows.Forms.DockStyle.Fill;
+            dgvDoctors.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dgvDoctors.Cursor = Cursors.Hand;
+            dgvDoctors.Dock = DockStyle.Fill;
             dgvDoctors.Location = new System.Drawing.Point(0, 220);
             dgvDoctors.MultiSelect = false;
             dgvDoctors.Name = "dgvDoctors";
             dgvDoctors.ReadOnly = true;
             dgvDoctors.RowHeadersVisible = false;
             dgvDoctors.RowTemplate.Height = 40;
-            dgvDoctors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            dgvDoctors.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvDoctors.Size = new System.Drawing.Size(900, 320);
             dgvDoctors.TabIndex = 3;
-            dgvDoctors.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvDoctors_CellDoubleClick);
-            dgvDoctors.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DgvDoctors_CellFormatting);
-            dgvDoctors.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.DgvDoctors_RowPrePaint);
+            dgvDoctors.CellDoubleClick += new DataGridViewCellEventHandler(this.DgvDoctors_CellDoubleClick);
+            dgvDoctors.CellFormatting += new DataGridViewCellFormattingEventHandler(this.DgvDoctors_CellFormatting);
+            dgvDoctors.RowPrePaint += new DataGridViewRowPrePaintEventHandler(this.DgvDoctors_RowPrePaint);
             // 
             // panelButtons
             // 
             panelButtons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
             panelButtons.Controls.Add(this.btnAssign);
             panelButtons.Controls.Add(this.btnCancel);
-            panelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            panelButtons.Dock = DockStyle.Bottom;
             panelButtons.Location = new System.Drawing.Point(0, 540);
             panelButtons.Name = "panelButtons";
-            panelButtons.Padding = new System.Windows.Forms.Padding(20, 15, 20, 15);
+            panelButtons.Padding = new Padding(20, 15, 20, 15);
             panelButtons.Size = new System.Drawing.Size(900, 80);
             panelButtons.TabIndex = 4;
             // 
             // btnAssign
             // 
             btnAssign.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            btnAssign.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnAssign.Cursor = Cursors.Hand;
             btnAssign.FlatAppearance.BorderSize = 0;
-            btnAssign.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnAssign.FlatStyle = FlatStyle.Flat;
             btnAssign.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             btnAssign.ForeColor = System.Drawing.Color.White;
             btnAssign.Location = new System.Drawing.Point(580, 15);
@@ -237,9 +237,9 @@
             // btnCancel
             // 
             btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
-            btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
+            btnCancel.Cursor = Cursors.Hand;
             btnCancel.FlatAppearance.BorderSize = 0;
-            btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             btnCancel.ForeColor = System.Drawing.Color.White;
             btnCancel.Location = new System.Drawing.Point(740, 15);
@@ -253,7 +253,7 @@
             // AssignDoctorForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleMode = AutoScaleMode.Font;
             BackColor = System.Drawing.Color.White;
             ClientSize = new System.Drawing.Size(900, 620);
             Controls.Add(this.dgvDoctors);
@@ -261,11 +261,11 @@
             Controls.Add(this.panelSearch);
             Controls.Add(this.panelHeader);
             Controls.Add(this.panelButtons);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "AssignDoctorForm";
-            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.CenterParent;
             Text = "Assign Doctor - St. Joseph's Hospital";
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();

@@ -666,7 +666,6 @@
             txtMedications.Location = new Point(20, 70);
             txtMedications.Multiline = true;
             txtMedications.Name = "txtMedications";
-            txtMedications.PlaceholderText = "Enter medications, one per line:\nExample: Aspirin 81mg - Blood thinner\nLisinopril 10mg - Blood pressure";
             txtMedications.ScrollBars = ScrollBars.Vertical;
             txtMedications.Size = new Size(1000, 95);
             txtMedications.TabIndex = 2;

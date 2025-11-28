@@ -17,19 +17,16 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private System.Threading.Timer searchDebounceTimer;
         private const int SEARCH_DEBOUNCE_MS = 300;
         private Label lblSearchStatus;
-        private Panel panelSearchCategories;
-        private CheckBox chkSearchUsers;
-        private CheckBox chkSearchPatients;
-        private CheckBox chkSearchBilling;
 
         public AdminDashboard(User user)
         {
             currentUser = user;
             InitializeComponent();
             ApplyStyle();
+            ApplyRoleBasedAccess();
             UpdateUserDisplay();
             ConfigureAllDataGridViews();
-            ConfigureBillingGrids(); 
+            ConfigureBillingGrids();
             InitializeUniversalSearch();
             LoadData();
             LoadUserProfile();
@@ -42,8 +39,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             this.WindowState = FormWindowState.Maximized;
             this.MinimumSize = new Size(1200, 700);
-            this.MaximizeBox = false;  
-            this.MinimizeBox = true;   
+            this.MaximizeBox = false;
+            this.MinimizeBox = true;
 
             Color sidebarBg = Color.FromArgb(26, 32, 44);
             Color sidebarHover = Color.FromArgb(45, 55, 72);
@@ -131,6 +128,25 @@ namespace SaintJosephsHospitalHealthMonitorApp
             SwitchToTab(0);
         }
 
+        private void ApplyRoleBasedAccess()
+        {
+            if (currentUser.Role == "Admin")
+            {
+                btnBillingMenu.Visible = false;
+            }
+            else if (currentUser.Role == "Headadmin")
+            {
+                btnBillingMenu.Visible = true;
+            }
+            if (currentUser.Role == "Admin")
+            {
+                if (tabControl.TabPages.Contains(tabBilling))
+                {
+                    tabControl.TabPages.Remove(tabBilling);
+                }
+            }
+        }
+
         private void CenterSearchBar()
         {
             if (panelHeader != null && panelUniversalSearch != null)
@@ -200,11 +216,91 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void ConfigureAllDataGridViews()
         {
-            if (dgvUsers != null) ConfigureDataGridView(dgvUsers);
-            if (dgvAdmins != null) ConfigureDataGridView(dgvAdmins);
-            if (dgvDoctors != null) ConfigureDataGridView(dgvDoctors);
+            if (dgvUsers != null)
+            {
+                ConfigureDataGridView(dgvUsers);
+                dgvUsers.SelectionChanged += DgvUsers_SelectionChanged;
+            }
+            if (dgvAdmins != null)
+            {
+                ConfigureDataGridView(dgvAdmins);
+                dgvAdmins.SelectionChanged += DgvUsers_SelectionChanged;
+            }
+            if (dgvDoctors != null)
+            {
+                ConfigureDataGridView(dgvDoctors);
+                dgvDoctors.SelectionChanged += DgvUsers_SelectionChanged;
+            }
             if (dgvPatients != null) ConfigureDataGridView(dgvPatients);
-            if (dgvStaff != null) ConfigureDataGridView(dgvStaff);
+            if (dgvStaff != null)
+            {
+                ConfigureDataGridView(dgvStaff);
+                dgvStaff.SelectionChanged += DgvUsers_SelectionChanged;
+            }
+        }
+
+        private void DgvUsers_SelectionChanged(object sender, EventArgs e)
+        {
+            DataGridView dgv = sender as DataGridView;
+            if (dgv == null || dgv.SelectedRows.Count == 0)
+            {
+                btnToggleAccountStatus.Visible = false;
+                return;
+            }
+
+            var userIdCell = dgv.SelectedRows[0].Cells["User ID"];
+            var roleCell = dgv.SelectedRows[0].Cells["Role"];
+
+            if (userIdCell?.Value == null || userIdCell.Value == DBNull.Value)
+            {
+                btnToggleAccountStatus.Visible = false;
+                return;
+            }
+
+            string uniqueId = userIdCell.Value.ToString();
+            string role = roleCell?.Value?.ToString() ?? "";
+
+            string getUserQuery = @"SELECT user_id, is_active, email, role FROM Users WHERE unique_id = @uniqueId";
+            DataTable dt = DatabaseHelper.ExecuteQuery(getUserQuery,
+                new MySqlParameter("@uniqueId", uniqueId));
+
+            if (dt.Rows.Count > 0)
+            {
+                int userId = Convert.ToInt32(dt.Rows[0]["user_id"]);
+                bool isActive = Convert.ToBoolean(dt.Rows[0]["is_active"]);
+                string email = dt.Rows[0]["email"]?.ToString() ?? "";
+                string userRole = dt.Rows[0]["role"]?.ToString() ?? "";
+
+
+                if (userRole == "Headadmin" && isActive)
+                {
+                    btnToggleAccountStatus.Visible = false;
+                    return;
+                }
+
+                if (userId == currentUser.UserId && isActive)
+                {
+                    btnToggleAccountStatus.Visible = false;
+                    return;
+                }
+
+                btnToggleAccountStatus.Visible = true;
+
+                if (isActive)
+                {
+                    btnToggleAccountStatus.Text = "🔒 Deactivate Account";
+                    btnToggleAccountStatus.BackColor = Color.FromArgb(231, 76, 60);
+                }
+                else
+                {
+                    btnToggleAccountStatus.Text = "🔓 Activate Account";
+                    btnToggleAccountStatus.BackColor = Color.FromArgb(46, 204, 113);
+                }
+            }
+            else
+            {
+                btnToggleAccountStatus.Visible = false;
+            }
         }
 
         private void ConfigureDataGridView(DataGridView dgv)
@@ -283,8 +379,24 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
                 null, dgv, new object[] { true });
 
-            dgv.DataBindingComplete -= Dgv_DataBindingComplete;
-            dgv.DataBindingComplete += Dgv_DataBindingComplete;
+            dgv.DataBindingComplete += (s, e) =>
+            {
+                foreach (DataGridViewColumn column in dgv.Columns)
+                {
+                    column.SortMode = DataGridViewColumnSortMode.NotSortable;
+
+                    string originalName = column.DataPropertyName;
+                    if (!string.IsNullOrWhiteSpace(originalName))
+                    {
+                        column.HeaderText = RenameColumns(originalName);
+                    }
+                }
+
+                if (dgv == dgvUsers || dgv == dgvAdmins || dgv == dgvDoctors || dgv == dgvStaff)
+                {
+                    HideStatusColumnAndHighlight(dgv);
+                }
+            };
 
             dgv.RowPostPaint -= DgvUniversal_RowPostPaint;
             dgv.RowPostPaint += DgvUniversal_RowPostPaint;
@@ -296,7 +408,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             dgvBilling.Dock = DockStyle.Fill;
 
             ConfigureDataGridView(dgvDischargedBills);
-            dgvDischargedBills.Dock = DockStyle.Fill;  
+            dgvDischargedBills.Dock = DockStyle.Fill;
 
             System.Diagnostics.Debug.WriteLine("[AdminDashboard] Billing grids configured with full styling");
         }
@@ -374,6 +486,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         System.Diagnostics.Debug.WriteLine($"[ConfigureDataGridView] Error setting MinimumWidth for column '{column.Name}': {ex.Message}");
                     }
                 }
+
+                if (dgv == dgvUsers || dgv == dgvAdmins || dgv == dgvDoctors || dgv == dgvStaff)
+                {
+                    HideStatusColumnAndHighlight(dgv);
+                }
             }
             catch (Exception ex)
             {
@@ -422,7 +539,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {"payment_method", "Payment Method"},
         {"Payment Method", "Payment Method"},
         {"status", "Status"},
-        {"Status", "Status"},
         {"bill_date", "Bill Date"},
         {"Bill Date", "Bill Date"},
         {"discharged_time", "Discharged Date"},
@@ -447,7 +563,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {"lab_tests", "Lab Tests"},
         {"visit_type", "Visit Type"},
         {"record_date", "Record Date"}
-    };
+        };
 
             if (columnMappings.ContainsKey(columnName))
                 return columnMappings[columnName];
@@ -489,38 +605,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void InitializeUniversalSearch()
         {
-            panelSearchCategories = new Panel();
-            panelSearchCategories.BackColor = Color.White;
-            panelSearchCategories.Height = 40;
-            panelSearchCategories.Visible = false;
-            panelSearchCategories.Name = "panelSearchCategories";
-
-            chkSearchUsers = new CheckBox();
-            chkSearchUsers.Text = "👥 Users";
-            chkSearchUsers.Checked = true;
-            chkSearchUsers.Font = new Font("Segoe UI", 9F);
-            chkSearchUsers.Location = new Point(15, 10);
-            chkSearchUsers.AutoSize = true;
-            chkSearchUsers.CheckedChanged += (s, e) => RefreshSearchResults();
-
-            chkSearchPatients = new CheckBox();
-            chkSearchPatients.Text = "📋 Medical Records";
-            chkSearchPatients.Checked = true;
-            chkSearchPatients.Font = new Font("Segoe UI", 9F);
-            chkSearchPatients.Location = new Point(120, 10);
-            chkSearchPatients.AutoSize = true;
-            chkSearchPatients.CheckedChanged += (s, e) => RefreshSearchResults();
-
-            chkSearchBilling = new CheckBox();
-            chkSearchBilling.Text = "💰 Billing";
-            chkSearchBilling.Checked = true;
-            chkSearchBilling.Font = new Font("Segoe UI", 9F);
-            chkSearchBilling.Location = new Point(290, 10);
-            chkSearchBilling.AutoSize = true;
-            chkSearchBilling.CheckedChanged += (s, e) => RefreshSearchResults();
-
-            panelSearchCategories.Controls.AddRange(new Control[] {chkSearchUsers, chkSearchPatients, chkSearchBilling});
-
             lblSearchStatus = new Label();
             lblSearchStatus.Font = new Font("Segoe UI", 9F, FontStyle.Italic);
             lblSearchStatus.ForeColor = Color.FromArgb(113, 128, 150);
@@ -710,14 +794,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             suggestionsShadow.Name = "suggestionsShadow";
 
             this.Controls.Add(lblSearchStatus);
-            this.Controls.Add(panelSearchCategories);
-            this.Controls.Add(suggestionsShadow);
             this.Controls.Add(suggestionsContainer);
+            this.Controls.Add(suggestionsShadow);
             suggestionsContainer.Controls.Add(searchSuggestionsListBox);
 
             suggestionsShadow.SendToBack();
             suggestionsContainer.BringToFront();
-            panelSearchCategories.BringToFront();
 
             searchSuggestionsListBox.Tag = new
             {
@@ -754,14 +836,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (index >= 0 && index != searchSuggestionsListBox.SelectedIndex)
             {
                 searchSuggestionsListBox.SelectedIndex = index;
-            }
-        }
-
-        private void RefreshSearchResults()
-        {
-            if (!string.IsNullOrWhiteSpace(txtUniversalSearch.Text))
-            {
-                ShowUniversalSearchSuggestions(txtUniversalSearch.Text.Trim());
             }
         }
 
@@ -1333,32 +1407,79 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-            SELECT 
+                SELECT 
                 unique_id AS 'User ID', 
                 name AS 'Name', 
                 role AS 'Role', 
                 email AS 'Email Address', 
-                DATE_FORMAT(created_date, '%Y-%m-%d %H:%i') AS 'Date Created'
-            FROM Users 
-            WHERE is_active = 1 
-            AND role != 'Patient' 
-            ORDER BY created_date DESC";
+                DATE_FORMAT(created_date, '%Y-%m-%d %H:%i') AS 'Date Created',
+                is_active
+                FROM Users 
+                WHERE role != 'Patient' 
+                ORDER BY is_active DESC, created_date DESC";
 
                 DataTable allUsers = DatabaseHelper.ExecuteQuery(query);
 
-                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {allUsers.Rows.Count} users (excluding patients)");
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {allUsers.Rows.Count} users (including inactive)");
 
                 dgvUsers.DataSource = allUsers;
 
                 this.Text = $"St. Joseph's Hospital - Admin Dashboard ({allUsers.Rows.Count} users)";
 
                 LoadRoleSpecificGrids(allUsers);
+                HideStatusColumnAndHighlight(dgvUsers);
+                HideStatusColumnAndHighlight(dgvAdmins);
+                HideStatusColumnAndHighlight(dgvDoctors);
+                HideStatusColumnAndHighlight(dgvStaff);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading users: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 System.Diagnostics.Debug.WriteLine($"[AdminDashboard] LoadUsersData error: {ex.Message}");
+            }
+        }
+
+        private void HideStatusColumnAndHighlight(DataGridView dgv)
+        {
+            if (dgv == null || dgv.Rows.Count == 0) return;
+
+            try
+            {
+                if (dgv.Columns.Contains("is_active"))
+                {
+                    dgv.Columns["is_active"].Visible = false;
+                }
+
+                foreach (DataGridViewRow row in dgv.Rows)
+                {
+                    bool isActive = true;
+                    if (row.DataBoundItem != null)
+                    {
+                        DataRowView rowView = row.DataBoundItem as DataRowView;
+                        if (rowView != null && rowView.Row.Table.Columns.Contains("is_active"))
+                        {
+                            isActive = Convert.ToBoolean(rowView["is_active"]);
+                        }
+                    }
+                    else if (dgv.Columns.Contains("is_active") && row.Cells["is_active"].Value != null)
+                    {
+                        isActive = Convert.ToBoolean(row.Cells["is_active"].Value);
+                    }
+
+                    if (!isActive)
+                    {
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(255, 235, 235);
+                        row.DefaultCellStyle.ForeColor = Color.FromArgb(197, 48, 48);
+                        row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 200, 200);
+                        row.DefaultCellStyle.SelectionForeColor = Color.FromArgb(139, 0, 0);
+                        row.DefaultCellStyle.Font = new Font(dgv.Font, FontStyle.Italic);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error highlighting deactivated users: {ex.Message}");
             }
         }
 
@@ -1476,7 +1597,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 HideSearchSuggestions();
                 txtUniversalSearch.Clear();
                 lblSearchStatus.Visible = false;
-                panelSearchCategories.Visible = false;
             }
         }
 
@@ -1486,22 +1606,42 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 searchSuggestionsListBox.Items.Clear();
                 int totalResults = 0;
+                int activeTabIndex = tabControl.SelectedIndex;
 
-                if (chkSearchUsers.Checked)
+                if (activeTabIndex == 0) 
                 {
-                    string userQuery = @"SELECT user_id, name, role, email, profile_image, 'Users' as source 
-                FROM Users 
-                WHERE is_active = 1 
-                AND role != 'Patient'
-                AND (name LIKE @search OR email LIKE @search OR role LIKE @search) 
-                ORDER BY 
+                    int activeUserSubTab = tabUsers.SelectedIndex;
+                    string roleFilter = "";
+
+                    switch (activeUserSubTab)
+                    {
+                        case 0:
+                            roleFilter = "";
+                            break;
+                        case 1:
+                            roleFilter = "AND (role = 'Admin' OR role = 'Headadmin')";
+                            break;
+                        case 2:
+                            roleFilter = "AND role = 'Doctor'";
+                            break;
+                        case 3: 
+                            roleFilter = "AND (role = 'Receptionist' OR role = 'Pharmacist')";
+                            break;
+                    }
+
+                    string userQuery = $@"SELECT user_id, name, role, email, profile_image, 'Users' as source 
+                    FROM Users 
+                    WHERE role != 'Patient'
+                    {roleFilter}
+                    AND (name LIKE @search OR email LIKE @search OR role LIKE @search) 
+                    ORDER BY 
                     CASE 
-                        WHEN name LIKE @exactSearch THEN 1
-                        WHEN name LIKE @startSearch THEN 2
-                        ELSE 3
+                    WHEN name LIKE @exactSearch THEN 1
+                    WHEN name LIKE @startSearch THEN 2
+                    ELSE 3
                     END,
                     name
-                LIMIT 5";
+                    LIMIT 10";
 
                     DataTable users = DatabaseHelper.ExecuteQuery(userQuery,
                         new MySqlParameter("@search", $"%{searchText}%"),
@@ -1520,19 +1660,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         totalResults++;
                     }
                 }
-
-                if (chkSearchPatients.Checked)
+                else if (activeTabIndex == 1) 
                 {
                     string patientQuery = @"
-                SELECT p.patient_id, u.name AS patient_name, p.blood_type, 
-                       u.age, u.gender, 'Patients' as source,
-                       u.profile_image AS patient_image
-                FROM Patients p
-                INNER JOIN Users u ON p.user_id = u.user_id
-                WHERE u.is_active = 1
-                AND (u.name LIKE @search OR p.blood_type LIKE @search OR p.phone_number LIKE @search)
-                ORDER BY u.name
-                LIMIT 5";
+                    SELECT p.patient_id, u.name AS patient_name, p.blood_type, 
+                    u.age, u.gender, 'Patients' as source,
+                    u.profile_image AS patient_image
+                    FROM Patients p
+                    INNER JOIN Users u ON p.user_id = u.user_id
+                    WHERE (u.name LIKE @search OR p.blood_type LIKE @search OR p.phone_number LIKE @search)
+                    ORDER BY u.name
+                    LIMIT 10";
 
                     DataTable patients = DatabaseHelper.ExecuteQuery(patientQuery,
                         new MySqlParameter("@search", $"%{searchText}%"));
@@ -1550,18 +1688,33 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         totalResults++;
                     }
                 }
-
-                if (chkSearchBilling.Checked)
+                else if (activeTabIndex == 2) 
                 {
-                    string billQuery = @"
-                SELECT b.bill_id, u.name AS patient_name, b.amount, b.status, 
-                       b.description, 'Billing' as source, u.profile_image AS patient_image
-                FROM Billing b
-                INNER JOIN Patients p ON b.patient_id = p.patient_id
-                INNER JOIN Users u ON p.user_id = u.user_id
-                WHERE u.name LIKE @search OR b.description LIKE @search OR b.status LIKE @search
-                ORDER BY b.bill_date DESC
-                LIMIT 5";
+                    int activeBillingSubTab = tabBillingControl.SelectedIndex;
+                    string billingFilter = "";
+
+                    switch (activeBillingSubTab)
+                    {
+                        case 0:
+                            billingFilter = @"LEFT JOIN patientqueue pq ON b.queue_id = pq.queue_id
+                                     WHERE (pq.status IS NULL OR pq.status != 'Discharged')
+                                     AND";
+                            break;
+                        case 1:
+                            billingFilter = @"INNER JOIN patientqueue pq ON b.queue_id = pq.queue_id AND pq.status = 'Discharged'
+                                     WHERE";
+                            break;
+                    }
+
+                    string billQuery = $@"
+                    SELECT b.bill_id, u.name AS patient_name, b.amount, b.status, 
+                           b.description, 'Billing' as source, u.profile_image AS patient_image
+                    FROM Billing b
+                    INNER JOIN Patients p ON b.patient_id = p.patient_id
+                    INNER JOIN Users u ON p.user_id = u.user_id
+                    {billingFilter} (u.name LIKE @search OR b.description LIKE @search OR b.status LIKE @search)
+                    ORDER BY b.bill_date DESC
+                    LIMIT 10";
 
                     DataTable billing = DatabaseHelper.ExecuteQuery(billQuery,
                         new MySqlParameter("@search", $"%{searchText}%"));
@@ -1600,9 +1753,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     int maxVisibleItems = 6;
 
                     int statusHeight = 35;
-                    int filterHeight = 40;
                     int listHeight = Math.Min(itemCount, maxVisibleItems) * searchSuggestionsListBox.ItemHeight;
-                    int totalHeight = statusHeight + filterHeight + listHeight + 2;
+                    int totalHeight = statusHeight + listHeight + 2;
 
                     container.Location = new Point(searchPanelLocation.X, searchPanelBottom);
                     container.Size = new Size(width, totalHeight);
@@ -1627,31 +1779,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     lblSearchStatus.AutoSize = true;
                     lblSearchStatus.BringToFront();
 
-                    panelSearchCategories.Parent = container;
-                    panelSearchCategories.Location = new Point(0, statusHeight);
-                    panelSearchCategories.Size = new Size(width, filterHeight);
-                    panelSearchCategories.BackColor = Color.FromArgb(249, 250, 251);
-                    panelSearchCategories.Visible = true;
-                    panelSearchCategories.BorderStyle = BorderStyle.None;
-
-                    Panel filterTopBorder = panelSearchCategories.Controls.Find("filterTopBorder", false).FirstOrDefault() as Panel;
-                    if (filterTopBorder == null)
-                    {
-                        filterTopBorder = new Panel();
-                        filterTopBorder.Name = "filterTopBorder";
-                        filterTopBorder.Dock = DockStyle.Top;
-                        filterTopBorder.Height = 1;
-                        filterTopBorder.BackColor = Color.FromArgb(226, 232, 240);
-                        panelSearchCategories.Controls.Add(filterTopBorder);
-                        filterTopBorder.BringToFront();
-                    }
-
                     searchSuggestionsListBox.Parent = container;
-
-                    searchSuggestionsListBox.Location = new Point(1, statusHeight + filterHeight);
+                    searchSuggestionsListBox.Location = new Point(1, statusHeight);
                     searchSuggestionsListBox.Size = new Size(width - 2, listHeight);
                     searchSuggestionsListBox.BorderStyle = BorderStyle.FixedSingle;
                     searchSuggestionsListBox.Region = null;
+
                     shadow.Location = new Point(searchPanelLocation.X + 2, searchPanelBottom + 2);
                     shadow.Size = new Size(width, totalHeight);
                     shadow.Region = new Region(path.Clone() as System.Drawing.Drawing2D.GraphicsPath);
@@ -2233,12 +2366,183 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private void BtnAddBill_Click(object sender, EventArgs e)
+        private void btnToggleAccountStatus_Click(object sender, EventArgs e)
         {
-            int? selectedPatientId = null;
-            BillingForm billForm = new BillingForm(currentUser.UserId, selectedPatientId);
-            billForm.FormClosed += (s, args) => LoadData();
-            billForm.ShowDialog();
+            DataGridView activeGrid = GetActiveUserGrid();
+            if (activeGrid.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a user to change account status.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var userIdCell = activeGrid.SelectedRows[0].Cells["User ID"];
+            var nameCell = activeGrid.SelectedRows[0].Cells["Name"];
+            var emailCell = activeGrid.SelectedRows[0].Cells["Email Address"];
+            var roleCell = activeGrid.SelectedRows[0].Cells["Role"];
+
+            if (userIdCell?.Value == null || userIdCell.Value == DBNull.Value)
+            {
+                MessageBox.Show("Invalid user data selected.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string uniqueId = userIdCell.Value.ToString();
+            string userName = nameCell?.Value?.ToString() ?? "Unknown";
+            string userEmail = emailCell?.Value?.ToString() ?? "";
+            string userRole = roleCell?.Value?.ToString() ?? "";
+
+            string getUserQuery = @"SELECT user_id, is_active, failed_login_attempts FROM Users WHERE unique_id = @uniqueId";
+            DataTable dt = DatabaseHelper.ExecuteQuery(getUserQuery,
+                new MySqlParameter("@uniqueId", uniqueId));
+
+            if (dt.Rows.Count == 0)
+            {
+                MessageBox.Show("Cannot find user record.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int userId = Convert.ToInt32(dt.Rows[0]["user_id"]);
+            bool isActive = Convert.ToBoolean(dt.Rows[0]["is_active"]);
+            int failedAttempts = dt.Rows[0]["failed_login_attempts"] != DBNull.Value
+                ? Convert.ToInt32(dt.Rows[0]["failed_login_attempts"])
+                : 0;
+
+            if (userId == currentUser.UserId)
+            {
+                if (isActive)
+                {
+                    MessageBox.Show(
+                        "🚫 CANNOT DEACTIVATE YOUR OWN ACCOUNT\n\n" +
+                        "You cannot deactivate your own account for security reasons.\n\n" +
+                        "If you need to deactivate this account, ask another administrator to do it.",
+                        "Access Denied",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "✅ REACTIVATING YOUR ACCOUNT\n\n" +
+                        "You are reactivating your own account.\n" +
+                        "This is allowed for recovery purposes.",
+                        "Self-Reactivation",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+            }
+
+            if (userRole == "Headadmin" && isActive)
+            {
+                MessageBox.Show(
+                    "🔒 CANNOT DEACTIVATE HEAD ADMINISTRATOR\n\n" +
+                    "The Head Administrator account cannot be deactivated.\n\n" +
+                    "This is a critical system account and must remain active for security and administrative purposes.",
+                    "Protected Account",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (isActive)
+            {
+                string message = $"🔒 DEACTIVATE ACCOUNT\n\n" +
+                      $"User: {userName}\n" +
+                      $"Email: {userEmail}\n" +
+                      $"Role: {userRole}\n\n" +
+                      "This will:\n" +
+                      "• Prevent user from logging in\n" +
+                      "• Require administrator to reactivate\n" +
+                      "• Preserve all user data\n\n" +
+                      "Are you sure you want to deactivate this account?";
+
+                DialogResult confirm = MessageBox.Show(message, "Confirm DEACTIVATE",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+
+                if (confirm != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                try
+                {
+                    string updateQuery = @"UPDATE Users 
+                                  SET is_active = 0
+                                  WHERE user_id = @userId";
+
+                    DatabaseHelper.ExecuteNonQuery(updateQuery,
+                        new MySqlParameter("@userId", userId));
+
+                    string successMsg = $"🔒 ACCOUNT DEACTIVATED\n\n" +
+                          $"User: {userName}\n\n" +
+                          "• Account is now deactivated\n" +
+                          "• User cannot login\n" +
+                          "• Administrator can reactivate";
+
+                    MessageBox.Show(successMsg, "Account Deactivated",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    LoadData();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error deactivating account: {ex.Message}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                string message = $"🔓 ACTIVATE ACCOUNT\n\n" +
+                      $"User: {userName}\n" +
+                      $"Email: {userEmail}\n" +
+                      $"Role: {userRole}\n" +
+                      $"Failed Login Attempts: {failedAttempts}\n\n" +
+                      "This will:\n" +
+                      "• Allow user to login again\n" +
+                      "• Reset failed login attempts to 0\n" +
+                      "• Clear any account locks\n\n" +
+                      "Are you sure you want to activate this account?";
+
+                DialogResult confirm = MessageBox.Show(message, "Confirm ACTIVATE",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+
+                if (confirm != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                try
+                {
+                    string updateQuery = @"UPDATE Users 
+                                  SET is_active = 1,
+                                      failed_login_attempts = 0,
+                                      last_failed_attempt = NULL,
+                                      locked_until = NULL
+                                  WHERE user_id = @userId";
+
+                    DatabaseHelper.ExecuteNonQuery(updateQuery,
+                        new MySqlParameter("@userId", userId));
+
+                    string successMsg = $"✅ ACCOUNT ACTIVATED\n\n" +
+                          $"User: {userName}\n\n" +
+                          "• Account is now active\n" +
+                          "• Failed login attempts reset\n" +
+                          "• User can now login";
+
+                    MessageBox.Show(successMsg, "Account Activated",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    LoadData();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error activating account: {ex.Message}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         private void btnGenerateIncomeReport_Click(object sender, EventArgs e)

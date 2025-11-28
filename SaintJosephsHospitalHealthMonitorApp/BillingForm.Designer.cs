@@ -59,7 +59,6 @@
             lblPaymentMethod = new Label();
             btnSave = new Button();
             btnCancel = new Button();
-            btnPrintPreview = new Button();
             grpServices.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numQuantity).BeginInit();
             grpCalculations.SuspendLayout();
@@ -114,7 +113,7 @@
             grpServices.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             grpServices.Location = new Point(20, 140);
             grpServices.Name = "grpServices";
-            grpServices.Size = new Size(880, 364);
+            grpServices.Size = new Size(873, 364);
             grpServices.TabIndex = 3;
             grpServices.TabStop = false;
             grpServices.Text = "Services / Items";
@@ -127,7 +126,7 @@
             btnRemoveService.FlatStyle = FlatStyle.Flat;
             btnRemoveService.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnRemoveService.ForeColor = Color.White;
-            btnRemoveService.Location = new Point(750, 65);
+            btnRemoveService.Location = new Point(738, 65);
             btnRemoveService.Name = "btnRemoveService";
             btnRemoveService.Size = new Size(110, 35);
             btnRemoveService.TabIndex = 8;
@@ -143,7 +142,7 @@
             btnAddService.FlatStyle = FlatStyle.Flat;
             btnAddService.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnAddService.ForeColor = Color.White;
-            btnAddService.Location = new Point(620, 65);
+            btnAddService.Location = new Point(618, 65);
             btnAddService.Name = "btnAddService";
             btnAddService.Size = new Size(110, 35);
             btnAddService.TabIndex = 7;
@@ -181,6 +180,7 @@
             cmbServiceItem.Name = "cmbServiceItem";
             cmbServiceItem.Size = new Size(230, 23);
             cmbServiceItem.TabIndex = 4;
+            cmbServiceItem.SelectedIndexChanged += CmbServiceItem_SelectedIndexChanged;
             // 
             // lblServiceItem
             // 
@@ -220,7 +220,7 @@
             lstServices.GridLines = true;
             lstServices.Location = new Point(20, 106);
             lstServices.Name = "lstServices";
-            lstServices.Size = new Size(840, 238);
+            lstServices.Size = new Size(828, 238);
             lstServices.TabIndex = 0;
             lstServices.UseCompatibleStateImageBehavior = false;
             lstServices.View = View.Details;
@@ -238,7 +238,7 @@
             grpCalculations.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             grpCalculations.Location = new Point(560, 510);
             grpCalculations.Name = "grpCalculations";
-            grpCalculations.Size = new Size(340, 220);
+            grpCalculations.Size = new Size(333, 220);
             grpCalculations.TabIndex = 4;
             grpCalculations.TabStop = false;
             grpCalculations.Text = "Bill Summary";
@@ -288,7 +288,7 @@
             // 
             numTax.DecimalPlaces = 2;
             numTax.Font = new Font("Segoe UI", 9F);
-            numTax.Location = new Point(220, 50);
+            numTax.Location = new Point(208, 51);
             numTax.Name = "numTax";
             numTax.Size = new Size(100, 23);
             numTax.TabIndex = 3;
@@ -298,7 +298,7 @@
             // 
             lblTaxLabel.AutoSize = true;
             lblTaxLabel.Font = new Font("Segoe UI", 9F);
-            lblTaxLabel.Location = new Point(220, 30);
+            lblTaxLabel.Location = new Point(208, 30);
             lblTaxLabel.Name = "lblTaxLabel";
             lblTaxLabel.Size = new Size(40, 15);
             lblTaxLabel.TabIndex = 2;
@@ -424,7 +424,7 @@
             btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnCancel.ForeColor = Color.White;
-            btnCancel.Location = new Point(730, 750);
+            btnCancel.Location = new Point(743, 750);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(150, 45);
             btnCancel.TabIndex = 7;
@@ -432,29 +432,12 @@
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += BtnCancel_Click;
             // 
-            // btnPrintPreview
-            // 
-            btnPrintPreview.BackColor = Color.FromArgb(52, 152, 219);
-            btnPrintPreview.Cursor = Cursors.Hand;
-            btnPrintPreview.FlatAppearance.BorderSize = 0;
-            btnPrintPreview.FlatStyle = FlatStyle.Flat;
-            btnPrintPreview.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnPrintPreview.ForeColor = Color.White;
-            btnPrintPreview.Location = new Point(20, 750);
-            btnPrintPreview.Name = "btnPrintPreview";
-            btnPrintPreview.Size = new Size(150, 45);
-            btnPrintPreview.TabIndex = 8;
-            btnPrintPreview.Text = "Print Preview";
-            btnPrintPreview.UseVisualStyleBackColor = false;
-            btnPrintPreview.Click += BtnPrintPreview_Click;
-            // 
             // BillingForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(236, 240, 241);
             ClientSize = new Size(920, 820);
-            Controls.Add(btnPrintPreview);
             Controls.Add(btnCancel);
             Controls.Add(btnSave);
             Controls.Add(grpPaymentInfo);
@@ -514,6 +497,5 @@
         private TextBox txtNotes;
         private Button btnSave;
         private Button btnCancel;
-        private Button btnPrintPreview;
     }
 }

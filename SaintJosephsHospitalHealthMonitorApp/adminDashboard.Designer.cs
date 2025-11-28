@@ -49,6 +49,7 @@
             tabStaff = new TabPage();
             dgvStaff = new DataGridView();
             panelUserButtons = new Panel();
+            btnToggleAccountStatus = new Button();
             btnViewUserProfile = new Button();
             btnDeleteUser = new Button();
             btnEditUser = new Button();
@@ -64,16 +65,16 @@
             btnViewPatientRecord = new Button();
             medicalBtnShadow = new Panel();
             tabBilling = new TabPage();
-            tabBillingControl = new TabControl();        
-            tabActiveBills = new TabPage();              
-            tabDischargedBills = new TabPage();          
+            tabBillingControl = new TabControl();
+            tabActiveBills = new TabPage();
+            dgvBilling = new DataGridView();
+            tabDischargedBills = new TabPage();
+            dgvDischargedBills = new DataGridView();
+            panelBillingStats = new Panel();
             panelBillingButtons = new Panel();
             btnGenerateIncomeReport = new Button();
             btnViewBillDetails = new Button();
             billBtnShadow = new Panel();
-            panelBillingStats = new Panel();
-            dgvBilling = new DataGridView();
-            dgvDischargedBills = new DataGridView();
             panelHeader = new Panel();
             panelUniversalSearch = new Panel();
             lblUniversalSearchIcon = new Label();
@@ -101,12 +102,12 @@
             ((System.ComponentModel.ISupportInitialize)dgvPatients).BeginInit();
             panelMedicalButtons.SuspendLayout();
             tabBilling.SuspendLayout();
-            tabBillingControl.SuspendLayout();      
-            tabActiveBills.SuspendLayout();         
-            tabDischargedBills.SuspendLayout();
-            panelBillingButtons.SuspendLayout();
+            tabBillingControl.SuspendLayout();
+            tabActiveBills.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvBilling).BeginInit();
+            tabDischargedBills.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvDischargedBills).BeginInit();
+            panelBillingButtons.SuspendLayout();
             panelHeader.SuspendLayout();
             panelUniversalSearch.SuspendLayout();
             SuspendLayout();
@@ -404,6 +405,7 @@
             // panelUserButtons
             // 
             panelUserButtons.BackColor = Color.White;
+            panelUserButtons.Controls.Add(btnToggleAccountStatus);
             panelUserButtons.Controls.Add(btnViewUserProfile);
             panelUserButtons.Controls.Add(btnDeleteUser);
             panelUserButtons.Controls.Add(btnEditUser);
@@ -416,6 +418,23 @@
             panelUserButtons.Size = new Size(1165, 80);
             panelUserButtons.TabIndex = 2;
             // 
+            // btnToggleAccountStatus
+            // 
+            btnToggleAccountStatus.BackColor = Color.FromArgb(52, 152, 219);
+            btnToggleAccountStatus.Cursor = Cursors.Hand;
+            btnToggleAccountStatus.FlatAppearance.BorderSize = 0;
+            btnToggleAccountStatus.FlatStyle = FlatStyle.Flat;
+            btnToggleAccountStatus.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnToggleAccountStatus.ForeColor = Color.White;
+            btnToggleAccountStatus.Location = new Point(723, 13);
+            btnToggleAccountStatus.Name = "btnToggleAccountStatus";
+            btnToggleAccountStatus.Size = new Size(180, 45);
+            btnToggleAccountStatus.TabIndex = 0;
+            btnToggleAccountStatus.Text = "🔓 Activate Account";
+            btnToggleAccountStatus.UseVisualStyleBackColor = false;
+            btnToggleAccountStatus.Visible = false;
+            btnToggleAccountStatus.Click += btnToggleAccountStatus_Click;
+            // 
             // btnViewUserProfile
             // 
             btnViewUserProfile.BackColor = Color.FromArgb(52, 152, 219);
@@ -425,7 +444,7 @@
             btnViewUserProfile.FlatStyle = FlatStyle.Flat;
             btnViewUserProfile.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnViewUserProfile.ForeColor = Color.White;
-            btnViewUserProfile.Location = new Point(15, 13);
+            btnViewUserProfile.Location = new Point(19, 13);
             btnViewUserProfile.Name = "btnViewUserProfile";
             btnViewUserProfile.Size = new Size(170, 45);
             btnViewUserProfile.TabIndex = 6;
@@ -442,7 +461,7 @@
             btnDeleteUser.FlatStyle = FlatStyle.Flat;
             btnDeleteUser.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnDeleteUser.ForeColor = Color.White;
-            btnDeleteUser.Location = new Point(551, 13);
+            btnDeleteUser.Location = new Point(547, 13);
             btnDeleteUser.Name = "btnDeleteUser";
             btnDeleteUser.Size = new Size(170, 45);
             btnDeleteUser.TabIndex = 1;
@@ -476,7 +495,7 @@
             btnAddUser.FlatStyle = FlatStyle.Flat;
             btnAddUser.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnAddUser.ForeColor = Color.White;
-            btnAddUser.Location = new Point(191, 13);
+            btnAddUser.Location = new Point(195, 13);
             btnAddUser.Name = "btnAddUser";
             btnAddUser.Size = new Size(170, 45);
             btnAddUser.TabIndex = 3;
@@ -547,7 +566,7 @@
             btnDeletePatient.FlatStyle = FlatStyle.Flat;
             btnDeletePatient.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnDeletePatient.ForeColor = Color.White;
-            btnDeletePatient.Location = new Point(747, 17);
+            btnDeletePatient.Location = new Point(743, 12);
             btnDeletePatient.Name = "btnDeletePatient";
             btnDeletePatient.Size = new Size(170, 45);
             btnDeletePatient.TabIndex = 5;
@@ -564,7 +583,7 @@
             BtnViewPatientProfile.FlatStyle = FlatStyle.Flat;
             BtnViewPatientProfile.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             BtnViewPatientProfile.ForeColor = Color.White;
-            BtnViewPatientProfile.Location = new Point(219, 18);
+            BtnViewPatientProfile.Location = new Point(215, 13);
             BtnViewPatientProfile.Name = "BtnViewPatientProfile";
             BtnViewPatientProfile.Size = new Size(170, 45);
             BtnViewPatientProfile.TabIndex = 5;
@@ -581,7 +600,7 @@
             btnEditPatient.FlatStyle = FlatStyle.Flat;
             btnEditPatient.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnEditPatient.ForeColor = Color.White;
-            btnEditPatient.Location = new Point(571, 17);
+            btnEditPatient.Location = new Point(567, 12);
             btnEditPatient.Name = "btnEditPatient";
             btnEditPatient.Size = new Size(170, 45);
             btnEditPatient.TabIndex = 6;
@@ -598,7 +617,7 @@
             btnAddPatient.FlatStyle = FlatStyle.Flat;
             btnAddPatient.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnAddPatient.ForeColor = Color.White;
-            btnAddPatient.Location = new Point(395, 18);
+            btnAddPatient.Location = new Point(391, 13);
             btnAddPatient.Name = "btnAddPatient";
             btnAddPatient.Size = new Size(170, 45);
             btnAddPatient.TabIndex = 7;
@@ -615,7 +634,7 @@
             btnViewPatientRecord.FlatStyle = FlatStyle.Flat;
             btnViewPatientRecord.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnViewPatientRecord.ForeColor = Color.White;
-            btnViewPatientRecord.Location = new Point(23, 18);
+            btnViewPatientRecord.Location = new Point(19, 13);
             btnViewPatientRecord.Name = "btnViewPatientRecord";
             btnViewPatientRecord.Size = new Size(190, 45);
             btnViewPatientRecord.TabIndex = 1;
@@ -635,42 +654,21 @@
             // tabBilling
             // 
             tabBilling.BackColor = Color.FromArgb(247, 250, 252);
-            tabBilling.Controls.Add(tabBillingControl);      
-            tabBilling.Controls.Add(panelBillingStats);      
-            tabBilling.Controls.Add(panelBillingButtons);    
+            tabBilling.Controls.Add(tabBillingControl);
+            tabBilling.Controls.Add(panelBillingStats);
+            tabBilling.Controls.Add(panelBillingButtons);
             tabBilling.Location = new Point(4, 34);
             tabBilling.Name = "tabBilling";
             tabBilling.Padding = new Padding(20);
             tabBilling.Size = new Size(1205, 746);
             tabBilling.TabIndex = 2;
             // 
-            // panelBillingButtons 
-            // 
-            panelBillingButtons.BackColor = Color.White;
-            panelBillingButtons.Controls.Add(btnGenerateIncomeReport);
-            panelBillingButtons.Controls.Add(btnViewBillDetails);
-            panelBillingButtons.Controls.Add(billBtnShadow);
-            panelBillingButtons.Location = new Point(20, 20);  
-            panelBillingButtons.Name = "panelBillingButtons";
-            panelBillingButtons.Padding = new Padding(20, 15, 20, 15);
-            panelBillingButtons.Size = new Size(1165, 80);
-            panelBillingButtons.TabIndex = 0;
-            // 
-            // panelBillingStats 
-            // 
-            panelBillingStats.BackColor = Color.White;
-            panelBillingStats.BorderStyle = BorderStyle.FixedSingle;
-            panelBillingStats.Location = new Point(20, 110);  
-            panelBillingStats.Name = "panelBillingStats";
-            panelBillingStats.Size = new Size(1165, 80);
-            panelBillingStats.TabIndex = 1;
-            // 
             // tabBillingControl
             // 
             tabBillingControl.Controls.Add(tabActiveBills);
             tabBillingControl.Controls.Add(tabDischargedBills);
             tabBillingControl.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            tabBillingControl.Location = new Point(20, 200);  
+            tabBillingControl.Location = new Point(20, 200);
             tabBillingControl.Name = "tabBillingControl";
             tabBillingControl.SelectedIndex = 0;
             tabBillingControl.Size = new Size(1165, 526);
@@ -686,86 +684,6 @@
             tabActiveBills.Size = new Size(1157, 496);
             tabActiveBills.TabIndex = 0;
             tabActiveBills.Text = "📋 Active Bills";
-            // 
-            // dgvBilling
-            // 
-            dgvBilling.Dock = DockStyle.Fill;
-            dgvBilling.Location = new Point(15, 15);
-            dgvBilling.Name = "dgvBilling";
-            dgvBilling.Size = new Size(1127, 466);
-            dgvBilling.TabIndex = 0;
-            // 
-            // tabDischargedBills
-            // 
-            tabDischargedBills.BackColor = Color.White;
-            tabDischargedBills.Controls.Add(dgvDischargedBills);
-            tabDischargedBills.Location = new Point(4, 26);
-            tabDischargedBills.Name = "tabDischargedBills";
-            tabDischargedBills.Padding = new Padding(15);
-            tabDischargedBills.Size = new Size(1157, 496);
-            tabDischargedBills.TabIndex = 1;
-            tabDischargedBills.Text = "✅ Discharged Bills";
-            // 
-            // dgvDischargedBills
-            // 
-            dgvDischargedBills.Dock = DockStyle.Fill;
-            dgvDischargedBills.Location = new Point(15, 15);
-            dgvDischargedBills.Name = "dgvDischargedBills";
-            dgvDischargedBills.Size = new Size(1127, 466);
-            dgvDischargedBills.TabIndex = 0;
-            // 
-            // btnGenerateIncomeReport
-            // 
-            btnGenerateIncomeReport.BackColor = Color.FromArgb(66, 153, 225);
-            btnGenerateIncomeReport.Cursor = Cursors.Hand;
-            btnGenerateIncomeReport.FlatAppearance.BorderSize = 0;
-            btnGenerateIncomeReport.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
-            btnGenerateIncomeReport.FlatStyle = FlatStyle.Flat;
-            btnGenerateIncomeReport.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnGenerateIncomeReport.ForeColor = Color.White;
-            btnGenerateIncomeReport.Location = new Point(216, 15);
-            btnGenerateIncomeReport.Name = "btnGenerateIncomeReport";
-            btnGenerateIncomeReport.Size = new Size(190, 45);
-            btnGenerateIncomeReport.TabIndex = 4;
-            btnGenerateIncomeReport.Text = "📄 Print Income";
-            btnGenerateIncomeReport.UseVisualStyleBackColor = false;
-            btnGenerateIncomeReport.Click += btnGenerateIncomeReport_Click;
-            // 
-            // btnViewBillDetails
-            // 
-            btnViewBillDetails.BackColor = Color.FromArgb(66, 153, 225);
-            btnViewBillDetails.Cursor = Cursors.Hand;
-            btnViewBillDetails.FlatAppearance.BorderSize = 0;
-            btnViewBillDetails.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
-            btnViewBillDetails.FlatStyle = FlatStyle.Flat;
-            btnViewBillDetails.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnViewBillDetails.ForeColor = Color.White;
-            btnViewBillDetails.Location = new Point(20, 15);
-            btnViewBillDetails.Name = "btnViewBillDetails";
-            btnViewBillDetails.Size = new Size(190, 45);
-            btnViewBillDetails.TabIndex = 1;
-            btnViewBillDetails.Text = "📄 View Details";
-            btnViewBillDetails.UseVisualStyleBackColor = false;
-            btnViewBillDetails.Click += BtnViewBillDetails_Click;
-            // 
-            // billBtnShadow
-            // 
-            billBtnShadow.BackColor = Color.FromArgb(226, 232, 240);
-            billBtnShadow.Dock = DockStyle.Bottom;
-            billBtnShadow.Location = new Point(20, 64);
-            billBtnShadow.Name = "billBtnShadow";
-            billBtnShadow.Size = new Size(1125, 1);
-            billBtnShadow.TabIndex = 3;
-            // 
-            // panelBillingStats
-            // 
-            panelBillingStats.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            panelBillingStats.BackColor = Color.White;
-            panelBillingStats.BorderStyle = BorderStyle.FixedSingle;
-            panelBillingStats.Location = new Point(20, 100);
-            panelBillingStats.Name = "panelBillingStats";
-            panelBillingStats.Size = new Size(1165, 80);
-            panelBillingStats.TabIndex = 3;
             // 
             // dgvBilling
             // 
@@ -785,6 +703,17 @@
             dgvBilling.Size = new Size(1165, 200);
             dgvBilling.TabIndex = 1;
             // 
+            // tabDischargedBills
+            // 
+            tabDischargedBills.BackColor = Color.White;
+            tabDischargedBills.Controls.Add(dgvDischargedBills);
+            tabDischargedBills.Location = new Point(4, 26);
+            tabDischargedBills.Name = "tabDischargedBills";
+            tabDischargedBills.Padding = new Padding(15);
+            tabDischargedBills.Size = new Size(1157, 496);
+            tabDischargedBills.TabIndex = 1;
+            tabDischargedBills.Text = "✅ Discharged Bills";
+            // 
             // dgvDischargedBills
             // 
             dgvDischargedBills.AllowUserToAddRows = false;
@@ -802,6 +731,71 @@
             dgvDischargedBills.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvDischargedBills.Size = new Size(1165, 271);
             dgvDischargedBills.TabIndex = 6;
+            // 
+            // panelBillingStats
+            // 
+            panelBillingStats.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            panelBillingStats.BackColor = Color.White;
+            panelBillingStats.BorderStyle = BorderStyle.FixedSingle;
+            panelBillingStats.Location = new Point(20, 100);
+            panelBillingStats.Name = "panelBillingStats";
+            panelBillingStats.Size = new Size(1165, 80);
+            panelBillingStats.TabIndex = 3;
+            // 
+            // panelBillingButtons
+            // 
+            panelBillingButtons.BackColor = Color.White;
+            panelBillingButtons.Controls.Add(btnGenerateIncomeReport);
+            panelBillingButtons.Controls.Add(btnViewBillDetails);
+            panelBillingButtons.Controls.Add(billBtnShadow);
+            panelBillingButtons.Location = new Point(20, 20);
+            panelBillingButtons.Name = "panelBillingButtons";
+            panelBillingButtons.Padding = new Padding(20, 15, 20, 15);
+            panelBillingButtons.Size = new Size(1165, 80);
+            panelBillingButtons.TabIndex = 0;
+            // 
+            // btnGenerateIncomeReport
+            // 
+            btnGenerateIncomeReport.BackColor = Color.FromArgb(66, 153, 225);
+            btnGenerateIncomeReport.Cursor = Cursors.Hand;
+            btnGenerateIncomeReport.FlatAppearance.BorderSize = 0;
+            btnGenerateIncomeReport.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
+            btnGenerateIncomeReport.FlatStyle = FlatStyle.Flat;
+            btnGenerateIncomeReport.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnGenerateIncomeReport.ForeColor = Color.White;
+            btnGenerateIncomeReport.Location = new Point(225, 13);
+            btnGenerateIncomeReport.Name = "btnGenerateIncomeReport";
+            btnGenerateIncomeReport.Size = new Size(190, 45);
+            btnGenerateIncomeReport.TabIndex = 4;
+            btnGenerateIncomeReport.Text = "📄 Print Income";
+            btnGenerateIncomeReport.UseVisualStyleBackColor = false;
+            btnGenerateIncomeReport.Click += btnGenerateIncomeReport_Click;
+            // 
+            // btnViewBillDetails
+            // 
+            btnViewBillDetails.BackColor = Color.FromArgb(66, 153, 225);
+            btnViewBillDetails.Cursor = Cursors.Hand;
+            btnViewBillDetails.FlatAppearance.BorderSize = 0;
+            btnViewBillDetails.FlatAppearance.MouseOverBackColor = Color.FromArgb(56, 131, 186);
+            btnViewBillDetails.FlatStyle = FlatStyle.Flat;
+            btnViewBillDetails.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnViewBillDetails.ForeColor = Color.White;
+            btnViewBillDetails.Location = new Point(29, 13);
+            btnViewBillDetails.Name = "btnViewBillDetails";
+            btnViewBillDetails.Size = new Size(190, 45);
+            btnViewBillDetails.TabIndex = 1;
+            btnViewBillDetails.Text = "📄 View Bill Details";
+            btnViewBillDetails.UseVisualStyleBackColor = false;
+            btnViewBillDetails.Click += BtnViewBillDetails_Click;
+            // 
+            // billBtnShadow
+            // 
+            billBtnShadow.BackColor = Color.FromArgb(226, 232, 240);
+            billBtnShadow.Dock = DockStyle.Bottom;
+            billBtnShadow.Location = new Point(20, 64);
+            billBtnShadow.Name = "billBtnShadow";
+            billBtnShadow.Size = new Size(1125, 1);
+            billBtnShadow.TabIndex = 3;
             // 
             // panelHeader
             // 
@@ -937,12 +931,12 @@
             ((System.ComponentModel.ISupportInitialize)dgvPatients).EndInit();
             panelMedicalButtons.ResumeLayout(false);
             tabBilling.ResumeLayout(false);
-            tabBillingControl.ResumeLayout(false);  
-            tabActiveBills.ResumeLayout(false);     
-            tabDischargedBills.ResumeLayout(false);
-            panelBillingButtons.ResumeLayout(false);
+            tabBillingControl.ResumeLayout(false);
+            tabActiveBills.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvBilling).EndInit();
+            tabDischargedBills.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvDischargedBills).EndInit();
+            panelBillingButtons.ResumeLayout(false);
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();
             panelUniversalSearch.ResumeLayout(false);
@@ -1006,5 +1000,6 @@
         private Button btnAddPatient;
         private Button BtnViewPatientProfile;
         private Button btnViewUserProfile;
+        private Button btnToggleAccountStatus;
     }
 }

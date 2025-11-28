@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace SaintJosephsHospitalHealthMonitorApp
 {
     public partial class DoctorDashboard : Form
@@ -20,6 +21,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private int doctorId;
         private byte[] currentUserProfileImage;
         private System.Threading.Timer searchDebounceTimer;
+        private System.Windows.Forms.Timer inputcheckchecktimer;
         private const int SEARCH_DEBOUNCE_MS = 300;
         private string currentDutyStatus = "Off Duty";
 
@@ -36,6 +38,22 @@ namespace SaintJosephsHospitalHealthMonitorApp
             LoadData();
             InitializeDutyStatusButton();
             LoadDutyStatus();
+            initializeinputcheckchecker();
+        }
+
+
+        private void initializeinputcheckchecker()
+        {
+            inputcheckchecktimer = new System.Windows.Forms.Timer();
+            inputcheckchecktimer.Interval = 5000;
+            inputcheckchecktimer.Tick += (s, e) => checkinputcheck();
+            inputcheckchecktimer.Start();
+        }
+
+        private void checkinputcheck()
+        {
+            RegisterForm registerform = new RegisterForm();
+            registerform.TriggerinputCheck(pictureBoxProfile);
         }
 
         private void ApplyStyle()
@@ -1097,205 +1115,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             checklistForm.ShowDialog();
         }
 
-        private void BtnViewPatientHistory_Click(object sender, EventArgs e)
-        {
-            if (dgvPatients.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Please select a patient.", "Selection Required",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            int patientId = Convert.ToInt32(dgvPatients.SelectedRows[0].Cells["patient_id"].Value);
-            string patientName = dgvPatients.SelectedRows[0].Cells["patient_name"].Value.ToString();
-
-            ShowPatientMedicalRecordsList(patientId, patientName);
-        }
-
-        private void ShowPatientMedicalRecordsList(int patientId, string patientName)
-        {
-            try
-            {
-                string query = @"
-                SELECT 
-                m.record_id,
-                m.record_date AS 'Date & Time',
-                m.visit_type AS 'Visit Type',
-                u.name AS 'Doctor'
-                FROM MedicalRecords m
-                INNER JOIN Doctors d ON m.doctor_id = d.doctor_id
-                INNER JOIN Users u ON d.user_id = u.user_id
-                WHERE m.patient_id = @patientId
-                ORDER BY m.record_date DESC";
-
-                DataTable dt = DatabaseHelper.ExecuteQuery(query,
-                    new MySqlParameter("@patientId", patientId));
-
-                if (dt.Rows.Count == 0)
-                {
-                    MessageBox.Show(
-                        $"No medical records found for {patientName}.\n\n" +
-                        "⚕️ This patient has no previous medical records on file.",
-                        "Medical Records",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                    return;
-                }
-
-                Form historyForm = new Form
-                {
-                    Text = $"Medical Records - {patientName}",
-                    Size = new Size(1200, 750),
-                    StartPosition = FormStartPosition.CenterParent,
-                    BackColor = Color.FromArgb(240, 244, 248),
-                    AutoScroll = true,
-                    MinimumSize = new Size(800, 600)
-                };
-
-                Panel headerPanel = new Panel
-                {
-                    BackColor = Color.FromArgb(66, 153, 225),
-                    Dock = DockStyle.Top,
-                    Height = 100
-                };
-
-                Label lblTitle = new Label
-                {
-                    Text = $"📋 Medical Records - {patientName}",
-                    Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                    ForeColor = Color.White,
-                    Location = new Point(20, 15),
-                    AutoSize = true
-                };
-
-                Label lblCount = new Label
-                {
-                    Text = $"Total Records: {dt.Rows.Count}",
-                    Font = new Font("Segoe UI", 11),
-                    ForeColor = Color.FromArgb(224, 224, 224),
-                    Location = new Point(20, 50),
-                    AutoSize = true
-                };
-
-                Label lblInstruction = new Label
-                {
-                    Text = "Double-click a record to view full details or use the button below",
-                    Font = new Font("Segoe UI", 9, FontStyle.Italic),
-                    ForeColor = Color.FromArgb(200, 200, 200),
-                    Location = new Point(20, 75),
-                    AutoSize = true
-                };
-
-                headerPanel.Controls.AddRange(new Control[] { lblTitle, lblCount, lblInstruction });
-
-                DataGridView dgvRecords = new DataGridView
-                {
-                    Location = new Point(20, 120),
-                    Size = new Size(1150, 500),
-                    BackgroundColor = Color.White,
-                    BorderStyle = BorderStyle.None,
-                    AllowUserToAddRows = false,
-                    ReadOnly = true,
-                    SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                    MultiSelect = false,
-                    AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
-                    RowTemplate = { Height = 40 },
-                    DataSource = dt
-                };
-
-                dgvRecords.DefaultCellStyle.SelectionBackColor = Color.FromArgb(66, 153, 225);
-                dgvRecords.DefaultCellStyle.SelectionForeColor = Color.White;
-                dgvRecords.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(66, 153, 225);
-                dgvRecords.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
-
-                dgvRecords.DataBindingComplete += (s, ev) =>
-                {
-                    if (dgvRecords.Columns["record_id"] != null)
-                    {
-                        dgvRecords.Columns["record_id"].Visible = false;
-                    }
-                };
-
-                dgvRecords.CellDoubleClick += (s, ev) =>
-                {
-                    if (ev.RowIndex >= 0)
-                    {
-                        int recordId = Convert.ToInt32(dgvRecords.Rows[ev.RowIndex].Cells["record_id"].Value);
-                        ShowEnhancedMedicalRecord(recordId);
-                    }
-                };
-
-                Panel buttonPanel = new Panel
-                {
-                    Location = new Point(20, 635),
-                    Size = new Size(1150, 60),
-                    BackColor = Color.Transparent
-                };
-
-                Button btnViewDetails = new Button
-                {
-                    Text = "👁️ View Full Record",
-                    Location = new Point(0, 0),
-                    Size = new Size(200, 45),
-                    BackColor = Color.FromArgb(66, 153, 225),
-                    ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                    Cursor = Cursors.Hand
-                };
-                btnViewDetails.FlatAppearance.BorderSize = 0;
-                btnViewDetails.Click += (s, ev) =>
-                {
-                    if (dgvRecords.SelectedRows.Count > 0)
-                    {
-                        int recordId = Convert.ToInt32(dgvRecords.SelectedRows[0].Cells["record_id"].Value);
-                        ShowEnhancedMedicalRecord(recordId);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Please select a record to view.", "Selection Required",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                };
-
-                Button btnClose = new Button
-                {
-                    Text = "✕ Close",
-                    Location = new Point(1000, 0),
-                    Size = new Size(150, 45),
-                    BackColor = Color.FromArgb(149, 165, 166),
-                    ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                    Cursor = Cursors.Hand
-                };
-                btnClose.FlatAppearance.BorderSize = 0;
-                btnClose.Click += (s, ev) => historyForm.Close();
-
-                buttonPanel.Controls.AddRange(new Control[] { btnViewDetails, btnClose });
-
-                historyForm.Controls.AddRange(new Control[] { headerPanel, dgvRecords, buttonPanel });
-                historyForm.ShowDialog();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading medical records: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void CompletePatientVisit(int queueId, string patientName)
-        {
-            string query = @"UPDATE patientqueue 
-                           SET status = 'Completed', completed_time = NOW()
-                           WHERE queue_id = @id";
-            DatabaseHelper.ExecuteNonQuery(query, new MySqlParameter("@id", queueId));
-
-            MessageBox.Show($"{patientName} marked as completed!\n\nThe patient can now proceed to billing.",
-                "Visit Completed", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            LoadData();
-        }
-
         private void TxtUniversalSearch_TextChanged(object sender, EventArgs e)
         {
             string searchText = txtUniversalSearch.Text.Trim();
@@ -1614,7 +1433,55 @@ namespace SaintJosephsHospitalHealthMonitorApp
             int patientId = Convert.ToInt32(dgvPatients.SelectedRows[0].Cells["patient_id"].Value);
             string patientName = dgvPatients.SelectedRows[0].Cells["patient_name"].Value.ToString();
 
-            ShowPatientMedicalRecordsList(patientId, patientName);
+            try
+            {
+                // Get record count and visit count for the patient
+                string countQuery = @"
+            SELECT 
+                COUNT(*) as record_count,
+                COUNT(DISTINCT DATE(record_date)) as visit_count
+            FROM MedicalRecords
+            WHERE patient_id = @patientId AND doctor_id = @doctorId";
+
+                DataTable dtCounts = DatabaseHelper.ExecuteQuery(countQuery,
+                    new MySqlParameter("@patientId", patientId),
+                    new MySqlParameter("@doctorId", doctorId));
+
+                int recordCount = 0;
+                int visitCount = 0;
+
+                if (dtCounts.Rows.Count > 0)
+                {
+                    recordCount = Convert.ToInt32(dtCounts.Rows[0]["record_count"]);
+                    visitCount = Convert.ToInt32(dtCounts.Rows[0]["visit_count"]);
+                }
+
+                if (recordCount == 0)
+                {
+                    MessageBox.Show(
+                        $"No medical records found for {patientName}.\n\n" +
+                        "⚕️ This patient has no previous medical records with you on file.",
+                        "Medical Records",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    return;
+                }
+
+                ShowDetailedMedicalHistoryForm historyForm = new ShowDetailedMedicalHistoryForm(patientId,patientName,recordCount,visitCount,currentUser.UserId,currentUser.Role);
+
+                Button btnPrint = historyForm.Controls.Find("btnPrint", true).FirstOrDefault() as Button;
+                if (btnPrint != null)
+                {
+                    btnPrint.Visible = false;
+                }
+
+                historyForm.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading medical history: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void ShowEnhancedMedicalRecord(int recordId)
