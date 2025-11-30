@@ -54,5 +54,6 @@ Default accounts:
 
 🩺 Doctor: Doctor@hospital.com / doctor123
 
-Comming Soon
+## Comming Soon
+
 💊 Pharmacist: pharmacist@hospital.com / pharmacist123
