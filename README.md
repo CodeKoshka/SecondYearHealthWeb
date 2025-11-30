@@ -57,5 +57,6 @@ Default accounts:
 ## Comming Soon Accounts / DashBoard Modules
 
 🧾 Nurse: Nurse@hospital.com / Nurse123@
+
 💊 Pharmacist: pharmacist@hospital.com / Pharmacist123@
 
