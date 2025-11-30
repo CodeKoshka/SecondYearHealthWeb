@@ -21,6 +21,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
     public partial class RegisterForm : Form
     {
         public int? NewlyCreatedPatientId { get; private set; }
+        public bool ShouldOpenIntakeForm { get; private set; }
         private string originalEmail = string.Empty;
         private string originalRole = string.Empty;
         private string creatorRole = string.Empty;
@@ -49,7 +50,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void SetupNameValidation()
         {
-            txtName.KeyPress += (s, e) =>
+            KeyPressEventHandler nameKeyPress = (s, e) =>
             {
                 if (char.IsControl(e.KeyChar))
                     return;
@@ -71,7 +72,26 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     System.Media.SystemSounds.Beep.Play();
                 }
             };
+
+            txtFirstName.KeyPress += nameKeyPress;
+            txtMiddleName.KeyPress += nameKeyPress;
+            txtLastName.KeyPress += nameKeyPress;
         }
+
+        private string GetFormattedFullName()
+        {
+            string firstName = txtFirstName.Text.Trim();
+            string middleName = txtMiddleName.Text.Trim();
+            string lastName = txtLastName.Text.Trim();
+
+            if (string.IsNullOrEmpty(middleName))
+            {
+                return $"{firstName} {lastName}";
+            }
+
+            return $"{firstName} {middleName} {lastName}";
+        }
+
 
         public RegisterForm(int userIdToView, bool viewOnly)
         {
@@ -545,29 +565,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (isEditMode)
             {
-                if (creatorRole == "Receptionist")
-                {
-                    if (config.AllowCreatePatient)
-                    {
-                        cmbRole.Items.Add("Patient");
-                    }
-                }
-                else
-                {
-                    if (config.AllowCreateAdmin || creatorRole == "Headadmin")
-                        cmbRole.Items.Add("Admin");
-
-                    if (config.AllowCreateReceptionist)
-                        cmbRole.Items.Add("Receptionist");
-
-                    if (config.AllowCreateDoctor)
-                        cmbRole.Items.Add("Doctor");
-
-                    if (config.AllowCreatePharmacist)
-                        cmbRole.Items.Add("Pharmacist");
-                }
+                return;
             }
-            else if (creatorRole == "Registration")
+
+            if (isViewMode)
+            {
+                return;
+            }
+
+            if (creatorRole == "Registration")
+            {
+                if (config.AllowCreateReceptionist)
+                    cmbRole.Items.Add("Receptionist");
+
+                if (config.AllowCreateDoctor)
+                    cmbRole.Items.Add("Doctor");
+            }
+            else if (creatorRole == "Headadmin")
             {
                 if (config.AllowCreateAdmin)
                     cmbRole.Items.Add("Admin");
@@ -577,12 +591,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 if (config.AllowCreateDoctor)
                     cmbRole.Items.Add("Doctor");
-            }
-            else if (creatorRole == "Headadmin" || creatorRole == "Admin")
-            {
-                if (config.AllowCreateAdmin)
-                    cmbRole.Items.Add("Admin");
 
+                if (config.AllowCreatePharmacist)
+                    cmbRole.Items.Add("Pharmacist");
+            }
+            else if (creatorRole == "Admin")
+            {
                 if (config.AllowCreateReceptionist)
                     cmbRole.Items.Add("Receptionist");
 
@@ -605,17 +619,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
             else
             {
-                if (config.AllowCreateAdmin)
-                    cmbRole.Items.Add("Admin");
-
                 if (config.AllowCreateReceptionist)
                     cmbRole.Items.Add("Receptionist");
 
                 if (config.AllowCreateDoctor)
                     cmbRole.Items.Add("Doctor");
-
-                if (config.AllowCreatePharmacist)
-                    cmbRole.Items.Add("Pharmacist");
             }
 
             if (cmbRole.Items.Count == 0)
@@ -631,8 +639,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 this.Close();
                 return;
             }
-
-            if (cmbRole.Items.Count > 0 && !isEditMode && !isViewMode)
+            if (cmbRole.Items.Count > 0)
                 cmbRole.SelectedIndex = 0;
         }
 
@@ -653,7 +660,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
             btnSubmit.Visible = false;
             btnCancel.Text = "✓ Close";
 
-            txtName.ReadOnly = true;
+            txtFirstName.ReadOnly = true;
+            txtMiddleName.ReadOnly = true;
+            txtLastName.ReadOnly = true;
             txtEmail.ReadOnly = true;
             txtPassword.Visible = false;
             lblPassword.Visible = false;
@@ -671,7 +680,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
             btnRemovePhoto.Visible = false;
 
             Color readOnlyBg = Color.FromArgb(245, 245, 245);
-            txtName.BackColor = readOnlyBg;
+            txtFirstName.BackColor = readOnlyBg;
+            txtMiddleName.BackColor = readOnlyBg;
+            txtLastName.BackColor = readOnlyBg;
             txtEmail.BackColor = readOnlyBg;
             cmbGender.BackColor = readOnlyBg;
             cmbRole.BackColor = readOnlyBg;
@@ -798,6 +809,34 @@ namespace SaintJosephsHospitalHealthMonitorApp
             chkShowPassword.Visible = true;
         }
 
+        private void SplitFullName(string fullName)
+        {
+            if (string.IsNullOrWhiteSpace(fullName))
+                return;
+
+            string[] parts = fullName.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+                return;
+
+            if (parts.Length == 1)
+            {
+                txtFirstName.Text = parts[0];
+            }
+            else if (parts.Length == 2)
+            {
+                txtFirstName.Text = parts[0];
+                txtLastName.Text = parts[1];
+            }
+            else
+            {
+                txtFirstName.Text = parts[0];
+                txtLastName.Text = parts[parts.Length - 1];
+
+                txtMiddleName.Text = string.Join(" ", parts, 1, parts.Length - 2);
+            }
+        }
+
         private void LoadExistingUserData()
         {
             string query = @"SELECT name, email, date_of_birth, gender, role, profile_image 
@@ -807,7 +846,10 @@ namespace SaintJosephsHospitalHealthMonitorApp
             if (dt.Rows.Count > 0)
             {
                 DataRow row = dt.Rows[0];
-                txtName.Text = row["name"].ToString();
+
+                string fullName = row["name"].ToString();
+                SplitFullName(fullName);
+
                 txtEmail.Text = row["email"].ToString();
                 originalEmail = txtEmail.Text;
 
@@ -1052,29 +1094,33 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void UpdateUser()
         {
-            if (string.IsNullOrWhiteSpace(txtName.Text) ||
+            if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
+                string.IsNullOrWhiteSpace(txtLastName.Text) ||
                 cmbRole.SelectedItem == null ||
                 cmbGender.SelectedItem == null)
             {
-                MessageBox.Show("Please fill in all required fields.", "Validation Error",
+                MessageBox.Show("Please fill in First Name and Last Name (Middle Name is optional).",
+                    "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (!IsValidName(txtName.Text.Trim()))
+            if (!IsValidName(txtFirstName.Text.Trim()) ||
+                !IsValidName(txtLastName.Text.Trim()) ||
+                (!string.IsNullOrWhiteSpace(txtMiddleName.Text) && !IsValidName(txtMiddleName.Text.Trim())))
             {
                 MessageBox.Show(
                     "Invalid name format.\n\n" +
-                    "• Name cannot contain numbers\n" +
-                    "• Only letters, spaces, hyphens, and apostrophes are allowed\n" +
-                    "• Example: John Doe, Mary-Jane O'Connor",
+                    "• Names cannot contain numbers\n" +
+                    "• Only letters, spaces, hyphens, and apostrophes are allowed",
                     "Name Validation Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
-                txtName.Focus();
+                txtFirstName.Focus();
                 return;
             }
 
+            string fullName = GetFormattedFullName();
             string currentRole = cmbRole.SelectedItem.ToString();
 
             if (creatorRole == "Receptionist")
@@ -1104,7 +1150,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 }
             }
 
-            if (originalRole == "Patient" && currentRole != "Patient" && creatorRole != "Headadmin" && creatorRole != "Admin")
+            if (originalRole == "Patient" && currentRole != "Patient" &&
+                creatorRole != "Headadmin" && creatorRole != "Admin")
             {
                 MessageBox.Show(
                     "❌ ROLE CHANGE RESTRICTED\n\n" +
@@ -1236,7 +1283,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             string email = string.IsNullOrWhiteSpace(txtEmail.Text) ? null : txtEmail.Text.Trim();
-            string name = txtName.Text.Trim();
             string gender = cmbGender.SelectedItem.ToString();
             DateTime dateOfBirth = dtpDateOfBirth.Value.Date;
 
@@ -1265,18 +1311,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
 
                         string updateUser = @"UPDATE Users 
-                            SET name = @name, 
-                                email = @email, 
-                                date_of_birth = @dateOfBirth,
-                                age = @age, 
-                                gender = @gender, 
-                                role = @role,
-                                profile_image = @profileImage
-                            WHERE user_id = @userId";
+                    SET name = @name, 
+                        email = @email, 
+                        date_of_birth = @dateOfBirth,
+                        age = @age, 
+                        gender = @gender, 
+                        role = @role,
+                        profile_image = @profileImage
+                    WHERE user_id = @userId";
 
                         using (MySqlCommand cmdUpdate = new MySqlCommand(updateUser, conn, transaction))
                         {
-                            cmdUpdate.Parameters.AddWithValue("@name", name);
+                            cmdUpdate.Parameters.AddWithValue("@name", fullName);
 
                             if (string.IsNullOrEmpty(email))
                                 cmdUpdate.Parameters.AddWithValue("@email", DBNull.Value);
@@ -1317,18 +1363,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                         if (profileImageData != null && userId.HasValue)
                         {
-                            SaveProfileImageToFile(profileImageData, userId.Value, txtName.Text.Trim());
+                            SaveProfileImageToFile(profileImageData, userId.Value, fullName);
+
+                            string successMsg = chkChangePassword.Checked
+                                ? "User information and password updated successfully!"
+                                : "User information updated successfully!";
+
+                            MessageBox.Show(successMsg, "Success",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            this.DialogResult = DialogResult.OK;
+                            this.Close();
                         }
-
-                        string successMsg = chkChangePassword.Checked
-                            ? "User information and password updated successfully!"
-                            : "User information updated successfully!";
-
-                        MessageBox.Show(successMsg, "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        this.DialogResult = DialogResult.OK;
-                        this.Close();
                     }
                     catch (Exception ex)
                     {
@@ -1342,27 +1388,32 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void CreateUser()
         {
-            if (string.IsNullOrWhiteSpace(txtName.Text) ||
+            if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
+                string.IsNullOrWhiteSpace(txtLastName.Text) ||
                 cmbGender.SelectedItem == null)
             {
-                MessageBox.Show("Please fill in all required fields.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please fill in First Name and Last Name (Middle Name is optional).",
+                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (!IsValidName(txtName.Text.Trim()))
+            if (!IsValidName(txtFirstName.Text.Trim()) ||
+                !IsValidName(txtLastName.Text.Trim()) ||
+                (!string.IsNullOrWhiteSpace(txtMiddleName.Text) && !IsValidName(txtMiddleName.Text.Trim())))
             {
                 MessageBox.Show(
                     "Invalid name format.\n\n" +
-                    "• Name cannot contain numbers\n" +
+                    "• Names cannot contain numbers\n" +
                     "• Only letters, spaces, hyphens, and apostrophes are allowed\n" +
-                    "• Example: John Doe, Mary-Jane O'Connor",
+                    "• Example: John, Mary-Jane, O'Connor",
                     "Name Validation Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
-                txtName.Focus();
+                txtFirstName.Focus();
                 return;
             }
+
+            string fullName = GetFormattedFullName();
 
             string role;
             if (isPatientMode)
@@ -1471,7 +1522,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             string email = string.IsNullOrWhiteSpace(txtEmail.Text) ? null : txtEmail.Text.Trim();
-            string name = txtName.Text.Trim();
             string gender = cmbGender.SelectedItem.ToString();
             DateTime dateOfBirth = dtpDateOfBirth.Value.Date;
 
@@ -1513,10 +1563,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         }
 
                         string insertUser = @"INSERT INTO Users (name, role, email, password, date_of_birth, age, gender, created_by, profile_image) 
-                                            VALUES (@name, @role, @email, @password, @dateOfBirth, @age, @gender, @createdBy, @profileImage)";
+                    VALUES (@name, @role, @email, @password, @dateOfBirth, @age, @gender, @createdBy, @profileImage)";
+
                         using (MySqlCommand cmdInsertUser = new MySqlCommand(insertUser, conn, transaction))
                         {
-                            cmdInsertUser.Parameters.AddWithValue("@name", name);
+                            cmdInsertUser.Parameters.AddWithValue("@name", fullName); 
                             cmdInsertUser.Parameters.AddWithValue("@role", role);
 
                             if (string.IsNullOrEmpty(email))
@@ -1553,7 +1604,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         if (role == "Patient")
                         {
                             string insertPatient = @"INSERT INTO Patients (user_id, medical_history) 
-                                                    VALUES (@userId, '')";
+                            VALUES (@userId, '')";
                             using (MySqlCommand cmdInsertPatient = new MySqlCommand(insertPatient, conn, transaction))
                             {
                                 cmdInsertPatient.Parameters.AddWithValue("@userId", newUserId);
@@ -1570,7 +1621,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                             string specialization = GetDoctorSpecialization();
 
                             string insertDoctor = @"INSERT INTO Doctors (user_id, specialization, is_available, duty_status) 
-                                                  VALUES (@userId, @specialization, 1, 'Off Duty')";
+                          VALUES (@userId, @specialization, 1, 'Off Duty')";
                             using (MySqlCommand cmdInsertDoctor = new MySqlCommand(insertDoctor, conn, transaction))
                             {
                                 cmdInsertDoctor.Parameters.AddWithValue("@userId", newUserId);
@@ -1581,13 +1632,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         else if (role == "Headadmin" || role == "Admin" || role == "Receptionist" || role == "Pharmacist")
                         {
                             string insertStaff = @"INSERT INTO Staff (user_id, position, department) 
-                                                 VALUES (@userId, @position, @department)";
+                         VALUES (@userId, @position, @department)";
                             using (MySqlCommand cmdInsertStaff = new MySqlCommand(insertStaff, conn, transaction))
                             {
                                 cmdInsertStaff.Parameters.AddWithValue("@userId", newUserId);
 
                                 string position = role;
-                                string department = role == "Headadmin" ? "Administration" :role == "Admin" ? "Administration" :role == "Receptionist" ? "Reception" :"Pharmacy";
+                                string department = role == "Headadmin" ? "Administration" :
+                                                  role == "Admin" ? "Administration" :
+                                                  role == "Receptionist" ? "Reception" : "Pharmacy";
 
                                 cmdInsertStaff.Parameters.AddWithValue("@position", position);
                                 cmdInsertStaff.Parameters.AddWithValue("@department", department);
@@ -1601,31 +1654,65 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                         if (profileImageData != null)
                         {
-                            SaveProfileImageToFile(profileImageData, newUserId, name);
+                            SaveProfileImageToFile(profileImageData, newUserId, fullName);
                         }
 
                         string successMessage;
                         if (role == "Patient")
                         {
                             NewlyCreatedPatientId = newPatientId;
-
                             string displayEmail = string.IsNullOrEmpty(email) ? "None" : email;
 
-                            successMessage = $"✓ Patient record created successfully!\n\n" +
-                                           $"Name: {name}\n" +
+                            successMessage = $"✓ Patient profile created successfully!\n\n" +
+                                           $"Name: {fullName}\n" + 
                                            $"Email: {displayEmail}\n" +
                                            $"Age: {age} years old\n\n" +
-                                           $"Patient is now registered in the system.";
+                                           $"Opening intake form to complete registration...";
 
-                            MessageBox.Show(successMessage, "Patient Created",
+                            MessageBox.Show(successMessage, "Patient Profile Created",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                            this.DialogResult = DialogResult.OK;
+                            this.Hide();
+
+                            using (PatientIntakeForm intakeForm = new PatientIntakeForm(newPatientId, createdByUserId ?? 1))
+                            {
+                                if (intakeForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    MessageBox.Show(
+                                        $"✅ PATIENT REGISTRATION COMPLETE\n\n" +
+                                        $"Patient: {fullName}\n\n" +
+                                        "• Profile saved to system\n" +
+                                        "• Intake form completed\n" +
+                                        "• Added to today's queue\n\n" +
+                                        "Patient is ready to be seen by a doctor.",
+                                        "Success - Patient Ready",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information);
+
+                                    this.DialogResult = DialogResult.OK;
+                                }
+                                else
+                                {
+                                    MessageBox.Show(
+                                        $"ℹ️ PATIENT PROFILE SAVED\n\n" +
+                                        $"Patient: {fullName}\n\n" + 
+                                        "✓ Patient profile has been saved to the system\n" +
+                                        "✗ Patient was NOT added to queue (intake cancelled)\n\n" +
+                                        "You can add this patient to the queue later using 'Add to Queue' button.",
+                                        "Profile Saved - Not Queued",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information);
+
+                                    this.DialogResult = DialogResult.OK;
+                                }
+                            }
+
+                            this.Close();
                         }
                         else
                         {
                             successMessage = $"{role} account created successfully!\n\n" +
-                                           $"Name: {name}\n" +
+                                           $"Name: {fullName}\n" +
                                            $"Email: {email}\n" +
                                            $"Password: {password}\n\n" +
                                            $"⚠️ IMPORTANT: Please save these credentials securely.\n" +
@@ -1635,9 +1722,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             this.DialogResult = DialogResult.OK;
+                            this.Close();
                         }
-
-                        this.Close();
                     }
                     catch (Exception ex)
                     {

@@ -3,55 +3,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
 {
     partial class ManageInventoryForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Panel panelTop;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblTotalItems;
-        private System.Windows.Forms.Panel panelLeft;
-        private System.Windows.Forms.Label lblMedicineName;
-        private System.Windows.Forms.TextBox txtMedicineName;
-        private System.Windows.Forms.Label lblGenericName;
-        private System.Windows.Forms.TextBox txtGenericName;
-        private System.Windows.Forms.Label lblBrandName;
-        private System.Windows.Forms.TextBox txtBrandName;
-        private System.Windows.Forms.Label lblCategory;
-        private System.Windows.Forms.ComboBox cmbCategory;
-        private System.Windows.Forms.Label lblDosageForm;
-        private System.Windows.Forms.ComboBox cmbDosageForm;
-        private System.Windows.Forms.Label lblStrength;
-        private System.Windows.Forms.TextBox txtStrength;
-        private System.Windows.Forms.Label lblQuantity;
-        private System.Windows.Forms.TextBox txtQuantity;
-        private System.Windows.Forms.Label lblUnit;
-        private System.Windows.Forms.ComboBox cmbUnit;
-        private System.Windows.Forms.Label lblReorderLevel;
-        private System.Windows.Forms.TextBox txtReorderLevel;
-        private System.Windows.Forms.Label lblCostPrice;
-        private System.Windows.Forms.TextBox txtCostPrice;
-        private System.Windows.Forms.Label lblSellingPrice;
-        private System.Windows.Forms.TextBox txtSellingPrice;
-        private System.Windows.Forms.Label lblSupplier;
-        private System.Windows.Forms.TextBox txtSupplier;
-        private System.Windows.Forms.Label lblBatchNumber;
-        private System.Windows.Forms.TextBox txtBatchNumber;
-        private System.Windows.Forms.Label lblExpiryDate;
-        private System.Windows.Forms.DateTimePicker dtpExpiryDate;
-        private System.Windows.Forms.Label lblStorageLocation;
-        private System.Windows.Forms.TextBox txtStorageLocation;
-        private System.Windows.Forms.CheckBox chkControlled;
-        private System.Windows.Forms.CheckBox chkRequiresApproval;
-        private System.Windows.Forms.Button btnAdd;
-        private System.Windows.Forms.Button btnUpdate;
-        private System.Windows.Forms.Button btnDelete;
-        private System.Windows.Forms.Button btnClear;
-        private System.Windows.Forms.Panel panelRight;
-        private System.Windows.Forms.Label lblSearch;
-        private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.Button btnSearch;
-        private System.Windows.Forms.Button btnAdjustStock;
-        private System.Windows.Forms.DataGridView dgvInventory;
-        private System.Windows.Forms.Button btnClose;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -61,620 +21,676 @@ namespace SaintJosephsHospitalHealthMonitorApp
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
-            this.panelTop = new System.Windows.Forms.Panel();
-            this.lblTitle = new System.Windows.Forms.Label();
-            this.lblTotalItems = new System.Windows.Forms.Label();
-            this.btnClose = new System.Windows.Forms.Button();
-            this.panelLeft = new System.Windows.Forms.Panel();
-            this.lblMedicineName = new System.Windows.Forms.Label();
-            this.txtMedicineName = new System.Windows.Forms.TextBox();
-            this.lblGenericName = new System.Windows.Forms.Label();
-            this.txtGenericName = new System.Windows.Forms.TextBox();
-            this.lblBrandName = new System.Windows.Forms.Label();
-            this.txtBrandName = new System.Windows.Forms.TextBox();
-            this.lblCategory = new System.Windows.Forms.Label();
-            this.cmbCategory = new System.Windows.Forms.ComboBox();
-            this.lblDosageForm = new System.Windows.Forms.Label();
-            this.cmbDosageForm = new System.Windows.Forms.ComboBox();
-            this.lblStrength = new System.Windows.Forms.Label();
-            this.txtStrength = new System.Windows.Forms.TextBox();
-            this.lblQuantity = new System.Windows.Forms.Label();
-            this.txtQuantity = new System.Windows.Forms.TextBox();
-            this.lblUnit = new System.Windows.Forms.Label();
-            this.cmbUnit = new System.Windows.Forms.ComboBox();
-            this.lblReorderLevel = new System.Windows.Forms.Label();
-            this.txtReorderLevel = new System.Windows.Forms.TextBox();
-            this.lblCostPrice = new System.Windows.Forms.Label();
-            this.txtCostPrice = new System.Windows.Forms.TextBox();
-            this.lblSellingPrice = new System.Windows.Forms.Label();
-            this.txtSellingPrice = new System.Windows.Forms.TextBox();
-            this.lblSupplier = new System.Windows.Forms.Label();
-            this.txtSupplier = new System.Windows.Forms.TextBox();
-            this.lblBatchNumber = new System.Windows.Forms.Label();
-            this.txtBatchNumber = new System.Windows.Forms.TextBox();
-            this.lblExpiryDate = new System.Windows.Forms.Label();
-            this.dtpExpiryDate = new System.Windows.Forms.DateTimePicker();
-            this.lblStorageLocation = new System.Windows.Forms.Label();
-            this.txtStorageLocation = new System.Windows.Forms.TextBox();
-            this.chkControlled = new System.Windows.Forms.CheckBox();
-            this.chkRequiresApproval = new System.Windows.Forms.CheckBox();
-            this.btnAdd = new System.Windows.Forms.Button();
-            this.btnUpdate = new System.Windows.Forms.Button();
-            this.btnDelete = new System.Windows.Forms.Button();
-            this.btnClear = new System.Windows.Forms.Button();
-            this.panelRight = new System.Windows.Forms.Panel();
-            this.lblSearch = new System.Windows.Forms.Label();
-            this.txtSearch = new System.Windows.Forms.TextBox();
-            this.btnSearch = new System.Windows.Forms.Button();
-            this.btnAdjustStock = new System.Windows.Forms.Button();
-            this.dgvInventory = new System.Windows.Forms.DataGridView();
-            this.panelTop.SuspendLayout();
-            this.panelLeft.SuspendLayout();
-            this.panelRight.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvInventory)).BeginInit();
-            this.SuspendLayout();
+            panelTop = new Panel();
+            lblTitle = new Label();
+            lblTotalItems = new Label();
+            btnClose = new Button();
+            panelLeft = new Panel();
+            lblMedicineName = new Label();
+            txtMedicineName = new TextBox();
+            lblGenericName = new Label();
+            txtGenericName = new TextBox();
+            lblBrandName = new Label();
+            txtBrandName = new TextBox();
+            lblCategory = new Label();
+            cmbCategory = new ComboBox();
+            lblDosageForm = new Label();
+            cmbDosageForm = new ComboBox();
+            lblStrength = new Label();
+            txtStrength = new TextBox();
+            lblQuantity = new Label();
+            txtQuantity = new TextBox();
+            lblUnit = new Label();
+            cmbUnit = new ComboBox();
+            lblReorderLevel = new Label();
+            txtReorderLevel = new TextBox();
+            lblCostPrice = new Label();
+            txtCostPrice = new TextBox();
+            lblSellingPrice = new Label();
+            txtSellingPrice = new TextBox();
+            lblSupplier = new Label();
+            txtSupplier = new TextBox();
+            lblBatchNumber = new Label();
+            txtBatchNumber = new TextBox();
+            lblExpiryDate = new Label();
+            dtpExpiryDate = new DateTimePicker();
+            lblStorageLocation = new Label();
+            txtStorageLocation = new TextBox();
+            chkControlled = new CheckBox();
+            chkRequiresApproval = new CheckBox();
+            btnAdd = new Button();
+            btnUpdate = new Button();
+            btnDelete = new Button();
+            btnClear = new Button();
+            panelRight = new Panel();
+            lblSearch = new Label();
+            txtSearch = new TextBox();
+            btnSearch = new Button();
+            btnAdjustStock = new Button();
+            dgvInventory = new DataGridView();
+            panelTop.SuspendLayout();
+            panelLeft.SuspendLayout();
+            panelRight.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(dgvInventory)).BeginInit();
+            SuspendLayout();
             // 
             // panelTop
             // 
-            this.panelTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.panelTop.Controls.Add(this.lblTitle);
-            this.panelTop.Controls.Add(this.lblTotalItems);
-            this.panelTop.Controls.Add(this.btnClose);
-            this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelTop.Location = new System.Drawing.Point(0, 0);
-            this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(1400, 70);
-            this.panelTop.TabIndex = 0;
+            panelTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            panelTop.Controls.Add(lblTitle);
+            panelTop.Controls.Add(lblTotalItems);
+            panelTop.Controls.Add(btnClose);
+            panelTop.Dock = DockStyle.Top;
+            panelTop.Location = new System.Drawing.Point(0, 0);
+            panelTop.Name = "panelTop";
+            panelTop.Size = new System.Drawing.Size(1400, 70);
+            panelTop.TabIndex = 0;
             // 
             // lblTitle
             // 
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Location = new System.Drawing.Point(20, 15);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(296, 30);
-            this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "Manage Medicine Inventory";
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            lblTitle.ForeColor = System.Drawing.Color.White;
+            lblTitle.Location = new System.Drawing.Point(20, 15);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new System.Drawing.Size(296, 30);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "Manage Medicine Inventory";
             // 
             // lblTotalItems
             // 
-            this.lblTotalItems.AutoSize = true;
-            this.lblTotalItems.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblTotalItems.ForeColor = System.Drawing.Color.White;
-            this.lblTotalItems.Location = new System.Drawing.Point(22, 45);
-            this.lblTotalItems.Name = "lblTotalItems";
-            this.lblTotalItems.Size = new System.Drawing.Size(88, 19);
-            this.lblTotalItems.TabIndex = 1;
-            this.lblTotalItems.Text = "Total Items: 0";
+            lblTotalItems.AutoSize = true;
+            lblTotalItems.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblTotalItems.ForeColor = System.Drawing.Color.White;
+            lblTotalItems.Location = new System.Drawing.Point(22, 45);
+            lblTotalItems.Name = "lblTotalItems";
+            lblTotalItems.Size = new System.Drawing.Size(88, 19);
+            lblTotalItems.TabIndex = 1;
+            lblTotalItems.Text = "Total Items: 0";
             // 
             // btnClose
             // 
-            this.btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-            this.btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnClose.FlatAppearance.BorderSize = 0;
-            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(1270, 15);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(110, 40);
-            this.btnClose.TabIndex = 2;
-            this.btnClose.Text = "Close";
-            this.btnClose.UseVisualStyleBackColor = false;
-            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
+            btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            btnClose.Cursor = Cursors.Hand;
+            btnClose.FlatAppearance.BorderSize = 0;
+            btnClose.FlatStyle = FlatStyle.Flat;
+            btnClose.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnClose.ForeColor = System.Drawing.Color.White;
+            btnClose.Location = new System.Drawing.Point(1270, 15);
+            btnClose.Name = "btnClose";
+            btnClose.Size = new System.Drawing.Size(110, 40);
+            btnClose.TabIndex = 2;
+            btnClose.Text = "Close";
+            btnClose.UseVisualStyleBackColor = false;
+            btnClose.Click += new System.EventHandler(BtnClose_Click);
             // 
             // panelLeft
             // 
-            this.panelLeft.BackColor = System.Drawing.Color.White;
-            this.panelLeft.Controls.Add(this.lblMedicineName);
-            this.panelLeft.Controls.Add(this.txtMedicineName);
-            this.panelLeft.Controls.Add(this.lblGenericName);
-            this.panelLeft.Controls.Add(this.txtGenericName);
-            this.panelLeft.Controls.Add(this.lblBrandName);
-            this.panelLeft.Controls.Add(this.txtBrandName);
-            this.panelLeft.Controls.Add(this.lblCategory);
-            this.panelLeft.Controls.Add(this.cmbCategory);
-            this.panelLeft.Controls.Add(this.lblDosageForm);
-            this.panelLeft.Controls.Add(this.cmbDosageForm);
-            this.panelLeft.Controls.Add(this.lblStrength);
-            this.panelLeft.Controls.Add(this.txtStrength);
-            this.panelLeft.Controls.Add(this.lblQuantity);
-            this.panelLeft.Controls.Add(this.txtQuantity);
-            this.panelLeft.Controls.Add(this.lblUnit);
-            this.panelLeft.Controls.Add(this.cmbUnit);
-            this.panelLeft.Controls.Add(this.lblReorderLevel);
-            this.panelLeft.Controls.Add(this.txtReorderLevel);
-            this.panelLeft.Controls.Add(this.lblCostPrice);
-            this.panelLeft.Controls.Add(this.txtCostPrice);
-            this.panelLeft.Controls.Add(this.lblSellingPrice);
-            this.panelLeft.Controls.Add(this.txtSellingPrice);
-            this.panelLeft.Controls.Add(this.lblSupplier);
-            this.panelLeft.Controls.Add(this.txtSupplier);
-            this.panelLeft.Controls.Add(this.lblBatchNumber);
-            this.panelLeft.Controls.Add(this.txtBatchNumber);
-            this.panelLeft.Controls.Add(this.lblExpiryDate);
-            this.panelLeft.Controls.Add(this.dtpExpiryDate);
-            this.panelLeft.Controls.Add(this.lblStorageLocation);
-            this.panelLeft.Controls.Add(this.txtStorageLocation);
-            this.panelLeft.Controls.Add(this.chkControlled);
-            this.panelLeft.Controls.Add(this.chkRequiresApproval);
-            this.panelLeft.Controls.Add(this.btnAdd);
-            this.panelLeft.Controls.Add(this.btnUpdate);
-            this.panelLeft.Controls.Add(this.btnDelete);
-            this.panelLeft.Controls.Add(this.btnClear);
-            this.panelLeft.Location = new System.Drawing.Point(20, 90);
-            this.panelLeft.Name = "panelLeft";
-            this.panelLeft.Size = new System.Drawing.Size(400, 620);
-            this.panelLeft.TabIndex = 1;
+            panelLeft.BackColor = System.Drawing.Color.White;
+            panelLeft.Controls.Add(lblMedicineName);
+            panelLeft.Controls.Add(txtMedicineName);
+            panelLeft.Controls.Add(lblGenericName);
+            panelLeft.Controls.Add(txtGenericName);
+            panelLeft.Controls.Add(lblBrandName);
+            panelLeft.Controls.Add(txtBrandName);
+            panelLeft.Controls.Add(lblCategory);
+            panelLeft.Controls.Add(cmbCategory);
+            panelLeft.Controls.Add(lblDosageForm);
+            panelLeft.Controls.Add(cmbDosageForm);
+            panelLeft.Controls.Add(lblStrength);
+            panelLeft.Controls.Add(txtStrength);
+            panelLeft.Controls.Add(lblQuantity);
+            panelLeft.Controls.Add(txtQuantity);
+            panelLeft.Controls.Add(lblUnit);
+            panelLeft.Controls.Add(cmbUnit);
+            panelLeft.Controls.Add(lblReorderLevel);
+            panelLeft.Controls.Add(txtReorderLevel);
+            panelLeft.Controls.Add(lblCostPrice);
+            panelLeft.Controls.Add(txtCostPrice);
+            panelLeft.Controls.Add(lblSellingPrice);
+            panelLeft.Controls.Add(txtSellingPrice);
+            panelLeft.Controls.Add(lblSupplier);
+            panelLeft.Controls.Add(txtSupplier);
+            panelLeft.Controls.Add(lblBatchNumber);
+            panelLeft.Controls.Add(txtBatchNumber);
+            panelLeft.Controls.Add(lblExpiryDate);
+            panelLeft.Controls.Add(dtpExpiryDate);
+            panelLeft.Controls.Add(lblStorageLocation);
+            panelLeft.Controls.Add(txtStorageLocation);
+            panelLeft.Controls.Add(chkControlled);
+            panelLeft.Controls.Add(chkRequiresApproval);
+            panelLeft.Controls.Add(btnAdd);
+            panelLeft.Controls.Add(btnUpdate);
+            panelLeft.Controls.Add(btnDelete);
+            panelLeft.Controls.Add(btnClear);
+            panelLeft.Location = new System.Drawing.Point(20, 90);
+            panelLeft.Name = "panelLeft";
+            panelLeft.Size = new System.Drawing.Size(400, 620);
+            panelLeft.TabIndex = 1;
             // 
             // lblMedicineName
             // 
-            this.lblMedicineName.AutoSize = true;
-            this.lblMedicineName.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblMedicineName.Location = new System.Drawing.Point(15, 15);
-            this.lblMedicineName.Name = "lblMedicineName";
-            this.lblMedicineName.Size = new System.Drawing.Size(102, 15);
-            this.lblMedicineName.TabIndex = 0;
-            this.lblMedicineName.Text = "Medicine Name: *";
+            lblMedicineName.AutoSize = true;
+            lblMedicineName.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblMedicineName.Location = new System.Drawing.Point(15, 15);
+            lblMedicineName.Name = "lblMedicineName";
+            lblMedicineName.Size = new System.Drawing.Size(102, 15);
+            lblMedicineName.TabIndex = 0;
+            lblMedicineName.Text = "Medicine Name: *";
             // 
             // txtMedicineName
             // 
-            this.txtMedicineName.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtMedicineName.Location = new System.Drawing.Point(15, 35);
-            this.txtMedicineName.Name = "txtMedicineName";
-            this.txtMedicineName.Size = new System.Drawing.Size(370, 23);
-            this.txtMedicineName.TabIndex = 1;
+            txtMedicineName.Font = new System.Drawing.Font("Segoe UI", 9F);
+            txtMedicineName.Location = new System.Drawing.Point(15, 35);
+            txtMedicineName.Name = "txtMedicineName";
+            txtMedicineName.Size = new System.Drawing.Size(370, 23);
+            txtMedicineName.TabIndex = 1;
             // 
             // lblGenericName
             // 
-            this.lblGenericName.AutoSize = true;
-            this.lblGenericName.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblGenericName.Location = new System.Drawing.Point(15, 65);
-            this.lblGenericName.Name = "lblGenericName";
-            this.lblGenericName.Size = new System.Drawing.Size(87, 15);
-            this.lblGenericName.TabIndex = 2;
-            this.lblGenericName.Text = "Generic Name:";
+            lblGenericName.AutoSize = true;
+            lblGenericName.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblGenericName.Location = new System.Drawing.Point(15, 65);
+            lblGenericName.Name = "lblGenericName";
+            lblGenericName.Size = new System.Drawing.Size(87, 15);
+            lblGenericName.TabIndex = 2;
+            lblGenericName.Text = "Generic Name:";
             // 
             // txtGenericName
             // 
-            this.txtGenericName.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtGenericName.Location = new System.Drawing.Point(15, 85);
-            this.txtGenericName.Name = "txtGenericName";
-            this.txtGenericName.Size = new System.Drawing.Size(370, 23);
-            this.txtGenericName.TabIndex = 3;
+            txtGenericName.Font = new System.Drawing.Font("Segoe UI", 9F);
+            txtGenericName.Location = new System.Drawing.Point(15, 85);
+            txtGenericName.Name = "txtGenericName";
+            txtGenericName.Size = new System.Drawing.Size(370, 23);
+            txtGenericName.TabIndex = 3;
             // 
             // lblBrandName
             // 
-            this.lblBrandName.AutoSize = true;
-            this.lblBrandName.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblBrandName.Location = new System.Drawing.Point(15, 115);
-            this.lblBrandName.Name = "lblBrandName";
-            this.lblBrandName.Size = new System.Drawing.Size(77, 15);
-            this.lblBrandName.TabIndex = 4;
-            this.lblBrandName.Text = "Brand Name:";
+            lblBrandName.AutoSize = true;
+            lblBrandName.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblBrandName.Location = new System.Drawing.Point(15, 115);
+            lblBrandName.Name = "lblBrandName";
+            lblBrandName.Size = new System.Drawing.Size(77, 15);
+            lblBrandName.TabIndex = 4;
+            lblBrandName.Text = "Brand Name:";
             // 
             // txtBrandName
             // 
-            this.txtBrandName.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtBrandName.Location = new System.Drawing.Point(15, 135);
-            this.txtBrandName.Name = "txtBrandName";
-            this.txtBrandName.Size = new System.Drawing.Size(370, 23);
-            this.txtBrandName.TabIndex = 5;
+            txtBrandName.Font = new System.Drawing.Font("Segoe UI", 9F);
+            txtBrandName.Location = new System.Drawing.Point(15, 135);
+            txtBrandName.Name = "txtBrandName";
+            txtBrandName.Size = new System.Drawing.Size(370, 23);
+            txtBrandName.TabIndex = 5;
             // 
             // lblCategory
             // 
-            this.lblCategory.AutoSize = true;
-            this.lblCategory.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblCategory.Location = new System.Drawing.Point(15, 165);
-            this.lblCategory.Name = "lblCategory";
-            this.lblCategory.Size = new System.Drawing.Size(65, 15);
-            this.lblCategory.TabIndex = 6;
-            this.lblCategory.Text = "Category: *";
+            lblCategory.AutoSize = true;
+            lblCategory.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblCategory.Location = new System.Drawing.Point(15, 165);
+            lblCategory.Name = "lblCategory";
+            lblCategory.Size = new System.Drawing.Size(65, 15);
+            lblCategory.TabIndex = 6;
+            lblCategory.Text = "Category: *";
             // 
             // cmbCategory
             // 
-            this.cmbCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbCategory.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.cmbCategory.FormattingEnabled = true;
-            this.cmbCategory.Location = new System.Drawing.Point(15, 185);
-            this.cmbCategory.Name = "cmbCategory";
-            this.cmbCategory.Size = new System.Drawing.Size(180, 23);
-            this.cmbCategory.TabIndex = 7;
+            cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbCategory.Font = new System.Drawing.Font("Segoe UI", 9F);
+            cmbCategory.FormattingEnabled = true;
+            cmbCategory.Location = new System.Drawing.Point(15, 185);
+            cmbCategory.Name = "cmbCategory";
+            cmbCategory.Size = new System.Drawing.Size(180, 23);
+            cmbCategory.TabIndex = 7;
             // 
             // lblDosageForm
             // 
-            this.lblDosageForm.AutoSize = true;
-            this.lblDosageForm.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblDosageForm.Location = new System.Drawing.Point(205, 165);
-            this.lblDosageForm.Name = "lblDosageForm";
-            this.lblDosageForm.Size = new System.Drawing.Size(80, 15);
-            this.lblDosageForm.TabIndex = 8;
-            this.lblDosageForm.Text = "Dosage Form:";
+            lblDosageForm.AutoSize = true;
+            lblDosageForm.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblDosageForm.Location = new System.Drawing.Point(205, 165);
+            lblDosageForm.Name = "lblDosageForm";
+            lblDosageForm.Size = new System.Drawing.Size(80, 15);
+            lblDosageForm.TabIndex = 8;
+            lblDosageForm.Text = "Dosage Form:";
             // 
             // cmbDosageForm
             // 
-            this.cmbDosageForm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbDosageForm.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.cmbDosageForm.FormattingEnabled = true;
-            this.cmbDosageForm.Location = new System.Drawing.Point(205, 185);
-            this.cmbDosageForm.Name = "cmbDosageForm";
-            this.cmbDosageForm.Size = new System.Drawing.Size(180, 23);
-            this.cmbDosageForm.TabIndex = 9;
+            cmbDosageForm.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbDosageForm.Font = new System.Drawing.Font("Segoe UI", 9F);
+            cmbDosageForm.FormattingEnabled = true;
+            cmbDosageForm.Location = new System.Drawing.Point(205, 185);
+            cmbDosageForm.Name = "cmbDosageForm";
+            cmbDosageForm.Size = new System.Drawing.Size(180, 23);
+            cmbDosageForm.TabIndex = 9;
             // 
             // lblStrength
             // 
-            this.lblStrength.AutoSize = true;
-            this.lblStrength.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblStrength.Location = new System.Drawing.Point(15, 215);
-            this.lblStrength.Name = "lblStrength";
-            this.lblStrength.Size = new System.Drawing.Size(102, 15);
-            this.lblStrength.TabIndex = 10;
-            this.lblStrength.Text = "Strength (e.g. 500mg):";
+            lblStrength.AutoSize = true;
+            lblStrength.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblStrength.Location = new System.Drawing.Point(15, 215);
+            lblStrength.Name = "lblStrength";
+            lblStrength.Size = new System.Drawing.Size(102, 15);
+            lblStrength.TabIndex = 10;
+            lblStrength.Text = "Strength (e.g. 500mg):";
             // 
             // txtStrength
             // 
-            this.txtStrength.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtStrength.Location = new System.Drawing.Point(15, 235);
-            this.txtStrength.Name = "txtStrength";
-            this.txtStrength.Size = new System.Drawing.Size(180, 23);
-            this.txtStrength.TabIndex = 11;
+            txtStrength.Font = new System.Drawing.Font("Segoe UI", 9F);
+            txtStrength.Location = new System.Drawing.Point(15, 235);
+            txtStrength.Name = "txtStrength";
+            txtStrength.Size = new System.Drawing.Size(180, 23);
+            txtStrength.TabIndex = 11;
             // 
             // lblQuantity
             // 
-            this.lblQuantity.AutoSize = true;
-            this.lblQuantity.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblQuantity.Location = new System.Drawing.Point(205, 215);
-            this.lblQuantity.Name = "lblQuantity";
-            this.lblQuantity.Size = new System.Drawing.Size(56, 15);
-            this.lblQuantity.TabIndex = 12;
-            this.lblQuantity.Text = "Quantity:";
+            lblQuantity.AutoSize = true;
+            lblQuantity.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblQuantity.Location = new System.Drawing.Point(205, 215);
+            lblQuantity.Name = "lblQuantity";
+            lblQuantity.Size = new System.Drawing.Size(56, 15);
+            lblQuantity.TabIndex = 12;
+            lblQuantity.Text = "Quantity:";
             // 
             // txtQuantity
             // 
-            this.txtQuantity.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtQuantity.Location = new System.Drawing.Point(205, 235);
-            this.txtQuantity.Name = "txtQuantity";
-            this.txtQuantity.Size = new System.Drawing.Size(85, 23);
-            this.txtQuantity.TabIndex = 13;
+            txtQuantity.Font = new System.Drawing.Font("Segoe UI", 9F);
+            txtQuantity.Location = new System.Drawing.Point(205, 235);
+            txtQuantity.Name = "txtQuantity";
+            txtQuantity.Size = new System.Drawing.Size(85, 23);
+            txtQuantity.TabIndex = 13;
             // 
             // lblUnit
             // 
-            this.lblUnit.AutoSize = true;
-            this.lblUnit.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblUnit.Location = new System.Drawing.Point(300, 215);
-            this.lblUnit.Name = "lblUnit";
-            this.lblUnit.Size = new System.Drawing.Size(32, 15);
-            this.lblUnit.TabIndex = 14;
-            this.lblUnit.Text = "Unit:";
+            lblUnit.AutoSize = true;
+            lblUnit.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblUnit.Location = new System.Drawing.Point(300, 215);
+            lblUnit.Name = "lblUnit";
+            lblUnit.Size = new System.Drawing.Size(32, 15);
+            lblUnit.TabIndex = 14;
+            lblUnit.Text = "Unit:";
             // 
             // cmbUnit
             // 
-            this.cmbUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbUnit.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.cmbUnit.FormattingEnabled = true;
-            this.cmbUnit.Location = new System.Drawing.Point(300, 235);
-            this.cmbUnit.Name = "cmbUnit";
-            this.cmbUnit.Size = new System.Drawing.Size(85, 23);
-            this.cmbUnit.TabIndex = 15;
+            cmbUnit.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbUnit.Font = new System.Drawing.Font("Segoe UI", 9F);
+            cmbUnit.FormattingEnabled = true;
+            cmbUnit.Location = new System.Drawing.Point(300, 235);
+            cmbUnit.Name = "cmbUnit";
+            cmbUnit.Size = new System.Drawing.Size(85, 23);
+            cmbUnit.TabIndex = 15;
             // 
             // lblReorderLevel
             // 
-            this.lblReorderLevel.AutoSize = true;
-            this.lblReorderLevel.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblReorderLevel.Location = new System.Drawing.Point(15, 265);
-            this.lblReorderLevel.Name = "lblReorderLevel";
-            this.lblReorderLevel.Size = new System.Drawing.Size(84, 15);
-            this.lblReorderLevel.TabIndex = 16;
-            this.lblReorderLevel.Text = "Reorder Level:";
+            lblReorderLevel.AutoSize = true;
+            lblReorderLevel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblReorderLevel.Location = new System.Drawing.Point(15, 265);
+            lblReorderLevel.Name = "lblReorderLevel";
+            lblReorderLevel.Size = new System.Drawing.Size(84, 15);
+            lblReorderLevel.TabIndex = 16;
+            lblReorderLevel.Text = "Reorder Level:";
             // 
             // txtReorderLevel
             // 
-            this.txtReorderLevel.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtReorderLevel.Location = new System.Drawing.Point(15, 285);
-            this.txtReorderLevel.Name = "txtReorderLevel";
-            this.txtReorderLevel.Size = new System.Drawing.Size(120, 23);
-            this.txtReorderLevel.TabIndex = 17;
+            txtReorderLevel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            txtReorderLevel.Location = new System.Drawing.Point(15, 285);
+            txtReorderLevel.Name = "txtReorderLevel";
+            txtReorderLevel.Size = new System.Drawing.Size(120, 23);
+            txtReorderLevel.TabIndex = 17;
             // 
             // lblCostPrice
             // 
-            this.lblCostPrice.AutoSize = true;
-            this.lblCostPrice.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblCostPrice.Location = new System.Drawing.Point(145, 265);
-            this.lblCostPrice.Name = "lblCostPrice";
-            this.lblCostPrice.Size = new System.Drawing.Size(63, 15);
-            this.lblCostPrice.TabIndex = 18;
-            this.lblCostPrice.Text = "Cost Price:";
+            lblCostPrice.AutoSize = true;
+            lblCostPrice.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblCostPrice.Location = new System.Drawing.Point(145, 265);
+            lblCostPrice.Name = "lblCostPrice";
+            lblCostPrice.Size = new System.Drawing.Size(63, 15);
+            lblCostPrice.TabIndex = 18;
+            lblCostPrice.Text = "Cost Price:";
             // 
             // txtCostPrice
             // 
-            this.txtCostPrice.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtCostPrice.Location = new System.Drawing.Point(145, 285);
-            this.txtCostPrice.Name = "txtCostPrice";
-            this.txtCostPrice.Size = new System.Drawing.Size(115, 23);
-            this.txtCostPrice.TabIndex = 19;
+            txtCostPrice.Font = new System.Drawing.Font("Segoe UI", 9F);
+            txtCostPrice.Location = new System.Drawing.Point(145, 285);
+            txtCostPrice.Name = "txtCostPrice";
+            txtCostPrice.Size = new System.Drawing.Size(115, 23);
+            txtCostPrice.TabIndex = 19;
             // 
             // lblSellingPrice
             // 
-            this.lblSellingPrice.AutoSize = true;
-            this.lblSellingPrice.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblSellingPrice.Location = new System.Drawing.Point(270, 265);
-            this.lblSellingPrice.Name = "lblSellingPrice";
-            this.lblSellingPrice.Size = new System.Drawing.Size(77, 15);
-            this.lblSellingPrice.TabIndex = 20;
-            this.lblSellingPrice.Text = "Selling Price: *";
+            lblSellingPrice.AutoSize = true;
+            lblSellingPrice.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblSellingPrice.Location = new System.Drawing.Point(270, 265);
+            lblSellingPrice.Name = "lblSellingPrice";
+            lblSellingPrice.Size = new System.Drawing.Size(77, 15);
+            lblSellingPrice.TabIndex = 20;
+            lblSellingPrice.Text = "Selling Price: *";
             // 
             // txtSellingPrice
             // 
-            this.txtSellingPrice.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtSellingPrice.Location = new System.Drawing.Point(270, 285);
-            this.txtSellingPrice.Name = "txtSellingPrice";
-            this.txtSellingPrice.Size = new System.Drawing.Size(115, 23);
-            this.txtSellingPrice.TabIndex = 21;
+            txtSellingPrice.Font = new System.Drawing.Font("Segoe UI", 9F);
+            txtSellingPrice.Location = new System.Drawing.Point(270, 285);
+            txtSellingPrice.Name = "txtSellingPrice";
+            txtSellingPrice.Size = new System.Drawing.Size(115, 23);
+            txtSellingPrice.TabIndex = 21;
             // 
             // lblSupplier
             // 
-            this.lblSupplier.AutoSize = true;
-            this.lblSupplier.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblSupplier.Location = new System.Drawing.Point(15, 315);
-            this.lblSupplier.Name = "lblSupplier";
-            this.lblSupplier.Size = new System.Drawing.Size(54, 15);
-            this.lblSupplier.TabIndex = 22;
-            this.lblSupplier.Text = "Supplier:";
+            lblSupplier.AutoSize = true;
+            lblSupplier.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblSupplier.Location = new System.Drawing.Point(15, 315);
+            lblSupplier.Name = "lblSupplier";
+            lblSupplier.Size = new System.Drawing.Size(54, 15);
+            lblSupplier.TabIndex = 22;
+            lblSupplier.Text = "Supplier:";
             // 
             // txtSupplier
             // 
-            this.txtSupplier.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtSupplier.Location = new System.Drawing.Point(15, 335);
-            this.txtSupplier.Name = "txtSupplier";
-            this.txtSupplier.Size = new System.Drawing.Size(370, 23);
-            this.txtSupplier.TabIndex = 23;
+            txtSupplier.Font = new System.Drawing.Font("Segoe UI", 9F);
+            txtSupplier.Location = new System.Drawing.Point(15, 335);
+            txtSupplier.Name = "txtSupplier";
+            txtSupplier.Size = new System.Drawing.Size(370, 23);
+            txtSupplier.TabIndex = 23;
             // 
             // lblBatchNumber
             // 
-            this.lblBatchNumber.AutoSize = true;
-            this.lblBatchNumber.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblBatchNumber.Location = new System.Drawing.Point(15, 365);
-            this.lblBatchNumber.Name = "lblBatchNumber";
-            this.lblBatchNumber.Size = new System.Drawing.Size(87, 15);
-            this.lblBatchNumber.TabIndex = 24;
-            this.lblBatchNumber.Text = "Batch Number:";
+            lblBatchNumber.AutoSize = true;
+            lblBatchNumber.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblBatchNumber.Location = new System.Drawing.Point(15, 365);
+            lblBatchNumber.Name = "lblBatchNumber";
+            lblBatchNumber.Size = new System.Drawing.Size(87, 15);
+            lblBatchNumber.TabIndex = 24;
+            lblBatchNumber.Text = "Batch Number:";
             // 
             // txtBatchNumber
             // 
-            this.txtBatchNumber.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtBatchNumber.Location = new System.Drawing.Point(15, 385);
-            this.txtBatchNumber.Name = "txtBatchNumber";
-            this.txtBatchNumber.Size = new System.Drawing.Size(180, 23);
-            this.txtBatchNumber.TabIndex = 25;
+            txtBatchNumber.Font = new System.Drawing.Font("Segoe UI", 9F);
+            txtBatchNumber.Location = new System.Drawing.Point(15, 385);
+            txtBatchNumber.Name = "txtBatchNumber";
+            txtBatchNumber.Size = new System.Drawing.Size(180, 23);
+            txtBatchNumber.TabIndex = 25;
             // 
             // lblExpiryDate
             // 
-            this.lblExpiryDate.AutoSize = true;
-            this.lblExpiryDate.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblExpiryDate.Location = new System.Drawing.Point(205, 365);
-            this.lblExpiryDate.Name = "lblExpiryDate";
-            this.lblExpiryDate.Size = new System.Drawing.Size(70, 15);
-            this.lblExpiryDate.TabIndex = 26;
-            this.lblExpiryDate.Text = "Expiry Date:";
+            lblExpiryDate.AutoSize = true;
+            lblExpiryDate.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblExpiryDate.Location = new System.Drawing.Point(205, 365);
+            lblExpiryDate.Name = "lblExpiryDate";
+            lblExpiryDate.Size = new System.Drawing.Size(70, 15);
+            lblExpiryDate.TabIndex = 26;
+            lblExpiryDate.Text = "Expiry Date:";
             // 
             // dtpExpiryDate
             // 
-            this.dtpExpiryDate.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.dtpExpiryDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpExpiryDate.Location = new System.Drawing.Point(205, 385);
-            this.dtpExpiryDate.Name = "dtpExpiryDate";
-            this.dtpExpiryDate.Size = new System.Drawing.Size(180, 23);
-            this.dtpExpiryDate.TabIndex = 27;
+            dtpExpiryDate.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dtpExpiryDate.Format = DateTimePickerFormat.Short;
+            dtpExpiryDate.Location = new System.Drawing.Point(205, 385);
+            dtpExpiryDate.Name = "dtpExpiryDate";
+            dtpExpiryDate.Size = new System.Drawing.Size(180, 23);
+            dtpExpiryDate.TabIndex = 27;
             // 
             // lblStorageLocation
             // 
-            this.lblStorageLocation.AutoSize = true;
-            this.lblStorageLocation.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblStorageLocation.Location = new System.Drawing.Point(15, 415);
-            this.lblStorageLocation.Name = "lblStorageLocation";
-            this.lblStorageLocation.Size = new System.Drawing.Size(102, 15);
-            this.lblStorageLocation.TabIndex = 28;
-            this.lblStorageLocation.Text = "Storage Location:";
+            lblStorageLocation.AutoSize = true;
+            lblStorageLocation.Font = new System.Drawing.Font("Segoe UI", 9F);
+            lblStorageLocation.Location = new System.Drawing.Point(15, 415);
+            lblStorageLocation.Name = "lblStorageLocation";
+            lblStorageLocation.Size = new System.Drawing.Size(102, 15);
+            lblStorageLocation.TabIndex = 28;
+            lblStorageLocation.Text = "Storage Location:";
             // 
             // txtStorageLocation
             // 
-            this.txtStorageLocation.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtStorageLocation.Location = new System.Drawing.Point(15, 435);
-            this.txtStorageLocation.Name = "txtStorageLocation";
-            this.txtStorageLocation.Size = new System.Drawing.Size(370, 23);
-            this.txtStorageLocation.TabIndex = 29;
+            txtStorageLocation.Font = new System.Drawing.Font("Segoe UI", 9F);
+            txtStorageLocation.Location = new System.Drawing.Point(15, 435);
+            txtStorageLocation.Name = "txtStorageLocation";
+            txtStorageLocation.Size = new System.Drawing.Size(370, 23);
+            txtStorageLocation.TabIndex = 29;
             // 
             // chkControlled
             // 
-            this.chkControlled.AutoSize = true;
-            this.chkControlled.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.chkControlled.Location = new System.Drawing.Point(15, 470);
-            this.chkControlled.Name = "chkControlled";
-            this.chkControlled.Size = new System.Drawing.Size(147, 19);
-            this.chkControlled.TabIndex = 30;
-            this.chkControlled.Text = "Controlled Substance";
-            this.chkControlled.UseVisualStyleBackColor = true;
+            chkControlled.AutoSize = true;
+            chkControlled.Font = new System.Drawing.Font("Segoe UI", 9F);
+            chkControlled.Location = new System.Drawing.Point(15, 470);
+            chkControlled.Name = "chkControlled";
+            chkControlled.Size = new System.Drawing.Size(147, 19);
+            chkControlled.TabIndex = 30;
+            chkControlled.Text = "Controlled Substance";
+            chkControlled.UseVisualStyleBackColor = true;
             // 
             // chkRequiresApproval
             // 
-            this.chkRequiresApproval.AutoSize = true;
-            this.chkRequiresApproval.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.chkRequiresApproval.Location = new System.Drawing.Point(205, 470);
-            this.chkRequiresApproval.Name = "chkRequiresApproval";
-            this.chkRequiresApproval.Size = new System.Drawing.Size(126, 19);
-            this.chkRequiresApproval.TabIndex = 31;
-            this.chkRequiresApproval.Text = "Requires Approval";
-            this.chkRequiresApproval.UseVisualStyleBackColor = true;
+            chkRequiresApproval.AutoSize = true;
+            chkRequiresApproval.Font = new System.Drawing.Font("Segoe UI", 9F);
+            chkRequiresApproval.Location = new System.Drawing.Point(205, 470);
+            chkRequiresApproval.Name = "chkRequiresApproval";
+            chkRequiresApproval.Size = new System.Drawing.Size(126, 19);
+            chkRequiresApproval.TabIndex = 31;
+            chkRequiresApproval.Text = "Requires Approval";
+            chkRequiresApproval.UseVisualStyleBackColor = true;
             // 
             // btnAdd
             // 
-            this.btnAdd.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.btnAdd.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnAdd.FlatAppearance.BorderSize = 0;
-            this.btnAdd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAdd.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnAdd.ForeColor = System.Drawing.Color.White;
-            this.btnAdd.Location = new System.Drawing.Point(15, 510);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(180, 40);
-            this.btnAdd.TabIndex = 32;
-            this.btnAdd.Text = "Add Medicine";
-            this.btnAdd.UseVisualStyleBackColor = false;
-            this.btnAdd.Click += new System.EventHandler(this.BtnAdd_Click);
+            btnAdd.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            btnAdd.Cursor = Cursors.Hand;
+            btnAdd.FlatAppearance.BorderSize = 0;
+            btnAdd.FlatStyle = FlatStyle.Flat;
+            btnAdd.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnAdd.ForeColor = System.Drawing.Color.White;
+            btnAdd.Location = new System.Drawing.Point(15, 510);
+            btnAdd.Name = "btnAdd";
+            btnAdd.Size = new System.Drawing.Size(180, 40);
+            btnAdd.TabIndex = 32;
+            btnAdd.Text = "Add Medicine";
+            btnAdd.UseVisualStyleBackColor = false;
+            btnAdd.Click += new System.EventHandler(BtnAdd_Click);
             // 
             // btnUpdate
             // 
-            this.btnUpdate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnUpdate.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnUpdate.FlatAppearance.BorderSize = 0;
-            this.btnUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnUpdate.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnUpdate.ForeColor = System.Drawing.Color.White;
-            this.btnUpdate.Location = new System.Drawing.Point(205, 510);
-            this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(180, 40);
-            this.btnUpdate.TabIndex = 33;
-            this.btnUpdate.Text = "Update";
-            this.btnUpdate.UseVisualStyleBackColor = false;
-            this.btnUpdate.Click += new System.EventHandler(this.BtnUpdate_Click);
+            btnUpdate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            btnUpdate.Cursor = Cursors.Hand;
+            btnUpdate.FlatAppearance.BorderSize = 0;
+            btnUpdate.FlatStyle = FlatStyle.Flat;
+            btnUpdate.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnUpdate.ForeColor = System.Drawing.Color.White;
+            btnUpdate.Location = new System.Drawing.Point(205, 510);
+            btnUpdate.Name = "btnUpdate";
+            btnUpdate.Size = new System.Drawing.Size(180, 40);
+            btnUpdate.TabIndex = 33;
+            btnUpdate.Text = "Update";
+            btnUpdate.UseVisualStyleBackColor = false;
+            btnUpdate.Click += new System.EventHandler(BtnUpdate_Click);
             // 
             // btnDelete
             // 
-            this.btnDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-            this.btnDelete.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnDelete.FlatAppearance.BorderSize = 0;
-            this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDelete.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnDelete.ForeColor = System.Drawing.Color.White;
-            this.btnDelete.Location = new System.Drawing.Point(15, 560);
-            this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(180, 40);
-            this.btnDelete.TabIndex = 34;
-            this.btnDelete.Text = "Delete";
-            this.btnDelete.UseVisualStyleBackColor = false;
-            this.btnDelete.Click += new System.EventHandler(this.BtnDelete_Click);
+            btnDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            btnDelete.Cursor = Cursors.Hand;
+            btnDelete.FlatAppearance.BorderSize = 0;
+            btnDelete.FlatStyle = FlatStyle.Flat;
+            btnDelete.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnDelete.ForeColor = System.Drawing.Color.White;
+            btnDelete.Location = new System.Drawing.Point(15, 560);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new System.Drawing.Size(180, 40);
+            btnDelete.TabIndex = 34;
+            btnDelete.Text = "Delete";
+            btnDelete.UseVisualStyleBackColor = false;
+            btnDelete.Click += new System.EventHandler(BtnDelete_Click);
             // 
             // btnClear
             // 
-            this.btnClear.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
-            this.btnClear.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnClear.FlatAppearance.BorderSize = 0;
-            this.btnClear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClear.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnClear.ForeColor = System.Drawing.Color.White;
-            this.btnClear.Location = new System.Drawing.Point(205, 560);
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(180, 40);
-            this.btnClear.TabIndex = 35;
-            this.btnClear.Text = "Clear Fields";
-            this.btnClear.UseVisualStyleBackColor = false;
-            this.btnClear.Click += new System.EventHandler(this.BtnClear_Click);
+            btnClear.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
+            btnClear.Cursor = Cursors.Hand;
+            btnClear.FlatAppearance.BorderSize = 0;
+            btnClear.FlatStyle = FlatStyle.Flat;
+            btnClear.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnClear.ForeColor = System.Drawing.Color.White;
+            btnClear.Location = new System.Drawing.Point(205, 560);
+            btnClear.Name = "btnClear";
+            btnClear.Size = new System.Drawing.Size(180, 40);
+            btnClear.TabIndex = 35;
+            btnClear.Text = "Clear Fields";
+            btnClear.UseVisualStyleBackColor = false;
+            btnClear.Click += new System.EventHandler(BtnClear_Click);
             // 
             // panelRight
             // 
-            this.panelRight.BackColor = System.Drawing.Color.White;
-            this.panelRight.Controls.Add(this.lblSearch);
-            this.panelRight.Controls.Add(this.txtSearch);
-            this.panelRight.Controls.Add(this.btnSearch);
-            this.panelRight.Controls.Add(this.btnAdjustStock);
-            this.panelRight.Controls.Add(this.dgvInventory);
-            this.panelRight.Location = new System.Drawing.Point(440, 90);
-            this.panelRight.Name = "panelRight";
-            this.panelRight.Size = new System.Drawing.Size(940, 620);
-            this.panelRight.TabIndex = 2;
+            panelRight.BackColor = System.Drawing.Color.White;
+            panelRight.Controls.Add(lblSearch);
+            panelRight.Controls.Add(txtSearch);
+            panelRight.Controls.Add(btnSearch);
+            panelRight.Controls.Add(btnAdjustStock);
+            panelRight.Controls.Add(dgvInventory);
+            panelRight.Location = new System.Drawing.Point(440, 90);
+            panelRight.Name = "panelRight";
+            panelRight.Size = new System.Drawing.Size(940, 620);
+            panelRight.TabIndex = 2;
             // 
             // lblSearch
             // 
-            this.lblSearch.AutoSize = true;
-            this.lblSearch.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblSearch.Location = new System.Drawing.Point(15, 15);
-            this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(123, 19);
-            this.lblSearch.TabIndex = 0;
-            this.lblSearch.Text = "Search Medicine:";
+            lblSearch.AutoSize = true;
+            lblSearch.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            lblSearch.Location = new System.Drawing.Point(15, 15);
+            lblSearch.Name = "lblSearch";
+            lblSearch.Size = new System.Drawing.Size(123, 19);
+            lblSearch.TabIndex = 0;
+            lblSearch.Text = "Search Medicine:";
             // 
             // txtSearch
             // 
-            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtSearch.Location = new System.Drawing.Point(15, 40);
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(600, 25);
-            this.txtSearch.TabIndex = 1;
+            txtSearch.Font = new System.Drawing.Font("Segoe UI", 10F);
+            txtSearch.Location = new System.Drawing.Point(15, 40);
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new System.Drawing.Size(600, 25);
+            txtSearch.TabIndex = 1;
             // 
             // btnSearch
             // 
-            this.btnSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnSearch.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSearch.FlatAppearance.BorderSize = 0;
-            this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSearch.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnSearch.ForeColor = System.Drawing.Color.White;
-            this.btnSearch.Location = new System.Drawing.Point(625, 35);
-            this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(140, 35);
-            this.btnSearch.TabIndex = 2;
-            this.btnSearch.Text = "Search";
-            this.btnSearch.UseVisualStyleBackColor = false;
-            this.btnSearch.Click += new System.EventHandler(this.BtnSearch_Click);
+            btnSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            btnSearch.Cursor = Cursors.Hand;
+            btnSearch.FlatAppearance.BorderSize = 0;
+            btnSearch.FlatStyle = FlatStyle.Flat;
+            btnSearch.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnSearch.ForeColor = System.Drawing.Color.White;
+            btnSearch.Location = new System.Drawing.Point(625, 35);
+            btnSearch.Name = "btnSearch";
+            btnSearch.Size = new System.Drawing.Size(140, 35);
+            btnSearch.TabIndex = 2;
+            btnSearch.Text = "Search";
+            btnSearch.UseVisualStyleBackColor = false;
+            btnSearch.Click += new System.EventHandler(BtnSearch_Click);
             // 
             // btnAdjustStock
             // 
-            this.btnAdjustStock.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
-            this.btnAdjustStock.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnAdjustStock.FlatAppearance.BorderSize = 0;
-            this.btnAdjustStock.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAdjustStock.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnAdjustStock.ForeColor = System.Drawing.Color.White;
-            this.btnAdjustStock.Location = new System.Drawing.Point(775, 35);
-            this.btnAdjustStock.Name = "btnAdjustStock";
-            this.btnAdjustStock.Size = new System.Drawing.Size(150, 35);
-            this.btnAdjustStock.TabIndex = 3;
-            this.btnAdjustStock.Text = "Adjust Stock";
-            this.btnAdjustStock.UseVisualStyleBackColor = false;
-            this.btnAdjustStock.Click += new System.EventHandler(this.BtnAdjustStock_Click);
+            btnAdjustStock.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
+            btnAdjustStock.Cursor = Cursors.Hand;
+            btnAdjustStock.FlatAppearance.BorderSize = 0;
+            btnAdjustStock.FlatStyle = FlatStyle.Flat;
+            btnAdjustStock.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnAdjustStock.ForeColor = System.Drawing.Color.White;
+            btnAdjustStock.Location = new System.Drawing.Point(775, 35);
+            btnAdjustStock.Name = "btnAdjustStock";
+            btnAdjustStock.Size = new System.Drawing.Size(150, 35);
+            btnAdjustStock.TabIndex = 3;
+            btnAdjustStock.Text = "Adjust Stock";
+            btnAdjustStock.UseVisualStyleBackColor = false;
+            btnAdjustStock.Click += new System.EventHandler(BtnAdjustStock_Click);
             // 
             // dgvInventory
             // 
-            this.dgvInventory.AllowUserToAddRows = false;
-            this.dgvInventory.AllowUserToDeleteRows = false;
-            this.dgvInventory.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvInventory.BackgroundColor = System.Drawing.Color.White;
-            this.dgvInventory.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dgvInventory.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvInventory.Location = new System.Drawing.Point(15, 85);
-            this.dgvInventory.Name = "dgvInventory";
-            this.dgvInventory.ReadOnly = true;
-            this.dgvInventory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvInventory.Size = new System.Drawing.Size(910, 520);
-            this.dgvInventory.TabIndex = 4;
-            this.dgvInventory.SelectionChanged += new System.EventHandler(this.DgvInventory_SelectionChanged);
+            dgvInventory.AllowUserToAddRows = false;
+            dgvInventory.AllowUserToDeleteRows = false;
+            dgvInventory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvInventory.BackgroundColor = System.Drawing.Color.White;
+            dgvInventory.BorderStyle = BorderStyle.None;
+            dgvInventory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvInventory.Location = new System.Drawing.Point(15, 85);
+            dgvInventory.Name = "dgvInventory";
+            dgvInventory.ReadOnly = true;
+            dgvInventory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvInventory.Size = new System.Drawing.Size(910, 520);
+            dgvInventory.TabIndex = 4;
+            dgvInventory.SelectionChanged += new System.EventHandler(DgvInventory_SelectionChanged);
             // 
             // ManageInventoryForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
-            this.ClientSize = new System.Drawing.Size(1400, 730);
-            this.Controls.Add(this.panelRight);
-            this.Controls.Add(this.panelLeft);
-            this.Controls.Add(this.panelTop);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.Name = "ManageInventoryForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Manage Medicine Inventory";
-            this.Load += new System.EventHandler(this.ManageInventoryForm_Load);
-            this.panelTop.ResumeLayout(false);
-            this.panelTop.PerformLayout();
-            this.panelLeft.ResumeLayout(false);
-            this.panelLeft.PerformLayout();
-            this.panelRight.ResumeLayout(false);
-            this.panelRight.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvInventory)).EndInit();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
+            ClientSize = new System.Drawing.Size(1400, 730);
+            Controls.Add(panelRight);
+            Controls.Add(panelLeft);
+            Controls.Add(panelTop);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            Name = "ManageInventoryForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Manage Medicine Inventory";
+            Load += new System.EventHandler(ManageInventoryForm_Load);
+            panelTop.ResumeLayout(false);
+            panelTop.PerformLayout();
+            panelLeft.ResumeLayout(false);
+            panelLeft.PerformLayout();
+            panelRight.ResumeLayout(false);
+            panelRight.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(dgvInventory)).EndInit();
+            ResumeLayout(false);
         }
+
+        #endregion
+
+        private Panel panelTop;
+        private Label lblTitle;
+        private Label lblTotalItems;
+        private Panel panelLeft;
+        private Label lblMedicineName;
+        private TextBox txtMedicineName;
+        private Label lblGenericName;
+        private TextBox txtGenericName;
+        private Label lblBrandName;
+        private TextBox txtBrandName;
+        private Label lblCategory;
+        private ComboBox cmbCategory;
+        private Label lblDosageForm;
+        private ComboBox cmbDosageForm;
+        private Label lblStrength;
+        private TextBox txtStrength;
+        private Label lblQuantity;
+        private TextBox txtQuantity;
+        private Label lblUnit;
+        private ComboBox cmbUnit;
+        private Label lblReorderLevel;
+        private TextBox txtReorderLevel;
+        private Label lblCostPrice;
+        private TextBox txtCostPrice;
+        private Label lblSellingPrice;
+        private TextBox txtSellingPrice;
+        private Label lblSupplier;
+        private TextBox txtSupplier;
+        private Label lblBatchNumber;
+        private TextBox txtBatchNumber;
+        private Label lblExpiryDate;
+        private DateTimePicker dtpExpiryDate;
+        private Label lblStorageLocation;
+        private TextBox txtStorageLocation;
+        private CheckBox chkControlled;
+        private CheckBox chkRequiresApproval;
+        private Button btnAdd;
+        private Button btnUpdate;
+        private Button btnDelete;
+        private Button btnClear;
+        private Panel panelRight;
+        private Label lblSearch;
+        private TextBox txtSearch;
+        private Button btnSearch;
+        private Button btnAdjustStock;
+        private DataGridView dgvInventory;
+        private Button btnClose;
     }
 }

@@ -1,8 +1,14 @@
-﻿using MySqlConnector;
+﻿using iTextSharp.text.pdf.parser;
+using MySqlConnector;
+using Org.BouncyCastle.Crypto;
 using System;
 using System.Data;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Drawing;
+using System.Runtime.ConstrainedExecution;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SaintJosephsHospitalHealthMonitorApp
 {
@@ -71,25 +77,38 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 decimal amountPaid = GetAmountAlreadyPaid();
                 decimal remaining = totalAmount - amountPaid;
 
+                numPaymentAmount.Value = 0;
+                numPaymentAmount.Maximum = 999999999;
+
                 if (currentStatus.ToUpper() == "PARTIALLY PAID" || amountPaid > 0)
                 {
-                    numPaymentAmount.Value = remaining;
-                    numPaymentAmount.Maximum = 999999999;
                     lblRemainingValue.Text = $"₱{remaining:N2}";
                     panelPartialPayment.Visible = true;
                 }
-                else if (currentStatus.ToUpper() == "PENDING")
-                {
-                    numPaymentAmount.Value = totalAmount;
-                    numPaymentAmount.Maximum = 999999999; 
-                    panelPartialPayment.Visible = false; 
-                }
                 else
                 {
-                    numPaymentAmount.Value = totalAmount;
-                    numPaymentAmount.Maximum = 999999999;
                     panelPartialPayment.Visible = false;
                 }
+
+                Label lblPaymentNote = new Label
+                {
+                    Text = $"💡 Total Bill Amount: ₱{totalAmount:N2}" +
+                           (remaining < totalAmount ? $" | Remaining: ₱{remaining:N2}" : ""),
+                    Font = new Font("Segoe UI", 9F, FontStyle.Italic),
+                    ForeColor = Color.FromArgb(113, 128, 150),
+                    Location = new Point(23, 85),
+                    AutoSize = true,
+                    Name = "lblPaymentNote"
+                };
+
+                var existingNote = grpPaymentDetails.Controls.Find("lblPaymentNote", false);
+                if (existingNote.Length > 0)
+                {
+                    grpPaymentDetails.Controls.Remove(existingNote[0]);
+                }
+
+                grpPaymentDetails.Controls.Add(lblPaymentNote);
+                lblPaymentNote.BringToFront();
             }
             catch (Exception ex)
             {
@@ -103,7 +122,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-            SELECT 
+                SELECT 
                 b.subtotal,
                 b.discount_percent,
                 b.discount_amount,
@@ -111,8 +130,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 b.tax_amount,
                 b.amount,
                 b.notes
-            FROM Billing b
-            WHERE b.bill_id = @billId";
+                FROM Billing b
+                WHERE b.bill_id = @billId";
 
                 DataTable dt = DatabaseHelper.ExecuteQuery(query,
                     new MySqlParameter("@billId", billId));
@@ -152,8 +171,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private string FormatBillNotes(string notes)
         {
-            notes = notes.Replace("---", new string('-', 50) + Environment.NewLine);
-
             notes = notes.Replace("Edited on:", Environment.NewLine + "Edited on:");
             notes = notes.Replace("Previous payments refunded:", Environment.NewLine + "Previous payments refunded:");
             notes = notes.Replace("Edited by user ID:", Environment.NewLine + "Edited by user ID:");
@@ -164,7 +181,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 notes = notes.Replace(Environment.NewLine + Environment.NewLine + Environment.NewLine,
                                     Environment.NewLine + Environment.NewLine);
             }
-
             return notes.Trim();
         }
 
@@ -202,11 +218,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 string query = @"
                     SELECT 
-                        COALESCE(s.service_name, 'Service') AS service_name,
-                        COALESCE(sc.category_name, 'General') AS category_name,
-                        bs.quantity,
-                        bs.unit_price,
-                        (bs.quantity * bs.unit_price) AS total
+                    COALESCE(s.service_name, 'Service') AS service_name,
+                    COALESCE(sc.category_name, 'General') AS category_name,
+                    bs.quantity,
+                    bs.unit_price,
+                    (bs.quantity * bs.unit_price) AS total
                     FROM BillServices bs
                     LEFT JOIN Services s ON bs.service_id = s.service_id
                     LEFT JOIN ServiceCategories sc ON bs.category_id = sc.category_id
@@ -388,8 +404,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private void ProcessPayment(decimal actualPayment, decimal amountTendered, decimal change,
-            string paymentMethod, string referenceNumber, string paymentNotes, bool isPartialPayment)
+        private void ProcessPayment(decimal actualPayment, decimal amountTendered, decimal change, string paymentMethod, string referenceNumber, string paymentNotes, bool isPartialPayment)
         {
             try
             {
@@ -410,24 +425,49 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     newStatus = "Pending";
                 }
 
-                string updateBillingQuery = @"
-            UPDATE Billing 
-            SET status = @status,
-                payment_method = @paymentMethod
-            WHERE bill_id = @billId";
+                System.Diagnostics.Debug.WriteLine($"[Payment] Processing payment for Bill #{billId}");
+                System.Diagnostics.Debug.WriteLine($"[Payment] Previous amount paid: ₱{previouslyPaid:N2}");
+                System.Diagnostics.Debug.WriteLine($"[Payment] Current payment: ₱{actualPayment:N2}");
+                System.Diagnostics.Debug.WriteLine($"[Payment] Total amount paid: ₱{totalAmountPaid:N2}");
+                System.Diagnostics.Debug.WriteLine($"[Payment] Total bill amount: ₱{totalAmount:N2}");
+                System.Diagnostics.Debug.WriteLine($"[Payment] New status: {newStatus}");
 
-                DatabaseHelper.ExecuteNonQuery(updateBillingQuery,
+                string updateBillingQuery = @"
+                UPDATE Billing 
+                SET status = @status,
+                payment_method = CASE 
+                WHEN payment_method = 'Pending Payment' OR payment_method IS NULL 
+                THEN @paymentMethod 
+                ELSE payment_method 
+                END
+                WHERE bill_id = @billId";
+
+                int rowsAffected = DatabaseHelper.ExecuteNonQuery(updateBillingQuery,
                     new MySqlParameter("@status", newStatus),
                     new MySqlParameter("@paymentMethod", paymentMethod),
                     new MySqlParameter("@billId", billId));
 
+                System.Diagnostics.Debug.WriteLine($"[Payment] Billing update rows affected: {rowsAffected}");
+
+                string verifyQuery = "SELECT status, payment_method FROM Billing WHERE bill_id = @billId";
+                DataTable verifyResult = DatabaseHelper.ExecuteQuery(verifyQuery,
+                    new MySqlParameter("@billId", billId));
+
+                if (verifyResult.Rows.Count > 0)
+                {
+                    string actualStatus = verifyResult.Rows[0]["status"].ToString();
+                    string actualPaymentMethod = verifyResult.Rows[0]["payment_method"].ToString();
+                    System.Diagnostics.Debug.WriteLine($"[Payment] Verified DB status: {actualStatus}");
+                    System.Diagnostics.Debug.WriteLine($"[Payment] Verified DB payment method: {actualPaymentMethod}");
+                }
+
                 string insertTransactionQuery = @"
-            INSERT INTO PaymentTransactions 
-            (bill_id, patient_id, amount_paid, payment_method, reference_number, 
-             payment_notes, processed_by, payment_date)
-            VALUES 
-            (@billId, @patientId, @amountPaid, @paymentMethod, @referenceNumber,
-             @paymentNotes, @processedBy, NOW())";
+                INSERT INTO PaymentTransactions 
+                (bill_id, patient_id, amount_paid, payment_method, reference_number, 
+                 payment_notes, processed_by, payment_date)
+                VALUES 
+                (@billId, @patientId, @amountPaid, @paymentMethod, @referenceNumber,
+                 @paymentNotes, @processedBy, NOW())";
 
                 DatabaseHelper.ExecuteNonQuery(insertTransactionQuery,
                     new MySqlParameter("@billId", billId),
@@ -439,6 +479,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     new MySqlParameter("@paymentNotes",
                         string.IsNullOrWhiteSpace(paymentNotes) ? DBNull.Value : (object)paymentNotes),
                     new MySqlParameter("@processedBy", currentUserId));
+
+                System.Diagnostics.Debug.WriteLine($"[Payment] Transaction record inserted successfully");
 
                 string successMessage = "✅ PAYMENT PROCESSED SUCCESSFULLY\n\n" +
                     $"Patient: {patientName}\n";
@@ -483,8 +525,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving payment: {ex.Message}\n\nThe payment was not processed.",
-                    "Payment Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Diagnostics.Debug.WriteLine($"[Payment] ERROR: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[Payment] Stack trace: {ex.StackTrace}");
+
+                MessageBox.Show(
+                    $"❌ ERROR SAVING PAYMENT\n\n" +
+                    $"Error: {ex.Message}\n\n" +
+                    "The payment was not processed.\n" +
+                    "Please try again or contact support.",
+                    "Payment Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 

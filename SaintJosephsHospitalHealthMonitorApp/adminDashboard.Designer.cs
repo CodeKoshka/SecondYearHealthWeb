@@ -70,6 +70,10 @@
             dgvBilling = new DataGridView();
             tabDischargedBills = new TabPage();
             dgvDischargedBills = new DataGridView();
+            tabTemporaryDeactivated = new TabPage();
+            dgvTemporaryDeactivated = new DataGridView();
+            tabFired = new TabPage();
+            dgvFired = new DataGridView();
             panelBillingStats = new Panel();
             panelBillingButtons = new Panel();
             btnGenerateIncomeReport = new Button();
@@ -83,6 +87,9 @@
             label1 = new Label();
             lblHospitalName = new Label();
             panelHeaderRight = new Panel();
+            panelNotificationBell = new Panel();
+            lblNotificationBell = new Label();
+            lblNotificationBadge = new Label();
             panelSidebar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxProfile).BeginInit();
             panelMainContent.SuspendLayout();
@@ -278,6 +285,8 @@
             tabUsers.Controls.Add(tabAdmins);
             tabUsers.Controls.Add(tabDoctors);
             tabUsers.Controls.Add(tabStaff);
+            tabUsers.Controls.Add(tabTemporaryDeactivated);
+            tabUsers.Controls.Add(tabFired);
             tabUsers.Dock = DockStyle.Fill;
             tabUsers.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             tabUsers.Location = new Point(20, 100);
@@ -401,6 +410,64 @@
             dgvStaff.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvStaff.Size = new Size(1127, 566);
             dgvStaff.TabIndex = 0;
+            //
+            // tabTemporaryDeactivated
+            //
+            tabTemporaryDeactivated.BackColor = Color.White;
+            tabTemporaryDeactivated.Controls.Add(dgvTemporaryDeactivated);
+            tabTemporaryDeactivated.Location = new Point(4, 26);
+            tabTemporaryDeactivated.Name = "tabTemporaryDeactivated";
+            tabTemporaryDeactivated.Padding = new Padding(15);
+            tabTemporaryDeactivated.Size = new Size(1157, 596);
+            tabTemporaryDeactivated.TabIndex = 4;
+            tabTemporaryDeactivated.Text = "⏸️ Temporary Deactivation";
+            //
+            // dgvTemporaryDeactivated
+            //
+            dgvTemporaryDeactivated.AllowUserToAddRows = false;
+            dgvTemporaryDeactivated.AllowUserToDeleteRows = false;
+            dgvTemporaryDeactivated.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvTemporaryDeactivated.BackgroundColor = Color.White;
+            dgvTemporaryDeactivated.BorderStyle = BorderStyle.None;
+            dgvTemporaryDeactivated.ColumnHeadersHeight = 50;
+            dgvTemporaryDeactivated.Dock = DockStyle.Fill;
+            dgvTemporaryDeactivated.Location = new Point(15, 15);
+            dgvTemporaryDeactivated.Name = "dgvTemporaryDeactivated";
+            dgvTemporaryDeactivated.ReadOnly = true;
+            dgvTemporaryDeactivated.RowHeadersVisible = false;
+            dgvTemporaryDeactivated.RowTemplate.Height = 45;
+            dgvTemporaryDeactivated.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvTemporaryDeactivated.Size = new Size(1127, 566);
+            dgvTemporaryDeactivated.TabIndex = 0;
+            //
+            // tabFired
+            //
+            tabFired.BackColor = Color.White;
+            tabFired.Controls.Add(dgvFired);
+            tabFired.Location = new Point(4, 26);
+            tabFired.Name = "tabFired";
+            tabFired.Padding = new Padding(15);
+            tabFired.Size = new Size(1157, 596);
+            tabFired.TabIndex = 5;
+            tabFired.Text = "🚫 Fired";
+            //
+            // dgvFired
+            //
+            dgvFired.AllowUserToAddRows = false;
+            dgvFired.AllowUserToDeleteRows = false;
+            dgvFired.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvFired.BackgroundColor = Color.White;
+            dgvFired.BorderStyle = BorderStyle.None;
+            dgvFired.ColumnHeadersHeight = 50;
+            dgvFired.Dock = DockStyle.Fill;
+            dgvFired.Location = new Point(15, 15);
+            dgvFired.Name = "dgvFired";
+            dgvFired.ReadOnly = true;
+            dgvFired.RowHeadersVisible = false;
+            dgvFired.RowTemplate.Height = 45;
+            dgvFired.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvFired.Size = new Size(1127, 566);
+            dgvFired.TabIndex = 0;
             // 
             // panelUserButtons
             // 
@@ -570,7 +637,7 @@
             btnDeletePatient.Name = "btnDeletePatient";
             btnDeletePatient.Size = new Size(170, 45);
             btnDeletePatient.TabIndex = 5;
-            btnDeletePatient.Text = "🗑️ Delete User";
+            btnDeletePatient.Text = "🗑️ Delete Patient";
             btnDeletePatient.UseVisualStyleBackColor = false;
             btnDeletePatient.Click += btnDeletePatient_Click;
             // 
@@ -804,6 +871,7 @@
             panelHeader.Controls.Add(label1);
             panelHeader.Controls.Add(lblHospitalName);
             panelHeader.Controls.Add(panelHeaderRight);
+            panelHeader.Controls.Add(panelNotificationBell);
             panelHeader.Dock = DockStyle.Top;
             panelHeader.Location = new Point(0, 0);
             panelHeader.Name = "panelHeader";
@@ -898,6 +966,48 @@
             panelHeaderRight.TabIndex = 1;
             panelHeaderRight.Visible = false;
             // 
+            // panelNotificationBell
+            // 
+            panelNotificationBell.BackColor = Color.Transparent;
+            panelNotificationBell.Cursor = Cursors.Hand;
+            panelNotificationBell.Location = new Point(1120, 15);
+            panelNotificationBell.Name = "panelNotificationBell";
+            panelNotificationBell.Size = new Size(60, 45);
+            panelNotificationBell.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            panelNotificationBell.Controls.Add(lblNotificationBadge);
+            panelNotificationBell.Controls.Add(lblNotificationBell);
+            panelNotificationBell.Click += PanelNotificationBell_Click;
+            // 
+            // lblNotificationBell
+            // 
+            lblNotificationBell.AutoSize = false;
+            lblNotificationBell.Font = new Font("Segoe UI", 20F);
+            lblNotificationBell.ForeColor = Color.White;
+            lblNotificationBell.Location = new Point(10, 5);
+            lblNotificationBell.Name = "lblNotificationBell";
+            lblNotificationBell.Size = new Size(40, 35);
+            lblNotificationBell.TabIndex = 0;
+            lblNotificationBell.Text = "🔔";
+            lblNotificationBell.TextAlign = ContentAlignment.MiddleCenter;
+            lblNotificationBell.Cursor = Cursors.Hand;
+            lblNotificationBell.Click += PanelNotificationBell_Click;
+            // 
+            // lblNotificationBadge
+            // 
+            lblNotificationBadge.AutoSize = false;
+            lblNotificationBadge.BackColor = Color.FromArgb(229, 62, 62);
+            lblNotificationBadge.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
+            lblNotificationBadge.ForeColor = Color.White;
+            lblNotificationBadge.Location = new Point(32, 8);
+            lblNotificationBadge.Name = "lblNotificationBadge";
+            lblNotificationBadge.Size = new Size(22, 18);
+            lblNotificationBadge.TabIndex = 1;
+            lblNotificationBadge.Text = "0";
+            lblNotificationBadge.TextAlign = ContentAlignment.MiddleCenter;
+            lblNotificationBadge.Visible = false;
+            lblNotificationBadge.Cursor = Cursors.Hand;
+            lblNotificationBadge.Click += PanelNotificationBell_Click;
+            // 
             // AdminDashboard
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -982,6 +1092,10 @@
         private TabPage tabBilling;
         private DataGridView dgvBilling;
         private DataGridView dgvDischargedBills;
+        private TabPage tabTemporaryDeactivated;
+        private TabPage tabFired;
+        private DataGridView dgvTemporaryDeactivated;
+        private DataGridView dgvFired;
         private Panel panelBillingStats;
         private Panel panelBillingButtons;
         private Button btnViewBillDetails;
@@ -1001,5 +1115,8 @@
         private Button BtnViewPatientProfile;
         private Button btnViewUserProfile;
         private Button btnToggleAccountStatus;
+        private Panel panelNotificationBell;
+        private Label lblNotificationBell;
+        private Label lblNotificationBadge;
     }
 }

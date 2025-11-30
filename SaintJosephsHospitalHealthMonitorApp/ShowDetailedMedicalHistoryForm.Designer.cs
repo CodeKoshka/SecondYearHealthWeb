@@ -38,16 +38,16 @@
             btnPrint = new Button();
             btnViewDetails = new Button();
             panelHeader.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvHistory)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(dgvHistory)).BeginInit();
             panelButtons.SuspendLayout();
             SuspendLayout();
             // 
             // panelHeader
             // 
             panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(156)))), ((int)(((byte)(39)))), ((int)(((byte)(176)))));
-            panelHeader.Controls.Add(this.lblInstruction);
-            panelHeader.Controls.Add(this.lblStats);
-            panelHeader.Controls.Add(this.lblTitle);
+            panelHeader.Controls.Add(lblInstruction);
+            panelHeader.Controls.Add(lblStats);
+            panelHeader.Controls.Add(lblTitle);
             panelHeader.Dock = DockStyle.Top;
             panelHeader.Location = new System.Drawing.Point(0, 0);
             panelHeader.Name = "panelHeader";
@@ -103,14 +103,14 @@
             dgvHistory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvHistory.Size = new System.Drawing.Size(1160, 520);
             dgvHistory.TabIndex = 1;
-            dgvHistory.CellDoubleClick += new DataGridViewCellEventHandler(this.DgvHistory_CellDoubleClick);
+            dgvHistory.CellDoubleClick += new DataGridViewCellEventHandler(DgvHistory_CellDoubleClick);
             // 
             // panelButtons
             // 
             panelButtons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
-            panelButtons.Controls.Add(this.btnClose);
-            panelButtons.Controls.Add(this.btnPrint);
-            panelButtons.Controls.Add(this.btnViewDetails);
+            panelButtons.Controls.Add(btnClose);
+            panelButtons.Controls.Add(btnPrint);
+            panelButtons.Controls.Add(btnViewDetails);
             panelButtons.Dock = DockStyle.Bottom;
             panelButtons.Location = new System.Drawing.Point(0, 660);
             panelButtons.Name = "panelButtons";
@@ -132,7 +132,7 @@
             btnClose.TabIndex = 2;
             btnClose.Text = "✓ Close";
             btnClose.UseVisualStyleBackColor = false;
-            btnClose.Click += new System.EventHandler(this.BtnClose_Click);
+            btnClose.Click += new System.EventHandler(BtnClose_Click);
             // 
             // btnPrint
             // 
@@ -148,7 +148,7 @@
             btnPrint.TabIndex = 1;
             btnPrint.Text = "🖨️ Print History";
             btnPrint.UseVisualStyleBackColor = false;
-            btnPrint.Click += new System.EventHandler(this.BtnPrint_Click);
+            btnPrint.Click += new System.EventHandler(BtnPrint_Click);
             // 
             // btnViewDetails
             // 
@@ -164,7 +164,7 @@
             btnViewDetails.TabIndex = 0;
             btnViewDetails.Text = "👁️ View Full Record";
             btnViewDetails.UseVisualStyleBackColor = false;
-            btnViewDetails.Click += new System.EventHandler(this.BtnViewDetails_Click);
+            btnViewDetails.Click += new System.EventHandler(BtnViewDetails_Click);
             // 
             // ShowDetailedMedicalHistoryForm
             // 
@@ -172,9 +172,9 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
             ClientSize = new System.Drawing.Size(1200, 750);
-            Controls.Add(this.panelButtons);
-            Controls.Add(this.dgvHistory);
-            Controls.Add(this.panelHeader);
+            Controls.Add(panelButtons);
+            Controls.Add(dgvHistory);
+            Controls.Add(panelHeader);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
@@ -183,7 +183,7 @@
             Text = "Medical History";
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvHistory)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(dgvHistory)).EndInit();
             panelButtons.ResumeLayout(false);
             ResumeLayout(false);
 

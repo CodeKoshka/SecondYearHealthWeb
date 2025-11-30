@@ -28,18 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblTitle = new Label();
-            this.lblPatient = new Label();
-            this.cmbPatient = new ComboBox();
-            this.lblDoctor = new Label();
-            this.cmbDoctor = new ComboBox();
-            this.lblDate = new Label();
-            this.dtpAppointment = new DateTimePicker();
-            this.lblNotes = new Label();
-            this.txtNotes = new TextBox();
-            this.btnSave = new Button();
-            this.btnCancel = new Button();
-            this.SuspendLayout();
+            lblTitle = new Label();
+            lblPatient = new Label();
+            cmbPatient = new ComboBox();
+            lblDoctor = new Label();
+            cmbDoctor = new ComboBox();
+            lblDate = new Label();
+            dtpAppointment = new DateTimePicker();
+            lblNotes = new Label();
+            txtNotes = new TextBox();
+            btnSave = new Button();
+            btnCancel = new Button();
+            SuspendLayout();
             // 
             // lblTitle
             // 
@@ -135,7 +135,7 @@
             btnSave.TabIndex = 9;
             btnSave.Text = "Schedule";
             btnSave.UseVisualStyleBackColor = false;
-            btnSave.Click += new System.EventHandler(this.BtnSave_Click);
+            btnSave.Click += new System.EventHandler(BtnSave_Click);
             // 
             // btnCancel
             // 
@@ -150,7 +150,7 @@
             btnCancel.TabIndex = 10;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = false;
-            btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
+            btnCancel.Click += new System.EventHandler(BtnCancel_Click);
             // 
             // AppointmentForm
             // 
@@ -158,17 +158,17 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
             ClientSize = new System.Drawing.Size(484, 450);
-            Controls.Add(this.btnCancel);
-            Controls.Add(this.btnSave);
-            Controls.Add(this.txtNotes);
-            Controls.Add(this.lblNotes);
-            Controls.Add(this.dtpAppointment);
-            Controls.Add(this.lblDate);
-            Controls.Add(this.cmbDoctor);
-            Controls.Add(this.lblDoctor);
-            Controls.Add(this.cmbPatient);
-            Controls.Add(this.lblPatient);
-            Controls.Add(this.lblTitle);
+            Controls.Add(btnCancel);
+            Controls.Add(btnSave);
+            Controls.Add(txtNotes);
+            Controls.Add(lblNotes);
+            Controls.Add(dtpAppointment);
+            Controls.Add(lblDate);
+            Controls.Add(cmbDoctor);
+            Controls.Add(lblDoctor);
+            Controls.Add(cmbPatient);
+            Controls.Add(lblPatient);
+            Controls.Add(lblTitle);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             Name = "AppointmentForm";

@@ -349,6 +349,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
+        private void BtnForgotPassword_Click(object sender, EventArgs e)
+        {
+            ForgotPasswordForm forgotPasswordForm = new ForgotPasswordForm();
+            forgotPasswordForm.ShowDialog();
+        }
+
         private void ShowError(string message)
         {
             lblError.Text = message;

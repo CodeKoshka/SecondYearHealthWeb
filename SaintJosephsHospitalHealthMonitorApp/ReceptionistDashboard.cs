@@ -15,6 +15,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private byte[] currentUserProfileImage;
         private System.Threading.Timer searchDebounceTimer;
         private const int SEARCH_DEBOUNCE_MS = 300;
+        private int registeredBy;
+        public int SelectedPatientId { get; private set; }
 
         public ReceptionistDashboard(User user)
         {
@@ -1742,7 +1744,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     if (paymentForm.ShowDialog() == DialogResult.OK)
                     {
-                        LoadData();
+                        LoadBillingData();
+
+                        if (dgvBilling.SelectedRows.Count > 0)
+                        {
+                            dgvBilling.ClearSelection();
+                        }
+
+                        foreach (DataGridViewRow row in dgvBilling.Rows)
+                        {
+                            if (row.Cells["bill_id"].Value != null &&
+                                Convert.ToInt32(row.Cells["bill_id"].Value) == billId)
+                            {
+                                row.Selected = true;
+                                dgvBilling.FirstDisplayedScrollingRowIndex = row.Index;
+                                break;
+                            }
+                        }
 
                         MessageBox.Show(
                             "✅ Payment successfully recorded!\n\n" +
@@ -2426,28 +2444,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private void BtnAddToQueue_Click(object sender, EventArgs e)
-        {
-            using (AddToQueueForm addQueueForm = new AddToQueueForm(currentUser.UserId))
-            {
-                if (addQueueForm.ShowDialog() == DialogResult.OK)
-                {
-                    LoadData();
-
-                    MessageBox.Show(
-                        "✅ PATIENT ADDED TO QUEUE\n\n" +
-                        "The patient has been successfully added to today's queue.\n\n" +
-                        "Next steps:\n" +
-                        "• Assign a doctor to the patient\n" +
-                        "• Call the patient when ready\n" +
-                        "• Doctor will complete the consultation",
-                        "Success",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-            }
-        }
-
         private void BtnAssignDoctor_Click(object sender, EventArgs e)
         {
             if (dgvQueue.SelectedRows.Count == 0)
@@ -2797,17 +2793,17 @@ namespace SaintJosephsHospitalHealthMonitorApp
             int userId = Convert.ToInt32(userIdResult);
 
             DialogResult confirm = MessageBox.Show(
-                $"Edit patient record?\n\n" +
+                $"Edit basic profile information?\n\n" +
                 $"Patient: {patientName}\n\n" +
                 "You will be able to edit:\n" +
                 "• Name\n" +
                 "• Date of Birth\n" +
                 "• Gender\n" +
-                "• Email (optional)\n" +
                 "• Profile Photo\n\n" +
-                "⚠️ Note: Patient role cannot be changed.\n\n" +
+                "⚠️ Note: To edit medical intake details (blood type, allergies, etc.),\n" +
+                "use the 'Edit Details' button instead.\n\n" +
                 "Continue?",
-                "Edit Patient",
+                "Edit Patient Profile",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
@@ -2818,7 +2814,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     if (editForm.ShowDialog() == DialogResult.OK)
                     {
                         MessageBox.Show(
-                            $"✓ Patient record updated successfully!\n\n" +
+                            $"✓ Patient profile updated successfully!\n\n" +
                             $"Patient: {patientName}\n\n" +
                             "Changes have been saved to the database.",
                             "Update Successful",
@@ -3007,11 +3003,73 @@ namespace SaintJosephsHospitalHealthMonitorApp
             loginForm.Show();
         }
 
+        private void BtnAddToQueue_Click(object sender, EventArgs e)
+        {
+            using (AddToQueueForm addForm = new AddToQueueForm(currentUser.UserId))
+            {
+                if (addForm.ShowDialog() == DialogResult.OK)
+                {
+                    LoadData();
+                    MessageBox.Show(
+                        "✅ Patient added to queue successfully!\n\n" +
+                        "The patient can now wait to be called by a doctor.",
+                        "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+            }
+        }
+
         private void BtnAddPatient_Click(object sender, EventArgs e)
         {
             RegisterForm patientForm = RegisterForm.CreatePatientMode(currentUser.UserId, currentUser.Role);
             patientForm.FormClosed += (s, args) => LoadData();
             patientForm.ShowDialog();
+        }
+
+        private string GetPatientName(int patientId)
+        {
+            try
+            {
+                string query = @"
+            SELECT u.name 
+            FROM Patients p
+            INNER JOIN Users u ON p.user_id = u.user_id
+            WHERE p.patient_id = @patientId";
+
+                DataTable dt = DatabaseHelper.ExecuteQuery(query,
+                    new MySqlParameter("@patientId", patientId));
+
+                if (dt.Rows.Count > 0)
+                {
+                    return dt.Rows[0]["name"].ToString();
+                }
+            }
+            catch { }
+
+            return "Unknown Patient";
+        }
+
+        private void RemovePatientFromQueue(int patientId)
+        {
+            try
+            {
+                string removeQuery = @"
+            DELETE FROM PatientQueue 
+            WHERE patient_id = @patientId 
+            AND queue_date = CURDATE()
+            AND status = 'Waiting'";
+
+                DatabaseHelper.ExecuteNonQuery(removeQuery,
+                    new MySqlParameter("@patientId", patientId));
+
+                LoadData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error removing patient from queue: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BtnCheckMedicalHistory_Click(object sender, EventArgs e)

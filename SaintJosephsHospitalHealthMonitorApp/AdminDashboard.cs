@@ -30,6 +30,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             InitializeUniversalSearch();
             LoadData();
             LoadUserProfile();
+            CheckSecurityQuestionsAndUpdateBell();
         }
 
         private void ApplyStyle()
@@ -231,11 +232,24 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 ConfigureDataGridView(dgvDoctors);
                 dgvDoctors.SelectionChanged += DgvUsers_SelectionChanged;
             }
-            if (dgvPatients != null) ConfigureDataGridView(dgvPatients);
+            if (dgvPatients != null)
+            {
+                ConfigureDataGridView(dgvPatients);
+            }
             if (dgvStaff != null)
             {
                 ConfigureDataGridView(dgvStaff);
                 dgvStaff.SelectionChanged += DgvUsers_SelectionChanged;
+            }
+            if (dgvTemporaryDeactivated != null)
+            {
+                ConfigureDataGridView(dgvTemporaryDeactivated);
+                dgvTemporaryDeactivated.SelectionChanged += DgvUsers_SelectionChanged;
+            }
+            if (dgvFired != null)
+            {
+                ConfigureDataGridView(dgvFired);
+                dgvFired.SelectionChanged += DgvUsers_SelectionChanged;
             }
         }
 
@@ -260,7 +274,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             string uniqueId = userIdCell.Value.ToString();
             string role = roleCell?.Value?.ToString() ?? "";
 
-            string getUserQuery = @"SELECT user_id, is_active, email, role FROM Users WHERE unique_id = @uniqueId";
+            string getUserQuery = @"SELECT user_id, is_active, email, role, deactivation_type, can_reactivate 
+                           FROM Users WHERE unique_id = @uniqueId";
             DataTable dt = DatabaseHelper.ExecuteQuery(getUserQuery,
                 new MySqlParameter("@uniqueId", uniqueId));
 
@@ -270,7 +285,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 bool isActive = Convert.ToBoolean(dt.Rows[0]["is_active"]);
                 string email = dt.Rows[0]["email"]?.ToString() ?? "";
                 string userRole = dt.Rows[0]["role"]?.ToString() ?? "";
-
+                string deactivationType = dt.Rows[0]["deactivation_type"]?.ToString();
+                bool canReactivate = dt.Rows[0]["can_reactivate"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["can_reactivate"]) : true;
 
                 if (userRole == "Headadmin" && isActive)
                 {
@@ -290,6 +306,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 {
                     btnToggleAccountStatus.Text = "🔒 Deactivate Account";
                     btnToggleAccountStatus.BackColor = Color.FromArgb(231, 76, 60);
+                }
+                else if (deactivationType == "temporary")
+                {
+                    btnToggleAccountStatus.Text = "🔓 Reactivate Account";
+                    btnToggleAccountStatus.BackColor = Color.FromArgb(46, 204, 113);
+                }
+                else if (deactivationType == "permanent")
+                {
+                    if (canReactivate && currentUser.Role == "Headadmin")
+                    {
+                        btnToggleAccountStatus.Text = "♻️ Rehire User";
+                        btnToggleAccountStatus.BackColor = Color.FromArgb(52, 152, 219);
+                    }
+                    else
+                    {
+                        btnToggleAccountStatus.Visible = false;
+                    }
                 }
                 else
                 {
@@ -622,12 +655,21 @@ namespace SaintJosephsHospitalHealthMonitorApp
             searchSuggestionsListBox.BorderStyle = BorderStyle.None;
             searchSuggestionsListBox.BackColor = Color.White;
             searchSuggestionsListBox.ForeColor = Color.FromArgb(26, 32, 44);
-            searchSuggestionsListBox.IntegralHeight = false;
+            searchSuggestionsListBox.IntegralHeight = true;
             searchSuggestionsListBox.DrawMode = DrawMode.OwnerDrawFixed;
             searchSuggestionsListBox.ItemHeight = 50;
             searchSuggestionsListBox.Click += SearchSuggestionsListBox_Click;
             searchSuggestionsListBox.KeyDown += SearchSuggestionsListBox_KeyDown;
             searchSuggestionsListBox.MouseMove += SearchSuggestionsListBox_MouseMove;
+            searchSuggestionsListBox.MouseWheel += SearchSuggestionsListBox_MouseWheel;
+
+            searchSuggestionsListBox.MouseDown += (s, e) =>
+            {
+                if (e.X > searchSuggestionsListBox.ClientSize.Width - SystemInformation.VerticalScrollBarWidth)
+                {
+                    ((HandledMouseEventArgs)e).Handled = true;
+                }
+            };
 
             searchSuggestionsListBox.DrawItem += (s, e) =>
             {
@@ -806,6 +848,38 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 Container = suggestionsContainer,
                 Shadow = suggestionsShadow
             };
+        }
+
+        private void SearchSuggestionsListBox_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (searchSuggestionsListBox == null || searchSuggestionsListBox.Items.Count == 0)
+                return;
+
+            HandledMouseEventArgs handledArgs = e as HandledMouseEventArgs;
+            if (handledArgs != null)
+            {
+                handledArgs.Handled = true;
+            }
+
+            int direction = e.Delta > 0 ? -1 : 1;
+            int currentTop = searchSuggestionsListBox.TopIndex;
+            int newTop = currentTop + direction;
+
+            int maxTop = Math.Max(0, searchSuggestionsListBox.Items.Count - GetVisibleItemCount());
+            newTop = Math.Max(0, Math.Min(newTop, maxTop));
+
+            if (newTop != currentTop && newTop >= 0)
+            {
+                searchSuggestionsListBox.TopIndex = newTop;
+            }
+        }
+
+        private int GetVisibleItemCount()
+        {
+            if (searchSuggestionsListBox == null || searchSuggestionsListBox.ItemHeight <= 0)
+                return 1;
+
+            return Math.Max(1, searchSuggestionsListBox.ClientSize.Height / searchSuggestionsListBox.ItemHeight);
         }
 
         private Color GetCategoryColor(string source)
@@ -1407,36 +1481,103 @@ namespace SaintJosephsHospitalHealthMonitorApp
             try
             {
                 string query = @"
-                SELECT 
-                unique_id AS 'User ID', 
-                name AS 'Name', 
-                role AS 'Role', 
-                email AS 'Email Address', 
-                DATE_FORMAT(created_date, '%Y-%m-%d %H:%i') AS 'Date Created',
-                is_active
-                FROM Users 
-                WHERE role != 'Patient' 
-                ORDER BY is_active DESC, created_date DESC";
+            SELECT 
+            unique_id AS 'User ID', 
+            name AS 'Name', 
+            role AS 'Role', 
+            email AS 'Email Address', 
+            DATE_FORMAT(created_date, '%Y-%m-%d %H:%i') AS 'Date Created',
+            is_active,
+            deactivation_type
+            FROM Users 
+            WHERE role != 'Patient' AND (is_active = 1 OR deactivation_type IS NULL)
+            ORDER BY created_date DESC";
 
                 DataTable allUsers = DatabaseHelper.ExecuteQuery(query);
 
-                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {allUsers.Rows.Count} users (including inactive)");
-
                 dgvUsers.DataSource = allUsers;
-
-                this.Text = $"St. Joseph's Hospital - Admin Dashboard ({allUsers.Rows.Count} users)";
+                this.Text = $"St. Joseph's Hospital - Admin Dashboard ({allUsers.Rows.Count} active users)";
 
                 LoadRoleSpecificGrids(allUsers);
+                LoadTemporaryDeactivatedUsers();
+                LoadFiredUsers();
+
                 HideStatusColumnAndHighlight(dgvUsers);
                 HideStatusColumnAndHighlight(dgvAdmins);
                 HideStatusColumnAndHighlight(dgvDoctors);
                 HideStatusColumnAndHighlight(dgvStaff);
+                HideStatusColumnAndHighlight(dgvTemporaryDeactivated);
+                HideStatusColumnAndHighlight(dgvFired);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading users: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 System.Diagnostics.Debug.WriteLine($"[AdminDashboard] LoadUsersData error: {ex.Message}");
+            }
+        }
+
+        private void LoadTemporaryDeactivatedUsers()
+        {
+            try
+            {
+                string query = @"
+            SELECT 
+            unique_id AS 'User ID', 
+            name AS 'Name', 
+            role AS 'Role', 
+            email AS 'Email Address', 
+            DATE_FORMAT(deactivated_date, '%Y-%m-%d %H:%i') AS 'Deactivated Date',
+            deactivated_reason AS 'Reason',
+            is_active,
+            deactivation_type
+            FROM Users 
+            WHERE role != 'Patient' 
+            AND is_active = 0 
+            AND deactivation_type = 'temporary'
+            ORDER BY deactivated_date DESC";
+
+                DataTable tempDeactivated = DatabaseHelper.ExecuteQuery(query);
+                dgvTemporaryDeactivated.DataSource = tempDeactivated;
+
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {tempDeactivated.Rows.Count} temporarily deactivated users");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] LoadTemporaryDeactivatedUsers error: {ex.Message}");
+            }
+        }
+
+        private void LoadFiredUsers()
+        {
+            try
+            {
+                string query = @"
+            SELECT 
+            unique_id AS 'User ID', 
+            name AS 'Name', 
+            role AS 'Role', 
+            email AS 'Email Address', 
+            DATE_FORMAT(deactivated_date, '%Y-%m-%d %H:%i') AS 'Fired Date',
+            deactivated_reason AS 'Reason',
+            CASE WHEN can_reactivate = 1 THEN 'Yes' ELSE 'No' END AS 'Can Rehire',
+            is_active,
+            deactivation_type,
+            can_reactivate
+            FROM Users 
+            WHERE role != 'Patient' 
+            AND is_active = 0 
+            AND deactivation_type = 'permanent'
+            ORDER BY deactivated_date DESC";
+
+                DataTable fired = DatabaseHelper.ExecuteQuery(query);
+                dgvFired.DataSource = fired;
+
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] Loaded {fired.Rows.Count} fired users");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[AdminDashboard] LoadFiredUsers error: {ex.Message}");
             }
         }
 
@@ -1750,11 +1891,13 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                     int width = panelUniversalSearch.Width;
                     int itemCount = searchSuggestionsListBox.Items.Count;
-                    int maxVisibleItems = 6;
+                    int maxVisibleItems = 5;
+                    int actualVisibleItems = Math.Min(itemCount, maxVisibleItems);
 
                     int statusHeight = 35;
-                    int listHeight = Math.Min(itemCount, maxVisibleItems) * searchSuggestionsListBox.ItemHeight;
-                    int totalHeight = statusHeight + listHeight + 2;
+                    int itemHeight = searchSuggestionsListBox.ItemHeight; 
+                    int listHeight = actualVisibleItems * itemHeight;
+                    int totalHeight = statusHeight + listHeight + 4;
 
                     container.Location = new Point(searchPanelLocation.X, searchPanelBottom);
                     container.Size = new Size(width, totalHeight);
@@ -1784,6 +1927,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     searchSuggestionsListBox.Size = new Size(width - 2, listHeight);
                     searchSuggestionsListBox.BorderStyle = BorderStyle.FixedSingle;
                     searchSuggestionsListBox.Region = null;
+                    searchSuggestionsListBox.ScrollAlwaysVisible = false;
 
                     shadow.Location = new Point(searchPanelLocation.X + 2, searchPanelBottom + 2);
                     shadow.Size = new Size(width, totalHeight);
@@ -1963,13 +2107,29 @@ namespace SaintJosephsHospitalHealthMonitorApp
         private DataGridView GetActiveUserGrid()
         {
             if (tabUsers.SelectedTab == tabAllUsers)
+            {
                 return dgvUsers;
+            }
             else if (tabUsers.SelectedTab == tabAdmins)
+            {
                 return dgvAdmins;
+            }
             else if (tabUsers.SelectedTab == tabDoctors)
+            {
                 return dgvDoctors;
+            }
             else if (tabUsers.SelectedTab == tabStaff)
+            {
                 return dgvStaff;
+            }
+            else if (tabUsers.SelectedTab == tabTemporaryDeactivated)
+            {
+                return dgvTemporaryDeactivated;
+            }
+            else if (tabUsers.SelectedTab == tabFired)
+            {
+                return dgvFired;
+            }
             return dgvUsers;
         }
 
@@ -2011,16 +2171,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
 
             int userId = Convert.ToInt32(result);
+
             RegisterForm editForm = new RegisterForm(userId);
-            editForm.FormClosed += (s, args) =>
+
+            DialogResult dialogResult = editForm.ShowDialog();
+
+            if (dialogResult == DialogResult.OK)
             {
                 LoadData();
                 if (userId == currentUser.UserId)
                 {
                     RefreshUserData();
                 }
-            };
-            editForm.ShowDialog();
+            }
+            editForm.Dispose();
         }
 
         private void BtnDeleteUser_Click(object sender, EventArgs e)
@@ -2028,99 +2192,91 @@ namespace SaintJosephsHospitalHealthMonitorApp
             DataGridView activeGrid = GetActiveUserGrid();
             if (activeGrid.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Please select a user to delete.", "Selection Required",
+                MessageBox.Show("Please select a user to fire.", "Selection Required",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
             var userIdCell = activeGrid.SelectedRows[0].Cells["User ID"];
             var nameCell = activeGrid.SelectedRows[0].Cells["Name"];
             var emailCell = activeGrid.SelectedRows[0].Cells["Email Address"];
-
             if (userIdCell?.Value == null || userIdCell.Value == DBNull.Value)
             {
                 MessageBox.Show("Invalid user data selected.", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
             string uniqueId = userIdCell.Value.ToString();
             string userName = nameCell?.Value?.ToString() ?? "Unknown";
             string userEmail = emailCell?.Value?.ToString() ?? "";
-
-            if (userEmail == "Headadmin@hospital.com" ||
-                userEmail == "Admin@hospital.com" ||
-                userEmail == "Receptionist@hospital.com" ||
-                userEmail == "Pharmacist@hospital.com" ||
-                userEmail == "Doctor@hospital.com")
+            if (userEmail == "Headadmin@hospital.com")
             {
-                MessageBox.Show("Cannot delete default system accounts.", "Access Denied",
+                MessageBox.Show("Cannot fire Headadmin account.", "Access Denied",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            string getUserIdQuery = "SELECT user_id FROM Users WHERE unique_id = @uniqueId";
-            object result = DatabaseHelper.ExecuteScalar(getUserIdQuery,
+            string getUserIdQuery = "SELECT user_id, role FROM Users WHERE unique_id = @uniqueId";
+            DataTable dt = DatabaseHelper.ExecuteQuery(getUserIdQuery,
                 new MySqlParameter("@uniqueId", uniqueId));
-
-            if (result == null || result == DBNull.Value)
+            if (dt.Rows.Count == 0)
             {
                 MessageBox.Show("Cannot find user record.", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            int userId = Convert.ToInt32(result);
-
+            int userId = Convert.ToInt32(dt.Rows[0]["user_id"]);
+            string userRole = dt.Rows[0]["role"].ToString();
             if (userId == currentUser.UserId)
             {
-                MessageBox.Show("You cannot delete your own account.", "Access Denied",
+                MessageBox.Show("You cannot fire your own account.", "Access Denied",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            DialogResult deleteChoice = MessageBox.Show(
-                $"How do you want to remove {userName}?\n\n" +
-                "YES = Permanently Delete (cannot be undone)\n" +
-                "NO = Deactivate (can be reactivated later)\n" +
-                "CANCEL = Cancel operation",
-                "Delete or Deactivate?",
-                MessageBoxButtons.YesNoCancel,
-                MessageBoxIcon.Question);
-
-            if (deleteChoice == DialogResult.Cancel)
+            if (userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("Admins cannot fire other Admin accounts.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
-
-            try
-            {
-                if (deleteChoice == DialogResult.Yes)
-                {
-                    string query = "DELETE FROM Users WHERE user_id = @userId";
-                    DatabaseHelper.ExecuteNonQuery(query, new MySqlParameter("@userId", userId));
-                    MessageBox.Show("User permanently deleted.", "Success",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    string query = "UPDATE Users SET is_active = 0 WHERE user_id = @userId";
-                    DatabaseHelper.ExecuteNonQuery(query, new MySqlParameter("@userId", userId));
-                    MessageBox.Show("User deactivated successfully.", "Success",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                LoadData();
             }
-            catch (Exception ex)
+            using (FireUserDialog fireDialog = new FireUserDialog(userName, userRole))
             {
-                MessageBox.Show("Error: " + ex.Message, "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (fireDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        string updateQuery = @"
+                    UPDATE Users 
+                    SET is_active = 0,
+                        deactivation_type = 'permanent',
+                        deactivated_reason = @reason,
+                        deactivated_date = NOW(),
+                        deactivated_by = @deactivatedBy,
+                        can_reactivate = @canReactivate
+                    WHERE user_id = @userId";
+                        DatabaseHelper.ExecuteNonQuery(updateQuery,
+                            new MySqlParameter("@reason", fireDialog.Reason),
+                            new MySqlParameter("@deactivatedBy", currentUser.UserId),
+                            new MySqlParameter("@canReactivate", fireDialog.CanRehire),
+                            new MySqlParameter("@userId", userId));
+                        string rehireStatus = fireDialog.CanRehire ? "can be rehired" : "cannot be rehired";
+                        MessageBox.Show(
+                            $"🚫 USER FIRED\n\n" +
+                            $"User: {userName}\n" +
+                            $"Role: {userRole}\n\n" +
+                            $"Reason: {fireDialog.Reason}\n" +
+                            $"Status: {rehireStatus}\n\n" +
+                            $"User moved to 'Fired' tab.",
+                            "User Fired",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                        LoadData();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error firing user: " + ex.Message, "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
-        }
-
-        private void BtnRefresh_Click(object sender, EventArgs e)
-        {
-            LoadData();
-            MessageBox.Show("Data refreshed successfully!", "Refresh",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void BtnViewPatientRecord_Click(object sender, EventArgs e)
@@ -2144,8 +2300,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             string query = @"
             SELECT u.name, 
-                   COUNT(DISTINCT mr.record_id) as record_count,
-                   COUNT(DISTINCT pq.queue_id) as visit_count
+            COUNT(DISTINCT mr.record_id) as record_count,
+            COUNT(DISTINCT pq.queue_id) as visit_count
             FROM Patients p
             INNER JOIN Users u ON p.user_id = u.user_id
             LEFT JOIN medicalrecords mr ON p.patient_id = mr.patient_id
@@ -2190,15 +2346,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 return;
             }
 
-            var patientIdCell = dgvPatients.SelectedRows[0].Cells["Patient ID"];
-            if (patientIdCell?.Value == null || patientIdCell.Value == DBNull.Value)
-            {
-                MessageBox.Show("Invalid patient data selected.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            int patientId = Convert.ToInt32(dgvPatients.SelectedRows[0].Cells["Patient ID"].Value);
+            string patientName = dgvPatients.SelectedRows[0].Cells["Patient Name"].Value.ToString();
 
-            int patientId = Convert.ToInt32(patientIdCell.Value);
             string getUserIdQuery = "SELECT user_id FROM Patients WHERE patient_id = @patientId";
             object userIdResult = DatabaseHelper.ExecuteScalar(getUserIdQuery,
                 new MySqlParameter("@patientId", patientId));
@@ -2212,9 +2362,41 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             int userId = Convert.ToInt32(userIdResult);
 
-            RegisterForm editForm = new RegisterForm(userId);
-            editForm.FormClosed += (s, args) => LoadData();
-            editForm.ShowDialog();
+            DialogResult confirm = MessageBox.Show(
+                $"Edit basic profile information?\n\n" +
+                $"Patient: {patientName}\n\n" +
+                "You will be able to edit:\n" +
+                "• Name\n" +
+                "• Date of Birth\n" +
+                "• Gender\n" +
+                "• Profile Photo\n\n" +
+                "⚠️ Note: To edit medical intake details (blood type, allergies, etc.),\n" +
+                "use the 'Edit Details' button instead.\n\n" +
+                "Continue?",
+                "Edit Patient Profile",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (confirm == DialogResult.Yes)
+            {
+                RegisterForm editForm = new RegisterForm(userId);
+                DialogResult dialogResult = editForm.ShowDialog();
+
+                if (dialogResult == DialogResult.OK)
+                {
+                    MessageBox.Show(
+                        $"✓ Patient profile updated successfully!\n\n" +
+                        $"Patient: {patientName}\n\n" +
+                        "Changes have been saved to the database.",
+                        "Update Successful",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    LoadData();
+                }
+
+                editForm.Dispose();
+            }
         }
 
         private void btnDeletePatient_Click(object sender, EventArgs e)
@@ -2239,21 +2421,20 @@ namespace SaintJosephsHospitalHealthMonitorApp
             int patientId = Convert.ToInt32(patientIdCell.Value);
             string patientName = nameCell?.Value?.ToString() ?? "Unknown";
 
-            DialogResult deleteChoice = MessageBox.Show(
-                $"How do you want to remove {patientName}?\n\n" +
-                "YES = Permanently Delete (cannot be undone)\n" +
-                "NO = Deactivate (can be reactivated later)\n" +
-                "CANCEL = Cancel operation",
-                "Delete or Deactivate Patient?",
-                MessageBoxButtons.YesNoCancel,
-                MessageBoxIcon.Question);
+            DialogResult deleteConfirm = MessageBox.Show(
+                $"⚠️ PERMANENTLY DELETE PATIENT?\n\n" +
+                $"Patient: {patientName}\n\n" +
+                "This action CANNOT be undone!\n" +
+                "All patient records, medical history, and billing data will be permanently removed.\n\n" +
+                "Are you sure you want to delete this patient?",
+                "Confirm Permanent Deletion",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
 
-            if (deleteChoice == DialogResult.Cancel)
-                return;
-
-            try
+            if (deleteConfirm == DialogResult.Yes)
             {
-                if (deleteChoice == DialogResult.Yes)
+                try
                 {
                     string getUserIdQuery = "SELECT user_id FROM Patients WHERE patient_id = @patientId";
                     object userIdResult = DatabaseHelper.ExecuteScalar(getUserIdQuery,
@@ -2266,34 +2447,22 @@ namespace SaintJosephsHospitalHealthMonitorApp
                         string deleteQuery = "DELETE FROM Users WHERE user_id = @userId";
                         DatabaseHelper.ExecuteNonQuery(deleteQuery, new MySqlParameter("@userId", userId));
 
-                        MessageBox.Show("Patient permanently deleted.", "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(
+                            $"✓ Patient permanently deleted.\n\n" +
+                            $"Patient: {patientName}\n" +
+                            $"All medical records and data have been removed.",
+                            "Deletion Successful",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
                     }
+
+                    LoadData();
                 }
-                else
+                catch (Exception ex)
                 {
-                    string getUserIdQuery = "SELECT user_id FROM Patients WHERE patient_id = @patientId";
-                    object userIdResult = DatabaseHelper.ExecuteScalar(getUserIdQuery,
-                        new MySqlParameter("@patientId", patientId));
-
-                    if (userIdResult != null && userIdResult != DBNull.Value)
-                    {
-                        int userId = Convert.ToInt32(userIdResult);
-
-                        string deactivateQuery = "UPDATE Users SET is_active = 0 WHERE user_id = @userId";
-                        DatabaseHelper.ExecuteNonQuery(deactivateQuery, new MySqlParameter("@userId", userId));
-
-                        MessageBox.Show("Patient deactivated successfully.", "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    MessageBox.Show("Error deleting patient: " + ex.Message, "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-
-                LoadData();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message, "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -2329,10 +2498,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             int userId = Convert.ToInt32(result);
 
-            using (RegisterForm viewForm = RegisterForm.CreateViewMode(userId))
-            {
-                viewForm.ShowDialog();
-            }
+            RegisterForm viewForm = RegisterForm.CreateViewMode(userId);
+            viewForm.ShowDialog();
+            viewForm.Dispose();
         }
 
         private void BtnViewPatientProfile_Click(object sender, EventArgs e)
@@ -2360,10 +2528,9 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             int userId = Convert.ToInt32(userIdResult);
 
-            using (RegisterForm viewForm = RegisterForm.CreateViewMode(userId))
-            {
-                viewForm.ShowDialog();
-            }
+            RegisterForm viewForm = RegisterForm.CreateViewMode(userId);
+            viewForm.ShowDialog();
+            viewForm.Dispose();
         }
 
         private void btnToggleAccountStatus_Click(object sender, EventArgs e)
@@ -2393,7 +2560,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
             string userEmail = emailCell?.Value?.ToString() ?? "";
             string userRole = roleCell?.Value?.ToString() ?? "";
 
-            string getUserQuery = @"SELECT user_id, is_active, failed_login_attempts FROM Users WHERE unique_id = @uniqueId";
+            string getUserQuery = @"SELECT user_id, is_active, failed_login_attempts, deactivation_type, can_reactivate 
+                           FROM Users WHERE unique_id = @uniqueId";
             DataTable dt = DatabaseHelper.ExecuteQuery(getUserQuery,
                 new MySqlParameter("@uniqueId", uniqueId));
 
@@ -2409,38 +2577,27 @@ namespace SaintJosephsHospitalHealthMonitorApp
             int failedAttempts = dt.Rows[0]["failed_login_attempts"] != DBNull.Value
                 ? Convert.ToInt32(dt.Rows[0]["failed_login_attempts"])
                 : 0;
+            string deactivationType = dt.Rows[0]["deactivation_type"]?.ToString();
+            bool canReactivate = dt.Rows[0]["can_reactivate"] != DBNull.Value
+                ? Convert.ToBoolean(dt.Rows[0]["can_reactivate"])
+                : true;
 
-            if (userId == currentUser.UserId)
+            if (userId == currentUser.UserId && isActive)
             {
-                if (isActive)
-                {
-                    MessageBox.Show(
-                        "🚫 CANNOT DEACTIVATE YOUR OWN ACCOUNT\n\n" +
-                        "You cannot deactivate your own account for security reasons.\n\n" +
-                        "If you need to deactivate this account, ask another administrator to do it.",
-                        "Access Denied",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    return;
-                }
-                else
-                {
-                    MessageBox.Show(
-                        "✅ REACTIVATING YOUR ACCOUNT\n\n" +
-                        "You are reactivating your own account.\n" +
-                        "This is allowed for recovery purposes.",
-                        "Self-Reactivation",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
+                MessageBox.Show(
+                    "🚫 CANNOT DEACTIVATE YOUR OWN ACCOUNT\n\n" +
+                    "You cannot deactivate your own account for security reasons.",
+                    "Access Denied",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
             }
 
             if (userRole == "Headadmin" && isActive)
             {
                 MessageBox.Show(
                     "🔒 CANNOT DEACTIVATE HEAD ADMINISTRATOR\n\n" +
-                    "The Head Administrator account cannot be deactivated.\n\n" +
-                    "This is a critical system account and must remain active for security and administrative purposes.",
+                    "The Head Administrator account cannot be deactivated.",
                     "Protected Account",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
@@ -2449,99 +2606,281 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
             if (isActive)
             {
-                string message = $"🔒 DEACTIVATE ACCOUNT\n\n" +
-                      $"User: {userName}\n" +
-                      $"Email: {userEmail}\n" +
-                      $"Role: {userRole}\n\n" +
-                      "This will:\n" +
-                      "• Prevent user from logging in\n" +
-                      "• Require administrator to reactivate\n" +
-                      "• Preserve all user data\n\n" +
-                      "Are you sure you want to deactivate this account?";
-
-                DialogResult confirm = MessageBox.Show(message, "Confirm DEACTIVATE",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
-
-                if (confirm != DialogResult.Yes)
+                ShowDeactivationDialog(userId, userName, userRole, userEmail);
+            }
+            else if (deactivationType == "temporary")
+            {
+                ReactivateTemporaryUser(userId, userName, userRole, failedAttempts);
+            }
+            else if (deactivationType == "permanent")
+            {
+                if (currentUser.Role == "Headadmin" && canReactivate)
                 {
-                    return;
+                    RehireFiredUser(userId, userName, userRole);
                 }
-
-                try
+                else
                 {
-                    string updateQuery = @"UPDATE Users 
-                                  SET is_active = 0
-                                  WHERE user_id = @userId";
-
-                    DatabaseHelper.ExecuteNonQuery(updateQuery,
-                        new MySqlParameter("@userId", userId));
-
-                    string successMsg = $"🔒 ACCOUNT DEACTIVATED\n\n" +
-                          $"User: {userName}\n\n" +
-                          "• Account is now deactivated\n" +
-                          "• User cannot login\n" +
-                          "• Administrator can reactivate";
-
-                    MessageBox.Show(successMsg, "Account Deactivated",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    LoadData();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error deactivating account: {ex.Message}", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        "🚫 CANNOT REHIRE\n\n" +
+                        "Only Head Administrator can rehire fired users,\n" +
+                        "and only if they were marked as eligible for rehire.",
+                        "Access Denied",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
                 }
             }
             else
             {
-                string message = $"🔓 ACTIVATE ACCOUNT\n\n" +
-                      $"User: {userName}\n" +
-                      $"Email: {userEmail}\n" +
-                      $"Role: {userRole}\n" +
-                      $"Failed Login Attempts: {failedAttempts}\n\n" +
-                      "This will:\n" +
-                      "• Allow user to login again\n" +
-                      "• Reset failed login attempts to 0\n" +
-                      "• Clear any account locks\n\n" +
-                      "Are you sure you want to activate this account?";
+                ReactivateTemporaryUser(userId, userName, userRole, failedAttempts);
+            }
+        }
 
-                DialogResult confirm = MessageBox.Show(message, "Confirm ACTIVATE",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-
-                if (confirm != DialogResult.Yes)
+        private void ShowDeactivationDialog(int userId, string userName, string userRole, string userEmail)
+        {
+            using (DeactivationTypeDialog dialog = new DeactivationTypeDialog(userName, userRole))
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    return;
-                }
+                    string deactivationType = dialog.DeactivationType;
+                    string reason = dialog.Reason;
 
+                    try
+                    {
+                        string updateQuery = @"
+                    UPDATE Users 
+                    SET is_active = 0,
+                        deactivation_type = @deactivationType,
+                        deactivated_reason = @reason,
+                        deactivated_date = NOW(),
+                        deactivated_by = @deactivatedBy,
+                        can_reactivate = 1
+                    WHERE user_id = @userId";
+
+                        DatabaseHelper.ExecuteNonQuery(updateQuery,
+                            new MySqlParameter("@deactivationType", deactivationType),
+                            new MySqlParameter("@reason", reason),
+                            new MySqlParameter("@deactivatedBy", currentUser.UserId),
+                            new MySqlParameter("@userId", userId));
+
+                        string tabName = deactivationType == "temporary" ? "Temporary Deactivation" : "Fired";
+                        string icon = deactivationType == "temporary" ? "⏸️" : "🚫";
+
+                        MessageBox.Show(
+                            $"{icon} ACCOUNT DEACTIVATED\n\n" +
+                            $"User: {userName}\n" +
+                            $"Type: {(deactivationType == "temporary" ? "Temporary" : "Permanently Fired")}\n\n" +
+                            $"Reason: {reason}\n\n" +
+                            $"User moved to '{tabName}' tab.",
+                            "Account Deactivated",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+
+                        LoadData();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error deactivating account: {ex.Message}", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void ReactivateTemporaryUser(int userId, string userName, string userRole, int failedAttempts)
+        {
+            string message = $"🔓 REACTIVATE ACCOUNT\n\n" +
+                  $"User: {userName}\n" +
+                  $"Role: {userRole}\n" +
+                  $"Failed Login Attempts: {failedAttempts}\n\n" +
+                  "This will:\n" +
+                  "• Allow user to login again\n" +
+                  "• Reset failed login attempts to 0\n" +
+                  "• Clear temporary deactivation status\n\n" +
+                  "Continue?";
+
+            DialogResult confirm = MessageBox.Show(message, "Confirm Reactivation",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+
+            if (confirm == DialogResult.Yes)
+            {
                 try
                 {
                     string updateQuery = @"UPDATE Users 
                                   SET is_active = 1,
                                       failed_login_attempts = 0,
                                       last_failed_attempt = NULL,
-                                      locked_until = NULL
+                                      locked_until = NULL,
+                                      deactivation_type = NULL,
+                                      deactivated_reason = NULL,
+                                      deactivated_date = NULL,
+                                      deactivated_by = NULL
                                   WHERE user_id = @userId";
 
                     DatabaseHelper.ExecuteNonQuery(updateQuery,
                         new MySqlParameter("@userId", userId));
 
-                    string successMsg = $"✅ ACCOUNT ACTIVATED\n\n" +
-                          $"User: {userName}\n\n" +
-                          "• Account is now active\n" +
-                          "• Failed login attempts reset\n" +
-                          "• User can now login";
-
-                    MessageBox.Show(successMsg, "Account Activated",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(
+                        $"✅ ACCOUNT REACTIVATED\n\n" +
+                        $"User: {userName}\n\n" +
+                        "• Account is now active\n" +
+                        "• Failed login attempts reset\n" +
+                        "• User can now login",
+                        "Account Reactivated",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
 
                     LoadData();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error activating account: {ex.Message}", "Error",
+                    MessageBox.Show($"Error reactivating account: {ex.Message}", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        private void RehireFiredUser(int userId, string userName, string userRole)
+        {
+            DialogResult confirm = MessageBox.Show(
+                $"♻️ REHIRE USER\n\n" +
+                $"User: {userName}\n" +
+                $"Role: {userRole}\n\n" +
+                "This will:\n" +
+                "• Reactivate the account\n" +
+                "• Clear fired status\n" +
+                "• Allow user to login again\n\n" +
+                "⚠️ Only Head Administrator can perform this action.\n\n" +
+                "Continue?",
+                "Confirm Rehire",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2);
+
+            if (confirm == DialogResult.Yes)
+            {
+                try
+                {
+                    string updateQuery = @"UPDATE Users 
+                                  SET is_active = 1,
+                                      failed_login_attempts = 0,
+                                      last_failed_attempt = NULL,
+                                      locked_until = NULL,
+                                      deactivation_type = NULL,
+                                      deactivated_reason = NULL,
+                                      deactivated_date = NULL,
+                                      deactivated_by = NULL,
+                                      can_reactivate = 1
+                                  WHERE user_id = @userId";
+
+                    DatabaseHelper.ExecuteNonQuery(updateQuery,
+                        new MySqlParameter("@userId", userId));
+
+                    MessageBox.Show(
+                        $"✅ USER REHIRED\n\n" +
+                        $"User: {userName}\n\n" +
+                        "• Account reactivated\n" +
+                        "• Fired status cleared\n" +
+                        "• User can now login",
+                        "User Rehired",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    LoadData();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error rehiring user: {ex.Message}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void CheckSecurityQuestionsAndUpdateBell()
+        {
+            try
+            {
+                DatabaseHelper.EnsureAllUsersHaveSecurityQuestions();
+
+                string query = @"
+            SELECT COUNT(*) as count 
+            FROM Users 
+            WHERE role != 'Patient' 
+            AND is_active = 1 
+            AND (security_question IS NULL 
+                 OR security_answer IS NULL 
+                 OR security_answer = 'HAPPYHEALTH')";
+
+                object result = DatabaseHelper.ExecuteScalar(query);
+                int count = result != null ? Convert.ToInt32(result) : 0;
+
+                if (count > 0)
+                {
+                    lblNotificationBadge.Text = count.ToString();
+                    lblNotificationBadge.Visible = true;
+
+                    int size = 22;
+                    System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+                    path.AddEllipse(0, 0, size, size);
+                    lblNotificationBadge.Region = new Region(path);
+                }
+                else
+                {
+                    lblNotificationBadge.Visible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error checking security questions: {ex.Message}");
+            }
+        }
+        private void PanelNotificationBell_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string query = @"
+            SELECT 
+                user_id,
+                unique_id AS 'User ID',
+                name AS 'Name',
+                role AS 'Role',
+                email AS 'Email',
+                CASE 
+                    WHEN security_answer = 'HAPPYHEALTH' THEN 'Temporary Default'
+                    WHEN security_question IS NULL OR security_answer IS NULL THEN 'Not Set'
+                    ELSE 'Set'
+                END AS 'Security Status'
+            FROM Users 
+            WHERE role != 'Patient' 
+            AND is_active = 1 
+            AND (security_question IS NULL 
+                 OR security_answer IS NULL 
+                 OR security_answer = 'HAPPYHEALTH')
+            ORDER BY role, name";
+
+                DataTable dt = DatabaseHelper.ExecuteQuery(query);
+
+                if (dt.Rows.Count == 0)
+                {
+                    MessageBox.Show(
+                        "✓ ALL USERS SECURE\n\n" +
+                        "All active users have their security questions properly configured!",
+                        "Security Status",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    return;
+                }
+
+                SecurityQuestionsNotificationForm notificationForm = new SecurityQuestionsNotificationForm(dt, currentUser.Role);
+                notificationForm.FormClosed += (s, args) =>
+                {
+                    CheckSecurityQuestionsAndUpdateBell();
+                };
+                notificationForm.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading security notifications: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

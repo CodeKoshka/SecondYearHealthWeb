@@ -39,15 +39,15 @@
             btnSelect = new Button();
             btnCancel = new Button();
             panelHeader.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPatients)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(dgvPatients)).BeginInit();
             panelButtons.SuspendLayout();
             SuspendLayout();
             // 
             // panelHeader
             // 
             panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(68)))), ((int)(((byte)(173)))));
-            panelHeader.Controls.Add(this.lblTitle);
-            panelHeader.Controls.Add(this.lblInstruction);
+            panelHeader.Controls.Add(lblTitle);
+            panelHeader.Controls.Add(lblInstruction);
             panelHeader.Dock = DockStyle.Top;
             panelHeader.Location = new System.Drawing.Point(0, 0);
             panelHeader.Name = "panelHeader";
@@ -94,7 +94,7 @@
             txtSearch.PlaceholderText = "Search by name, blood type, or gender...";
             txtSearch.Size = new System.Drawing.Size(500, 27);
             txtSearch.TabIndex = 2;
-            txtSearch.TextChanged += new System.EventHandler(this.TxtSearch_TextChanged);
+            txtSearch.TextChanged += new System.EventHandler(TxtSearch_TextChanged);
             // 
             // lblPatientCount
             // 
@@ -114,25 +114,26 @@
             dgvPatients.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvPatients.BackgroundColor = System.Drawing.Color.White;
             dgvPatients.BorderStyle = BorderStyle.None;
-            dgvPatients.ColumnHeadersHeight = 40;
+            dgvPatients.ColumnHeadersHeight = 50;
+            dgvPatients.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dgvPatients.Cursor = Cursors.Hand;
             dgvPatients.Location = new System.Drawing.Point(20, 165);
             dgvPatients.MultiSelect = false;
             dgvPatients.Name = "dgvPatients";
             dgvPatients.ReadOnly = true;
             dgvPatients.RowHeadersVisible = false;
-            dgvPatients.RowTemplate.Height = 35;
+            dgvPatients.RowTemplate.Height = 45; 
             dgvPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvPatients.Size = new System.Drawing.Size(960, 385);
             dgvPatients.TabIndex = 4;
-            dgvPatients.CellClick += new DataGridViewCellEventHandler(this.DgvPatients_CellClick);
-            dgvPatients.CellDoubleClick += new DataGridViewCellEventHandler(this.DgvPatients_CellDoubleClick);
+            dgvPatients.CellClick += new DataGridViewCellEventHandler(DgvPatients_CellClick);
+            dgvPatients.CellDoubleClick += new DataGridViewCellEventHandler(DgvPatients_CellDoubleClick);
             // 
             // panelButtons
             // 
             panelButtons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
-            panelButtons.Controls.Add(this.btnSelect);
-            panelButtons.Controls.Add(this.btnCancel);
+            panelButtons.Controls.Add(btnSelect);
+            panelButtons.Controls.Add(btnCancel);
             panelButtons.Dock = DockStyle.Bottom;
             panelButtons.Location = new System.Drawing.Point(0, 565);
             panelButtons.Name = "panelButtons";
@@ -153,7 +154,7 @@
             btnSelect.TabIndex = 0;
             btnSelect.Text = "✓ Select && Continue to Intake";
             btnSelect.UseVisualStyleBackColor = false;
-            btnSelect.Click += new System.EventHandler(this.BtnSelect_Click);
+            btnSelect.Click += new System.EventHandler(BtnSelect_Click);
             // 
             // btnCancel
             // 
@@ -169,7 +170,7 @@
             btnCancel.TabIndex = 1;
             btnCancel.Text = "✕ Cancel";
             btnCancel.UseVisualStyleBackColor = false;
-            btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
+            btnCancel.Click += new System.EventHandler(BtnCancel_Click);
             // 
             // AddToQueueForm
             // 
@@ -177,22 +178,22 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = System.Drawing.Color.White;
             ClientSize = new System.Drawing.Size(1000, 640);
-            Controls.Add(this.panelButtons);
-            Controls.Add(this.dgvPatients);
-            Controls.Add(this.lblPatientCount);
-            Controls.Add(this.txtSearch);
-            Controls.Add(this.lblSearch);
-            Controls.Add(this.panelHeader);
+            Controls.Add(panelButtons);
+            Controls.Add(dgvPatients);
+            Controls.Add(lblPatientCount);
+            Controls.Add(txtSearch);
+            Controls.Add(lblSearch);
+            Controls.Add(panelHeader);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "AddToQueueForm";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Add Patient to Queue";
-            Load += new System.EventHandler(this.AddToQueueForm_Load);
+            Load += new System.EventHandler(AddToQueueForm_Load);
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPatients)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(dgvPatients)).EndInit();
             panelButtons.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();

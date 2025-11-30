@@ -18,6 +18,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             patientName = pName;
             InitializeComponent();
             lblPatientInfo.Text = $"Assigning doctor for: {patientName}";
+            ApplyStyles();
             LoadDoctors();
         }
 
@@ -128,6 +129,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
                 dgvDoctors.Refresh();
 
+                ConfigureDataGridViewColumns();
+
                 if (filteredTable.Rows.Count == 0)
                 {
                     string message = "No doctors found";
@@ -149,7 +152,6 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     lblDoctorCount.ForeColor = Color.FromArgb(220, 53, 69);
                     return;
                 }
-                ConfigureDataGridViewColumns();
 
                 int totalCount = filteredTable.Rows.Count;
                 int onDutyAvailable = 0;
@@ -208,6 +210,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
         {
             try
             {
+                ApplyStyles();
+
                 if (dgvDoctors.Columns.Contains("doctor_id"))
                     dgvDoctors.Columns["doctor_id"].Visible = false;
 
@@ -217,21 +221,35 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (dgvDoctors.Columns.Contains("doctor_name"))
                 {
                     dgvDoctors.Columns["doctor_name"].HeaderText = "Doctor Name";
+                    dgvDoctors.Columns["doctor_name"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                    dgvDoctors.Columns["doctor_name"].Resizable = DataGridViewTriState.False;
                 }
 
                 if (dgvDoctors.Columns.Contains("specialization"))
                 {
                     dgvDoctors.Columns["specialization"].HeaderText = "Specialization";
+                    dgvDoctors.Columns["specialization"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                    dgvDoctors.Columns["specialization"].Resizable = DataGridViewTriState.False;
                 }
 
                 if (dgvDoctors.Columns.Contains("duty_status"))
                 {
                     dgvDoctors.Columns["duty_status"].HeaderText = "Duty Status";
+                    dgvDoctors.Columns["duty_status"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                    dgvDoctors.Columns["duty_status"].Resizable = DataGridViewTriState.False;
                 }
 
                 if (dgvDoctors.Columns.Contains("availability_status"))
                 {
                     dgvDoctors.Columns["availability_status"].HeaderText = "Availability";
+                    dgvDoctors.Columns["availability_status"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                    dgvDoctors.Columns["availability_status"].Resizable = DataGridViewTriState.False;
+                }
+
+                foreach (DataGridViewColumn column in dgvDoctors.Columns)
+                {
+                    column.SortMode = DataGridViewColumnSortMode.NotSortable;
+                    column.Resizable = DataGridViewTriState.False;
                 }
             }
             catch (Exception ex)
@@ -239,6 +257,87 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 MessageBox.Show($"Column configuration error: {ex.Message}", "Debug Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+        }
+
+        private void ApplyStyles()
+        {
+            dgvDoctors.AutoGenerateColumns = true;
+            dgvDoctors.AllowUserToAddRows = false;
+            dgvDoctors.AllowUserToDeleteRows = false;
+            dgvDoctors.ReadOnly = true;
+            dgvDoctors.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvDoctors.MultiSelect = false;
+            dgvDoctors.RowHeadersVisible = false;
+            dgvDoctors.EnableHeadersVisualStyles = false;
+            dgvDoctors.AllowUserToResizeRows = false;
+            dgvDoctors.AllowUserToOrderColumns = false;
+            dgvDoctors.AllowUserToResizeColumns = false;
+            dgvDoctors.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            dgvDoctors.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(66, 153, 225);
+            dgvDoctors.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvDoctors.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            dgvDoctors.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgvDoctors.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(66, 153, 225);
+            dgvDoctors.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            dgvDoctors.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 8, 12, 8);
+            dgvDoctors.ColumnHeadersHeight = 50;
+            dgvDoctors.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+
+            dgvDoctors.DefaultCellStyle.BackColor = Color.White;
+            dgvDoctors.DefaultCellStyle.ForeColor = Color.FromArgb(26, 32, 44);
+            dgvDoctors.DefaultCellStyle.SelectionBackColor = Color.FromArgb(200, 230, 255); 
+            dgvDoctors.DefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44); 
+            dgvDoctors.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
+            dgvDoctors.DefaultCellStyle.Padding = new Padding(12, 5, 12, 5);
+            dgvDoctors.RowTemplate.Height = 45;
+
+            dgvDoctors.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 251);
+            dgvDoctors.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(200, 230, 255); 
+            dgvDoctors.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44); 
+
+            dgvDoctors.GridColor = Color.FromArgb(226, 232, 240);
+            dgvDoctors.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvDoctors.BackgroundColor = Color.White;
+            dgvDoctors.BorderStyle = BorderStyle.None;
+
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
+                null, dgvDoctors, new object[] { true });
+
+            dgvDoctors.RowPostPaint -= DgvDoctors_RowPostPaint;
+            dgvDoctors.RowPostPaint += DgvDoctors_RowPostPaint;
+
+            dgvDoctors.RowPrePaint -= DgvDoctors_RowPrePaint;
+            dgvDoctors.RowPrePaint += DgvDoctors_RowPrePaint;
+        }
+
+        private void DgvDoctors_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex < 0 || e.RowIndex >= dgvDoctors.Rows.Count) return;
+
+                DataGridViewRow row = dgvDoctors.Rows[e.RowIndex];
+
+                if (row.Selected)
+                {
+                    int slabWidth = 10;
+
+                    using (SolidBrush slabBrush = new SolidBrush(Color.FromArgb(52, 152, 219)))
+                    {
+                        Rectangle slabRect = new Rectangle(
+                            e.RowBounds.Left,
+                            e.RowBounds.Top,
+                            slabWidth,
+                            e.RowBounds.Height
+                        );
+
+                        e.Graphics.FillRectangle(slabBrush, slabRect);
+                    }
+                }
+            }
+            catch { }
         }
 
         private void DgvDoctors_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -292,18 +391,18 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 if (dutyStatus == "On Duty" && availStatus == "Available")
                 {
                     row.DefaultCellStyle.BackColor = Color.FromArgb(240, 255, 240);
-                    row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(46, 204, 113);
                 }
                 else if (dutyStatus == "On Duty" && availStatus == "Busy")
                 {
                     row.DefaultCellStyle.BackColor = Color.FromArgb(255, 250, 230);
-                    row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(243, 156, 18);
                 }
-                else
+                else 
                 {
                     row.DefaultCellStyle.BackColor = Color.FromArgb(255, 245, 245);
-                    row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(220, 53, 69);
                 }
+
+                row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(200, 230, 255);
+                row.DefaultCellStyle.SelectionForeColor = Color.FromArgb(26, 32, 44);
             }
         }
 
@@ -346,16 +445,44 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 string dutyStatus = dgvDoctors.SelectedRows[0].Cells["duty_status"].Value.ToString();
                 string availabilityStatus = dgvDoctors.SelectedRows[0].Cells["availability_status"].Value.ToString();
 
+                string priorityQuery = "SELECT priority FROM patientqueue WHERE queue_id = @queueId";
+                object priorityResult = DatabaseHelper.ExecuteScalar(priorityQuery,
+                    new MySqlParameter("@queueId", queueId));
+
+                string patientPriority = priorityResult?.ToString() ?? "Normal";
+
                 if (dutyStatus == "Off Duty")
                 {
+                    if (patientPriority.Equals("Normal", StringComparison.OrdinalIgnoreCase))
+                    {
+                        MessageBox.Show(
+                            $"❌ CANNOT ASSIGN OFF-DUTY DOCTOR\n\n" +
+                            $"Doctor: {doctorName}\n" +
+                            $"Status: Off Duty\n" +
+                            $"Patient Priority: {patientPriority}\n\n" +
+                            "⚠️ RESTRICTION:\n" +
+                            "Off-duty doctors can only be assigned to:\n" +
+                            "• Emergency patients\n" +
+                            "• Urgent patients\n\n" +
+                            "For Normal priority patients:\n" +
+                            "• Please select an on-duty doctor, OR\n" +
+                            "• Change patient priority to Urgent/Emergency first",
+                            "Off-Duty Doctor Restriction",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                        return;
+                    }
+
                     DialogResult result = MessageBox.Show(
-                        $"⚠️ DOCTOR OFF DUTY\n\n" +
+                        $"⚠️ ASSIGN OFF-DUTY DOCTOR\n\n" +
                         $"Doctor: {doctorName}\n" +
-                        $"Status: Off Duty\n\n" +
-                        "This doctor is currently off duty.\n\n" +
-                        "Do you still want to assign this patient to them?\n" +
-                        "(The doctor will need to come on duty to see the patient)",
-                        "Doctor Off Duty",
+                        $"Status: Off Duty\n" +
+                        $"Patient Priority: {patientPriority}\n\n" +
+                        "This doctor is currently off duty, but the patient priority\n" +
+                        $"is {patientPriority}, which allows assignment.\n\n" +
+                        "⚠️ The doctor will need to come on duty to see the patient.\n\n" +
+                        "Do you want to proceed with this assignment?",
+                        "Off-Duty Doctor - Urgent/Emergency",
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Warning,
                         MessageBoxDefaultButton.Button2);
@@ -385,6 +512,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 DialogResult confirm = MessageBox.Show(
                     $"📋 ASSIGN DOCTOR\n\n" +
                     $"Patient: {patientName}\n" +
+                    $"Patient Priority: {patientPriority}\n" +
                     $"Doctor: {doctorName}\n" +
                     $"Duty Status: {dutyStatus}\n" +
                     $"Availability: {availabilityStatus}\n\n" +
@@ -399,7 +527,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 string assignQuery = @"
                 UPDATE PatientQueue 
                 SET doctor_id = @doctorId,
-                    status = CASE WHEN status = 'Waiting' THEN 'Waiting' ELSE status END
+                status = CASE WHEN status = 'Waiting' THEN 'Waiting' ELSE status END
                 WHERE queue_id = @queueId";
 
                 DatabaseHelper.ExecuteNonQuery(assignQuery,
@@ -414,13 +542,23 @@ namespace SaintJosephsHospitalHealthMonitorApp
                 DatabaseHelper.ExecuteNonQuery(updateDoctorQuery,
                     new MySqlParameter("@doctorId", doctorId));
 
-                MessageBox.Show(
-                    $"✅ DOCTOR ASSIGNED\n\n" +
+                string successMessage = $"✅ DOCTOR ASSIGNED\n\n" +
                     $"Patient: {patientName}\n" +
+                    $"Patient Priority: {patientPriority}\n" +
                     $"Doctor: {doctorName}\n\n" +
                     "✓ Doctor marked as busy\n" +
-                    "✓ Patient assigned to doctor\n\n" +
-                    "The doctor will be available again after completing this patient.",
+                    "✓ Patient assigned to doctor\n\n";
+
+                if (dutyStatus == "Off Duty")
+                {
+                    successMessage += "⚠️ NOTE: Doctor is off duty and will need to come on duty\n" +
+                                    "to see this patient.\n\n";
+                }
+
+                successMessage += "The doctor will be available again after completing this patient.";
+
+                MessageBox.Show(
+                    successMessage,
                     "Success",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);

@@ -176,7 +176,7 @@
             cmbService.Name = "cmbService";
             cmbService.Size = new Size(203, 25);
             cmbService.TabIndex = 3;
-            cmbService.SelectedIndexChanged += new System.EventHandler(this.CmbService_SelectedIndexChanged);
+            cmbService.SelectedIndexChanged += new System.EventHandler(CmbService_SelectedIndexChanged);
             // 
             // lblService
             // 

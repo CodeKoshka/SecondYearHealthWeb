@@ -25,6 +25,30 @@
     <Compile Update="DoctorDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="DeactivationTypeDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="FireUserDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ForgotPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PharmacyRelated(DONTTOUCH)\DispenseOrderForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SetSecurityQuestionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SecurityQuestionsNotificationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SetNewPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="IncomeReportPreviewForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -35,9 +59,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="PaymentProcessingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="InputDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="MedicalRecordForm.cs">

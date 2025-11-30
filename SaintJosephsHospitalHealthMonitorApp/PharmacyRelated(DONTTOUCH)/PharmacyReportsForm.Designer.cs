@@ -6,21 +6,6 @@
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Label lblWelcome;
-        private System.Windows.Forms.Label lblReportType;
-        private System.Windows.Forms.ComboBox cmbReportType;
-        private System.Windows.Forms.Label lblStartDate;
-        private System.Windows.Forms.DateTimePicker dtpStartDate;
-        private System.Windows.Forms.Label lblEndDate;
-        private System.Windows.Forms.DateTimePicker dtpEndDate;
-        private System.Windows.Forms.Button btnGenerateReport;
-        private System.Windows.Forms.DataGridView dgvReport;
-        private System.Windows.Forms.Label lblRecordCount;
-        private System.Windows.Forms.Button btnExport;
-        private System.Windows.Forms.Button btnPrint;
-        private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.Panel panelFilters;
-        private System.Windows.Forms.Panel panelReport;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -35,247 +20,263 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
-            this.lblWelcome = new System.Windows.Forms.Label();
-            this.panelFilters = new System.Windows.Forms.Panel();
-            this.lblReportType = new System.Windows.Forms.Label();
-            this.cmbReportType = new System.Windows.Forms.ComboBox();
-            this.lblStartDate = new System.Windows.Forms.Label();
-            this.dtpStartDate = new System.Windows.Forms.DateTimePicker();
-            this.lblEndDate = new System.Windows.Forms.Label();
-            this.dtpEndDate = new System.Windows.Forms.DateTimePicker();
-            this.btnGenerateReport = new System.Windows.Forms.Button();
-            this.panelReport = new System.Windows.Forms.Panel();
-            this.dgvReport = new System.Windows.Forms.DataGridView();
-            this.lblRecordCount = new System.Windows.Forms.Label();
-            this.btnExport = new System.Windows.Forms.Button();
-            this.btnPrint = new System.Windows.Forms.Button();
-            this.btnClose = new System.Windows.Forms.Button();
-            this.panelFilters.SuspendLayout();
-            this.panelReport.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvReport)).BeginInit();
-            this.SuspendLayout();
+            lblWelcome = new Label();
+            panelFilters = new Panel();
+            lblReportType = new Label();
+            cmbReportType = new ComboBox();
+            lblStartDate = new Label();
+            dtpStartDate = new DateTimePicker();
+            lblEndDate = new Label();
+            dtpEndDate = new DateTimePicker();
+            btnGenerateReport = new Button();
+            panelReport = new Panel();
+            dgvReport = new DataGridView();
+            lblRecordCount = new Label();
+            btnExport = new Button();
+            btnPrint = new Button();
+            btnClose = new Button();
+            panelFilters.SuspendLayout();
+            panelReport.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(dgvReport)).BeginInit();
+            SuspendLayout();
             // 
             // lblWelcome
             // 
-            this.lblWelcome.AutoSize = true;
-            this.lblWelcome.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblWelcome.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(68)))), ((int)(((byte)(173)))));
-            this.lblWelcome.Location = new System.Drawing.Point(20, 20);
-            this.lblWelcome.Name = "lblWelcome";
-            this.lblWelcome.Size = new System.Drawing.Size(195, 30);
-            this.lblWelcome.TabIndex = 0;
-            this.lblWelcome.Text = "Pharmacy Reports";
+            lblWelcome.AutoSize = true;
+            lblWelcome.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            lblWelcome.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(68)))), ((int)(((byte)(173)))));
+            lblWelcome.Location = new System.Drawing.Point(20, 20);
+            lblWelcome.Name = "lblWelcome";
+            lblWelcome.Size = new System.Drawing.Size(195, 30);
+            lblWelcome.TabIndex = 0;
+            lblWelcome.Text = "Pharmacy Reports";
             // 
             // panelFilters
             // 
-            this.panelFilters.BackColor = System.Drawing.Color.White;
-            this.panelFilters.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelFilters.Controls.Add(this.lblReportType);
-            this.panelFilters.Controls.Add(this.cmbReportType);
-            this.panelFilters.Controls.Add(this.lblStartDate);
-            this.panelFilters.Controls.Add(this.dtpStartDate);
-            this.panelFilters.Controls.Add(this.lblEndDate);
-            this.panelFilters.Controls.Add(this.dtpEndDate);
-            this.panelFilters.Controls.Add(this.btnGenerateReport);
-            this.panelFilters.Location = new System.Drawing.Point(20, 70);
-            this.panelFilters.Name = "panelFilters";
-            this.panelFilters.Size = new System.Drawing.Size(1160, 120);
-            this.panelFilters.TabIndex = 1;
+            panelFilters.BackColor = System.Drawing.Color.White;
+            panelFilters.BorderStyle = BorderStyle.FixedSingle;
+            panelFilters.Controls.Add(lblReportType);
+            panelFilters.Controls.Add(cmbReportType);
+            panelFilters.Controls.Add(lblStartDate);
+            panelFilters.Controls.Add(dtpStartDate);
+            panelFilters.Controls.Add(lblEndDate);
+            panelFilters.Controls.Add(dtpEndDate);
+            panelFilters.Controls.Add(btnGenerateReport);
+            panelFilters.Location = new System.Drawing.Point(20, 70);
+            panelFilters.Name = "panelFilters";
+            panelFilters.Size = new System.Drawing.Size(1160, 120);
+            panelFilters.TabIndex = 1;
             // 
             // lblReportType
             // 
-            this.lblReportType.AutoSize = true;
-            this.lblReportType.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblReportType.Location = new System.Drawing.Point(20, 20);
-            this.lblReportType.Name = "lblReportType";
-            this.lblReportType.Size = new System.Drawing.Size(88, 19);
-            this.lblReportType.TabIndex = 0;
-            this.lblReportType.Text = "Report Type:";
+            lblReportType.AutoSize = true;
+            lblReportType.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblReportType.Location = new System.Drawing.Point(20, 20);
+            lblReportType.Name = "lblReportType";
+            lblReportType.Size = new System.Drawing.Size(88, 19);
+            lblReportType.TabIndex = 0;
+            lblReportType.Text = "Report Type:";
             // 
             // cmbReportType
             // 
-            this.cmbReportType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbReportType.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbReportType.FormattingEnabled = true;
-            this.cmbReportType.Items.AddRange(new object[] {
-            "Sales Summary",
-            "Inventory Status",
-            "Low Stock Items",
-            "Expired Medicines",
-            "Dispensing History",
-            "Medication Orders",
-            "Controlled Substances Log",
-            "Returns Summary"});
-            this.cmbReportType.Location = new System.Drawing.Point(20, 45);
-            this.cmbReportType.Name = "cmbReportType";
-            this.cmbReportType.Size = new System.Drawing.Size(300, 25);
-            this.cmbReportType.TabIndex = 1;
-            this.cmbReportType.SelectedIndexChanged += new System.EventHandler(this.CmbReportType_SelectedIndexChanged);
+            cmbReportType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbReportType.Font = new System.Drawing.Font("Segoe UI", 10F);
+            cmbReportType.FormattingEnabled = true;
+            cmbReportType.Items.AddRange(new object[] { "Sales Summary", "Inventory Status", "Low Stock Items", "Expired Medicines", "Dispensing History", "Medication Orders", "Controlled Substances Log", "Returns Summary" });
+            cmbReportType.Location = new System.Drawing.Point(20, 45);
+            cmbReportType.Name = "cmbReportType";
+            cmbReportType.Size = new System.Drawing.Size(300, 25);
+            cmbReportType.TabIndex = 1;
+            cmbReportType.SelectedIndexChanged += new System.EventHandler(CmbReportType_SelectedIndexChanged);
             // 
             // lblStartDate
             // 
-            this.lblStartDate.AutoSize = true;
-            this.lblStartDate.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblStartDate.Location = new System.Drawing.Point(350, 20);
-            this.lblStartDate.Name = "lblStartDate";
-            this.lblStartDate.Size = new System.Drawing.Size(75, 19);
-            this.lblStartDate.TabIndex = 2;
-            this.lblStartDate.Text = "Start Date:";
+            lblStartDate.AutoSize = true;
+            lblStartDate.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblStartDate.Location = new System.Drawing.Point(350, 20);
+            lblStartDate.Name = "lblStartDate";
+            lblStartDate.Size = new System.Drawing.Size(75, 19);
+            lblStartDate.TabIndex = 2;
+            lblStartDate.Text = "Start Date:";
             // 
             // dtpStartDate
             // 
-            this.dtpStartDate.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.dtpStartDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpStartDate.Location = new System.Drawing.Point(350, 45);
-            this.dtpStartDate.Name = "dtpStartDate";
-            this.dtpStartDate.Size = new System.Drawing.Size(200, 25);
-            this.dtpStartDate.TabIndex = 3;
+            dtpStartDate.Font = new System.Drawing.Font("Segoe UI", 10F);
+            dtpStartDate.Format = DateTimePickerFormat.Short;
+            dtpStartDate.Location = new System.Drawing.Point(350, 45);
+            dtpStartDate.Name = "dtpStartDate";
+            dtpStartDate.Size = new System.Drawing.Size(200, 25);
+            dtpStartDate.TabIndex = 3;
             // 
             // lblEndDate
             // 
-            this.lblEndDate.AutoSize = true;
-            this.lblEndDate.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblEndDate.Location = new System.Drawing.Point(580, 20);
-            this.lblEndDate.Name = "lblEndDate";
-            this.lblEndDate.Size = new System.Drawing.Size(68, 19);
-            this.lblEndDate.TabIndex = 4;
-            this.lblEndDate.Text = "End Date:";
+            lblEndDate.AutoSize = true;
+            lblEndDate.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblEndDate.Location = new System.Drawing.Point(580, 20);
+            lblEndDate.Name = "lblEndDate";
+            lblEndDate.Size = new System.Drawing.Size(68, 19);
+            lblEndDate.TabIndex = 4;
+            lblEndDate.Text = "End Date:";
             // 
             // dtpEndDate
             // 
-            this.dtpEndDate.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.dtpEndDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpEndDate.Location = new System.Drawing.Point(580, 45);
-            this.dtpEndDate.Name = "dtpEndDate";
-            this.dtpEndDate.Size = new System.Drawing.Size(200, 25);
-            this.dtpEndDate.TabIndex = 5;
+            dtpEndDate.Font = new System.Drawing.Font("Segoe UI", 10F);
+            dtpEndDate.Format = DateTimePickerFormat.Short;
+            dtpEndDate.Location = new System.Drawing.Point(580, 45);
+            dtpEndDate.Name = "dtpEndDate";
+            dtpEndDate.Size = new System.Drawing.Size(200, 25);
+            dtpEndDate.TabIndex = 5;
             // 
             // btnGenerateReport
             // 
-            this.btnGenerateReport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.btnGenerateReport.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnGenerateReport.FlatAppearance.BorderSize = 0;
-            this.btnGenerateReport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnGenerateReport.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnGenerateReport.ForeColor = System.Drawing.Color.White;
-            this.btnGenerateReport.Location = new System.Drawing.Point(820, 35);
-            this.btnGenerateReport.Name = "btnGenerateReport";
-            this.btnGenerateReport.Size = new System.Drawing.Size(180, 45);
-            this.btnGenerateReport.TabIndex = 6;
-            this.btnGenerateReport.Text = "Generate Report";
-            this.btnGenerateReport.UseVisualStyleBackColor = false;
-            this.btnGenerateReport.Click += new System.EventHandler(this.BtnGenerateReport_Click);
+            btnGenerateReport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            btnGenerateReport.Cursor = Cursors.Hand;
+            btnGenerateReport.FlatAppearance.BorderSize = 0;
+            btnGenerateReport.FlatStyle = FlatStyle.Flat;
+            btnGenerateReport.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnGenerateReport.ForeColor = System.Drawing.Color.White;
+            btnGenerateReport.Location = new System.Drawing.Point(820, 35);
+            btnGenerateReport.Name = "btnGenerateReport";
+            btnGenerateReport.Size = new System.Drawing.Size(180, 45);
+            btnGenerateReport.TabIndex = 6;
+            btnGenerateReport.Text = "Generate Report";
+            btnGenerateReport.UseVisualStyleBackColor = false;
+            btnGenerateReport.Click += new System.EventHandler(BtnGenerateReport_Click);
             // 
             // panelReport
             // 
-            this.panelReport.BackColor = System.Drawing.Color.White;
-            this.panelReport.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelReport.Controls.Add(this.dgvReport);
-            this.panelReport.Location = new System.Drawing.Point(20, 210);
-            this.panelReport.Name = "panelReport";
-            this.panelReport.Size = new System.Drawing.Size(1160, 450);
-            this.panelReport.TabIndex = 2;
+            panelReport.BackColor = System.Drawing.Color.White;
+            panelReport.BorderStyle = BorderStyle.FixedSingle;
+            panelReport.Controls.Add(dgvReport);
+            panelReport.Location = new System.Drawing.Point(20, 210);
+            panelReport.Name = "panelReport";
+            panelReport.Size = new System.Drawing.Size(1160, 450);
+            panelReport.TabIndex = 2;
             // 
             // dgvReport
             // 
-            this.dgvReport.AllowUserToAddRows = false;
-            this.dgvReport.AllowUserToDeleteRows = false;
-            this.dgvReport.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvReport.BackgroundColor = System.Drawing.Color.White;
-            this.dgvReport.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dgvReport.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvReport.Location = new System.Drawing.Point(10, 10);
-            this.dgvReport.Name = "dgvReport";
-            this.dgvReport.ReadOnly = true;
-            this.dgvReport.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvReport.Size = new System.Drawing.Size(1138, 428);
-            this.dgvReport.TabIndex = 0;
+            dgvReport.AllowUserToAddRows = false;
+            dgvReport.AllowUserToDeleteRows = false;
+            dgvReport.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvReport.BackgroundColor = System.Drawing.Color.White;
+            dgvReport.BorderStyle = BorderStyle.None;
+            dgvReport.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvReport.Location = new System.Drawing.Point(10, 10);
+            dgvReport.Name = "dgvReport";
+            dgvReport.ReadOnly = true;
+            dgvReport.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvReport.Size = new System.Drawing.Size(1138, 428);
+            dgvReport.TabIndex = 0;
             // 
             // lblRecordCount
             // 
-            this.lblRecordCount.AutoSize = true;
-            this.lblRecordCount.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblRecordCount.Location = new System.Drawing.Point(20, 675);
-            this.lblRecordCount.Name = "lblRecordCount";
-            this.lblRecordCount.Size = new System.Drawing.Size(112, 19);
-            this.lblRecordCount.TabIndex = 3;
-            this.lblRecordCount.Text = "Total Records: 0";
+            lblRecordCount.AutoSize = true;
+            lblRecordCount.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblRecordCount.Location = new System.Drawing.Point(20, 675);
+            lblRecordCount.Name = "lblRecordCount";
+            lblRecordCount.Size = new System.Drawing.Size(112, 19);
+            lblRecordCount.TabIndex = 3;
+            lblRecordCount.Text = "Total Records: 0";
             // 
             // btnExport
             // 
-            this.btnExport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnExport.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnExport.FlatAppearance.BorderSize = 0;
-            this.btnExport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExport.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnExport.ForeColor = System.Drawing.Color.White;
-            this.btnExport.Location = new System.Drawing.Point(780, 670);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(120, 40);
-            this.btnExport.TabIndex = 4;
-            this.btnExport.Text = "Export CSV";
-            this.btnExport.UseVisualStyleBackColor = false;
-            this.btnExport.Click += new System.EventHandler(this.BtnExport_Click);
+            btnExport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            btnExport.Cursor = Cursors.Hand;
+            btnExport.FlatAppearance.BorderSize = 0;
+            btnExport.FlatStyle = FlatStyle.Flat;
+            btnExport.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnExport.ForeColor = System.Drawing.Color.White;
+            btnExport.Location = new System.Drawing.Point(780, 670);
+            btnExport.Name = "btnExport";
+            btnExport.Size = new System.Drawing.Size(120, 40);
+            btnExport.TabIndex = 4;
+            btnExport.Text = "Export CSV";
+            btnExport.UseVisualStyleBackColor = false;
+            btnExport.Click += new System.EventHandler(BtnExport_Click);
             // 
             // btnPrint
             // 
-            this.btnPrint.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(89)))), ((int)(((byte)(182)))));
-            this.btnPrint.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnPrint.FlatAppearance.BorderSize = 0;
-            this.btnPrint.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPrint.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnPrint.ForeColor = System.Drawing.Color.White;
-            this.btnPrint.Location = new System.Drawing.Point(920, 670);
-            this.btnPrint.Name = "btnPrint";
-            this.btnPrint.Size = new System.Drawing.Size(120, 40);
-            this.btnPrint.TabIndex = 5;
-            this.btnPrint.Text = "Print";
-            this.btnPrint.UseVisualStyleBackColor = false;
-            this.btnPrint.Click += new System.EventHandler(this.BtnPrint_Click);
+            btnPrint.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(89)))), ((int)(((byte)(182)))));
+            btnPrint.Cursor = Cursors.Hand;
+            btnPrint.FlatAppearance.BorderSize = 0;
+            btnPrint.FlatStyle = FlatStyle.Flat;
+            btnPrint.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnPrint.ForeColor = System.Drawing.Color.White;
+            btnPrint.Location = new System.Drawing.Point(920, 670);
+            btnPrint.Name = "btnPrint";
+            btnPrint.Size = new System.Drawing.Size(120, 40);
+            btnPrint.TabIndex = 5;
+            btnPrint.Text = "Print";
+            btnPrint.UseVisualStyleBackColor = false;
+            btnPrint.Click += new System.EventHandler(BtnPrint_Click);
             // 
             // btnClose
             // 
-            this.btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-            this.btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnClose.FlatAppearance.BorderSize = 0;
-            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(1060, 670);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(120, 40);
-            this.btnClose.TabIndex = 6;
-            this.btnClose.Text = "Close";
-            this.btnClose.UseVisualStyleBackColor = false;
-            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
+            btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            btnClose.Cursor = Cursors.Hand;
+            btnClose.FlatAppearance.BorderSize = 0;
+            btnClose.FlatStyle = FlatStyle.Flat;
+            btnClose.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnClose.ForeColor = System.Drawing.Color.White;
+            btnClose.Location = new System.Drawing.Point(1060, 670);
+            btnClose.Name = "btnClose";
+            btnClose.Size = new System.Drawing.Size(120, 40);
+            btnClose.TabIndex = 6;
+            btnClose.Text = "Close";
+            btnClose.UseVisualStyleBackColor = false;
+            btnClose.Click += new System.EventHandler(BtnClose_Click);
             // 
             // PharmacyReportsForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
-            this.ClientSize = new System.Drawing.Size(1200, 730);
-            this.Controls.Add(this.btnClose);
-            this.Controls.Add(this.btnPrint);
-            this.Controls.Add(this.btnExport);
-            this.Controls.Add(this.lblRecordCount);
-            this.Controls.Add(this.panelReport);
-            this.Controls.Add(this.panelFilters);
-            this.Controls.Add(this.lblWelcome);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.Name = "PharmacyReportsForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Pharmacy Reports - St. Joseph's Hospital";
-            this.Load += new System.EventHandler(this.PharmacyReportsForm_Load);
-            this.panelFilters.ResumeLayout(false);
-            this.panelFilters.PerformLayout();
-            this.panelReport.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvReport)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
+            ClientSize = new System.Drawing.Size(1200, 730);
+            Controls.Add(btnClose);
+            Controls.Add(btnPrint);
+            Controls.Add(btnExport);
+            Controls.Add(lblRecordCount);
+            Controls.Add(panelReport);
+            Controls.Add(panelFilters);
+            Controls.Add(lblWelcome);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            Name = "PharmacyReportsForm";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Pharmacy Reports - St. Joseph's Hospital";
+            Load += new System.EventHandler(PharmacyReportsForm_Load);
+            panelFilters.ResumeLayout(false);
+            panelFilters.PerformLayout();
+            panelReport.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(dgvReport)).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
+
+        #endregion
+
+        private Label lblWelcome;
+        private Label lblReportType;
+        private ComboBox cmbReportType;
+        private Label lblStartDate;
+        private DateTimePicker dtpStartDate;
+        private Label lblEndDate;
+        private DateTimePicker dtpEndDate;
+        private Button btnGenerateReport;
+        private DataGridView dgvReport;
+        private Label lblRecordCount;
+        private Button btnExport;
+        private Button btnPrint;
+        private Button btnClose;
+        private Panel panelFilters;
+        private Panel panelReport;
     }
 }

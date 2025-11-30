@@ -6,25 +6,6 @@
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblMedicineName;
-        private System.Windows.Forms.Label lblCurrentStock;
-        private System.Windows.Forms.Label lblAdjustmentType;
-        private System.Windows.Forms.ComboBox cmbAdjustmentType;
-        private System.Windows.Forms.Label lblQuantityChange;
-        private System.Windows.Forms.TextBox txtQuantityChange;
-        private System.Windows.Forms.Label lblNewStock;
-        private System.Windows.Forms.Label lblWarning;
-        private System.Windows.Forms.Label lblReason;
-        private System.Windows.Forms.TextBox txtReason;
-        private System.Windows.Forms.Label lblBatchNumber;
-        private System.Windows.Forms.TextBox txtBatchNumber;
-        private System.Windows.Forms.Label lblNotes;
-        private System.Windows.Forms.TextBox txtNotes;
-        private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Panel panelInfo;
-        private System.Windows.Forms.Panel panelAdjustment;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -39,270 +20,298 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
-            this.lblTitle = new System.Windows.Forms.Label();
-            this.panelInfo = new System.Windows.Forms.Panel();
-            this.lblMedicineName = new System.Windows.Forms.Label();
-            this.lblCurrentStock = new System.Windows.Forms.Label();
-            this.panelAdjustment = new System.Windows.Forms.Panel();
-            this.lblAdjustmentType = new System.Windows.Forms.Label();
-            this.cmbAdjustmentType = new System.Windows.Forms.ComboBox();
-            this.lblQuantityChange = new System.Windows.Forms.Label();
-            this.txtQuantityChange = new System.Windows.Forms.TextBox();
-            this.lblNewStock = new System.Windows.Forms.Label();
-            this.lblWarning = new System.Windows.Forms.Label();
-            this.lblReason = new System.Windows.Forms.Label();
-            this.txtReason = new System.Windows.Forms.TextBox();
-            this.lblBatchNumber = new System.Windows.Forms.Label();
-            this.txtBatchNumber = new System.Windows.Forms.TextBox();
-            this.lblNotes = new System.Windows.Forms.Label();
-            this.txtNotes = new System.Windows.Forms.TextBox();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.panelInfo.SuspendLayout();
-            this.panelAdjustment.SuspendLayout();
-            this.SuspendLayout();
+            lblTitle = new Label();
+            panelInfo = new Panel();
+            lblMedicineName = new Label();
+            lblCurrentStock = new Label();
+            panelAdjustment = new Panel();
+            lblAdjustmentType = new Label();
+            cmbAdjustmentType = new ComboBox();
+            lblQuantityChange = new Label();
+            txtQuantityChange = new TextBox();
+            lblNewStock = new Label();
+            lblWarning = new Label();
+            lblReason = new Label();
+            txtReason = new TextBox();
+            lblBatchNumber = new Label();
+            txtBatchNumber = new TextBox();
+            lblNotes = new Label();
+            txtNotes = new TextBox();
+            btnSave = new Button();
+            btnCancel = new Button();
+            panelInfo.SuspendLayout();
+            panelAdjustment.SuspendLayout();
+            SuspendLayout();
             // 
             // lblTitle
             // 
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(68)))), ((int)(((byte)(173)))));
-            this.lblTitle.Location = new System.Drawing.Point(20, 20);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(168, 25);
-            this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "Stock Adjustment";
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(68)))), ((int)(((byte)(173)))));
+            lblTitle.Location = new System.Drawing.Point(20, 20);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new System.Drawing.Size(168, 25);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "Stock Adjustment";
             // 
             // panelInfo
             // 
-            this.panelInfo.BackColor = System.Drawing.Color.White;
-            this.panelInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelInfo.Controls.Add(this.lblMedicineName);
-            this.panelInfo.Controls.Add(this.lblCurrentStock);
-            this.panelInfo.Location = new System.Drawing.Point(20, 60);
-            this.panelInfo.Name = "panelInfo";
-            this.panelInfo.Size = new System.Drawing.Size(560, 80);
-            this.panelInfo.TabIndex = 1;
+            panelInfo.BackColor = System.Drawing.Color.White;
+            panelInfo.BorderStyle = BorderStyle.FixedSingle;
+            panelInfo.Controls.Add(lblMedicineName);
+            panelInfo.Controls.Add(lblCurrentStock);
+            panelInfo.Location = new System.Drawing.Point(20, 60);
+            panelInfo.Name = "panelInfo";
+            panelInfo.Size = new System.Drawing.Size(560, 80);
+            panelInfo.TabIndex = 1;
             // 
             // lblMedicineName
             // 
-            this.lblMedicineName.AutoSize = true;
-            this.lblMedicineName.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.lblMedicineName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.lblMedicineName.Location = new System.Drawing.Point(15, 15);
-            this.lblMedicineName.Name = "lblMedicineName";
-            this.lblMedicineName.Size = new System.Drawing.Size(155, 20);
-            this.lblMedicineName.TabIndex = 0;
-            this.lblMedicineName.Text = "Medicine: [Loading...]";
+            lblMedicineName.AutoSize = true;
+            lblMedicineName.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            lblMedicineName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            lblMedicineName.Location = new System.Drawing.Point(15, 15);
+            lblMedicineName.Name = "lblMedicineName";
+            lblMedicineName.Size = new System.Drawing.Size(155, 20);
+            lblMedicineName.TabIndex = 0;
+            lblMedicineName.Text = "Medicine: [Loading...]";
             // 
             // lblCurrentStock
             // 
-            this.lblCurrentStock.AutoSize = true;
-            this.lblCurrentStock.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblCurrentStock.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.lblCurrentStock.Location = new System.Drawing.Point(15, 45);
-            this.lblCurrentStock.Name = "lblCurrentStock";
-            this.lblCurrentStock.Size = new System.Drawing.Size(107, 19);
-            this.lblCurrentStock.TabIndex = 1;
-            this.lblCurrentStock.Text = "Current Stock: 0";
+            lblCurrentStock.AutoSize = true;
+            lblCurrentStock.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblCurrentStock.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            lblCurrentStock.Location = new System.Drawing.Point(15, 45);
+            lblCurrentStock.Name = "lblCurrentStock";
+            lblCurrentStock.Size = new System.Drawing.Size(107, 19);
+            lblCurrentStock.TabIndex = 1;
+            lblCurrentStock.Text = "Current Stock: 0";
             // 
             // panelAdjustment
             // 
-            this.panelAdjustment.BackColor = System.Drawing.Color.White;
-            this.panelAdjustment.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelAdjustment.Controls.Add(this.lblAdjustmentType);
-            this.panelAdjustment.Controls.Add(this.cmbAdjustmentType);
-            this.panelAdjustment.Controls.Add(this.lblQuantityChange);
-            this.panelAdjustment.Controls.Add(this.txtQuantityChange);
-            this.panelAdjustment.Controls.Add(this.lblNewStock);
-            this.panelAdjustment.Controls.Add(this.lblWarning);
-            this.panelAdjustment.Controls.Add(this.lblReason);
-            this.panelAdjustment.Controls.Add(this.txtReason);
-            this.panelAdjustment.Controls.Add(this.lblBatchNumber);
-            this.panelAdjustment.Controls.Add(this.txtBatchNumber);
-            this.panelAdjustment.Controls.Add(this.lblNotes);
-            this.panelAdjustment.Controls.Add(this.txtNotes);
-            this.panelAdjustment.Location = new System.Drawing.Point(20, 160);
-            this.panelAdjustment.Name = "panelAdjustment";
-            this.panelAdjustment.Size = new System.Drawing.Size(560, 430);
-            this.panelAdjustment.TabIndex = 2;
+            panelAdjustment.BackColor = System.Drawing.Color.White;
+            panelAdjustment.BorderStyle = BorderStyle.FixedSingle;
+            panelAdjustment.Controls.Add(lblAdjustmentType);
+            panelAdjustment.Controls.Add(cmbAdjustmentType);
+            panelAdjustment.Controls.Add(lblQuantityChange);
+            panelAdjustment.Controls.Add(txtQuantityChange);
+            panelAdjustment.Controls.Add(lblNewStock);
+            panelAdjustment.Controls.Add(lblWarning);
+            panelAdjustment.Controls.Add(lblReason);
+            panelAdjustment.Controls.Add(txtReason);
+            panelAdjustment.Controls.Add(lblBatchNumber);
+            panelAdjustment.Controls.Add(txtBatchNumber);
+            panelAdjustment.Controls.Add(lblNotes);
+            panelAdjustment.Controls.Add(txtNotes);
+            panelAdjustment.Location = new System.Drawing.Point(20, 160);
+            panelAdjustment.Name = "panelAdjustment";
+            panelAdjustment.Size = new System.Drawing.Size(560, 430);
+            panelAdjustment.TabIndex = 2;
             // 
             // lblAdjustmentType
             // 
-            this.lblAdjustmentType.AutoSize = true;
-            this.lblAdjustmentType.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblAdjustmentType.Location = new System.Drawing.Point(15, 15);
-            this.lblAdjustmentType.Name = "lblAdjustmentType";
-            this.lblAdjustmentType.Size = new System.Drawing.Size(121, 19);
-            this.lblAdjustmentType.TabIndex = 0;
-            this.lblAdjustmentType.Text = "Adjustment Type:";
+            lblAdjustmentType.AutoSize = true;
+            lblAdjustmentType.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblAdjustmentType.Location = new System.Drawing.Point(15, 15);
+            lblAdjustmentType.Name = "lblAdjustmentType";
+            lblAdjustmentType.Size = new System.Drawing.Size(121, 19);
+            lblAdjustmentType.TabIndex = 0;
+            lblAdjustmentType.Text = "Adjustment Type:";
             // 
             // cmbAdjustmentType
             // 
-            this.cmbAdjustmentType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbAdjustmentType.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbAdjustmentType.FormattingEnabled = true;
-            this.cmbAdjustmentType.Location = new System.Drawing.Point(15, 40);
-            this.cmbAdjustmentType.Name = "cmbAdjustmentType";
-            this.cmbAdjustmentType.Size = new System.Drawing.Size(530, 25);
-            this.cmbAdjustmentType.TabIndex = 1;
-            this.cmbAdjustmentType.SelectedIndexChanged += new System.EventHandler(this.CmbAdjustmentType_SelectedIndexChanged);
+            cmbAdjustmentType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbAdjustmentType.Font = new System.Drawing.Font("Segoe UI", 10F);
+            cmbAdjustmentType.FormattingEnabled = true;
+            cmbAdjustmentType.Location = new System.Drawing.Point(15, 40);
+            cmbAdjustmentType.Name = "cmbAdjustmentType";
+            cmbAdjustmentType.Size = new System.Drawing.Size(530, 25);
+            cmbAdjustmentType.TabIndex = 1;
+            cmbAdjustmentType.SelectedIndexChanged += new System.EventHandler(CmbAdjustmentType_SelectedIndexChanged);
             // 
             // lblQuantityChange
             // 
-            this.lblQuantityChange.AutoSize = true;
-            this.lblQuantityChange.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblQuantityChange.Location = new System.Drawing.Point(15, 80);
-            this.lblQuantityChange.Name = "lblQuantityChange";
-            this.lblQuantityChange.Size = new System.Drawing.Size(117, 19);
-            this.lblQuantityChange.TabIndex = 2;
-            this.lblQuantityChange.Text = "Quantity Change:";
+            lblQuantityChange.AutoSize = true;
+            lblQuantityChange.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblQuantityChange.Location = new System.Drawing.Point(15, 80);
+            lblQuantityChange.Name = "lblQuantityChange";
+            lblQuantityChange.Size = new System.Drawing.Size(117, 19);
+            lblQuantityChange.TabIndex = 2;
+            lblQuantityChange.Text = "Quantity Change:";
             // 
             // txtQuantityChange
             // 
-            this.txtQuantityChange.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtQuantityChange.Location = new System.Drawing.Point(15, 105);
-            this.txtQuantityChange.Name = "txtQuantityChange";
-            this.txtQuantityChange.Size = new System.Drawing.Size(250, 25);
-            this.txtQuantityChange.TabIndex = 3;
-            this.txtQuantityChange.TextChanged += new System.EventHandler(this.TxtQuantityChange_TextChanged);
+            txtQuantityChange.Font = new System.Drawing.Font("Segoe UI", 10F);
+            txtQuantityChange.Location = new System.Drawing.Point(15, 105);
+            txtQuantityChange.Name = "txtQuantityChange";
+            txtQuantityChange.Size = new System.Drawing.Size(250, 25);
+            txtQuantityChange.TabIndex = 3;
+            txtQuantityChange.TextChanged += new System.EventHandler(TxtQuantityChange_TextChanged);
             // 
             // lblNewStock
             // 
-            this.lblNewStock.AutoSize = true;
-            this.lblNewStock.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.lblNewStock.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.lblNewStock.Location = new System.Drawing.Point(290, 108);
-            this.lblNewStock.Name = "lblNewStock";
-            this.lblNewStock.Size = new System.Drawing.Size(100, 20);
-            this.lblNewStock.TabIndex = 4;
-            this.lblNewStock.Text = "New Stock: 0";
+            lblNewStock.AutoSize = true;
+            lblNewStock.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            lblNewStock.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            lblNewStock.Location = new System.Drawing.Point(290, 108);
+            lblNewStock.Name = "lblNewStock";
+            lblNewStock.Size = new System.Drawing.Size(100, 20);
+            lblNewStock.TabIndex = 4;
+            lblNewStock.Text = "New Stock: 0";
             // 
             // lblWarning
             // 
-            this.lblWarning.AutoSize = true;
-            this.lblWarning.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.lblWarning.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-            this.lblWarning.Location = new System.Drawing.Point(15, 140);
-            this.lblWarning.Name = "lblWarning";
-            this.lblWarning.Size = new System.Drawing.Size(226, 15);
-            this.lblWarning.TabIndex = 5;
-            this.lblWarning.Text = "Warning: Stock cannot be negative!";
-            this.lblWarning.Visible = false;
+            lblWarning.AutoSize = true;
+            lblWarning.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblWarning.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            lblWarning.Location = new System.Drawing.Point(15, 140);
+            lblWarning.Name = "lblWarning";
+            lblWarning.Size = new System.Drawing.Size(226, 15);
+            lblWarning.TabIndex = 5;
+            lblWarning.Text = "Warning: Stock cannot be negative!";
+            lblWarning.Visible = false;
             // 
             // lblReason
             // 
-            this.lblReason.AutoSize = true;
-            this.lblReason.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblReason.Location = new System.Drawing.Point(15, 170);
-            this.lblReason.Name = "lblReason";
-            this.lblReason.Size = new System.Drawing.Size(155, 19);
-            this.lblReason.TabIndex = 6;
-            this.lblReason.Text = "Reason (Required): *";
+            lblReason.AutoSize = true;
+            lblReason.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblReason.Location = new System.Drawing.Point(15, 170);
+            lblReason.Name = "lblReason";
+            lblReason.Size = new System.Drawing.Size(155, 19);
+            lblReason.TabIndex = 6;
+            lblReason.Text = "Reason (Required): *";
             // 
             // txtReason
             // 
-            this.txtReason.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtReason.Location = new System.Drawing.Point(15, 195);
-            this.txtReason.Multiline = true;
-            this.txtReason.Name = "txtReason";
-            this.txtReason.Size = new System.Drawing.Size(530, 60);
-            this.txtReason.TabIndex = 7;
+            txtReason.Font = new System.Drawing.Font("Segoe UI", 10F);
+            txtReason.Location = new System.Drawing.Point(15, 195);
+            txtReason.Multiline = true;
+            txtReason.Name = "txtReason";
+            txtReason.Size = new System.Drawing.Size(530, 60);
+            txtReason.TabIndex = 7;
             // 
             // lblBatchNumber
             // 
-            this.lblBatchNumber.AutoSize = true;
-            this.lblBatchNumber.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblBatchNumber.Location = new System.Drawing.Point(15, 270);
-            this.lblBatchNumber.Name = "lblBatchNumber";
-            this.lblBatchNumber.Size = new System.Drawing.Size(143, 19);
-            this.lblBatchNumber.TabIndex = 8;
-            this.lblBatchNumber.Text = "Batch Number (Opt):";
+            lblBatchNumber.AutoSize = true;
+            lblBatchNumber.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblBatchNumber.Location = new System.Drawing.Point(15, 270);
+            lblBatchNumber.Name = "lblBatchNumber";
+            lblBatchNumber.Size = new System.Drawing.Size(143, 19);
+            lblBatchNumber.TabIndex = 8;
+            lblBatchNumber.Text = "Batch Number (Opt):";
             // 
             // txtBatchNumber
             // 
-            this.txtBatchNumber.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtBatchNumber.Location = new System.Drawing.Point(15, 295);
-            this.txtBatchNumber.Name = "txtBatchNumber";
-            this.txtBatchNumber.Size = new System.Drawing.Size(530, 25);
-            this.txtBatchNumber.TabIndex = 9;
+            txtBatchNumber.Font = new System.Drawing.Font("Segoe UI", 10F);
+            txtBatchNumber.Location = new System.Drawing.Point(15, 295);
+            txtBatchNumber.Name = "txtBatchNumber";
+            txtBatchNumber.Size = new System.Drawing.Size(530, 25);
+            txtBatchNumber.TabIndex = 9;
             // 
             // lblNotes
             // 
-            this.lblNotes.AutoSize = true;
-            this.lblNotes.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblNotes.Location = new System.Drawing.Point(15, 335);
-            this.lblNotes.Name = "lblNotes";
-            this.lblNotes.Size = new System.Drawing.Size(116, 19);
-            this.lblNotes.TabIndex = 10;
-            this.lblNotes.Text = "Additional Notes:";
+            lblNotes.AutoSize = true;
+            lblNotes.Font = new System.Drawing.Font("Segoe UI", 10F);
+            lblNotes.Location = new System.Drawing.Point(15, 335);
+            lblNotes.Name = "lblNotes";
+            lblNotes.Size = new System.Drawing.Size(116, 19);
+            lblNotes.TabIndex = 10;
+            lblNotes.Text = "Additional Notes:";
             // 
             // txtNotes
             // 
-            this.txtNotes.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtNotes.Location = new System.Drawing.Point(15, 360);
-            this.txtNotes.Multiline = true;
-            this.txtNotes.Name = "txtNotes";
-            this.txtNotes.Size = new System.Drawing.Size(530, 55);
-            this.txtNotes.TabIndex = 11;
+            txtNotes.Font = new System.Drawing.Font("Segoe UI", 10F);
+            txtNotes.Location = new System.Drawing.Point(15, 360);
+            txtNotes.Multiline = true;
+            txtNotes.Name = "txtNotes";
+            txtNotes.Size = new System.Drawing.Size(530, 55);
+            txtNotes.TabIndex = 11;
             // 
             // btnSave
             // 
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.btnSave.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSave.FlatAppearance.BorderSize = 0;
-            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(20, 610);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(270, 45);
-            this.btnSave.TabIndex = 3;
-            this.btnSave.Text = "Save Adjustment";
-            this.btnSave.UseVisualStyleBackColor = false;
-            this.btnSave.Click += new System.EventHandler(this.BtnSave_Click);
+            btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            btnSave.Cursor = Cursors.Hand;
+            btnSave.FlatAppearance.BorderSize = 0;
+            btnSave.FlatStyle = FlatStyle.Flat;
+            btnSave.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnSave.ForeColor = System.Drawing.Color.White;
+            btnSave.Location = new System.Drawing.Point(20, 610);
+            btnSave.Name = "btnSave";
+            btnSave.Size = new System.Drawing.Size(270, 45);
+            btnSave.TabIndex = 3;
+            btnSave.Text = "Save Adjustment";
+            btnSave.UseVisualStyleBackColor = false;
+            btnSave.Click += new System.EventHandler(BtnSave_Click);
             // 
             // btnCancel
             // 
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
-            this.btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnCancel.FlatAppearance.BorderSize = 0;
-            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(310, 610);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(270, 45);
-            this.btnCancel.TabIndex = 4;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = false;
-            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
+            btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(165)))), ((int)(((byte)(166)))));
+            btnCancel.Cursor = Cursors.Hand;
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.FlatStyle = FlatStyle.Flat;
+            btnCancel.Font = new System.Drawing.Font("Segoe UI", 11F);
+            btnCancel.ForeColor = System.Drawing.Color.White;
+            btnCancel.Location = new System.Drawing.Point(310, 610);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new System.Drawing.Size(270, 45);
+            btnCancel.TabIndex = 4;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = false;
+            btnCancel.Click += new System.EventHandler(BtnCancel_Click);
             // 
             // StockAdjustmentForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
-            this.ClientSize = new System.Drawing.Size(600, 680);
-            this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.panelAdjustment);
-            this.Controls.Add(this.panelInfo);
-            this.Controls.Add(this.lblTitle);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "StockAdjustmentForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Stock Adjustment - St. Joseph's Hospital";
-            this.panelInfo.ResumeLayout(false);
-            this.panelInfo.PerformLayout();
-            this.panelAdjustment.ResumeLayout(false);
-            this.panelAdjustment.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
+            ClientSize = new System.Drawing.Size(600, 680);
+            Controls.Add(btnCancel);
+            Controls.Add(btnSave);
+            Controls.Add(panelAdjustment);
+            Controls.Add(panelInfo);
+            Controls.Add(lblTitle);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "StockAdjustmentForm";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Stock Adjustment - St. Joseph's Hospital";
+            panelInfo.ResumeLayout(false);
+            panelInfo.PerformLayout();
+            panelAdjustment.ResumeLayout(false);
+            panelAdjustment.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
+
+        #endregion
+
+        private Label lblTitle;
+        private Label lblMedicineName;
+        private Label lblCurrentStock;
+        private Label lblAdjustmentType;
+        private ComboBox cmbAdjustmentType;
+        private Label lblQuantityChange;
+        private TextBox txtQuantityChange;
+        private Label lblNewStock;
+        private Label lblWarning;
+        private Label lblReason;
+        private TextBox txtReason;
+        private Label lblBatchNumber;
+        private TextBox txtBatchNumber;
+        private Label lblNotes;
+        private TextBox txtNotes;
+        private Button btnSave;
+        private Button btnCancel;
+        private Panel panelInfo;
+        private Panel panelAdjustment;
     }
 }

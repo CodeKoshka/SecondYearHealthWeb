@@ -34,14 +34,14 @@
             lblInstructions = new Label();
             panelHeader = new Panel();
             lblTitle = new Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCrop)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(pictureBoxCrop)).BeginInit();
             panelHeader.SuspendLayout();
             SuspendLayout();
             // 
             // panelHeader
             // 
             panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
-            panelHeader.Controls.Add(this.lblTitle);
+            panelHeader.Controls.Add(lblTitle);
             panelHeader.Dock = DockStyle.Top;
             panelHeader.Location = new System.Drawing.Point(0, 0);
             panelHeader.Name = "panelHeader";
@@ -68,10 +68,10 @@
             pictureBoxCrop.Size = new System.Drawing.Size(660, 440);
             pictureBoxCrop.TabIndex = 1;
             pictureBoxCrop.TabStop = false;
-            pictureBoxCrop.Paint += new PaintEventHandler(this.PictureBoxCrop_Paint);
-            pictureBoxCrop.MouseDown += new MouseEventHandler(this.PictureBoxCrop_MouseDown);
-            pictureBoxCrop.MouseMove += new MouseEventHandler(this.PictureBoxCrop_MouseMove);
-            pictureBoxCrop.MouseUp += new MouseEventHandler(this.PictureBoxCrop_MouseUp);
+            pictureBoxCrop.Paint += new PaintEventHandler(PictureBoxCrop_Paint);
+            pictureBoxCrop.MouseDown += new MouseEventHandler(PictureBoxCrop_MouseDown);
+            pictureBoxCrop.MouseMove += new MouseEventHandler(PictureBoxCrop_MouseMove);
+            pictureBoxCrop.MouseUp += new MouseEventHandler(PictureBoxCrop_MouseUp);
             // 
             // lblInstructions
             // 
@@ -98,7 +98,7 @@
             btnCrop.TabIndex = 3;
             btnCrop.Text = "✔️ Crop && Save";
             btnCrop.UseVisualStyleBackColor = false;
-            btnCrop.Click += new System.EventHandler(this.BtnCrop_Click);
+            btnCrop.Click += new System.EventHandler(BtnCrop_Click);
             // 
             // btnCancel
             // 
@@ -114,7 +114,7 @@
             btnCancel.TabIndex = 4;
             btnCancel.Text = "❌ Cancel";
             btnCancel.UseVisualStyleBackColor = false;
-            btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
+            btnCancel.Click += new System.EventHandler(BtnCancel_Click);
             // 
             // ImageCropperForm
             // 
@@ -122,18 +122,18 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = System.Drawing.Color.White;
             ClientSize = new System.Drawing.Size(700, 640);
-            Controls.Add(this.btnCancel);
-            Controls.Add(this.btnCrop);
-            Controls.Add(this.lblInstructions);
-            Controls.Add(this.pictureBoxCrop);
-            Controls.Add(this.panelHeader);
+            Controls.Add(btnCancel);
+            Controls.Add(btnCrop);
+            Controls.Add(lblInstructions);
+            Controls.Add(pictureBoxCrop);
+            Controls.Add(panelHeader);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "ImageCropperForm";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Crop Picture - St. Joseph\'s Hospital";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCrop)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(pictureBoxCrop)).EndInit();
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();
             ResumeLayout(false);

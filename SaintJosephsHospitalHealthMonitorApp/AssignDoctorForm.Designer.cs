@@ -46,15 +46,15 @@
             panelHeader.SuspendLayout();
             panelSearch.SuspendLayout();
             panelFilters.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvDoctors)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(dgvDoctors)).BeginInit();
             panelButtons.SuspendLayout();
             SuspendLayout();
             // 
             // panelHeader
             // 
             panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            panelHeader.Controls.Add(this.lblTitle);
-            panelHeader.Controls.Add(this.lblPatientInfo);
+            panelHeader.Controls.Add(lblTitle);
+            panelHeader.Controls.Add(lblPatientInfo);
             panelHeader.Dock = DockStyle.Top;
             panelHeader.Location = new System.Drawing.Point(0, 0);
             panelHeader.Name = "panelHeader";
@@ -86,8 +86,8 @@
             // panelSearch
             // 
             panelSearch.BackColor = System.Drawing.Color.White;
-            panelSearch.Controls.Add(this.lblSearch);
-            panelSearch.Controls.Add(this.txtSearch);
+            panelSearch.Controls.Add(lblSearch);
+            panelSearch.Controls.Add(txtSearch);
             panelSearch.Dock = DockStyle.Top;
             panelSearch.Location = new System.Drawing.Point(0, 90);
             panelSearch.Name = "panelSearch";
@@ -113,15 +113,15 @@
             txtSearch.PlaceholderText = "Type doctor name or specialization...";
             txtSearch.Size = new System.Drawing.Size(400, 25);
             txtSearch.TabIndex = 1;
-            txtSearch.TextChanged += new System.EventHandler(this.TxtSearch_TextChanged);
+            txtSearch.TextChanged += new System.EventHandler(TxtSearch_TextChanged);
             // 
             // panelFilters
             // 
             panelFilters.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
-            panelFilters.Controls.Add(this.lblDoctorCount);
-            panelFilters.Controls.Add(this.rbAll);
-            panelFilters.Controls.Add(this.rbOnDuty);
-            panelFilters.Controls.Add(this.rbOffDuty);
+            panelFilters.Controls.Add(lblDoctorCount);
+            panelFilters.Controls.Add(rbAll);
+            panelFilters.Controls.Add(rbOnDuty);
+            panelFilters.Controls.Add(rbOffDuty);
             panelFilters.Dock = DockStyle.Top;
             panelFilters.Location = new System.Drawing.Point(0, 160);
             panelFilters.Name = "panelFilters";
@@ -142,7 +142,7 @@
             rbAll.TabStop = true;
             rbAll.Text = "📋 All (Show All)";
             rbAll.UseVisualStyleBackColor = true;
-            rbAll.CheckedChanged += new System.EventHandler(this.RbAll_CheckedChanged);
+            rbAll.CheckedChanged += new System.EventHandler(RbAll_CheckedChanged);
             // 
             // rbOnDuty
             // 
@@ -156,7 +156,7 @@
             rbOnDuty.TabIndex = 1;
             rbOnDuty.Text = "🟢 On Duty";
             rbOnDuty.UseVisualStyleBackColor = true;
-            rbOnDuty.CheckedChanged += new System.EventHandler(this.RbOnDuty_CheckedChanged);
+            rbOnDuty.CheckedChanged += new System.EventHandler(RbOnDuty_CheckedChanged);
             // 
             // rbOffDuty
             // 
@@ -170,7 +170,7 @@
             rbOffDuty.TabIndex = 2;
             rbOffDuty.Text = "🔴 Off Duty";
             rbOffDuty.UseVisualStyleBackColor = true;
-            rbOffDuty.CheckedChanged += new System.EventHandler(this.RbOffDuty_CheckedChanged);
+            rbOffDuty.CheckedChanged += new System.EventHandler(RbOffDuty_CheckedChanged);
             // 
             // lblDoctorCount
             // 
@@ -202,15 +202,15 @@
             dgvDoctors.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvDoctors.Size = new System.Drawing.Size(900, 320);
             dgvDoctors.TabIndex = 3;
-            dgvDoctors.CellDoubleClick += new DataGridViewCellEventHandler(this.DgvDoctors_CellDoubleClick);
-            dgvDoctors.CellFormatting += new DataGridViewCellFormattingEventHandler(this.DgvDoctors_CellFormatting);
-            dgvDoctors.RowPrePaint += new DataGridViewRowPrePaintEventHandler(this.DgvDoctors_RowPrePaint);
+            dgvDoctors.CellDoubleClick += new DataGridViewCellEventHandler(DgvDoctors_CellDoubleClick);
+            dgvDoctors.CellFormatting += new DataGridViewCellFormattingEventHandler(DgvDoctors_CellFormatting);
+            dgvDoctors.RowPrePaint += new DataGridViewRowPrePaintEventHandler(DgvDoctors_RowPrePaint);
             // 
             // panelButtons
             // 
             panelButtons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(248)))));
-            panelButtons.Controls.Add(this.btnAssign);
-            panelButtons.Controls.Add(this.btnCancel);
+            panelButtons.Controls.Add(btnAssign);
+            panelButtons.Controls.Add(btnCancel);
             panelButtons.Dock = DockStyle.Bottom;
             panelButtons.Location = new System.Drawing.Point(0, 540);
             panelButtons.Name = "panelButtons";
@@ -232,7 +232,7 @@
             btnAssign.TabIndex = 0;
             btnAssign.Text = "✓ Assign";
             btnAssign.UseVisualStyleBackColor = false;
-            btnAssign.Click += new System.EventHandler(this.BtnAssign_Click);
+            btnAssign.Click += new System.EventHandler(BtnAssign_Click);
             // 
             // btnCancel
             // 
@@ -248,7 +248,7 @@
             btnCancel.TabIndex = 1;
             btnCancel.Text = "✕ Cancel";
             btnCancel.UseVisualStyleBackColor = false;
-            btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
+            btnCancel.Click += new System.EventHandler(BtnCancel_Click);
             // 
             // AssignDoctorForm
             // 
@@ -256,11 +256,11 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = System.Drawing.Color.White;
             ClientSize = new System.Drawing.Size(900, 620);
-            Controls.Add(this.dgvDoctors);
-            Controls.Add(this.panelFilters);
-            Controls.Add(this.panelSearch);
-            Controls.Add(this.panelHeader);
-            Controls.Add(this.panelButtons);
+            Controls.Add(dgvDoctors);
+            Controls.Add(panelFilters);
+            Controls.Add(panelSearch);
+            Controls.Add(panelHeader);
+            Controls.Add(panelButtons);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
@@ -273,7 +273,7 @@
             panelSearch.PerformLayout();
             panelFilters.ResumeLayout(false);
             panelFilters.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvDoctors)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(dgvDoctors)).EndInit();
             panelButtons.ResumeLayout(false);
             ResumeLayout(false);
         }

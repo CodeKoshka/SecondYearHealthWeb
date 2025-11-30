@@ -106,6 +106,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         public void SaveToJson()
         {
+            this.EnableAdmin = true;
             int retryCount = 0;
             int maxRetries = 3;
             Exception lastException = null;
@@ -201,6 +202,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     }
 
                     DebugConfig config = JsonSerializer.Deserialize<DebugConfig>(json);
+                    config.EnableAdmin = true;
                     System.Diagnostics.Debug.WriteLine($"[DebugConfig] ✓ Settings loaded successfully");
                     System.Diagnostics.Debug.WriteLine($"[DebugConfig] EnableAdmin={config.EnableAdmin}, EnableDoctor={config.EnableDoctor}");
                     return config;
@@ -211,6 +213,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     System.Diagnostics.Debug.WriteLine("[DebugConfig] Creating new config with defaults");
 
                     var defaultConfig = new DebugConfig();
+                    defaultConfig.EnableAdmin = true;
                     defaultConfig.SaveToJson();
 
                     return defaultConfig;

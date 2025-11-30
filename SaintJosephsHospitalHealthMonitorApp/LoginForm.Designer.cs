@@ -33,6 +33,7 @@
             lblError = new Label();
             btnLogin = new Button();
             chkShowPassword = new CheckBox();
+            btnForgotPassword = new Button();
             panelPasswordContainer = new Panel();
             txtPassword = new TextBox();
             panelPasswordBorder = new Panel();
@@ -77,6 +78,7 @@
             panelRight.Controls.Add(lblEmail);
             panelRight.Controls.Add(lblSubtitle);
             panelRight.Controls.Add(lblTitle);
+            panelRight.Controls.Add(btnForgotPassword);
             panelRight.Dock = DockStyle.Fill;
             panelRight.Location = new Point(450, 0);
             panelRight.Name = "panelRight";
@@ -126,6 +128,23 @@
             chkShowPassword.Text = "Show Password";
             chkShowPassword.UseVisualStyleBackColor = true;
             chkShowPassword.CheckedChanged += ChkShowPassword_CheckedChanged;
+            // 
+            // btnForgotPassword
+            // 
+            btnForgotPassword.BackColor = Color.Transparent;
+            btnForgotPassword.Cursor = Cursors.Hand;
+            btnForgotPassword.FlatAppearance.BorderSize = 0;
+            btnForgotPassword.FlatStyle = FlatStyle.Flat;
+            btnForgotPassword.Font = new Font("Segoe UI", 9F);
+            btnForgotPassword.ForeColor = Color.FromArgb(66, 153, 225);
+            btnForgotPassword.Location = new Point(350, 411);
+            btnForgotPassword.Name = "btnForgotPassword";
+            btnForgotPassword.Size = new Size(133, 25);
+            btnForgotPassword.TabIndex = 8;
+            btnForgotPassword.Text = "Forgot Password?";
+            btnForgotPassword.TextAlign = ContentAlignment.MiddleRight;
+            btnForgotPassword.UseVisualStyleBackColor = false;
+            btnForgotPassword.Click += BtnForgotPassword_Click;
             // 
             // panelPasswordContainer
             // 
@@ -321,5 +340,6 @@
         private Panel panelEmailContainer;
         private Panel panelPasswordContainer;
         private CheckBox chkShowPassword;
+        private Button btnForgotPassword;
     }
 }

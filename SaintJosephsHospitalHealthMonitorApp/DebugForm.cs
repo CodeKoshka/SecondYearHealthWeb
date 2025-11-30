@@ -87,6 +87,8 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     LoadFromJsonConfig();
                 }
 
+                enableAdmin = true;
+
                 UpdateUIFromSettings();
             }
             finally
@@ -116,7 +118,7 @@ namespace SaintJosephsHospitalHealthMonitorApp
             {
                 DebugConfig config = DebugConfig.LoadFromJson();
 
-                enableAdmin = config.EnableAdmin;
+                enableAdmin = true;
                 enableReceptionist = config.EnableReceptionist;
                 enableDoctor = config.EnableDoctor;
                 enablePharmacist = config.EnablePharmacist;
@@ -165,23 +167,12 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void SyncRoleCreationWithDashboard()
         {
-            if (!enableAdmin)
-            {
-                chkAllowAdmin.Checked = false;
-                chkAllowAdmin.Enabled = false;
-                allowCreateAdmin = false;
+            chkAllowAdmin.Checked = true;
+            chkAllowAdmin.Enabled = false;  
+            allowCreateAdmin = true;        
 
-                chkCreateAdmin.Checked = false;
-                chkCreateAdmin.Enabled = false;
-                createDefaultAdmin = false;
-            }
-            else
-            {
-                chkAllowAdmin.Enabled = true;
-                chkCreateAdmin.Enabled = true;
-                allowCreateAdmin = chkAllowAdmin.Checked;
-                createDefaultAdmin = chkCreateAdmin.Checked;
-            }
+            chkCreateAdmin.Enabled = true;
+            createDefaultAdmin = chkCreateAdmin.Checked;
 
             if (!enableReceptionist)
             {
@@ -280,6 +271,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void ChkDashboardRole_CheckedChanged(object sender, EventArgs e)
         {
+            if (sender == chkAdmin && !chkAdmin.Checked)
+            {
+                chkAdmin.Checked = true;
+                MessageBox.Show("Admin Dashboard cannot be disabled.\n\n" +
+                               "The Admin role is required for core system functionality.",
+                               "Admin Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             enableAdmin = chkAdmin.Checked;
             enableReceptionist = chkReceptionist.Checked;
             enableDoctor = chkDoctor.Checked;
@@ -290,7 +290,15 @@ namespace SaintJosephsHospitalHealthMonitorApp
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            enableAdmin = chkAdmin.Checked;
+            if (!chkAdmin.Checked)
+            {
+                MessageBox.Show("Admin Dashboard cannot be disabled.\n\n" +
+                               "The Admin role is required for system operation.",
+                               "Admin Required", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            enableAdmin = true;
             enableReceptionist = chkReceptionist.Checked;
             enableDoctor = chkDoctor.Checked;
             enablePharmacist = chkPharmacist.Checked;

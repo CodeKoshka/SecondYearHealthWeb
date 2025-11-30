@@ -111,7 +111,7 @@
             lblDashboardNote.Name = "lblDashboardNote";
             lblDashboardNote.Size = new Size(420, 40);
             lblDashboardNote.TabIndex = 5;
-            lblDashboardNote.Text = "Head Admin access is always enabled\r\nDisabling dashboard access will also disable role creation";
+            lblDashboardNote.Text = "Head Admin and Admin access are always enabled (system requirement)\r\nDisabling dashboard access will also disable role creation";
             // 
             // chkPharmacist
             // 
@@ -157,7 +157,9 @@
             chkAdmin.Name = "chkAdmin";
             chkAdmin.Size = new Size(420, 30);
             chkAdmin.TabIndex = 1;
-            chkAdmin.Text = "Admin Dashboard";
+            chkAdmin.Text = "Admin Dashboard (Required - Cannot Disable)";
+            chkAdmin.Checked = true;           
+            chkAdmin.Enabled = false;          
             chkAdmin.UseVisualStyleBackColor = true;
             chkAdmin.CheckedChanged += ChkDashboardRole_CheckedChanged;
             // 
@@ -307,7 +309,9 @@
             chkAllowAdmin.Name = "chkAllowAdmin";
             chkAllowAdmin.Size = new Size(420, 30);
             chkAllowAdmin.TabIndex = 2;
-            chkAllowAdmin.Text = "Allow Admin Creation";
+            chkAllowAdmin.Text = "Allow Admin Creation ((Required - Cannot Disable)";
+            chkAllowAdmin.Checked = true;          
+            chkAllowAdmin.Enabled = false;          
             chkAllowAdmin.UseVisualStyleBackColor = true;
             // 
             // lblRoleCreationInfo

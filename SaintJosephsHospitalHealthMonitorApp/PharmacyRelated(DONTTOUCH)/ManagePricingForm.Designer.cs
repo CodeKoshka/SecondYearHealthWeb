@@ -2,36 +2,15 @@
 {
     partial class ManagePricingForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.Panel panelHeader;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Panel panelSearch;
-        private System.Windows.Forms.Button btnSearch;
-        private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.Label lblSearch;
-        private System.Windows.Forms.DataGridView dgvPricing;
-        private System.Windows.Forms.Label lblTotalItems;
-        private System.Windows.Forms.Panel panelPricing;
-        private System.Windows.Forms.Label lblWarning;
-        private System.Windows.Forms.Label lblProfit;
-        private System.Windows.Forms.Button btnUpdatePrice;
-        private System.Windows.Forms.TextBox txtMarkupPercent;
-        private System.Windows.Forms.Label lblMarkupPercent;
-        private System.Windows.Forms.TextBox txtSellingPrice;
-        private System.Windows.Forms.Label lblSellingPrice;
-        private System.Windows.Forms.TextBox txtCostPrice;
-        private System.Windows.Forms.Label lblCostPrice;
-        private System.Windows.Forms.Label lblSelectedMedicine;
-        private System.Windows.Forms.Label lblPricingSection;
-        private System.Windows.Forms.Panel panelBulk;
-        private System.Windows.Forms.Button btnBulkUpdate;
-        private System.Windows.Forms.TextBox txtBulkMarkup;
-        private System.Windows.Forms.Label lblBulkMarkup;
-        private System.Windows.Forms.Label lblBulkSection;
-        private System.Windows.Forms.Panel panelButtons;
-        private System.Windows.Forms.Button btnExportPricing;
-        private System.Windows.Forms.Button btnClose;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -41,396 +20,433 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
-            this.panelHeader = new System.Windows.Forms.Panel();
-            this.lblTitle = new System.Windows.Forms.Label();
-            this.panelSearch = new System.Windows.Forms.Panel();
-            this.btnSearch = new System.Windows.Forms.Button();
-            this.txtSearch = new System.Windows.Forms.TextBox();
-            this.lblSearch = new System.Windows.Forms.Label();
-            this.dgvPricing = new System.Windows.Forms.DataGridView();
-            this.lblTotalItems = new System.Windows.Forms.Label();
-            this.panelPricing = new System.Windows.Forms.Panel();
-            this.lblWarning = new System.Windows.Forms.Label();
-            this.lblProfit = new System.Windows.Forms.Label();
-            this.btnUpdatePrice = new System.Windows.Forms.Button();
-            this.txtMarkupPercent = new System.Windows.Forms.TextBox();
-            this.lblMarkupPercent = new System.Windows.Forms.Label();
-            this.txtSellingPrice = new System.Windows.Forms.TextBox();
-            this.lblSellingPrice = new System.Windows.Forms.Label();
-            this.txtCostPrice = new System.Windows.Forms.TextBox();
-            this.lblCostPrice = new System.Windows.Forms.Label();
-            this.lblSelectedMedicine = new System.Windows.Forms.Label();
-            this.lblPricingSection = new System.Windows.Forms.Label();
-            this.panelBulk = new System.Windows.Forms.Panel();
-            this.btnBulkUpdate = new System.Windows.Forms.Button();
-            this.txtBulkMarkup = new System.Windows.Forms.TextBox();
-            this.lblBulkMarkup = new System.Windows.Forms.Label();
-            this.lblBulkSection = new System.Windows.Forms.Label();
-            this.panelButtons = new System.Windows.Forms.Panel();
-            this.btnExportPricing = new System.Windows.Forms.Button();
-            this.btnClose = new System.Windows.Forms.Button();
-            this.panelHeader.SuspendLayout();
-            this.panelSearch.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPricing)).BeginInit();
-            this.panelPricing.SuspendLayout();
-            this.panelBulk.SuspendLayout();
-            this.panelButtons.SuspendLayout();
-            this.SuspendLayout();
+            panelHeader = new Panel();
+            lblTitle = new Label();
+            panelSearch = new Panel();
+            btnSearch = new Button();
+            txtSearch = new TextBox();
+            lblSearch = new Label();
+            dgvPricing = new DataGridView();
+            lblTotalItems = new Label();
+            panelPricing = new Panel();
+            lblWarning = new Label();
+            lblProfit = new Label();
+            btnUpdatePrice = new Button();
+            txtMarkupPercent = new TextBox();
+            lblMarkupPercent = new Label();
+            txtSellingPrice = new TextBox();
+            lblSellingPrice = new Label();
+            txtCostPrice = new TextBox();
+            lblCostPrice = new Label();
+            lblSelectedMedicine = new Label();
+            lblPricingSection = new Label();
+            panelBulk = new Panel();
+            btnBulkUpdate = new Button();
+            txtBulkMarkup = new TextBox();
+            lblBulkMarkup = new Label();
+            lblBulkSection = new Label();
+            panelButtons = new Panel();
+            btnExportPricing = new Button();
+            btnClose = new Button();
+            panelHeader.SuspendLayout();
+            panelSearch.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(dgvPricing)).BeginInit();
+            panelPricing.SuspendLayout();
+            panelBulk.SuspendLayout();
+            panelButtons.SuspendLayout();
+            SuspendLayout();
             // 
             // panelHeader
             // 
-            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.panelHeader.Controls.Add(this.lblTitle);
-            this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelHeader.Location = new System.Drawing.Point(0, 0);
-            this.panelHeader.Name = "panelHeader";
-            this.panelHeader.Size = new System.Drawing.Size(1200, 70);
-            this.panelHeader.TabIndex = 0;
+            panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
+            panelHeader.Controls.Add(lblTitle);
+            panelHeader.Dock = DockStyle.Top;
+            panelHeader.Location = new System.Drawing.Point(0, 0);
+            panelHeader.Name = "panelHeader";
+            panelHeader.Size = new System.Drawing.Size(1200, 70);
+            panelHeader.TabIndex = 0;
             // 
             // lblTitle
             // 
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Location = new System.Drawing.Point(20, 18);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(298, 37);
-            this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "Medicine Pricing Manager";
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
+            lblTitle.ForeColor = System.Drawing.Color.White;
+            lblTitle.Location = new System.Drawing.Point(20, 18);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new System.Drawing.Size(298, 37);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "Medicine Pricing Manager";
             // 
             // panelSearch
             // 
-            this.panelSearch.BackColor = System.Drawing.Color.White;
-            this.panelSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelSearch.Controls.Add(this.btnSearch);
-            this.panelSearch.Controls.Add(this.txtSearch);
-            this.panelSearch.Controls.Add(this.lblSearch);
-            this.panelSearch.Location = new System.Drawing.Point(20, 85);
-            this.panelSearch.Name = "panelSearch";
-            this.panelSearch.Size = new System.Drawing.Size(750, 60);
-            this.panelSearch.TabIndex = 1;
+            panelSearch.BackColor = System.Drawing.Color.White;
+            panelSearch.BorderStyle = BorderStyle.FixedSingle;
+            panelSearch.Controls.Add(btnSearch);
+            panelSearch.Controls.Add(txtSearch);
+            panelSearch.Controls.Add(lblSearch);
+            panelSearch.Location = new System.Drawing.Point(20, 85);
+            panelSearch.Name = "panelSearch";
+            panelSearch.Size = new System.Drawing.Size(750, 60);
+            panelSearch.TabIndex = 1;
             // 
             // btnSearch
             // 
-            this.btnSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSearch.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnSearch.ForeColor = System.Drawing.Color.White;
-            this.btnSearch.Location = new System.Drawing.Point(620, 12);
-            this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(110, 35);
-            this.btnSearch.TabIndex = 2;
-            this.btnSearch.Text = "Search";
-            this.btnSearch.UseVisualStyleBackColor = false;
-            this.btnSearch.Click += new System.EventHandler(this.BtnSearch_Click);
+            btnSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            btnSearch.FlatStyle = FlatStyle.Flat;
+            btnSearch.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnSearch.ForeColor = System.Drawing.Color.White;
+            btnSearch.Location = new System.Drawing.Point(620, 12);
+            btnSearch.Name = "btnSearch";
+            btnSearch.Size = new System.Drawing.Size(110, 35);
+            btnSearch.TabIndex = 2;
+            btnSearch.Text = "Search";
+            btnSearch.UseVisualStyleBackColor = false;
+            btnSearch.Click += new System.EventHandler(BtnSearch_Click);
             // 
             // txtSearch
             // 
-            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.txtSearch.Location = new System.Drawing.Point(170, 15);
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(430, 27);
-            this.txtSearch.TabIndex = 1;
+            txtSearch.Font = new System.Drawing.Font("Segoe UI", 11F);
+            txtSearch.Location = new System.Drawing.Point(170, 15);
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new System.Drawing.Size(430, 27);
+            txtSearch.TabIndex = 1;
             // 
             // lblSearch
             // 
-            this.lblSearch.AutoSize = true;
-            this.lblSearch.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.lblSearch.Location = new System.Drawing.Point(15, 18);
-            this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(139, 20);
-            this.lblSearch.TabIndex = 0;
-            this.lblSearch.Text = "Search Medicine:";
+            lblSearch.AutoSize = true;
+            lblSearch.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            lblSearch.Location = new System.Drawing.Point(15, 18);
+            lblSearch.Name = "lblSearch";
+            lblSearch.Size = new System.Drawing.Size(139, 20);
+            lblSearch.TabIndex = 0;
+            lblSearch.Text = "Search Medicine:";
             // 
             // dgvPricing
             // 
-            this.dgvPricing.AllowUserToAddRows = false;
-            this.dgvPricing.AllowUserToDeleteRows = false;
-            this.dgvPricing.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvPricing.BackgroundColor = System.Drawing.Color.White;
-            this.dgvPricing.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPricing.Location = new System.Drawing.Point(20, 160);
-            this.dgvPricing.MultiSelect = false;
-            this.dgvPricing.Name = "dgvPricing";
-            this.dgvPricing.ReadOnly = true;
-            this.dgvPricing.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvPricing.Size = new System.Drawing.Size(750, 450);
-            this.dgvPricing.TabIndex = 2;
-            this.dgvPricing.SelectionChanged += new System.EventHandler(this.DgvPricing_SelectionChanged);
+            dgvPricing.AllowUserToAddRows = false;
+            dgvPricing.AllowUserToDeleteRows = false;
+            dgvPricing.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvPricing.BackgroundColor = System.Drawing.Color.White;
+            dgvPricing.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvPricing.Location = new System.Drawing.Point(20, 160);
+            dgvPricing.MultiSelect = false;
+            dgvPricing.Name = "dgvPricing";
+            dgvPricing.ReadOnly = true;
+            dgvPricing.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvPricing.Size = new System.Drawing.Size(750, 450);
+            dgvPricing.TabIndex = 2;
+            dgvPricing.SelectionChanged += new System.EventHandler(DgvPricing_SelectionChanged);
             // 
             // lblTotalItems
             // 
-            this.lblTotalItems.AutoSize = true;
-            this.lblTotalItems.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblTotalItems.Location = new System.Drawing.Point(20, 620);
-            this.lblTotalItems.Name = "lblTotalItems";
-            this.lblTotalItems.Size = new System.Drawing.Size(101, 19);
-            this.lblTotalItems.TabIndex = 3;
-            this.lblTotalItems.Text = "Total Items: 0";
+            lblTotalItems.AutoSize = true;
+            lblTotalItems.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            lblTotalItems.Location = new System.Drawing.Point(20, 620);
+            lblTotalItems.Name = "lblTotalItems";
+            lblTotalItems.Size = new System.Drawing.Size(101, 19);
+            lblTotalItems.TabIndex = 3;
+            lblTotalItems.Text = "Total Items: 0";
             // 
             // panelPricing
             // 
-            this.panelPricing.BackColor = System.Drawing.Color.White;
-            this.panelPricing.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelPricing.Controls.Add(this.lblWarning);
-            this.panelPricing.Controls.Add(this.lblProfit);
-            this.panelPricing.Controls.Add(this.btnUpdatePrice);
-            this.panelPricing.Controls.Add(this.txtMarkupPercent);
-            this.panelPricing.Controls.Add(this.lblMarkupPercent);
-            this.panelPricing.Controls.Add(this.txtSellingPrice);
-            this.panelPricing.Controls.Add(this.lblSellingPrice);
-            this.panelPricing.Controls.Add(this.txtCostPrice);
-            this.panelPricing.Controls.Add(this.lblCostPrice);
-            this.panelPricing.Controls.Add(this.lblSelectedMedicine);
-            this.panelPricing.Controls.Add(this.lblPricingSection);
-            this.panelPricing.Location = new System.Drawing.Point(790, 85);
-            this.panelPricing.Name = "panelPricing";
-            this.panelPricing.Size = new System.Drawing.Size(390, 340);
-            this.panelPricing.TabIndex = 4;
+            panelPricing.BackColor = System.Drawing.Color.White;
+            panelPricing.BorderStyle = BorderStyle.FixedSingle;
+            panelPricing.Controls.Add(lblWarning);
+            panelPricing.Controls.Add(lblProfit);
+            panelPricing.Controls.Add(btnUpdatePrice);
+            panelPricing.Controls.Add(txtMarkupPercent);
+            panelPricing.Controls.Add(lblMarkupPercent);
+            panelPricing.Controls.Add(txtSellingPrice);
+            panelPricing.Controls.Add(lblSellingPrice);
+            panelPricing.Controls.Add(txtCostPrice);
+            panelPricing.Controls.Add(lblCostPrice);
+            panelPricing.Controls.Add(lblSelectedMedicine);
+            panelPricing.Controls.Add(lblPricingSection);
+            panelPricing.Location = new System.Drawing.Point(790, 85);
+            panelPricing.Name = "panelPricing";
+            panelPricing.Size = new System.Drawing.Size(390, 340);
+            panelPricing.TabIndex = 4;
             // 
             // lblWarning
             // 
-            this.lblWarning.AutoSize = true;
-            this.lblWarning.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.lblWarning.ForeColor = System.Drawing.Color.Red;
-            this.lblWarning.Location = new System.Drawing.Point(20, 250);
-            this.lblWarning.Name = "lblWarning";
-            this.lblWarning.Size = new System.Drawing.Size(59, 15);
-            this.lblWarning.TabIndex = 10;
-            this.lblWarning.Text = "⚠ Warning";
-            this.lblWarning.Visible = false;
+            lblWarning.AutoSize = true;
+            lblWarning.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            lblWarning.ForeColor = System.Drawing.Color.Red;
+            lblWarning.Location = new System.Drawing.Point(20, 250);
+            lblWarning.Name = "lblWarning";
+            lblWarning.Size = new System.Drawing.Size(59, 15);
+            lblWarning.TabIndex = 10;
+            lblWarning.Text = "⚠ Warning";
+            lblWarning.Visible = false;
             // 
             // lblProfit
             // 
-            this.lblProfit.AutoSize = true;
-            this.lblProfit.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblProfit.ForeColor = System.Drawing.Color.Green;
-            this.lblProfit.Location = new System.Drawing.Point(20, 220);
-            this.lblProfit.Name = "lblProfit";
-            this.lblProfit.Size = new System.Drawing.Size(98, 21);
-            this.lblProfit.TabIndex = 9;
-            this.lblProfit.Text = "Profit: ₱0.00";
+            lblProfit.AutoSize = true;
+            lblProfit.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            lblProfit.ForeColor = System.Drawing.Color.Green;
+            lblProfit.Location = new System.Drawing.Point(20, 220);
+            lblProfit.Name = "lblProfit";
+            lblProfit.Size = new System.Drawing.Size(98, 21);
+            lblProfit.TabIndex = 9;
+            lblProfit.Text = "Profit: ₱0.00";
             // 
             // btnUpdatePrice
             // 
-            this.btnUpdatePrice.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.btnUpdatePrice.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnUpdatePrice.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnUpdatePrice.ForeColor = System.Drawing.Color.White;
-            this.btnUpdatePrice.Location = new System.Drawing.Point(20, 280);
-            this.btnUpdatePrice.Name = "btnUpdatePrice";
-            this.btnUpdatePrice.Size = new System.Drawing.Size(350, 45);
-            this.btnUpdatePrice.TabIndex = 8;
-            this.btnUpdatePrice.Text = "Update Price";
-            this.btnUpdatePrice.UseVisualStyleBackColor = false;
-            this.btnUpdatePrice.Click += new System.EventHandler(this.BtnUpdatePrice_Click);
+            btnUpdatePrice.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            btnUpdatePrice.FlatStyle = FlatStyle.Flat;
+            btnUpdatePrice.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnUpdatePrice.ForeColor = System.Drawing.Color.White;
+            btnUpdatePrice.Location = new System.Drawing.Point(20, 280);
+            btnUpdatePrice.Name = "btnUpdatePrice";
+            btnUpdatePrice.Size = new System.Drawing.Size(350, 45);
+            btnUpdatePrice.TabIndex = 8;
+            btnUpdatePrice.Text = "Update Price";
+            btnUpdatePrice.UseVisualStyleBackColor = false;
+            btnUpdatePrice.Click += new System.EventHandler(BtnUpdatePrice_Click);
             // 
             // txtMarkupPercent
             // 
-            this.txtMarkupPercent.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.txtMarkupPercent.Location = new System.Drawing.Point(160, 175);
-            this.txtMarkupPercent.Name = "txtMarkupPercent";
-            this.txtMarkupPercent.Size = new System.Drawing.Size(210, 27);
-            this.txtMarkupPercent.TabIndex = 7;
-            this.txtMarkupPercent.TextChanged += new System.EventHandler(this.TxtMarkupPercent_TextChanged);
+            txtMarkupPercent.Font = new System.Drawing.Font("Segoe UI", 11F);
+            txtMarkupPercent.Location = new System.Drawing.Point(160, 175);
+            txtMarkupPercent.Name = "txtMarkupPercent";
+            txtMarkupPercent.Size = new System.Drawing.Size(210, 27);
+            txtMarkupPercent.TabIndex = 7;
+            txtMarkupPercent.TextChanged += new System.EventHandler(TxtMarkupPercent_TextChanged);
             // 
             // lblMarkupPercent
             // 
-            this.lblMarkupPercent.AutoSize = true;
-            this.lblMarkupPercent.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblMarkupPercent.Location = new System.Drawing.Point(20, 178);
-            this.lblMarkupPercent.Name = "lblMarkupPercent";
-            this.lblMarkupPercent.Size = new System.Drawing.Size(86, 19);
-            this.lblMarkupPercent.TabIndex = 6;
-            this.lblMarkupPercent.Text = "Markup %:";
+            lblMarkupPercent.AutoSize = true;
+            lblMarkupPercent.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            lblMarkupPercent.Location = new System.Drawing.Point(20, 178);
+            lblMarkupPercent.Name = "lblMarkupPercent";
+            lblMarkupPercent.Size = new System.Drawing.Size(86, 19);
+            lblMarkupPercent.TabIndex = 6;
+            lblMarkupPercent.Text = "Markup %:";
             // 
             // txtSellingPrice
             // 
-            this.txtSellingPrice.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.txtSellingPrice.Location = new System.Drawing.Point(160, 135);
-            this.txtSellingPrice.Name = "txtSellingPrice";
-            this.txtSellingPrice.Size = new System.Drawing.Size(210, 27);
-            this.txtSellingPrice.TabIndex = 5;
-            this.txtSellingPrice.TextChanged += new System.EventHandler(this.TxtSellingPrice_TextChanged);
+            txtSellingPrice.Font = new System.Drawing.Font("Segoe UI", 11F);
+            txtSellingPrice.Location = new System.Drawing.Point(160, 135);
+            txtSellingPrice.Name = "txtSellingPrice";
+            txtSellingPrice.Size = new System.Drawing.Size(210, 27);
+            txtSellingPrice.TabIndex = 5;
+            txtSellingPrice.TextChanged += new System.EventHandler(TxtSellingPrice_TextChanged);
             // 
             // lblSellingPrice
             // 
-            this.lblSellingPrice.AutoSize = true;
-            this.lblSellingPrice.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblSellingPrice.Location = new System.Drawing.Point(20, 138);
-            this.lblSellingPrice.Name = "lblSellingPrice";
-            this.lblSellingPrice.Size = new System.Drawing.Size(100, 19);
-            this.lblSellingPrice.TabIndex = 4;
-            this.lblSellingPrice.Text = "Selling Price:";
+            lblSellingPrice.AutoSize = true;
+            lblSellingPrice.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            lblSellingPrice.Location = new System.Drawing.Point(20, 138);
+            lblSellingPrice.Name = "lblSellingPrice";
+            lblSellingPrice.Size = new System.Drawing.Size(100, 19);
+            lblSellingPrice.TabIndex = 4;
+            lblSellingPrice.Text = "Selling Price:";
             // 
             // txtCostPrice
             // 
-            this.txtCostPrice.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.txtCostPrice.Location = new System.Drawing.Point(160, 95);
-            this.txtCostPrice.Name = "txtCostPrice";
-            this.txtCostPrice.Size = new System.Drawing.Size(210, 27);
-            this.txtCostPrice.TabIndex = 3;
-            this.txtCostPrice.TextChanged += new System.EventHandler(this.TxtCostPrice_TextChanged);
+            txtCostPrice.Font = new System.Drawing.Font("Segoe UI", 11F);
+            txtCostPrice.Location = new System.Drawing.Point(160, 95);
+            txtCostPrice.Name = "txtCostPrice";
+            txtCostPrice.Size = new System.Drawing.Size(210, 27);
+            txtCostPrice.TabIndex = 3;
+            txtCostPrice.TextChanged += new System.EventHandler(TxtCostPrice_TextChanged);
             // 
             // lblCostPrice
             // 
-            this.lblCostPrice.AutoSize = true;
-            this.lblCostPrice.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblCostPrice.Location = new System.Drawing.Point(20, 98);
-            this.lblCostPrice.Name = "lblCostPrice";
-            this.lblCostPrice.Size = new System.Drawing.Size(81, 19);
-            this.lblCostPrice.TabIndex = 2;
-            this.lblCostPrice.Text = "Cost Price:";
+            lblCostPrice.AutoSize = true;
+            lblCostPrice.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            lblCostPrice.Location = new System.Drawing.Point(20, 98);
+            lblCostPrice.Name = "lblCostPrice";
+            lblCostPrice.Size = new System.Drawing.Size(81, 19);
+            lblCostPrice.TabIndex = 2;
+            lblCostPrice.Text = "Cost Price:";
             // 
             // lblSelectedMedicine
             // 
-            this.lblSelectedMedicine.AutoSize = true;
-            this.lblSelectedMedicine.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Italic);
-            this.lblSelectedMedicine.ForeColor = System.Drawing.Color.Gray;
-            this.lblSelectedMedicine.Location = new System.Drawing.Point(20, 60);
-            this.lblSelectedMedicine.Name = "lblSelectedMedicine";
-            this.lblSelectedMedicine.Size = new System.Drawing.Size(209, 19);
-            this.lblSelectedMedicine.TabIndex = 1;
-            this.lblSelectedMedicine.Text = "Selected: No medicine selected";
+            lblSelectedMedicine.AutoSize = true;
+            lblSelectedMedicine.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Italic);
+            lblSelectedMedicine.ForeColor = System.Drawing.Color.Gray;
+            lblSelectedMedicine.Location = new System.Drawing.Point(20, 60);
+            lblSelectedMedicine.Name = "lblSelectedMedicine";
+            lblSelectedMedicine.Size = new System.Drawing.Size(209, 19);
+            lblSelectedMedicine.TabIndex = 1;
+            lblSelectedMedicine.Text = "Selected: No medicine selected";
             // 
             // lblPricingSection
             // 
-            this.lblPricingSection.AutoSize = true;
-            this.lblPricingSection.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblPricingSection.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.lblPricingSection.Location = new System.Drawing.Point(15, 15);
-            this.lblPricingSection.Name = "lblPricingSection";
-            this.lblPricingSection.Size = new System.Drawing.Size(179, 21);
-            this.lblPricingSection.TabIndex = 0;
-            this.lblPricingSection.Text = "Individual Price Edit";
+            lblPricingSection.AutoSize = true;
+            lblPricingSection.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            lblPricingSection.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            lblPricingSection.Location = new System.Drawing.Point(15, 15);
+            lblPricingSection.Name = "lblPricingSection";
+            lblPricingSection.Size = new System.Drawing.Size(179, 21);
+            lblPricingSection.TabIndex = 0;
+            lblPricingSection.Text = "Individual Price Edit";
             // 
             // panelBulk
             // 
-            this.panelBulk.BackColor = System.Drawing.Color.White;
-            this.panelBulk.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelBulk.Controls.Add(this.btnBulkUpdate);
-            this.panelBulk.Controls.Add(this.txtBulkMarkup);
-            this.panelBulk.Controls.Add(this.lblBulkMarkup);
-            this.panelBulk.Controls.Add(this.lblBulkSection);
-            this.panelBulk.Location = new System.Drawing.Point(790, 440);
-            this.panelBulk.Name = "panelBulk";
-            this.panelBulk.Size = new System.Drawing.Size(390, 170);
-            this.panelBulk.TabIndex = 5;
+            panelBulk.BackColor = System.Drawing.Color.White;
+            panelBulk.BorderStyle = BorderStyle.FixedSingle;
+            panelBulk.Controls.Add(btnBulkUpdate);
+            panelBulk.Controls.Add(txtBulkMarkup);
+            panelBulk.Controls.Add(lblBulkMarkup);
+            panelBulk.Controls.Add(lblBulkSection);
+            panelBulk.Location = new System.Drawing.Point(790, 440);
+            panelBulk.Name = "panelBulk";
+            panelBulk.Size = new System.Drawing.Size(390, 170);
+            panelBulk.TabIndex = 5;
             // 
             // btnBulkUpdate
             // 
-            this.btnBulkUpdate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(126)))), ((int)(((byte)(34)))));
-            this.btnBulkUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBulkUpdate.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnBulkUpdate.ForeColor = System.Drawing.Color.White;
-            this.btnBulkUpdate.Location = new System.Drawing.Point(20, 105);
-            this.btnBulkUpdate.Name = "btnBulkUpdate";
-            this.btnBulkUpdate.Size = new System.Drawing.Size(350, 45);
-            this.btnBulkUpdate.TabIndex = 3;
-            this.btnBulkUpdate.Text = "Apply Bulk Markup";
-            this.btnBulkUpdate.UseVisualStyleBackColor = false;
-            this.btnBulkUpdate.Click += new System.EventHandler(this.BtnBulkUpdate_Click);
+            btnBulkUpdate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(126)))), ((int)(((byte)(34)))));
+            btnBulkUpdate.FlatStyle = FlatStyle.Flat;
+            btnBulkUpdate.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnBulkUpdate.ForeColor = System.Drawing.Color.White;
+            btnBulkUpdate.Location = new System.Drawing.Point(20, 105);
+            btnBulkUpdate.Name = "btnBulkUpdate";
+            btnBulkUpdate.Size = new System.Drawing.Size(350, 45);
+            btnBulkUpdate.TabIndex = 3;
+            btnBulkUpdate.Text = "Apply Bulk Markup";
+            btnBulkUpdate.UseVisualStyleBackColor = false;
+            btnBulkUpdate.Click += new System.EventHandler(BtnBulkUpdate_Click);
             // 
             // txtBulkMarkup
             // 
-            this.txtBulkMarkup.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.txtBulkMarkup.Location = new System.Drawing.Point(160, 60);
-            this.txtBulkMarkup.Name = "txtBulkMarkup";
-            this.txtBulkMarkup.Size = new System.Drawing.Size(210, 27);
-            this.txtBulkMarkup.TabIndex = 2;
+            txtBulkMarkup.Font = new System.Drawing.Font("Segoe UI", 11F);
+            txtBulkMarkup.Location = new System.Drawing.Point(160, 60);
+            txtBulkMarkup.Name = "txtBulkMarkup";
+            txtBulkMarkup.Size = new System.Drawing.Size(210, 27);
+            txtBulkMarkup.TabIndex = 2;
             // 
             // lblBulkMarkup
             // 
-            this.lblBulkMarkup.AutoSize = true;
-            this.lblBulkMarkup.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblBulkMarkup.Location = new System.Drawing.Point(20, 63);
-            this.lblBulkMarkup.Name = "lblBulkMarkup";
-            this.lblBulkMarkup.Size = new System.Drawing.Size(86, 19);
-            this.lblBulkMarkup.TabIndex = 1;
-            this.lblBulkMarkup.Text = "Markup %:";
+            lblBulkMarkup.AutoSize = true;
+            lblBulkMarkup.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            lblBulkMarkup.Location = new System.Drawing.Point(20, 63);
+            lblBulkMarkup.Name = "lblBulkMarkup";
+            lblBulkMarkup.Size = new System.Drawing.Size(86, 19);
+            lblBulkMarkup.TabIndex = 1;
+            lblBulkMarkup.Text = "Markup %:";
             // 
             // lblBulkSection
             // 
-            this.lblBulkSection.AutoSize = true;
-            this.lblBulkSection.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblBulkSection.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.lblBulkSection.Location = new System.Drawing.Point(15, 15);
-            this.lblBulkSection.Name = "lblBulkSection";
-            this.lblBulkSection.Size = new System.Drawing.Size(160, 21);
-            this.lblBulkSection.TabIndex = 0;
-            this.lblBulkSection.Text = "Bulk Price Update";
+            lblBulkSection.AutoSize = true;
+            lblBulkSection.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            lblBulkSection.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            lblBulkSection.Location = new System.Drawing.Point(15, 15);
+            lblBulkSection.Name = "lblBulkSection";
+            lblBulkSection.Size = new System.Drawing.Size(160, 21);
+            lblBulkSection.TabIndex = 0;
+            lblBulkSection.Text = "Bulk Price Update";
             // 
             // panelButtons
             // 
-            this.panelButtons.BackColor = System.Drawing.Color.White;
-            this.panelButtons.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelButtons.Controls.Add(this.btnExportPricing);
-            this.panelButtons.Controls.Add(this.btnClose);
-            this.panelButtons.Location = new System.Drawing.Point(20, 655);
-            this.panelButtons.Name = "panelButtons";
-            this.panelButtons.Size = new System.Drawing.Size(1160, 70);
-            this.panelButtons.TabIndex = 6;
+            panelButtons.BackColor = System.Drawing.Color.White;
+            panelButtons.BorderStyle = BorderStyle.FixedSingle;
+            panelButtons.Controls.Add(btnExportPricing);
+            panelButtons.Controls.Add(btnClose);
+            panelButtons.Location = new System.Drawing.Point(20, 655);
+            panelButtons.Name = "panelButtons";
+            panelButtons.Size = new System.Drawing.Size(1160, 70);
+            panelButtons.TabIndex = 6;
             // 
             // btnExportPricing
             // 
-            this.btnExportPricing.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(160)))), ((int)(((byte)(133)))));
-            this.btnExportPricing.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExportPricing.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnExportPricing.ForeColor = System.Drawing.Color.White;
-            this.btnExportPricing.Location = new System.Drawing.Point(15, 12);
-            this.btnExportPricing.Name = "btnExportPricing";
-            this.btnExportPricing.Size = new System.Drawing.Size(180, 45);
-            this.btnExportPricing.TabIndex = 0;
-            this.btnExportPricing.Text = "Export to CSV";
-            this.btnExportPricing.UseVisualStyleBackColor = false;
-            this.btnExportPricing.Click += new System.EventHandler(this.BtnExportPricing_Click);
+            btnExportPricing.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(160)))), ((int)(((byte)(133)))));
+            btnExportPricing.FlatStyle = FlatStyle.Flat;
+            btnExportPricing.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnExportPricing.ForeColor = System.Drawing.Color.White;
+            btnExportPricing.Location = new System.Drawing.Point(15, 12);
+            btnExportPricing.Name = "btnExportPricing";
+            btnExportPricing.Size = new System.Drawing.Size(180, 45);
+            btnExportPricing.TabIndex = 0;
+            btnExportPricing.Text = "Export to CSV";
+            btnExportPricing.UseVisualStyleBackColor = false;
+            btnExportPricing.Click += new System.EventHandler(BtnExportPricing_Click);
             // 
             // btnClose
             // 
-            this.btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(960, 12);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(180, 45);
-            this.btnClose.TabIndex = 1;
-            this.btnClose.Text = "Close";
-            this.btnClose.UseVisualStyleBackColor = false;
-            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
+            btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            btnClose.FlatStyle = FlatStyle.Flat;
+            btnClose.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            btnClose.ForeColor = System.Drawing.Color.White;
+            btnClose.Location = new System.Drawing.Point(960, 12);
+            btnClose.Name = "btnClose";
+            btnClose.Size = new System.Drawing.Size(180, 45);
+            btnClose.TabIndex = 1;
+            btnClose.Text = "Close";
+            btnClose.UseVisualStyleBackColor = false;
+            btnClose.Click += new System.EventHandler(BtnClose_Click);
             // 
             // ManagePricingForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
-            this.ClientSize = new System.Drawing.Size(1200, 740);
-            this.Controls.Add(this.panelButtons);
-            this.Controls.Add(this.panelBulk);
-            this.Controls.Add(this.panelPricing);
-            this.Controls.Add(this.lblTotalItems);
-            this.Controls.Add(this.dgvPricing);
-            this.Controls.Add(this.panelSearch);
-            this.Controls.Add(this.panelHeader);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.Name = "ManagePricingForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Manage Medicine Pricing - St. Joseph's Hospital";
-            this.panelHeader.ResumeLayout(false);
-            this.panelHeader.PerformLayout();
-            this.panelSearch.ResumeLayout(false);
-            this.panelSearch.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPricing)).EndInit();
-            this.panelPricing.ResumeLayout(false);
-            this.panelPricing.PerformLayout();
-            this.panelBulk.ResumeLayout(false);
-            this.panelBulk.PerformLayout();
-            this.panelButtons.ResumeLayout(false);
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
+            ClientSize = new System.Drawing.Size(1200, 740);
+            Controls.Add(panelButtons);
+            Controls.Add(panelBulk);
+            Controls.Add(panelPricing);
+            Controls.Add(lblTotalItems);
+            Controls.Add(dgvPricing);
+            Controls.Add(panelSearch);
+            Controls.Add(panelHeader);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            Name = "ManagePricingForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Manage Medicine Pricing - St. Joseph's Hospital";
+            panelHeader.ResumeLayout(false);
+            panelHeader.PerformLayout();
+            panelSearch.ResumeLayout(false);
+            panelSearch.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(dgvPricing)).EndInit();
+            panelPricing.ResumeLayout(false);
+            panelPricing.PerformLayout();
+            panelBulk.ResumeLayout(false);
+            panelBulk.PerformLayout();
+            panelButtons.ResumeLayout(false);
+            ResumeLayout(false);
+            PerformLayout();
         }
+
+        #endregion
+
+        private Panel panelHeader;
+        private Label lblTitle;
+        private Panel panelSearch;
+        private Button btnSearch;
+        private TextBox txtSearch;
+        private Label lblSearch;
+        private DataGridView dgvPricing;
+        private Label lblTotalItems;
+        private Panel panelPricing;
+        private Label lblWarning;
+        private Label lblProfit;
+        private Button btnUpdatePrice;
+        private TextBox txtMarkupPercent;
+        private Label lblMarkupPercent;
+        private TextBox txtSellingPrice;
+        private Label lblSellingPrice;
+        private TextBox txtCostPrice;
+        private Label lblCostPrice;
+        private Label lblSelectedMedicine;
+        private Label lblPricingSection;
+        private Panel panelBulk;
+        private Button btnBulkUpdate;
+        private TextBox txtBulkMarkup;
+        private Label lblBulkMarkup;
+        private Label lblBulkSection;
+        private Panel panelButtons;
+        private Button btnExportPricing;
+        private Button btnClose;
     }
 }

@@ -363,6 +363,14 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     ADD COLUMN IF NOT EXISTS last_failed_attempt DATETIME NULL,
                     ADD COLUMN IF NOT EXISTS locked_until DATETIME NULL";
 
+                    string addDeactivationColumns = @"
+                    ALTER TABLE Users 
+                    ADD COLUMN IF NOT EXISTS deactivation_type VARCHAR(20) DEFAULT NULL COMMENT 'Types: temporary, permanent, NULL for active',
+                    ADD COLUMN IF NOT EXISTS deactivated_reason VARCHAR(500) DEFAULT NULL,
+                    ADD COLUMN IF NOT EXISTS deactivated_date DATETIME NULL,
+                    ADD COLUMN IF NOT EXISTS deactivated_by INT NULL,
+                    ADD COLUMN IF NOT EXISTS can_reactivate TINYINT(1) DEFAULT 1 COMMENT '1 = can reactivate, 0 = permanently fired'";
+
                     ExecuteNonQueryInternal(conn, createUsersTable);
                     ExecuteNonQueryInternal(conn, createPatientsTable);
                     ExecuteNonQueryInternal(conn, createDoctorsTable);
@@ -383,6 +391,27 @@ namespace SaintJosephsHospitalHealthMonitorApp
                     ExecuteNonQueryInternal(conn, createServicesTable);
                     ExecuteNonQueryInternal(conn, createBillServicesTable);
                     ExecuteNonQueryInternal(conn, addLoginAttemptsColumn);
+                    ExecuteNonQueryInternal(conn, addDeactivationColumns);
+                    EnsureSecurityQuestionsForAllUsers(conn);
+
+                    string checkConstraint = @"
+                    SELECT COUNT(*) 
+                    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+                    WHERE CONSTRAINT_SCHEMA = DATABASE()
+                    AND TABLE_NAME = 'Users'
+                    AND CONSTRAINT_NAME = 'fk_deactivated_by'";
+
+                    int constraintExists = Convert.ToInt32(ExecuteScalarInternal(conn, checkConstraint));
+
+                    if (constraintExists == 0)
+                    {
+                        string addConstraint = @"
+                    ALTER TABLE Users 
+                    ADD CONSTRAINT fk_deactivated_by 
+                    FOREIGN KEY (deactivated_by) REFERENCES Users(user_id) ON DELETE SET NULL";
+
+                        ExecuteNonQueryInternal(conn, addConstraint);
+                    }
 
                     try
                     {
@@ -469,6 +498,67 @@ namespace SaintJosephsHospitalHealthMonitorApp
             catch (Exception ex)
             {
                 throw new Exception($"Database Error: {ex.Message}", ex);
+            }
+        }
+
+        public static void EnsureAllUsersHaveSecurityQuestions()
+        {
+            try
+            {
+                using (MySqlConnection conn = GetConnection())
+                {
+                    conn.Open();
+                    EnsureSecurityQuestionsForAllUsers(conn);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Error ensuring security questions: {ex.Message}");
+                throw;
+            }
+        }
+
+        private static void EnsureSecurityQuestionsForAllUsers(MySqlConnection conn)
+        {
+            try
+            {
+                string checkColumns = @"
+            SELECT COUNT(*) 
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+            AND TABLE_NAME = 'Users'
+            AND COLUMN_NAME IN ('security_question', 'security_answer')";
+
+                int columnsExist = Convert.ToInt32(ExecuteScalarInternal(conn, checkColumns));
+
+                if (columnsExist < 2)
+                {
+                    string addSecurityColumns = @"
+                ALTER TABLE Users 
+                ADD COLUMN IF NOT EXISTS security_question VARCHAR(500) DEFAULT NULL,
+                ADD COLUMN IF NOT EXISTS security_answer VARCHAR(255) DEFAULT NULL";
+
+                    ExecuteNonQueryInternal(conn, addSecurityColumns);
+                    System.Diagnostics.Debug.WriteLine("[DatabaseHelper] Added security_question and security_answer columns");
+                }
+
+                string updateDefaultSecurity = @"
+            UPDATE Users 
+            SET security_question = 'What is your favorite color?',
+                security_answer = 'HAPPYHEALTH'
+            WHERE (security_question IS NULL OR security_question = '')
+               OR (security_answer IS NULL OR security_answer = '')";
+
+                int rowsUpdated = ExecuteNonQueryInternal(conn, updateDefaultSecurity);
+
+                if (rowsUpdated > 0)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Set default security questions for {rowsUpdated} users");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] Failed to ensure security questions: {ex.Message}");
             }
         }
 
@@ -918,11 +1008,11 @@ namespace SaintJosephsHospitalHealthMonitorApp
             }
         }
 
-        private static void ExecuteNonQueryInternal(MySqlConnection conn, string query)
+        private static int ExecuteNonQueryInternal(MySqlConnection conn, string query)
         {
             using (MySqlCommand cmd = new MySqlCommand(query, conn))
             {
-                cmd.ExecuteNonQuery();
+                return cmd.ExecuteNonQuery();
             }
         }
 
