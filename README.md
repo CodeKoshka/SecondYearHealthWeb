@@ -1,7 +1,7 @@
-# 🏥 Health App For Second Year Defence Baby!!!
+# Hospital System For Third Year Defence Baby!!!
 
 
-**Status:** 🟡 unstable version (Semi Broken State More Bandaid Patches Coming-Soon)
+**Status:** 🟡 unstable version (Time To Get Back To Work)
 
 **Note:** Requires **XAMPP** to run.
 
@@ -48,6 +48,11 @@ Default accounts:
 
 🧑‍💼 Headadmin: Headadmin@hospital.com / admin123
 
-🧾 Receptionist: receptionist@hospital.com / receptionist123
+🧑‍💼 Admin: Admin@hospital.com / admin123
 
+🧾 Receptionist: Deceptionist@hospital.com / receptionist123
+
+🩺 Doctor: Doctor@hospital.com / doctor123
+
+Comming Soon
 💊 Pharmacist: pharmacist@hospital.com / pharmacist123
