@@ -46,14 +46,16 @@ The name itself is temporary.
 
 Default accounts:
 
-🧑‍💼 Headadmin: Headadmin@hospital.com / admin123
+🧑‍💼 Headadmin: Headadmin@hospital.com / Headadmin123@
 
-🧑‍💼 Admin: Admin@hospital.com / admin123
+🧑‍💼 Admin: Admin@hospital.com / Admin123@
 
-🧾 Receptionist: Deceptionist@hospital.com / receptionist123
+🧾 Receptionist: Deceptionist@hospital.com / Receptionist123@
 
 🩺 Doctor: Doctor@hospital.com / doctor123
 
-## Comming Soon
+## Comming Soon Accounts / DashBoard Modules
 
-💊 Pharmacist: pharmacist@hospital.com / pharmacist123
+🧾 Nurse: Nurse@hospital.com / Nurse123@
+💊 Pharmacist: pharmacist@hospital.com / Pharmacist123@
+
